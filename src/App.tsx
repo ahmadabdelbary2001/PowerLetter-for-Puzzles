@@ -8,6 +8,7 @@ import { GameModeProvider, useGameMode } from './contexts/GameModeContext'
 import ModeToggler from './components/GameSetup/ModeToggler';
 import LanguageSelector from './components/GameSetup/LanguageSelector'
 import GameModeSelector from './components/GameSetup/GameModeSelector'
+import TeamConfigurator from './components/GameSetup/TeamConfigurator';
 
 // Define your flow states inline so TS knows their literal types
 const FLOW_STATES = {
@@ -42,10 +43,18 @@ function AppContent(): ReactElement {
     )
   }
 
+  const handleTeamsConfigured = () => {
+    setCurrentFlow(FLOW_STATES.GAME_TYPE_SELECTION);
+  };
+
   const handleBackToLanguage = (): void => {
     setSelectedLanguage(null)
     setCurrentFlow(FLOW_STATES.LANGUAGE_SELECTION)
   }
+
+  const handleBackToMode = () => {
+    setCurrentFlow(FLOW_STATES.MODE_SELECTION);
+  };
 
   const renderScreen = (): ReactElement => {
     switch (currentFlow) {
@@ -61,7 +70,12 @@ function AppContent(): ReactElement {
         )
 
       case FLOW_STATES.TEAM_SETUP:
-        return <div>🛠 Team setup (TODO)</div>
+        return (
+          <TeamConfigurator 
+            onTeamsConfigured={handleTeamsConfigured}
+            onBack={handleBackToMode}
+          />
+        );
 
       case FLOW_STATES.GAME_TYPE_SELECTION:
         return <div>🎯 Game type selection (TODO)</div>
@@ -97,7 +111,7 @@ export default function App(): ReactElement {
   return (
     <ThemeProvider>
       <GameModeProvider>
-        <div className="min-h-screen transition-colors duration-300 overflow-hidden">
+        <div className="min-h-screen transition-colors duration-300">
           <ModeToggler />
           <AppContent />
         </div>
