@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import type { ReactElement } from 'react'
 import type { Language } from './contexts/GameModeContext'
-import './index.css'   // Tailwind base/utilities
-import './App.css'     // your @apply helpers
-
+import './index.css'
+import './App.css'
+import { ThemeProvider } from './contexts/ThemeProvider';
 import { GameModeProvider, useGameMode } from './contexts/GameModeContext'
+import ModeToggler from './components/GameSetup/ModeToggler';
 import LanguageSelector from './components/GameSetup/LanguageSelector'
 import GameModeSelector from './components/GameSetup/GameModeSelector'
 
@@ -94,8 +95,13 @@ function AppContent(): ReactElement {
 
 export default function App(): ReactElement {
   return (
-    <GameModeProvider>
-      <AppContent />
-    </GameModeProvider>
+    <ThemeProvider>
+      <GameModeProvider>
+        <div className="min-h-screen transition-colors duration-300 overflow-hidden">
+          <ModeToggler />
+          <AppContent />
+        </div>
+      </GameModeProvider>
+    </ThemeProvider>
   )
 }
