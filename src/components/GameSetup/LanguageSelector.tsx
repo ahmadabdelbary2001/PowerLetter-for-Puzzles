@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { Globe, ArrowRight } from 'lucide-react';
 
 interface Language {
@@ -44,61 +50,58 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({ onLanguageSelect })
       <div className="max-w-4xl w-full">
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="flex flex-col items-center justify-center mb-8">
-            <div className="bg-blue-100 dark:bg-blue-900/30 w-24 h-24 rounded-full flex items-center justify-center mb-6">
-              <Globe className="w-14 h-14 text-blue-600 dark:text-blue-400" />
-            </div>
-            <h1 className="text-5xl font-bold text-gray-800 dark:text-white mb-4">
+          <div className="flex items-center justify-center mb-4">
+            <Globe className="w-12 h-12 text-blue-600 dark:text-blue-400 mr-3" />
+            <h1 className="text-5xl font-bold text-gray-800 dark:text-white">
               Power<span className="text-blue-600 dark:text-blue-400">Letter</span>
             </h1>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl">
-              Choose your preferred language to start your word puzzle adventure
-            </p>
           </div>
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            Choose your preferred language to start your word puzzle adventure
+          </p>
         </div>
         
         {/* Language Cards */}
-        <div className="grid md:grid-cols-2 gap-8 mb-10">
+        <div className="grid md:grid-cols-2 gap-8 mb-8">
           {languages.map((lang) => (
             <Card 
               key={lang.code}
               className={`
-                cursor-pointer transition-all duration-300 
+                cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-105
                 ${language === lang.code 
-                  ? 'ring-2 ring-blue-500 border-blue-300 bg-blue-50 dark:bg-blue-900/20' 
-                  : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                  ? 'ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-900/20' 
+                  : 'hover:bg-gray-50 dark:hover:bg-gray-800'
                 }
               `}
               onClick={() => handleLanguageSelect(lang.code)}
             >
-              <CardHeader className="text-center pb-3">
+              <CardHeader className="text-center">
                 <div className="text-6xl mb-4">{lang.flag}</div>
-                <CardTitle className={`text-3xl font-bold ${lang.code === 'ar' ? 'font-arabic' : ''}`}>
+                <CardTitle className={`text-2xl ${lang.code === 'ar' ? 'font-arabic' : ''}`}>
                   {lang.nativeName}
                 </CardTitle>
+                <CardDescription className="text-lg">
+                  {lang.name}
+                </CardDescription>
               </CardHeader>
               
-              <CardContent className="pt-0">
-                <div className={`text-center text-gray-500 dark:text-gray-400 mb-4 text-lg ${lang.code === 'ar' ? 'font-arabic' : ''}`}>
-                  {lang.name}
-                </div>
-                
+              <CardContent>
                 <p className={`
-                  text-center text-gray-600 dark:text-gray-300 mb-6
+                  text-center text-gray-600 dark:text-gray-300 mb-4
                   ${lang.code === 'ar' ? 'text-right font-arabic' : ''}
                 `}>
                   {lang.description}
                 </p>
                 
                 <Button 
-                  className="w-full py-6 text-base font-medium"
+                  className="w-full"
                   variant={language === lang.code ? "default" : "outline"}
                 >
                   {language === lang.code ? (
-                    <div className="flex items-center justify-center">
+                    <>
                       <span>{lang.code === 'ar' ? 'مختار' : 'Selected'}</span>
                       <ArrowRight className="w-4 h-4 ml-2" />
-                    </div>
+                    </>
                   ) : (
                     <span>{lang.code === 'ar' ? 'اختر' : 'Select'}</span>
                   )}
@@ -114,12 +117,10 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({ onLanguageSelect })
             <Button 
               size="lg"
               onClick={() => onLanguageSelect(language)}
-              className="px-10 py-6 text-xl font-medium shadow-lg hover:shadow-xl transition-shadow"
+              className="px-8 py-3 text-lg"
             >
-              <div className="flex items-center">
-                <span>{language === 'ar' ? 'متابعة' : 'Continue'}</span>
-                <ArrowRight className="w-5 h-5 ml-3" />
-              </div>
+              {language === 'ar' ? 'متابعة' : 'Continue'}
+              <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
           </div>
         )}
