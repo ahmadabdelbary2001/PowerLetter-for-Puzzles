@@ -15,8 +15,8 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.536.0",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "tailwind-merge": "^3.3.1"
   },
   "devDependencies": {
@@ -25,8 +25,8 @@
     "@tailwindcss/postcss": "^4.1.11",
     "@types/autoprefixer": "^10.2.4",
     "@types/node": "^24.1.0",
-    "@types/react": "^19.1.9",
-    "@types/react-dom": "^19.1.7",
+    "@types/react": "^18.3.23",
+    "@types/react-dom": "^18.3.7",
     "@types/tailwindcss": "^3.0.11",
     "@vitejs/plugin-react": "^4.7.0",
     "autoprefixer": "^10.4.21",

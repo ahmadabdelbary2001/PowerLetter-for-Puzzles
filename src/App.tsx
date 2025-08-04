@@ -9,6 +9,7 @@ import ModeToggler from './components/GameSetup/ModeToggler';
 import LanguageSelector from './components/GameSetup/LanguageSelector'
 import GameModeSelector from './components/GameSetup/GameModeSelector'
 import TeamConfigurator from './components/GameSetup/TeamConfigurator';
+import GameTypeSelector from './components/GameScreens/GameTypeSelector';
 
 // Define your flow states inline so TS knows their literal types
 const FLOW_STATES = {
@@ -16,6 +17,8 @@ const FLOW_STATES = {
   MODE_SELECTION: 'mode_selection',
   TEAM_SETUP: 'team_setup',
   GAME_TYPE_SELECTION: 'game_type_selection',
+  CLUE_GAME: 'clue_game',
+  COMING_SOON: 'coming_soon',
 } as const
 
 type FlowState = typeof FLOW_STATES[keyof typeof FLOW_STATES]
@@ -47,6 +50,15 @@ function AppContent(): ReactElement {
     setCurrentFlow(FLOW_STATES.GAME_TYPE_SELECTION);
   };
 
+  const handleGameTypeSelect = (gameType) => {
+    setSelectedGameType(gameType);
+    if (gameType === 'clue') {
+      setCurrentFlow(FLOW_STATES.CLUE_GAME);
+    } else {
+      setCurrentFlow(FLOW_STATES.COMING_SOON);
+    }
+  };
+
   const handleBackToLanguage = (): void => {
     setSelectedLanguage(null)
     setCurrentFlow(FLOW_STATES.LANGUAGE_SELECTION)
@@ -54,6 +66,10 @@ function AppContent(): ReactElement {
 
   const handleBackToMode = () => {
     setCurrentFlow(FLOW_STATES.MODE_SELECTION);
+  };
+
+  const handleBackToTeamSetup = () => {
+    setCurrentFlow(FLOW_STATES.TEAM_SETUP);
   };
 
   const renderScreen = (): ReactElement => {
@@ -78,7 +94,12 @@ function AppContent(): ReactElement {
         );
 
       case FLOW_STATES.GAME_TYPE_SELECTION:
-        return <div>🎯 Game type selection (TODO)</div>
+        return (
+          <GameTypeSelector 
+            onGameTypeSelect={handleGameTypeSelect}
+            onBack={handleBackToMode}
+          />
+        );
 
       default:
         return <div>❓ Unknown flow state</div>
@@ -86,22 +107,9 @@ function AppContent(): ReactElement {
   }
 
   return (
-    <div
-      className="
-        min-h-screen flex items-center justify-center p-4
-        bg-gradient-to-br from-blue-50 to-indigo-100
-        dark:bg-gradient-to-br dark:from-gray-900 dark:to-gray-800
-      "
-    >
-      <div className="w-full max-w-4xl">
+    <div>
+      <div>
         {renderScreen()}
-
-        {selectedLanguage && (
-          <div className="language-badge">
-            Current Language: {language.toUpperCase()}
-          </div>
-        )}
-
       </div>
     </div>
   )
