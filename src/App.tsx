@@ -1,17 +1,21 @@
-import { useState } from 'react'
-import type { ReactElement } from 'react'
-import type { Language } from './contexts/GameModeContext'
-import './index.css'
-import './App.css'
+import { useState } from 'react';
+import type { ReactElement } from 'react';
+import type { Language } from './contexts/GameModeContext';
+
+import './index.css';
+import './App.css';
+
 import { ThemeProvider } from './contexts/ThemeProvider';
-import { GameModeProvider, useGameMode } from './contexts/GameModeContext'
+import { GameModeProvider, useGameMode } from './contexts/GameModeContext';
+
 import ModeToggler from './components/GameSetup/ModeToggler';
-import LanguageSelector from './components/GameSetup/LanguageSelector'
-import GameModeSelector from './components/GameSetup/GameModeSelector'
+import LanguageSelector from './components/GameSetup/LanguageSelector';
+import GameModeSelector from './components/GameSetup/GameModeSelector';
 import TeamConfigurator from './components/GameSetup/TeamConfigurator';
 import GameTypeSelector from './components/GameScreens/GameTypeSelector';
+import ClueGameScreen from './components/GameScreens/ClueGame/ClueGameScreen';
 
-// Define your flow states inline so TS knows their literal types
+// Flow state constants
 const FLOW_STATES = {
   LANGUAGE_SELECTION: 'language_selection',
   MODE_SELECTION: 'mode_selection',
@@ -19,100 +23,90 @@ const FLOW_STATES = {
   GAME_TYPE_SELECTION: 'game_type_selection',
   CLUE_GAME: 'clue_game',
   COMING_SOON: 'coming_soon',
-} as const
+} as const;
 
-type FlowState = typeof FLOW_STATES[keyof typeof FLOW_STATES]
+type FlowState = typeof FLOW_STATES[keyof typeof FLOW_STATES];
 
 function AppContent(): ReactElement {
-  const { language, setLanguage } = useGameMode()
+  const { setLanguage } = useGameMode();
   const [currentFlow, setCurrentFlow] = useState<FlowState>(
     FLOW_STATES.LANGUAGE_SELECTION
-  )
-  const [selectedLanguage, setSelectedLanguage] = useState<Language | null>(null)
+  );
 
-  // Accept plain string from the selector, then cast to our union
   const handleLanguageSelect = (langCode: string): void => {
-    const lang = langCode as Language
-    setLanguage(lang)
-    setSelectedLanguage(lang)
-    setCurrentFlow(FLOW_STATES.MODE_SELECTION)
-  }
+    setLanguage(langCode as Language);
+    setCurrentFlow(FLOW_STATES.MODE_SELECTION);
+  };
 
   const handleModeSelect = (mode: 'single' | 'competitive'): void => {
     setCurrentFlow(
       mode === 'competitive'
         ? FLOW_STATES.TEAM_SETUP
         : FLOW_STATES.GAME_TYPE_SELECTION
-    )
-  }
+    );
+  };
 
-  const handleTeamsConfigured = () => {
+  const handleTeamsConfigured = (): void => {
     setCurrentFlow(FLOW_STATES.GAME_TYPE_SELECTION);
   };
 
-  const handleGameTypeSelect = (gameType) => {
-    setSelectedGameType(gameType);
-    if (gameType === 'clue') {
-      setCurrentFlow(FLOW_STATES.CLUE_GAME);
-    } else {
-      setCurrentFlow(FLOW_STATES.COMING_SOON);
-    }
+  const handleGameTypeSelect = (gameType: string): void => {
+    setCurrentFlow(
+      gameType === 'clue'
+        ? FLOW_STATES.CLUE_GAME
+        : FLOW_STATES.COMING_SOON
+    );
   };
 
   const handleBackToLanguage = (): void => {
-    setSelectedLanguage(null)
-    setCurrentFlow(FLOW_STATES.LANGUAGE_SELECTION)
-  }
+    setCurrentFlow(FLOW_STATES.LANGUAGE_SELECTION);
+  };
 
-  const handleBackToMode = () => {
+  const handleBackToMode = (): void => {
     setCurrentFlow(FLOW_STATES.MODE_SELECTION);
   };
 
-  const handleBackToTeamSetup = () => {
-    setCurrentFlow(FLOW_STATES.TEAM_SETUP);
+  const handleBackToGameType = (): void => {
+    setCurrentFlow(FLOW_STATES.GAME_TYPE_SELECTION);
   };
 
   const renderScreen = (): ReactElement => {
     switch (currentFlow) {
       case FLOW_STATES.LANGUAGE_SELECTION:
-        return <LanguageSelector onLanguageSelect={handleLanguageSelect} />
-
+        return <LanguageSelector onLanguageSelect={handleLanguageSelect} />;
       case FLOW_STATES.MODE_SELECTION:
         return (
           <GameModeSelector
             onModeSelect={handleModeSelect}
             onBack={handleBackToLanguage}
           />
-        )
-
+        );
       case FLOW_STATES.TEAM_SETUP:
         return (
-          <TeamConfigurator 
+          <TeamConfigurator
             onTeamsConfigured={handleTeamsConfigured}
             onBack={handleBackToMode}
           />
         );
-
       case FLOW_STATES.GAME_TYPE_SELECTION:
         return (
-          <GameTypeSelector 
+          <GameTypeSelector
             onGameTypeSelect={handleGameTypeSelect}
             onBack={handleBackToMode}
           />
         );
-
+      case FLOW_STATES.CLUE_GAME:
+        return (
+          <ClueGameScreen 
+            onBack={handleBackToGameType}
+          />
+        );
       default:
-        return <div>❓ Unknown flow state</div>
+        return <LanguageSelector onLanguageSelect={handleLanguageSelect} />;
     }
-  }
+  };
 
-  return (
-    <div>
-      <div>
-        {renderScreen()}
-      </div>
-    </div>
-  )
+  return <div>{renderScreen()}</div>;
 }
 
 export default function App(): ReactElement {
@@ -125,5 +119,5 @@ export default function App(): ReactElement {
         </div>
       </GameModeProvider>
     </ThemeProvider>
-  )
+  );
 }
