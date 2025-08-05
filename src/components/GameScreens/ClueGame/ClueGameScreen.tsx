@@ -1,9 +1,12 @@
-// components/GameScreens/ClueGameScreen.tsx
 import React, { useState } from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { SolutionBoxes } from './SolutionBoxes';
+import { LetterGrid } from './LetterGrid';
+import GameControls from './GameControls';
 import { ArrowLeft } from 'lucide-react';
 import { useGameMode } from '@/contexts/GameModeContext';
-import GameControls from './GameControls';
 
 interface ClueGameScreenProps {
   onBack: () => void;
@@ -11,8 +14,9 @@ interface ClueGameScreenProps {
 
 const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
   const { isRTL, language } = useGameMode();
-  const clue = language === 'ar' ? 'نوع من الفاكهة' : 'A type of fruit';
   const solution = language === 'ar' ? 'تفاح' : 'APPLE';
+  const clue = language === 'ar' ? 'نوع من الفاكهة' : 'A type of fruit';
+  const letters = Array.from(new Set(solution.split(''))).sort();
 
   const [currentAnswer, setCurrentAnswer] = useState('');
 
@@ -22,77 +26,66 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
     }
   };
 
-  const handleRemoveLetter = () => {
-    setCurrentAnswer(prev => prev.slice(0, -1));
-  };
-
-  const handleClearAnswer = () => {
-    setCurrentAnswer('');
-  };
-
+  const handleRemoveLetter = () => setCurrentAnswer(prev => prev.slice(0, -1));
+  const handleClearAnswer = () => setCurrentAnswer('');
   const handleCheckAnswer = () => {
-    alert(
-      currentAnswer === solution
-        ? (isRTL ? 'إجابة صحيحة!' : 'Correct!')
-        : (isRTL ? 'إجابة خاطئة!' : 'Wrong answer!')
+    const isCorrect = currentAnswer === solution;
+    alert(isCorrect
+      ? isRTL ? 'إجابة صحيحة!' : 'Correct!'
+      : isRTL ? 'إجابة خاطئة!' : 'Wrong answer!'
     );
   };
-
-  const handleShowSolution = () => {
-    setCurrentAnswer(solution);
-  };
-
-  const letters = Array.from(new Set(solution.split(''))).sort();
+  const handleShowSolution = () => setCurrentAnswer(solution);
 
   return (
-    <div className="p-4 max-w-xl mx-auto">
-      {/* Back Button */}
-      <Button
-        variant="outline"
-        onClick={onBack}
-        className="flex items-center gap-2 mb-4"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        {isRTL ? 'رجوع' : 'Back'}
-      </Button>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4" dir={isRTL ? 'rtl' : 'ltr'}>
+      <div className="max-w-xl mx-auto">
+        {/* Header with Back and Theme Toggle */}
+        <div className="flex items-center justify-between mb-4">
+          <Button variant="ghost" onClick={onBack} className="flex items-center gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            {isRTL ? 'رجوع' : 'Back'}
+          </Button>
+        </div>
 
-      {/* Clue */}
-      <h2 className="text-2xl font-semibold mb-2">
-        {isRTL ? 'الدليل' : 'Clue'}: {clue}
-      </h2>
-      
-      {/* Answer Boxes */}
-      <div className="flex justify-center gap-2 text-2xl font-mono mb-4">
-        {Array.from({ length: solution.length }).map((_, i) => (
-          <div key={i} className="border-b-2 w-8 text-center">
-            {currentAnswer[i] || ''}
-          </div>
-        ))}
+        <Card className="shadow-lg">
+          <CardHeader className="bg-white dark:bg-gray-800">
+            <div className="flex flex-col space-y-2 text-center">
+              <CardTitle className="text-2xl font-semibold">
+                {isRTL ? 'البحث عن الكلمة بالدليل' : 'Clue-Driven Word Find'}
+              </CardTitle>
+              <Badge variant="secondary" className="self-center">
+                {isRTL ? 'الدليل' : 'Clue'}
+              </Badge>
+              <p className="text-lg">{clue}</p>
+            </div>
+          </CardHeader>
+
+          <CardContent className="space-y-6">
+            {/* Solution Boxes */}
+            <SolutionBoxes solution={solution} currentWord={currentAnswer} />
+
+            {/* Letter Grid */}
+            <LetterGrid
+              letters={letters}
+              selectedIndices={currentAnswer.split('').map(ch => letters.indexOf(ch))}
+              onLetterClick={(index: number) => handleAddLetter(letters[index])}
+              disabled={currentAnswer.length === solution.length}
+            />
+
+            {/* Controls */}
+            <GameControls
+              onRemoveLetter={handleRemoveLetter}
+              onClearAnswer={handleClearAnswer}
+              onCheckAnswer={handleCheckAnswer}
+              onShowSolution={handleShowSolution}
+              canRemove={currentAnswer.length > 0}
+              canClear={currentAnswer.length > 0}
+              canCheck={currentAnswer.length === solution.length}
+            />
+          </CardContent>
+        </Card>
       </div>
-
-      {/* Letter Buttons */}
-      <div className="flex justify-center gap-2 flex-wrap mb-4">
-        {letters.map((letter, idx) => (
-          <button
-            key={idx}
-            onClick={() => handleAddLetter(letter)}
-            className="px-3 py-2 border rounded hover:bg-gray-200 dark:hover:bg-gray-700"
-          >
-            {letter}
-          </button>
-        ))}
-      </div>
-
-      {/* Controls */}
-      <GameControls
-        onRemoveLetter={handleRemoveLetter}
-        onClearAnswer={handleClearAnswer}
-        onCheckAnswer={handleCheckAnswer}
-        onShowSolution={handleShowSolution}
-        canRemove={currentAnswer.length > 0}
-        canClear={currentAnswer.length > 0}
-        canCheck={currentAnswer.length === solution.length}
-      />
     </div>
   );
 };
