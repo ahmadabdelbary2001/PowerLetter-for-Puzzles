@@ -25,6 +25,7 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
   const [letters, setLetters] = useState<string[]>([]);
 
   const currentLevel = levels[currentLevelIndex];
+  const maxLetters = currentLevel?.solution.replace(/\s/g, '').length || 0;
 
   // load levels
   useEffect(() => {
@@ -46,25 +47,24 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
   if (loading) return <p>Loading...</p>;
 
   const handleLetterClick = (index: number) => {
-    if (gameState !== "playing") return
+    if (gameState !== 'playing') return;
+    // Prevent selecting more letters than solution length
+    if (selectedIndices.length >= maxLetters && !selectedIndices.includes(index)) return;
 
-    const letter = letters[index]
-    
+    const letter = letters[index];
     if (selectedIndices.includes(index)) {
-      // Remove letter
-      const letterIndex = selectedIndices.indexOf(index)
-      setSelectedIndices(prev => prev.filter(i => i !== index))
+      const letterPos = selectedIndices.indexOf(index);
+      setSelectedIndices(prev => prev.filter(i => i !== index));
       setAnswer(prev => {
-        const wordArray = [...prev]
-        wordArray.splice(letterIndex, 1)
-        return wordArray.join('')
-      })
+        const arr = prev.split('');
+        arr.splice(letterPos, 1);
+        return arr.join('');
+      });
     } else {
-      // Add letter
-      setSelectedIndices(prev => [...prev, index])
-      setAnswer(prev => prev + letter)
+      setSelectedIndices(prev => [...prev, index]);
+      setAnswer(prev => prev + letter);
     }
-  }
+  };
   const handleRemove = () => {
     if (selectedIndices.length === 0) return;
     // Remove last selected index
@@ -89,13 +89,20 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
   const handleCheck = () => {
     if (answer === currentLevel.solution) {
       setGameState('won');
-      // update score
       if (gameMode === 'competitive') {
-        updateScore(teams[currentTeam].id, currentLevel.difficulty === 'easy' ? 10 : currentLevel.difficulty === 'medium' ? 20 : 30);
+        updateScore(
+          teams[currentTeam].id,
+          currentLevel.difficulty === 'easy' ? 10 : currentLevel.difficulty === 'medium' ? 20 : 30
+        );
         nextTurn();
       }
     } else {
+      // Error notification and reset level
+      window.alert('Incorrect answer. The level will reset.');
       setGameState('failed');
+      setSelectedIndices([]);
+      setAnswer('');
+      setGameState('playing');
     }
   };
 

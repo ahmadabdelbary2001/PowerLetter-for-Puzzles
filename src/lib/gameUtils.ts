@@ -73,26 +73,6 @@ export function canFormWord(word: string, available: string[]): boolean {
 }
 
 /**
- * Provide a hint by revealing a random wrong or missing letter position.
- */
-export function getHint(
-  solution: string,
-  currentAnswer: string
-): { position: number; letter: string } | null {
-  const sol = solution.replace(/\s/g, '').split('');
-  const ans = currentAnswer.replace(/\s/g, '').split('');
-  const wrong: number[] = [];
-
-  sol.forEach((ch, i) => {
-    if (ans[i] !== ch) wrong.push(i);
-  });
-
-  if (!wrong.length) return null;
-  const pos = wrong[Math.floor(Math.random() * wrong.length)];
-  return { position: pos, letter: sol[pos] };
-}
-
-/**
  * Calculate a score based on difficulty and number of hints used.
  */
 export function calculateScore(
