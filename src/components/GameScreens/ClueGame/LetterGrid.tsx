@@ -20,7 +20,7 @@ export function LetterGrid({
   const firstRow = letters.slice(0, midPoint)
   const secondRow = letters.slice(midPoint)
 
-  const handleLetterClick = (letter: string, originalIndex: number) => {
+  const handleLetterClick = (_letter: string, originalIndex: number) => {
     if (disabled) return
     onLetterClick(originalIndex)
   }

@@ -4,6 +4,7 @@ import { RotateCcw, RefreshCw, Delete, CheckCircle, Eye, ArrowLeft, ArrowRight }
 import { useGameMode } from '@/contexts/GameModeContext';
 
 interface Props {
+  onReset: () => void
   onRemoveLetter: () => void;
   onClearAnswer: () => void;
   onCheckAnswer: () => void;
@@ -19,6 +20,7 @@ interface Props {
 }
 
 const GameControls: React.FC<Props> = ({
+  onReset,
   onRemoveLetter,
   onClearAnswer,
   onCheckAnswer,
@@ -58,7 +60,7 @@ const GameControls: React.FC<Props> = ({
   if (gameState === 'won') {
     return (
       <div className="flex flex-wrap justify-center gap-3">
-        <Button variant="outline" onClick={onClearAnswer}>
+        <Button variant="outline" onClick={onReset}>
           <RefreshCw className="h-4 w-4 mr-2" />
           {t.reset}
         </Button>
@@ -86,7 +88,7 @@ const GameControls: React.FC<Props> = ({
       </Button>
 
       <Button onClick={onClearAnswer} disabled={!canClear} variant="outline">
-        <RotateCcw className="w-4 mr-2" />
+        <RotateCcw className="w-4 h-4mr-2" />
         {isRTL ? 'مسح' : 'Clear'}
       </Button>
 
