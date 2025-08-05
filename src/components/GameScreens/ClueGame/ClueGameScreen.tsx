@@ -1,91 +1,114 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { SolutionBoxes } from './SolutionBoxes';
 import { LetterGrid } from './LetterGrid';
 import GameControls from './GameControls';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Trophy } from 'lucide-react';
 import { useGameMode } from '@/contexts/GameModeContext';
+import { loadLevels, generateLetters } from '../../../lib/gameUtils';
+import type { Difficulty } from '@/contexts/GameModeContext';
 
 interface ClueGameScreenProps {
   onBack: () => void;
 }
 
 const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
-  const { isRTL, language } = useGameMode();
-  const solution = language === 'ar' ? 'تفاح' : 'APPLE';
-  const clue = language === 'ar' ? 'نوع من الفاكهة' : 'A type of fruit';
-  const letters = Array.from(new Set(solution.split(''))).sort();
+  const { isRTL, language, gameMode, updateScore, currentTeam, teams, nextTurn } = useGameMode();
 
-  const [currentAnswer, setCurrentAnswer] = useState('');
+  const [levels, setLevels] = useState<{ id: string; difficulty: Difficulty; clue: string; solution: string }[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [index, setIndex] = useState(0);
+  const [letters, setLetters] = useState<string[]>([]);
+  const [answer, setAnswer] = useState('');
+  const [state, setState] = useState<'playing' | 'won' | 'failed'>('playing');
 
-  const handleAddLetter = (letter: string) => {
-    if (currentAnswer.length < solution.length) {
-      setCurrentAnswer(prev => prev + letter);
+  // load levels
+  useEffect(() => {
+    loadLevels(language).then(lvls => {
+      setLevels(lvls);
+      setLoading(false);
+    });
+  }, [language]);
+
+  // generate letters when level changes
+  useEffect(() => {
+    if (!levels.length) return;
+    const lvl = levels[index];
+    setLetters(generateLetters(lvl.solution, lvl.difficulty, language));
+    setAnswer('');
+    setState('playing');
+  }, [levels, index, language]);
+
+  const lvl = levels[index];
+  if (loading) return <p>Loading...</p>;
+
+  const handleAdd = (letter: string) => {
+    if (answer.length < lvl.solution.length && state === 'playing') {
+      setAnswer(prev => prev + letter);
+    }
+  };
+  const handleRemove = () => state === 'playing' && setAnswer(prev => prev.slice(0, -1));
+  const handleClear = () => state === 'playing' && setAnswer('');
+
+  const handleCheck = () => {
+    if (answer === lvl.solution) {
+      setState('won');
+      // update score
+      if (gameMode === 'competitive') {
+        updateScore(teams[currentTeam].id, lvl.difficulty === 'easy' ? 10 : lvl.difficulty === 'medium' ? 20 : 30);
+        nextTurn();
+      }
+    } else {
+      setState('failed');
     }
   };
 
-  const handleRemoveLetter = () => setCurrentAnswer(prev => prev.slice(0, -1));
-  const handleClearAnswer = () => setCurrentAnswer('');
-  const handleCheckAnswer = () => {
-    const isCorrect = currentAnswer === solution;
-    alert(isCorrect
-      ? isRTL ? 'إجابة صحيحة!' : 'Correct!'
-      : isRTL ? 'إجابة خاطئة!' : 'Wrong answer!'
-    );
-  };
-  const handleShowSolution = () => setCurrentAnswer(solution);
+  const handleShow = () => state === 'playing' && setAnswer(lvl.solution);
+  const prev = () => index > 0 && setIndex(i => i - 1);
+  const next = () => index < levels.length - 1 && setIndex(i => i + 1);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4" dir={isRTL ? 'rtl' : 'ltr'}>
-      <div className="max-w-xl mx-auto">
-        {/* Header with Back and Theme Toggle */}
-        <div className="flex items-center justify-between mb-4">
-          <Button variant="ghost" onClick={onBack} className="flex items-center gap-2">
-            <ArrowLeft className="w-4 h-4" />
-            {isRTL ? 'رجوع' : 'Back'}
-          </Button>
-        </div>
+    <div className="p-4 max-w-xl mx-auto" dir={isRTL ? 'rtl' : 'ltr'}>
+      <Button variant="outline" onClick={onBack} className="mb-4">
+        <ArrowLeft /> {isRTL ? 'رجوع' : 'Back'}
+      </Button>
 
-        <Card className="shadow-lg">
-          <CardHeader className="bg-white dark:bg-gray-800">
-            <div className="flex flex-col space-y-2 text-center">
-              <CardTitle className="text-2xl font-semibold">
-                {isRTL ? 'البحث عن الكلمة بالدليل' : 'Clue-Driven Word Find'}
-              </CardTitle>
-              <Badge variant="secondary" className="self-center">
-                {isRTL ? 'الدليل' : 'Clue'}
-              </Badge>
-              <p className="text-lg">{clue}</p>
+      <Card>
+        <CardHeader className="text-center">
+          <CardTitle>{lvl.clue}</CardTitle>
+          <Badge>{lvl.difficulty}</Badge>
+        </CardHeader>
+        <CardContent>
+          <SolutionBoxes solution={lvl.solution} currentWord={answer} />
+          <LetterGrid
+            letters={letters}
+            selectedIndices={answer.split('').map(ch => letters.indexOf(ch))}
+            onLetterClick={(idx: number) => handleAdd(letters[idx])}
+            disabled={state !== 'playing'}
+          />
+          {state === 'won' && (
+            <div className="text-center text-green-600">
+              <Trophy /> {isRTL ? 'مبروك!' : 'Congratulations!'}
             </div>
-          </CardHeader>
-
-          <CardContent className="space-y-6">
-            {/* Solution Boxes */}
-            <SolutionBoxes solution={solution} currentWord={currentAnswer} />
-
-            {/* Letter Grid */}
-            <LetterGrid
-              letters={letters}
-              selectedIndices={currentAnswer.split('').map(ch => letters.indexOf(ch))}
-              onLetterClick={(index: number) => handleAddLetter(letters[index])}
-              disabled={currentAnswer.length === solution.length}
-            />
-
-            {/* Controls */}
-            <GameControls
-              onRemoveLetter={handleRemoveLetter}
-              onClearAnswer={handleClearAnswer}
-              onCheckAnswer={handleCheckAnswer}
-              onShowSolution={handleShowSolution}
-              canRemove={currentAnswer.length > 0}
-              canClear={currentAnswer.length > 0}
-              canCheck={currentAnswer.length === solution.length}
-            />
-          </CardContent>
-        </Card>
-      </div>
+          )}
+          <GameControls
+            onRemoveLetter={handleRemove}
+            onClearAnswer={handleClear}
+            onCheckAnswer={handleCheck}
+            onShowSolution={handleShow}
+            onPrevLevel={prev}
+            onNextLevel={next}
+            canRemove={!!answer}
+            canClear={!!answer}
+            canCheck={answer.length === lvl.solution.length}
+            canPrev={index > 0}
+            canNext={index < levels.length - 1}
+            gameState={state}
+          />
+        </CardContent>
+      </Card>
     </div>
   );
 };

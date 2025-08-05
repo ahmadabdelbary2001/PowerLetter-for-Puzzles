@@ -10,6 +10,7 @@ import type {
 export type Language = 'en' | 'ar';
 export type GameMode = 'single' | 'competitive';
 export type GameType = 'clue' | 'formation' | 'category';
+export type Difficulty = 'easy' | 'medium' | 'hard';
 
 export interface Team {
   id: number;
