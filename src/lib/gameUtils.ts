@@ -60,19 +60,6 @@ export function generateLetters(
 }
 
 /**
- * Check if a word can be formed from the available letters (accounting for duplicates).
- */
-export function canFormWord(word: string, available: string[]): boolean {
-  const counts: Record<string, number> = {};
-  available.forEach(l => counts[l] = (counts[l] || 0) + 1);
-  for (const ch of word.replace(/\s/g, '')) {
-    if (!counts[ch] || counts[ch] <= 0) return false;
-    counts[ch]--;
-  }
-  return true;
-}
-
-/**
  * Calculate a score based on difficulty and number of hints used.
  */
 export function calculateScore(

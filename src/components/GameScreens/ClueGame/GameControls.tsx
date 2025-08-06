@@ -1,12 +1,13 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { RotateCcw, RefreshCw, Delete, CheckCircle, Eye, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Lightbulb, RotateCcw, RefreshCw, Delete, CheckCircle, Eye, ArrowLeft, ArrowRight } from 'lucide-react';
 import { useGameMode } from '@/contexts/GameModeContext';
 
 interface Props {
   onReset: () => void
   onRemoveLetter: () => void;
   onClearAnswer: () => void;
+  onHint: () => void;
   onCheckAnswer: () => void;
   onShowSolution: () => void;
   onPrevLevel: () => void;
@@ -23,6 +24,7 @@ const GameControls: React.FC<Props> = ({
   onReset,
   onRemoveLetter,
   onClearAnswer,
+  onHint,
   onCheckAnswer,
   onShowSolution,
   onPrevLevel,
@@ -90,6 +92,11 @@ const GameControls: React.FC<Props> = ({
       <Button onClick={onClearAnswer} disabled={!canClear} variant="outline">
         <RotateCcw className="w-4 h-4mr-2" />
         {isRTL ? 'مسح' : 'Clear'}
+      </Button>
+
+      <Button variant="outline" onClick={onHint}>
+        <Lightbulb className="h-4 w-4 mr-2" />
+        {t.hint}
       </Button>
 
       <Button onClick={onCheckAnswer} disabled={!canCheck} className="bg-blue-600 hover:bg-blue-700 text-white">
