@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from "@/components/ui/badge"
 import { SolutionBoxes } from './SolutionBoxes';
 import { LetterGrid } from './LetterGrid';
 import GameControls from './GameControls';
@@ -151,57 +152,78 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
   };
 
   return (
-    <div className="p-4 max-w-xl mx-auto" dir={isRTL ? 'rtl' : 'ltr'}>
-      <Button variant="outline" onClick={onBack} className="mb-4">
-        <ArrowLeft /> {isRTL ? 'رجوع' : 'Back'}
-      </Button>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4" dir={isRTL ? 'rtl' : 'ltr'}>
+      <div className="mx-auto max-w-5xl">
+        {/* Header */}
+        <div className="flex justify-between items-center mb-6">
+          <Button 
+            variant="ghost"
+            onClick={onBack}
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" /> {isRTL ? 'رجوع' : 'Back'}
+          </Button>
 
-      {/* Main Game Card */}
-      <Card className="mb-6">
-        <CardContent className="space-y-8">
-          {/* Clue */}
-          <div className="text-center">
-            <p className="text-xl font-medium">{currentLevel.clue}</p>
+          <div className="flex items-center gap-4">
+            <Badge variant="secondary">
+              {isRTL ? 'المستوى' : 'Level'} {currentLevelIndex + 1}
+            </Badge>
+            <Badge variant="outline">
+              {isRTL ? 'الصعوبة' : 'Difficulty'} {currentLevel.difficulty}
+            </Badge>
           </div>
+        </div>
 
-          {/* Solution Boxes */}
-          <SolutionBoxes 
-            solution={currentLevel.solution}
-            currentWord={answer}
-          />
-
-          <LetterGrid
-            letters={letters}
-            selectedIndices={selectedIndices}
-            onLetterClick={handleLetterClick}
-            disabled={gameState !== 'playing'}
-          />
-
-          {/* Success Message */}
-          {gameState === 'won' && (
-            <div className="text-center text-green-600">
-              <Trophy /> {isRTL ? 'مبروك!' : 'Congratulations!'}
+        {/* Main Game Card */}
+        <Card className="mb-6">
+          <CardContent className="space-y-8">
+            {/* Clue */}
+            <div className="text-center">
+              <p className="text-xl font-medium">{currentLevel.clue}</p>
             </div>
-          )}
 
-          {/* Game Controls */}
-          <GameControls
-            onReset={resetGameState}
-            onRemoveLetter={handleRemove}
-            onClearAnswer={handleClear}
-            onCheckAnswer={handleCheck}
-            onShowSolution={handleShow}
-            onPrevLevel={prevLevel}
-            onNextLevel={nextLevel}
-            canRemove={!!answer}
-            canClear={!!answer}
-            canCheck={answer.length === currentLevel.solution.length}
-            canPrev={currentLevelIndex > 0}
-            canNext={currentLevelIndex < levels.length - 1}
-            gameState={gameState}
-          />
-        </CardContent>
-      </Card>
+            {/* Solution Boxes */}
+            <SolutionBoxes 
+              solution={currentLevel.solution}
+              currentWord={answer}
+            />
+
+            <LetterGrid
+              letters={letters}
+              selectedIndices={selectedIndices}
+              onLetterClick={handleLetterClick}
+              disabled={gameState !== 'playing'}
+            />
+
+            {/* Success Message */}
+            {gameState === "won" && (
+              <div className="text-center">
+                <div className="text-green-600 flex items-center justify-center gap-2 text-success mb-4">
+                  <Trophy className="h-6 w-6" />
+                  <span className="text-lg font-semibold">{isRTL ? 'مبروك!' : 'Congratulations!'}</span>
+                </div>
+              </div>
+            )}
+
+            {/* Game Controls */}
+            <GameControls
+              onReset={resetGameState}
+              onRemoveLetter={handleRemove}
+              onClearAnswer={handleClear}
+              onCheckAnswer={handleCheck}
+              onShowSolution={handleShow}
+              onPrevLevel={prevLevel}
+              onNextLevel={nextLevel}
+              canRemove={!!answer}
+              canClear={!!answer}
+              canCheck={answer.length === currentLevel.solution.length}
+              canPrev={currentLevelIndex > 0}
+              canNext={currentLevelIndex < levels.length - 1}
+              gameState={gameState}
+            />
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
