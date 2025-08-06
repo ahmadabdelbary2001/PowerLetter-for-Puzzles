@@ -1,10 +1,10 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Lightbulb, RotateCcw, RefreshCw, Delete, CheckCircle, Eye, ArrowLeft, ArrowRight } from 'lucide-react';
-import { useGameMode } from '@/contexts/GameModeContext';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface Props {
-  onReset: () => void
+  onReset: () => void;
   onRemoveLetter: () => void;
   onClearAnswer: () => void;
   onHint: () => void;
@@ -18,6 +18,16 @@ interface Props {
   canPrev: boolean;
   canNext: boolean;
   gameState: 'playing' | 'won' | 'failed';
+  labels: {
+    remove: string;
+    clear: string;
+    hint: string;
+    check: string;
+    showSolution: string;
+    reset: string;
+    prev: string;
+    next: string;
+  };
 }
 
 const GameControls: React.FC<Props> = ({
@@ -34,51 +44,48 @@ const GameControls: React.FC<Props> = ({
   canCheck,
   canPrev,
   canNext,
-  gameState
+  gameState,
+  labels
 }) => {
-  const { language } = useGameMode();
-  const texts = {
-    english: {
-      remove: "Remove",
-      clear: "Clear",
-      hint: "Hint",
-      check: "Check Answer",
-      showSolution: "Show Solution",
-      reset: "Reset",
-      prev: "Previous",
-      next: "Next"
-    },
-    arabic: {
-      remove: "حذف",
-      clear: "مسح",
-      hint: "تلميح",
-      check: "تحقق من الإجابة",
-      showSolution: "أظهر الحل",
-      reset: "إعادة",
-      prev: "السابق",
-      next: "التالي"
-    }
-  } as const;
-
-  const t = language === 'ar' ? texts.arabic : texts.english;
+  const { dir } = useTranslation(); // Moved inside the component
 
   if (gameState === 'won') {
     return (
       <div className="flex flex-wrap justify-center gap-3">
         <Button variant="outline" onClick={onReset}>
           <RefreshCw className="h-4 w-4 mr-2" />
-          {t.reset}
+          {labels.reset}
         </Button>
         {canPrev && (
-          <Button variant="outline" onClick={onPrevLevel} className="flex items-center gap-2">
-            <ArrowLeft className="h-4 w-4" />
-            {t.prev}
+          <Button 
+            variant="outline" 
+            onClick={onPrevLevel} 
+            className="flex items-center gap-2"
+          >
+            {dir === 'rtl' ? (
+              <ArrowRight className="h-4 w-4" />
+            ) : (
+              <ArrowLeft className="h-4 w-4" />
+            )}
+            {labels.prev}
           </Button>
         )}
         {canNext && (
-          <Button onClick={onNextLevel} className="flex items-center gap-2">
-            <ArrowRight className="h-4 w-4" />
-            {t.next}
+          <Button 
+            onClick={onNextLevel} 
+            className="flex items-center gap-2"
+          >
+            {dir === 'rtl' ? (
+              <>
+                {labels.next}
+                <ArrowLeft className="h-4 w-4" />
+              </>
+            ) : (
+              <>
+                {labels.next}
+                <ArrowRight className="h-4 w-4" />
+              </>
+            )}
           </Button>
         )}
       </div>
@@ -89,27 +96,27 @@ const GameControls: React.FC<Props> = ({
     <div className="flex flex-wrap gap-2 justify-center mt-4">
       <Button onClick={onRemoveLetter} disabled={!canRemove} variant="outline">
         <Delete className="w-4 h-4 mr-2" />
-        {t.remove}
+        {labels.remove}
       </Button>
 
       <Button onClick={onClearAnswer} disabled={!canClear} variant="outline">
-        <RotateCcw className="w-4 h-4mr-2" />
-        {t.clear}
+        <RotateCcw className="w-4 h-4 mr-2" />
+        {labels.clear}
       </Button>
 
       <Button variant="outline" onClick={onHint}>
         <Lightbulb className="h-4 w-4 mr-2" />
-        {t.hint}
+        {labels.hint}
       </Button>
 
       <Button onClick={onCheckAnswer} disabled={!canCheck} className="bg-blue-600 hover:bg-blue-700 text-white">
         <CheckCircle className="w-4 h-4 mr-2" />
-        {t.check}
+        {labels.check}
       </Button>
 
       <Button variant="outline" onClick={onShowSolution} className="flex items-center gap-2">
         <Eye className="w-4 h-4 mr-2" />
-        {t.showSolution}
+        {labels.showSolution}
       </Button>
     </div>
   );

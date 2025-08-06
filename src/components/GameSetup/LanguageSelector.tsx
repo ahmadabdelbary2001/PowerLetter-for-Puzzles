@@ -3,18 +3,17 @@ import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
-import { Globe, ArrowRight } from 'lucide-react';
+} from '@/components/ui/card';
+import { Globe, ArrowRight, ArrowLeft, Target } from 'lucide-react';
 
 interface Language {
   code: string;
-  name: string;
   nativeName: string;
   flag: string;
   description: string;
+  languageSelectorSubtitle: string;
 }
 
 interface LanguageSelectorProps {
@@ -22,28 +21,31 @@ interface LanguageSelectorProps {
 }
 
 const LanguageSelector: React.FC<LanguageSelectorProps> = ({ onLanguageSelect }) => {
-  const [language, setLanguage] = useState<string>('');
+  const [selectedLanguage, setSelectedLanguage] = useState<string>('');
 
   const languages: Language[] = [
     {
       code: 'en',
-      name: 'English',
       nativeName: 'English',
       flag: '🇺🇸',
-      description: 'Play in English with Latin alphabet'
+      description: 'Play in English with Latin alphabet',
+      languageSelectorSubtitle: "Choose your preferred language to start your word puzzle adventure"
     },
     {
       code: 'ar',
-      name: 'Arabic',
-      nativeName: 'العربية',
+      nativeName: 'عربي',
       flag: '🇸🇦',
-      description: 'العب باللغة العربية مع الأبجدية العربية'
+      description: 'العب باللغة العربية مع الأبجدية العربية',
+      languageSelectorSubtitle: "اختر لغتك المفضلة لبدء مغامرة ألغاز الكلمات"
     }
   ];
 
   const handleLanguageSelect = (langCode: string) => {
-    setLanguage(langCode);
+    setSelectedLanguage(langCode);
   };
+
+  // Get the default subtitle (English in this case)
+  const defaultSubtitle = languages.find(lang => lang.code === 'en')?.languageSelectorSubtitle || '';
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
@@ -57,7 +59,9 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({ onLanguageSelect })
             </h1>
           </div>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Choose your preferred language to start your word puzzle adventure
+            {selectedLanguage 
+              ? languages.find(lang => lang.code === selectedLanguage)?.languageSelectorSubtitle 
+              : defaultSubtitle}
           </p>
         </div>
         
@@ -68,7 +72,7 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({ onLanguageSelect })
               key={lang.code}
               className={`
                 cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-105
-                ${language === lang.code 
+                ${selectedLanguage === lang.code 
                   ? 'ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-900/20' 
                   : 'hover:bg-gray-50 dark:hover:bg-gray-800'
                 }
@@ -80,27 +84,32 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({ onLanguageSelect })
                 <CardTitle className={`text-2xl ${lang.code === 'ar' ? 'font-arabic' : ''}`}>
                   {lang.nativeName}
                 </CardTitle>
-                <CardDescription className="text-lg">
-                  {lang.name}
-                </CardDescription>
               </CardHeader>
               
               <CardContent>
                 <p className={`
                   text-center text-gray-600 dark:text-gray-300 mb-4
-                  ${lang.code === 'ar' ? 'text-right font-arabic' : ''}
                 `}>
                   {lang.description}
                 </p>
                 
                 <Button 
                   className="w-full"
-                  variant={language === lang.code ? "default" : "outline"}
+                  variant={selectedLanguage === lang.code ? "default" : "outline"}
                 >
-                  {language === lang.code ? (
+                  {selectedLanguage === lang.code ? (
                     <>
-                      <span>{lang.code === 'ar' ? 'مختار' : 'Selected'}</span>
-                      <ArrowRight className="w-4 h-4 ml-2" />
+                      {lang.code === 'ar' ? (
+                        <>
+                          <Target className="w-4 h-4 mr-2" />
+                          <span>مختار</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>Selected</span>
+                          <Target className="w-4 h-4 ml-2" />
+                        </>
+                      )}
                     </>
                   ) : (
                     <span>{lang.code === 'ar' ? 'اختر' : 'Select'}</span>
@@ -112,15 +121,24 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({ onLanguageSelect })
         </div>
         
         {/* Continue Button */}
-        {language && (
+        {selectedLanguage && (
           <div className="text-center">
             <Button 
               size="lg"
-              onClick={() => onLanguageSelect(language)}
+              onClick={() => onLanguageSelect(selectedLanguage)}
               className="px-8 py-3 text-lg"
             >
-              {language === 'ar' ? 'متابعة' : 'Continue'}
-              <ArrowRight className="w-5 h-5 ml-2" />
+              {selectedLanguage === 'ar' ? (
+                <>
+                  <ArrowLeft className="w-5 h-5 mr-2" />
+                  {'متابعة'}
+                </>
+              ) : (
+                <>
+                  {'Continue'}
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </>
+              )}
             </Button>
           </div>
         )}
