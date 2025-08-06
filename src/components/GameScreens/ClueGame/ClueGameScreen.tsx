@@ -85,7 +85,16 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
           </Button>
           <div className="flex items-center gap-4">
             <Badge variant="secondary">{isRTL ? 'المستوى' : 'Level'} {currentLevelIndex + 1}</Badge>
-            <Badge variant="outline">{isRTL ? 'الصعوبة' : 'Difficulty'} {currentLevel.difficulty}</Badge>
+            <Badge variant={
+              currentLevel.difficulty === 'easy' ? 'default' :
+              currentLevel.difficulty === 'medium' ? 'secondary' : 'destructive'
+            }>
+              {isRTL 
+                ? currentLevel.difficulty === 'easy' ? 'سهل' : 
+                  currentLevel.difficulty === 'medium' ? 'متوسط' : 'صعب'
+                : currentLevel.difficulty
+              }
+            </Badge>
           </div>
         </div>
 
