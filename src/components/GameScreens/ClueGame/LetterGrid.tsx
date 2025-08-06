@@ -5,6 +5,7 @@ interface LetterGridProps {
   selectedIndices: number[]
   onLetterClick: (index: number) => void
   disabled?: boolean
+  hintIndices: number[] // Changed to array
   className?: string
 }
 
@@ -13,51 +14,57 @@ export function LetterGrid({
   selectedIndices, 
   onLetterClick, 
   disabled = false,
+  hintIndices,
   className 
 }: LetterGridProps) {
-  // Split letters into two rows
-  const midPoint = Math.ceil(letters.length / 2)
-  const firstRow = letters.slice(0, midPoint)
-  const secondRow = letters.slice(midPoint)
-
-  const handleLetterClick = (_letter: string, originalIndex: number) => {
-    if (disabled) return
-    onLetterClick(originalIndex)
-  }
+  // Handle RTL layout
+  const displayLetters = letters;
+  const originalIndex = (displayIndex: number) => displayIndex;
 
   const renderRow = (rowLetters: string[], startIndex: number) => (
     <div className="flex flex-wrap justify-center gap-3">
       {rowLetters.map((letter, rowIndex) => {
-        const originalIndex = startIndex + rowIndex
-        const isSelected = selectedIndices.includes(originalIndex)
+        const origIndex = originalIndex(startIndex + rowIndex);
+        const isSelected = selectedIndices.includes(origIndex);
+        const isHint = hintIndices.includes(origIndex);
         
         return (
           <button
-            key={originalIndex}
-            onClick={() => handleLetterClick(letter, originalIndex)}
-            disabled={disabled}
+            key={origIndex}
+            onClick={() => onLetterClick(origIndex)}
+            disabled={disabled || isHint}
             className={cn(
-              "w-12 h-12 rounded-lg border-2 font-bold text-lg transition-all duration-300",
+              "w-12 h-12 rounded-lg border-2 font-bold text-lg transition-all duration-300 relative",
               "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
-              "shadow-card hover:shadow-elegant active:scale-95",
+              "shadow-card",
               {
-                "bg-card border-border text-card-foreground hover:border-primary/30": !isSelected,
-                "bg-primary border-primary text-primary-foreground shadow-glow": isSelected,
-                "opacity-50 cursor-not-allowed hover:border-border hover:shadow-card": disabled,
+                "bg-green-100 border-green-500 text-green-800 cursor-default": isHint,
+                "bg-primary border-primary text-primary-foreground": isSelected && !isHint,
+                "bg-card border-border text-card-foreground hover:border-primary/30": 
+                  !isSelected && !isHint,
+                "opacity-80": disabled,
               }
             )}
           >
             {letter}
+            {isHint && (
+              <span className="absolute -top-1 -right-1 text-xs">🔒</span>
+            )}
           </button>
-        )
+        );
       })}
     </div>
-  )
+  );
+
+  // Split letters into two rows
+  const midPoint = Math.ceil(displayLetters.length / 2);
+  const firstRow = displayLetters.slice(0, midPoint);
+  const secondRow = displayLetters.slice(midPoint);
 
   return (
     <div className={cn("space-y-4", className)}>
       {renderRow(firstRow, 0)}
       {renderRow(secondRow, midPoint)}
     </div>
-  )
+  );
 }

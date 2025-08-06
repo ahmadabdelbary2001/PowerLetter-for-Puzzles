@@ -36,22 +36,25 @@ const GameControls: React.FC<Props> = ({
   canNext,
   gameState
 }) => {
-  const { language, isRTL } = useGameMode();
-
+  const { language } = useGameMode();
   const texts = {
     english: {
+      remove: "Remove",
+      clear: "Clear",
       hint: "Hint",
-      reset: "Reset",
       check: "Check Answer",
       showSolution: "Show Solution",
+      reset: "Reset",
       prev: "Previous",
       next: "Next"
     },
     arabic: {
+      remove: "حذف",
+      clear: "مسح",
       hint: "تلميح",
-      reset: "إعادة",
       check: "تحقق من الإجابة",
       showSolution: "أظهر الحل",
+      reset: "إعادة",
       prev: "السابق",
       next: "التالي"
     }
@@ -86,12 +89,12 @@ const GameControls: React.FC<Props> = ({
     <div className="flex flex-wrap gap-2 justify-center mt-4">
       <Button onClick={onRemoveLetter} disabled={!canRemove} variant="outline">
         <Delete className="w-4 h-4 mr-2" />
-        {isRTL ? 'حذف' : 'Remove'}
+        {t.remove}
       </Button>
 
       <Button onClick={onClearAnswer} disabled={!canClear} variant="outline">
         <RotateCcw className="w-4 h-4mr-2" />
-        {isRTL ? 'مسح' : 'Clear'}
+        {t.clear}
       </Button>
 
       <Button variant="outline" onClick={onHint}>
