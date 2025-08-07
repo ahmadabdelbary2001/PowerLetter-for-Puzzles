@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import type { ReactElement } from 'react';
-import type { Language } from './contexts/GameModeContext';
+import type { Language } from './types/game';
 
 import './index.css';
 import './App.css';
 
 import { ThemeProvider } from './contexts/ThemeProvider';
-import { GameModeProvider, useGameMode } from './contexts/GameModeContext';
+import { GameModeProvider } from './contexts/GameModeContext';
+import { useGameMode } from './hooks/useGameMode';
 
 import ModeToggler from './components/GameSetup/ModeToggler';
 import LanguageSelector from './components/GameSetup/LanguageSelector';

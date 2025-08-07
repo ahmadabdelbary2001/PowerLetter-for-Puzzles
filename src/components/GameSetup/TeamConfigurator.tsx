@@ -10,7 +10,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Users, Plus, Minus, ArrowRight, ArrowLeft } from 'lucide-react';
-import { useGameMode } from '../../contexts/GameModeContext';
+import { useGameMode } from '../../hooks/useGameMode';
 import { useTranslation } from '@/hooks/useTranslation';
 
 interface TeamConfiguratorProps {

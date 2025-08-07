@@ -3,8 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, ArrowRight, Puzzle, BookOpen, Search, Lock } from 'lucide-react';
-import { useGameMode } from '../../contexts/GameModeContext';
-import type { GameType as GameModeType } from '@/contexts/GameModeContext';
+import { useGameMode } from '../../hooks/useGameMode';
+import type { GameType as GameModeType } from '@/types/game';
 import { useTranslation } from '@/hooks/useTranslation';
 
 interface GameType {

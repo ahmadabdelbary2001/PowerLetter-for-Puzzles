@@ -1,4 +1,4 @@
-import { useGameMode } from '@/contexts/GameModeContext';
+import { useGameMode } from '@/hooks/useGameMode';
 
 export const useTranslation = () => {
     const { language } = useGameMode();

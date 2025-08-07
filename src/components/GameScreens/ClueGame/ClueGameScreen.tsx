@@ -1,14 +1,15 @@
+/* src/components/GameScreens/ClueGame/ClueGameScreen.tsx */
 import React, { useReducer, useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from "@/components/ui/badge";
+import { Badge } from '@/components/ui/badge';
 import { SolutionBoxes } from './SolutionBoxes';
 import { LetterGrid } from './LetterGrid';
 import GameControls from './GameControls';
 import { ArrowLeft, ArrowRight, Trophy } from 'lucide-react';
-import { useGameMode } from '@/contexts/GameModeContext';
+import { useGameMode } from '@/hooks/useGameMode';
 import { loadLevels, generateLetters } from '../../../lib/gameUtils';
-import type { Difficulty } from '@/contexts/GameModeContext';
+import type { Difficulty } from '@/types/game';
 import { reducer } from './gameReducer';
 import type { State, Action } from './gameReducer';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -25,9 +26,8 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
   const [letters, setLetters] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [notification, setNotification] = useState<{message: string, type: 'error' | 'success'} | null>(null);
-  const [wrongAnswers, setWrongAnswers] = useState<string[]>([]); // Track wrong answers
+  const [wrongAnswers, setWrongAnswers] = useState<string[]>([]);
 
-  // useReducer for all slot/hint/state logic
   const [state, dispatch] = useReducer<React.Reducer<State, Action>>(reducer, {
     slotIndices: [],
     answerSlots: [],
@@ -53,7 +53,7 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
     const sol = lvl.solution.replace(/\s/g, '');
     setLetters(generateLetters(lvl.solution, lvl.difficulty, language));
     dispatch({ type: 'RESET', solutionLen: sol.length });
-    setWrongAnswers([]); // Clear wrong answers on level change
+    setWrongAnswers([]);
     setNotification(null);
   }, [levels, currentLevelIndex, language]);
 
@@ -73,28 +73,40 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
       // Reset game after delay
       const timer = setTimeout(() => {
         dispatch({ type: 'CLEAR' });
+        nextTurn('lose');
         setNotification(null);
       }, 2000);
       
       return () => clearTimeout(timer);
     }
-  }, [state.gameState, t.wrongAnswer]);
+  }, [state.gameState, t.wrongAnswer, nextTurn]);
 
   if (loading) return <p>Loading...</p>;
 
-  // Handlers dispatching actions
-  const onLetterClick = (i: number) => dispatch({ type: 'PLACE', gridIndex: i, letter: letters[i] });
-  const onRemove     = ()       => dispatch({ type: 'REMOVE_LAST' });
-  const onClear      = ()       => dispatch({ type: 'CLEAR' });
-  const onHint       = ()       => dispatch({ type: 'HINT', solution, letters });
-  const onShow       = ()       => dispatch({ type: 'SHOW', solution, letters });
-  const onCheck      = ()       => {
+  // Handlers for letter grid & controls
+  const onLetterClick = (i: number) =>
+    dispatch({ type: 'PLACE', gridIndex: i, letter: letters[i] });
+  const onRemove = () => dispatch({ type: 'REMOVE_LAST' });
+  const onClear = () => dispatch({ type: 'CLEAR' });
+  const onHint = () => dispatch({ type: 'HINT', solution, letters });
+  const onShow = () => dispatch({ type: 'SHOW', solution, letters });
+  const onCheck = () => {
     dispatch({ type: 'CHECK', solution });
+
     if (state.gameState === 'won' && gameMode === 'competitive') {
-      const pts = currentLevel.difficulty === 'easy' ? 10
-                : currentLevel.difficulty === 'medium' ? 20 : 30;
+      // Award points
+      const pts =
+        currentLevel.difficulty === 'easy'
+          ? 10
+          : currentLevel.difficulty === 'medium'
+          ? 20
+          : 30;
       updateScore(teams[currentTeam].id, pts);
-      nextTurn();
+      nextTurn('win');
+      setNotification({
+        message: `+${pts} ${t.congrats}`,
+        type: 'success',
+      });
     }
   };
 
@@ -108,16 +120,22 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
     setNotification(null);
     setWrongAnswers([]); // Clear wrong answers on reset
   };
-  
-  const prevLevel = () => currentLevelIndex > 0 && setCurrentLevelIndex(i => i - 1);
-  const nextLevel = () => currentLevelIndex < levels.length - 1 && setCurrentLevelIndex(i => i + 1);
+
+  const prevLevel = () =>
+    currentLevelIndex > 0 && setCurrentLevelIndex(i => i - 1);
+  const nextLevel = () =>
+    currentLevelIndex < levels.length - 1 && setCurrentLevelIndex(i => i + 1);
 
   const { slotIndices, answerSlots, hintIndices, gameState } = state;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4" dir={dir}>
-      <div className="mx-auto max-w-5xl">
-        <div className="flex justify-between items-center mb-6">
+    <div
+      className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4"
+      dir={dir}
+    >
+      <div className="mx-auto max-w-5xl space-y-6">
+        {/* ← Back & Team Status */}
+        <div className="flex justify-between items-center">
           <Button variant="ghost" onClick={onBack} className="flex items-center gap-2">
             {dir === 'rtl' ? (
               <>
@@ -131,28 +149,54 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
               </>
             )}
           </Button>
-          <div className="flex items-center gap-4">
-            <Badge variant="secondary">{t.level} {currentLevelIndex + 1}</Badge>
-            <Badge variant={
-              currentLevel.difficulty === 'easy' ? 'default' :
-              currentLevel.difficulty === 'medium' ? 'secondary' : 'destructive'
-            }>
-              {
-                currentLevel.difficulty === 'easy' ? t.easy : 
-                currentLevel.difficulty === 'medium' ? t.medium : t.hard
-              }
-            </Badge>
-          </div>
+
+          {/* Team badges + scores */}
+          {gameMode === 'competitive' && teams.length > 0 && (
+            <div className="flex gap-2">
+              {teams.map((team, idx) => (
+                <Badge
+                  key={team.id}
+                  variant={idx === currentTeam ? 'default' : 'secondary'}
+                  className="px-3"
+                >
+                  {team.name}: {team.score}
+                </Badge>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Level & Difficulty */}
+        <div className="flex justify-between items-center">
+          <Badge variant="secondary">
+            {t.level} {currentLevelIndex + 1}
+          </Badge>
+          <Badge
+            variant={
+              currentLevel.difficulty === 'easy'
+                ? 'default'
+                : currentLevel.difficulty === 'medium'
+                ? 'secondary'
+                : 'destructive'
+            }
+          >
+            {currentLevel.difficulty === 'easy'
+              ? t.easy
+              : currentLevel.difficulty === 'medium'
+              ? t.medium
+              : t.hard}
+          </Badge>
         </div>
 
         <Card className="mb-6">
           <CardContent className="space-y-8">
+            {/* Clue */}
             <div className="text-center">
               <p className="text-xl font-medium">{currentLevel.clue}</p>
             </div>
 
+            {/* Solution & Grid */}
             <SolutionBoxes solution={solution} currentWord={answerSlots.join('')} />
-
             <LetterGrid
               letters={letters}
               selectedIndices={slotIndices.filter(i => i !== null) as number[]}
@@ -181,17 +225,21 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
               </div>
             )}
 
+            {/* Notifications */}
             {notification && (
-              <div className={`text-center p-4 rounded-lg ${
-                notification.type === 'error' 
-                  ? 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-200' 
-                  : 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-200'
-              }`}>
+              <div
+                className={`text-center p-4 rounded-lg ${
+                  notification.type === 'error'
+                    ? 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-200'
+                    : 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-200'
+                }`}
+              >
                 {notification.message}
               </div>
             )}
 
-            {gameState === 'won' && (
+            {/* Victory */}
+            {gameState === 'won' && notification?.type !== 'success' && (
               <div className="text-center">
                 <div className="text-green-600 flex items-center justify-center gap-2 mb-4">
                   <Trophy className="h-6 w-6" />
@@ -200,6 +248,7 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
               </div>
             )}
 
+            {/* Controls */}
             {gameState !== 'failed' && (
               <GameControls
                 onReset={onResetLevel}
@@ -211,7 +260,9 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
                 onPrevLevel={prevLevel}
                 onNextLevel={nextLevel}
                 canRemove={slotIndices.some(i => i !== null && !hintIndices.includes(i))}
-                canClear={slotIndices.filter(i => i !== null).length > hintIndices.length}
+                canClear={
+                  slotIndices.filter(i => i !== null).length > hintIndices.length
+                }
                 canCheck={answerSlots.every(ch => ch !== '')}
                 canPrev={currentLevelIndex > 0}
                 canNext={currentLevelIndex < levels.length - 1}
@@ -224,7 +275,7 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
                   showSolution: t.showSolution,
                   reset: t.reset,
                   prev: t.prev,
-                  next: t.next
+                  next: t.next,
                 }}
               />
             )}

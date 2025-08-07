@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Sun, Moon } from 'lucide-react';
-import { useTheme } from '../../contexts/useTheme';
+import { useTheme } from '../../hooks/useTheme';
 
 const ModeToggler: React.FC = () => {
   const { toggleTheme, isDark } = useTheme();

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { User, Users, ArrowRight, ArrowLeft, Trophy, Target } from 'lucide-react';
-import { useGameMode } from '../../contexts/GameModeContext';
+import { useGameMode } from '../../hooks/useGameMode';
 import { useTranslation } from '@/hooks/useTranslation';
 
 interface GameModeSelectorProps {
