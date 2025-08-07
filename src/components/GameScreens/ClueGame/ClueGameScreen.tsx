@@ -25,6 +25,7 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
   const [letters, setLetters] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [notification, setNotification] = useState<{message: string, type: 'error' | 'success'} | null>(null);
+  const [wrongAnswers, setWrongAnswers] = useState<string[]>([]); // Track wrong answers
 
   // useReducer for all slot/hint/state logic
   const [state, dispatch] = useReducer<React.Reducer<State, Action>>(reducer, {
@@ -52,11 +53,20 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
     const sol = lvl.solution.replace(/\s/g, '');
     setLetters(generateLetters(lvl.solution, lvl.difficulty, language));
     dispatch({ type: 'RESET', solutionLen: sol.length });
+    setWrongAnswers([]); // Clear wrong answers on level change
+    setNotification(null);
   }, [levels, currentLevelIndex, language]);
 
   // Handle game state changes
   useEffect(() => {
     if (state.gameState === 'failed') {
+      const currentAnswer = state.answerSlots.join('');
+      
+      // Add to wrong answers if not already listed
+      if (!wrongAnswers.includes(currentAnswer)) {
+        setWrongAnswers(prev => [...prev, currentAnswer]);
+      }
+      
       // Show error notification
       setNotification({ message: t.wrongAnswer, type: 'error' });
       
@@ -96,6 +106,7 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
     // Full reset including hints
     dispatch({ type: 'RESET', solutionLen: solution.length });
     setNotification(null);
+    setWrongAnswers([]); // Clear wrong answers on reset
   };
   
   const prevLevel = () => currentLevelIndex > 0 && setCurrentLevelIndex(i => i - 1);
@@ -149,6 +160,26 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
               disabled={gameState !== 'playing'}
               hintIndices={hintIndices}
             />
+
+            {/* Wrong Answers List */}
+            {wrongAnswers.length > 0 && (
+              <div className="mt-2">
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+                  {t.wrongAttempts}:
+                </p>
+                <div className="flex flex-wrap gap-2 justify-center">
+                  {wrongAnswers.map((answer, index) => (
+                    <Badge 
+                      key={index} 
+                      variant="destructive"
+                      className="text-xs py-1"
+                    >
+                      {answer}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {notification && (
               <div className={`text-center p-4 rounded-lg ${
