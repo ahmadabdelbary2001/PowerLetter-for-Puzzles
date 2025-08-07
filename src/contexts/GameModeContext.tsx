@@ -1,19 +1,18 @@
-/* src/contexts/GameModeContext.tsx */
 import { createContext, useState, useCallback } from 'react';
 import type { ReactNode, FC } from 'react';
-import type { 
-  Language, 
-  GameMode, 
-  GameType, 
-  Team, 
-  Scores, 
-  GameModeContextType 
+import type {
+  GameModeContextType,
+  Team,
+  Scores,
+  Language,
+  GameMode,
+  GameType,
 } from '../types/game';
 
 const GameModeContext = createContext<GameModeContextType | undefined>(undefined);
 
-interface ProviderProps { 
-  children: ReactNode; 
+interface ProviderProps {
+  children: ReactNode;
 }
 
 export const GameModeProvider: FC<ProviderProps> = ({ children }) => {
@@ -24,41 +23,58 @@ export const GameModeProvider: FC<ProviderProps> = ({ children }) => {
   const [currentTeam, setCurrentTeam] = useState(0);
   const [scores, setScores] = useState<Scores>({});
 
-  const initializeTeams = (teamCount: number) => {
-    const newTeams: Team[] = Array.from({ length: teamCount }, (_, i) => ({
+  const initializeTeams = (teamCount: number, names?: string[]) => {
+    const newTeams = Array.from({ length: teamCount }, (_, i) => ({
       id: i + 1,
-      name: `Team ${i + 1}`,
+      name: names?.[i] ?? `Team ${i + 1}`,
       score: 0,
     }));
+
     setTeams(newTeams);
+
     const newScores: Scores = {};
-    newTeams.forEach(t => { newScores[t.id] = 0; });
+    newTeams.forEach((t) => (newScores[t.id] = 0));
     setScores(newScores);
+
     setCurrentTeam(0);
   };
 
-  const updateScore = (teamId: number, points: number) =>
-    setScores(prev => ({ ...prev, [teamId]: (prev[teamId] || 0) + points }));
+  const renameTeam = (teamId: number, newName: string) => {
+    setTeams((prev) =>
+      prev.map((t) => (t.id === teamId ? { ...t, name: newName } : t))
+    );
+  };
 
-  const nextTurn = useCallback((outcome: 'win' | 'lose') => {
-    const n = teams.length;
-    if (gameMode !== 'competitive' || n === 0) {
-      setCurrentTeam(prev => (prev + 1) % (n || 1));
-      return;
-    }
-    let next: number;
-    if (outcome === 'win') {
-      next = (currentTeam + 1) % n;
-    } else {
-      if (n % 2 === 0) {
-        next = (currentTeam - 1 + n) % n;
+  const updateScore = (teamId: number, points: number) => {
+    setScores((prev) => ({
+      ...prev,
+      [teamId]: (prev[teamId] || 0) + points,
+    }));
+  };
+
+  const nextTurn = useCallback(
+    (outcome: 'win' | 'lose') => {
+      const n = teams.length;
+      if (gameMode !== 'competitive' || n === 0) {
+        setCurrentTeam((prev) => (prev + 1) % (n || 1));
+        return;
+      }
+
+      let nextIndex: number;
+
+      if (outcome === 'win') {
+        nextIndex = (currentTeam + 1) % n;
+      } else if (n % 2 === 0) {
+        nextIndex = (currentTeam - 1 + n) % n;
       } else {
         const half = Math.floor(n / 2);
-        next = (currentTeam - half + n) % n;
+        nextIndex = (currentTeam - half + n) % n;
       }
-    }
-    setCurrentTeam(next);
-  }, [currentTeam, gameMode, teams.length]);
+
+      setCurrentTeam(nextIndex);
+    },
+    [currentTeam, gameMode, teams.length]
+  );
 
   const resetGame = () => {
     setGameMode('single');
@@ -69,19 +85,28 @@ export const GameModeProvider: FC<ProviderProps> = ({ children }) => {
   };
 
   return (
-    <GameModeContext.Provider value={{
-      language, setLanguage,
-      gameMode, setGameMode,
-      gameType, setGameType,
-      teams, setTeams,
-      currentTeam, setCurrentTeam,
-      scores, setScores,
-      initializeTeams,
-      updateScore,
-      nextTurn,
-      resetGame,
-      isRTL: language === 'ar',
-    }}>
+    <GameModeContext.Provider
+      value={{
+        language,
+        setLanguage,
+        gameMode,
+        setGameMode,
+        gameType,
+        setGameType,
+        teams,
+        setTeams,
+        currentTeam,
+        setCurrentTeam,
+        scores,
+        setScores,
+        initializeTeams,
+        renameTeam,
+        updateScore,
+        nextTurn,
+        resetGame,
+        isRTL: language === 'ar',
+      }}
+    >
       {children}
     </GameModeContext.Provider>
   );

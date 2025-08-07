@@ -1,6 +1,6 @@
 /* src/components/GameScreens/ClueGame/ClueGameScreen.tsx */
 import React, { useReducer, useEffect, useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { SolutionBoxes } from './SolutionBoxes';
@@ -189,12 +189,10 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
         </div>
 
         <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="text-center">{currentLevel.clue}</CardTitle>
+          </CardHeader>
           <CardContent className="space-y-8">
-            {/* Clue */}
-            <div className="text-center">
-              <p className="text-xl font-medium">{currentLevel.clue}</p>
-            </div>
-
             {/* Solution & Grid */}
             <SolutionBoxes solution={solution} currentWord={answerSlots.join('')} />
             <LetterGrid
@@ -281,6 +279,32 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
             )}
           </CardContent>
         </Card>
+
+        {/* Competitive Mode Scoreboard */}
+        {gameMode === 'competitive' && teams.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-center">Scoreboard</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-2">
+                {teams.map((team, index) => (
+                  <div 
+                    key={team.id} 
+                    className={`flex justify-between items-center p-3 rounded-lg ${
+                      index === currentTeam ? 'bg-primary/20 border border-primary' : 'bg-muted'
+                    }`}
+                  >
+                    <span className="font-medium">{team.name}</span>
+                    <Badge variant={index === currentTeam ? 'default' : 'secondary'}>
+                      {team.score}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );

@@ -2,15 +2,15 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Card,
-  CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
+  CardDescription,
+  CardContent,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Users, Plus, Minus, ArrowRight, ArrowLeft } from 'lucide-react';
-import { useGameMode } from '../../hooks/useGameMode';
+import { useGameMode } from '@/hooks/useGameMode';
 import { useTranslation } from '@/hooks/useTranslation';
 
 interface TeamConfiguratorProps {
@@ -18,39 +18,31 @@ interface TeamConfiguratorProps {
   onBack: () => void;
 }
 
-const TeamConfigurator: React.FC<TeamConfiguratorProps> = ({
-  onTeamsConfigured,
-  onBack,
-}) => {
+const TeamConfigurator: React.FC<TeamConfiguratorProps> = ({ onTeamsConfigured, onBack }) => {
   const { initializeTeams } = useGameMode();
   const { t, dir } = useTranslation();
-  const [teamCount, setTeamCount] = useState<number>(2);
-  const [teamNames, setTeamNames] = useState<string[]>(() => {
-    return Array.from({ length: 2 }, (_, i) => `${t.team} ${i + 1}`);
-  });
+  const [teamCount, setTeamCount] = useState(2);
+  const [teamNames, setTeamNames] = useState<string[]>(
+    Array.from({ length: 2 }, (_, i) => `${t.team} ${i + 1}`)
+  );
 
-  const handleTeamCountChange = (newCount: number): void => {
+  const handleTeamCountChange = (newCount: number) => {
     if (newCount < 2 || newCount > 8) return;
-
     setTeamCount(newCount);
-    const newTeamNames = Array.from({ length: newCount }, (_, i) =>
-      teamNames[i] || `${t.team} ${i + 1}`
+    setTeamNames((prev) =>
+      Array.from({ length: newCount }, (_, i) => prev[i] || `${t.team} ${i + 1}`)
     );
-    setTeamNames(newTeamNames);
   };
 
-  const handleTeamNameChange = (index: number, name: string): void => {
-    const newNames = [...teamNames];
-    newNames[index] = name;
-    setTeamNames(newNames);
+  const handleTeamNameChange = (index: number, name: string) => {
+    const copy = [...teamNames];
+    copy[index] = name;
+    setTeamNames(copy);
   };
 
-  const handleContinue = (): void => {
-    initializeTeams(teamCount);
-    onTeamsConfigured({
-      count: teamCount,
-      names: teamNames,
-    });
+  const handleContinue = () => {
+    initializeTeams(teamCount, teamNames);
+    onTeamsConfigured({ count: teamCount, names: teamNames });
   };
 
   return (
@@ -74,33 +66,25 @@ const TeamConfigurator: React.FC<TeamConfiguratorProps> = ({
 
         <Card>
           <CardHeader>
-            <CardTitle>
-              {t.numTeams}
-            </CardTitle>
-            <CardDescription>
-              {t.numTeamsDesc}
-            </CardDescription>
+            <CardTitle>{t.numTeams}</CardTitle>
+            <CardDescription>{t.numTeamsDesc}</CardDescription>
           </CardHeader>
-
           <CardContent className="space-y-6">
-            {/* Team Count Selector */}
             <div className="flex items-center justify-center gap-4">
               <Button
-                variant="outline"
                 size="sm"
+                variant="outline"
                 onClick={() => handleTeamCountChange(teamCount - 1)}
                 disabled={teamCount <= 2}
               >
                 <Minus className="w-4 h-4" />
               </Button>
-
-              <div className="text-2xl font-bold text-center min-w-[3rem]">
+              <div className="text-2xl font-bold min-w-[3rem] text-center">
                 {teamCount}
               </div>
-
               <Button
-                variant="outline"
                 size="sm"
+                variant="outline"
                 onClick={() => handleTeamCountChange(teamCount + 1)}
                 disabled={teamCount >= 8}
               >
@@ -108,25 +92,18 @@ const TeamConfigurator: React.FC<TeamConfiguratorProps> = ({
               </Button>
             </div>
 
-            {/* Team Names */}
             <div className="space-y-4">
-              <Label className={`text-lg font-semibold`}>
-                {t.teamNames}
-              </Label>
-
+              <Label className="text-lg font-semibold">{t.teamNames}</Label>
               <div className="grid gap-3">
-                {teamNames.map((name, index) => (
-                  <div 
-                    key={index} 
-                    className={`flex items-center gap-3`}
-                  >
+                {teamNames.map((name, i) => (
+                  <div key={i} className="flex items-center gap-3">
                     <Label className="min-w-[4rem] text-sm text-gray-600 dark:text-gray-400">
-                      {t.team} {index + 1}
+                      {t.team} {i + 1}
                     </Label>
                     <Input
                       value={name}
-                      onChange={(e) => handleTeamNameChange(index, e.target.value)}
-                      placeholder={`${t.team} ${index + 1}`}
+                      onChange={e => handleTeamNameChange(i, e.target.value)}
+                      placeholder={`${t.team} ${i + 1}`}
                       dir={dir}
                     />
                   </div>
@@ -134,40 +111,32 @@ const TeamConfigurator: React.FC<TeamConfiguratorProps> = ({
               </div>
             </div>
 
-            {/* Action Buttons */}
             <div className="flex justify-between pt-4">
-              <Button
-                variant="outline"
-                onClick={onBack}
-                className="flex items-center gap-2"
-              >
-            {/* Reverse arrow direction for RTL */}
-            {dir === 'rtl' ? (
-              <>
-                <ArrowRight className="w-4 h-4" />
-                {t.back}
-              </>
-            ) : (
-              <>
-                <ArrowLeft className="w-4 h-4" />
-                {t.back}
-              </>
-            )}
+              <Button variant="outline" onClick={onBack} className="flex items-center gap-2">
+                {dir === 'rtl' ? (
+                  <>
+                    <ArrowRight className="w-4 h-4" />
+                    {t.back}
+                  </>
+                ) : (
+                  <>
+                    <ArrowLeft className="w-4 h-4" />
+                    {t.back}
+                  </>
+                )}
               </Button>
-
               <Button onClick={handleContinue} className="flex items-center gap-2">
-              {/* Reverse arrow direction for RTL */}
-              {dir === 'rtl' ? (
-                <>
-                  {t.continue}
-                  <ArrowLeft className="w-4 h-4" />
-                </>
-              ) : (
-                <>
-                  {t.continue}
-                  <ArrowRight className="w-4 h-4" />
-                </>
-              )}
+                {dir === 'rtl' ? (
+                  <>
+                    {t.continue}
+                    <ArrowLeft className="w-4 h-4" />
+                  </>
+                ) : (
+                  <>
+                    {t.continue}
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
               </Button>
             </div>
           </CardContent>
