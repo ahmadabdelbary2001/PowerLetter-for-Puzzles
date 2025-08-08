@@ -15,5 +15,5 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  base: "powerletter-for-pussles"
+  base: "powerletter-for-puzzles"
 })
