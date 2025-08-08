@@ -2,24 +2,46 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Lightbulb, RotateCcw, RefreshCw, Delete, CheckCircle, Eye, ArrowLeft, ArrowRight } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useGameMode } from '@/hooks/useGameMode';
 
+/**
+ * Props interface for the GameControls component
+ * Defines all callbacks and state needed for game control buttons
+ */
 interface Props {
+  /** Callback to reset the current game */
   onReset: () => void;
+  /** Callback to remove the last entered letter */
   onRemoveLetter: () => void;
+  /** Callback to clear the entire answer */
   onClearAnswer: () => void;
+  /** Callback to request a hint */
   onHint: () => void;
+  /** Callback to check if the current answer is correct */
   onCheckAnswer: () => void;
+  /** Callback to show the solution */
   onShowSolution: () => void;
+  /** Callback to navigate to the previous level */
   onPrevLevel: () => void;
+  /** Callback to navigate to the next level */
   onNextLevel: () => void;
+  /** Flag indicating if remove letter action is available */
   canRemove: boolean;
+  /** Flag indicating if clear answer action is available */
   canClear: boolean;
+  /** Flag indicating if check answer action is available */
   canCheck: boolean;
+  /** Flag indicating if previous level navigation is available */
   canPrev: boolean;
+  /** Flag indicating if next level navigation is available */
   canNext: boolean;
+  /** Flag indicating if hint action is available */
   canHint: boolean;
+  /** Number of hints remaining for the current team */
   hintsRemaining?: number;
+  /** Current state of the game */
   gameState: 'playing' | 'won' | 'failed';
+  /** Localized labels for all buttons */
   labels: {
     remove: string;
     clear: string;
@@ -32,6 +54,16 @@ interface Props {
   };
 }
 
+/**
+ * GameControls component - Renders game control buttons based on game state
+ * 
+ * This component conditionally renders different sets of buttons based on:
+ * - Current game state (playing, won, failed)
+ * - Game mode (single player vs competitive)
+ * - Available actions (canRemove, canCheck, etc.)
+ * 
+ * In competitive mode, it hides Reset and Previous buttons to maintain game flow
+ */
 const GameControls: React.FC<Props> = ({
   onReset,
   onRemoveLetter,
@@ -51,21 +83,39 @@ const GameControls: React.FC<Props> = ({
   gameState,
   labels
 }) => {
-  const { dir } = useTranslation(); // Moved inside the component
+  // Get text direction based on current language
+  const { dir } = useTranslation();
+  
+  // Get current game mode to determine which buttons to show
+  const { gameMode } = useGameMode();
+  
+  // Determine if we should show reset and previous buttons
+  // In competitive mode, we hide these buttons
+  const showResetAndPrev = gameMode !== 'competitive';
 
+  // Render different controls when game is won
   if (gameState === 'won') {
     return (
       <div className="flex flex-wrap justify-center gap-3">
-        <Button variant="outline" onClick={onReset}>
-          <RefreshCw className="h-4 w-4 mr-2" />
-          {labels.reset}
-        </Button>
-        {canPrev && (
+        {/* Only show reset button in single player mode
+         * In competitive mode, we don't allow resetting to maintain game flow
+         */}
+        {showResetAndPrev && (
+          <Button variant="outline" onClick={onReset}>
+            <RefreshCw className="h-4 w-4 mr-2" />
+            {labels.reset}
+          </Button>
+        )}
+        {/* Only show previous button in single player mode
+         * In competitive mode, players must progress forward only
+         */}
+        {showResetAndPrev && canPrev && (
           <Button 
             variant="outline" 
             onClick={onPrevLevel} 
             className="flex items-center gap-2"
           >
+            {/* Direction-aware arrow icon based on text direction */}
             {dir === 'rtl' ? (
               <ArrowRight className="h-4 w-4" />
             ) : (
@@ -96,29 +146,35 @@ const GameControls: React.FC<Props> = ({
     );
   }
 
+  // Render controls for active gameplay
   return (
     <div className="flex flex-wrap gap-2 justify-center mt-4">
+      {/* Remove last letter button */}
       <Button onClick={onRemoveLetter} disabled={!canRemove} variant="outline">
         <Delete className="w-4 h-4 mr-2" />
         {labels.remove}
       </Button>
 
+      {/* Clear entire answer button */}
       <Button onClick={onClearAnswer} disabled={!canClear} variant="outline">
         <RotateCcw className="w-4 h-4 mr-2" />
         {labels.clear}
       </Button>
 
+      {/* Hint button - shows remaining hints if available */}
       <Button variant="outline" onClick={onHint} disabled={!canHint}>
-        <Lightbulb className="h-4 w-4 mr-2" />
+        <Lightbulb className="w-4 h-4 mr-2" />
         {labels.hint}
         {hintsRemaining !== undefined && ` (${hintsRemaining})`}
       </Button>
 
+      {/* Check answer button - primary action */}
       <Button onClick={onCheckAnswer} disabled={!canCheck} className="bg-blue-600 hover:bg-blue-700 text-white">
         <CheckCircle className="w-4 h-4 mr-2" />
         {labels.check}
       </Button>
 
+      {/* Show solution button */}
       <Button variant="outline" onClick={onShowSolution} className="flex items-center gap-2">
         <Eye className="w-4 h-4 mr-2" />
         {labels.showSolution}
