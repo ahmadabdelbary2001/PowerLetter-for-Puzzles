@@ -17,6 +17,8 @@ interface Props {
   canCheck: boolean;
   canPrev: boolean;
   canNext: boolean;
+  canHint: boolean;
+  hintsRemaining?: number;
   gameState: 'playing' | 'won' | 'failed';
   labels: {
     remove: string;
@@ -44,6 +46,8 @@ const GameControls: React.FC<Props> = ({
   canCheck,
   canPrev,
   canNext,
+  canHint,
+  hintsRemaining,
   gameState,
   labels
 }) => {
@@ -104,9 +108,10 @@ const GameControls: React.FC<Props> = ({
         {labels.clear}
       </Button>
 
-      <Button variant="outline" onClick={onHint}>
+      <Button variant="outline" onClick={onHint} disabled={!canHint}>
         <Lightbulb className="h-4 w-4 mr-2" />
         {labels.hint}
+        {hintsRemaining !== undefined && ` (${hintsRemaining})`}
       </Button>
 
       <Button onClick={onCheckAnswer} disabled={!canCheck} className="bg-blue-600 hover:bg-blue-700 text-white">

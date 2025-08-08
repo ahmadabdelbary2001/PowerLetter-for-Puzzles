@@ -17,6 +17,7 @@ export interface GameModeContextType {
   initializeTeams: (teamCount: number, names?: string[]) => void;
   renameTeam: (teamId: number, newName: string) => void;
   updateScore: (teamId: number, points: number) => void;
+  consumeHint: (teamId: number) => boolean; // Returns true if hint was used, false if no hints remaining
   nextTurn: (outcome: 'win' | 'lose') => void;
   resetGame: () => void;
   isRTL: boolean;

@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { SolutionBoxes } from './SolutionBoxes';
 import { LetterGrid } from './LetterGrid';
 import GameControls from './GameControls';
-import { ArrowLeft, ArrowRight, Trophy } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Trophy, Lightbulb } from 'lucide-react';
 import { useGameMode } from '@/hooks/useGameMode';
 import { loadLevels, generateLetters } from '@/lib/gameUtils';
 import type { Difficulty } from '@/types/game';
@@ -19,13 +19,24 @@ interface ClueGameScreenProps {
 }
 
 const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
-  const { language, gameMode, updateScore, currentTeam, setCurrentTeam, teams, nextTurn } = useGameMode();
+  // include consumeHint from context
+  const {
+    language,
+    gameMode,
+    updateScore,
+    currentTeam,
+    setCurrentTeam,
+    teams,
+    nextTurn,
+    consumeHint,
+  } = useGameMode();
+
   const { t, dir } = useTranslation();
   const [levels, setLevels] = useState<{ id: string; difficulty: Difficulty; clue: string; solution: string }[]>([]);
   const [currentLevelIndex, setCurrentLevelIndex] = useState(0);
   const [letters, setLetters] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
-  const [notification, setNotification] = useState<{message: string, type: 'error' | 'success'} | null>(null);
+  const [notification, setNotification] = useState<{ message: string; type: 'error' | 'success' } | null>(null);
   const [wrongAnswers, setWrongAnswers] = useState<string[]>([]);
   const [pointsAwarded, setPointsAwarded] = useState(false); // Track if points have been awarded for current question
 
@@ -41,10 +52,17 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
 
   // Load levels
   useEffect(() => {
+    let mounted = true;
     loadLevels(language).then(lvls => {
+      if (!mounted) return;
       setLevels(lvls);
       setLoading(false);
+    }).catch(() => {
+      if (!mounted) return;
+      setLevels([]);
+      setLoading(false);
     });
+    return () => { mounted = false; };
   }, [language]);
 
   // Reset on level change and set starting team based on question number
@@ -57,7 +75,7 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
     setWrongAnswers([]);
     setNotification(null);
     setPointsAwarded(false); // Reset points awarded flag
-    
+
     // Set starting team based on question number (q % n)
     if (teams.length > 0) {
       const startingTeam = currentLevelIndex % teams.length;
@@ -69,19 +87,19 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
     resetLevel();
   }, [resetLevel]);
 
-  // Handle game state changes
+  // Handle game state changes (failure)
   useEffect(() => {
     if (state.gameState === 'failed') {
       const currentAnswer = state.answerSlots.join('');
-      
+
       // Add to wrong answers if not already listed
       if (!wrongAnswers.includes(currentAnswer)) {
         setWrongAnswers(prev => [...prev, currentAnswer]);
       }
-      
+
       // Show error notification
       setNotification({ message: t.wrongAnswer, type: 'error' });
-      
+
       // Reset game after delay and move to next team
       const timer = setTimeout(() => {
         dispatch({ type: 'CLEAR' });
@@ -91,7 +109,7 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
         setNotification(null);
         nextTurn('lose');
       }, 2000);
-      
+
       return () => clearTimeout(timer);
     }
   }, [state.gameState, state.answerSlots, wrongAnswers, t.wrongAnswer, teams.length, setCurrentTeam, nextTurn]);
@@ -126,7 +144,33 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
   const onLetterClick = (i: number) => dispatch({ type: 'PLACE', gridIndex: i, letter: letters[i] });
   const onRemove = () => dispatch({ type: 'REMOVE_LAST' });
   const onClear = () => dispatch({ type: 'CLEAR' });
-  const onHint = () => dispatch({ type: 'HINT', solution, letters });
+
+  // onHint now respects team hint budgets for competitive mode
+  const onHint = () => {
+    // If competitive mode and teams exist, try to consume a hint for the current team
+    if (gameMode === 'competitive' && teams.length > 0) {
+      const team = teams[currentTeam];
+      if (!team) {
+        setNotification({ message: t.noHintsLeft, type: 'error' });
+        setTimeout(() => setNotification(null), 2000);
+        return;
+      }
+      const consumed = consumeHint(team.id);
+      if (!consumed) {
+        // Notify user that team has no hints left
+        setNotification({ message: t.noHintsLeft, type: 'error' });
+        setTimeout(() => setNotification(null), 2000);
+        return;
+      }
+      // If consumed successfully, dispatch the reducer hint action
+      dispatch({ type: 'HINT', solution, letters });
+      return;
+    }
+
+    // Non-competitive: just dispatch hint (no team budget)
+    dispatch({ type: 'HINT', solution, letters });
+  };
+
   const onShow = () => dispatch({ type: 'SHOW', solution, letters });
   const onCheck = () => dispatch({ type: 'CHECK', solution });
 
@@ -135,7 +179,7 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
       // Regenerate letters to reshuffle them
       setLetters(generateLetters(currentLevel.solution, currentLevel.difficulty, language));
     }
-    // Full reset including hints
+    // Full reset including hints (level-local hints in reducer)
     dispatch({ type: 'RESET', solutionLen: solution.length });
     setNotification(null);
     setWrongAnswers([]); // Clear wrong answers on reset
@@ -147,7 +191,7 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
       setCurrentLevelIndex(i => i - 1);
     }
   };
-  
+
   const nextLevel = () => {
     if (currentLevelIndex < levels.length - 1) {
       setCurrentLevelIndex(i => i + 1);
@@ -155,6 +199,11 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
   };
 
   const { slotIndices, answerSlots, hintIndices, gameState } = state;
+
+  // canHint prop for GameControls: only allowed if team has hints left in competitive mode; otherwise allowed for single mode
+  const canHint = gameMode === 'competitive'
+    ? (teams[currentTeam]?.hintsRemaining ?? 0) > 0 && gameState === 'playing'
+    : gameState === 'playing';
 
   return (
     <div
@@ -178,16 +227,22 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
             )}
           </Button>
 
-          {/* Team badges + scores */}
+          {/* Team badges + scores + hints remaining */}
           {gameMode === 'competitive' && teams.length > 0 && (
-            <div className="flex gap-2">
+            <div className="flex gap-2 items-center">
               {teams.map((team, idx) => (
                 <Badge
                   key={team.id}
                   variant={idx === currentTeam ? 'default' : 'secondary'}
-                  className="px-3"
+                  className="px-3 flex items-center gap-2"
                 >
-                  {team.name}: {team.score}
+                  <span className="font-medium">{team.name}:</span>
+                  <span>{team.score}</span>
+                  <span className="text-xs opacity-80">·</span>
+                  <span className="text-sm flex items-center" aria-hidden={false}>
+                  <span className="mr-1">{team.hintsRemaining}</span>
+                    <Lightbulb className="w-4 h-4 text-yellow-500" aria-hidden="true" />
+                  </span>
                 </Badge>
               ))}
             </div>
@@ -201,16 +256,16 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
           </Badge>
           <Badge
             variant={
-              currentLevel.difficulty === 'easy'
+              currentLevel?.difficulty === 'easy'
                 ? 'default'
-                : currentLevel.difficulty === 'medium'
+                : currentLevel?.difficulty === 'medium'
                 ? 'secondary'
                 : 'destructive'
             }
           >
-            {currentLevel.difficulty === 'easy'
+            {currentLevel?.difficulty === 'easy'
               ? t.easy
-              : currentLevel.difficulty === 'medium'
+              : currentLevel?.difficulty === 'medium'
               ? t.medium
               : t.hard}
           </Badge>
@@ -218,7 +273,7 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
 
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle className="text-center">{currentLevel.clue}</CardTitle>
+            <CardTitle className="text-center">{currentLevel?.clue}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-8">
             {/* Solution & Grid */}
@@ -239,8 +294,8 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
                 </p>
                 <div className="flex flex-wrap gap-2 justify-center">
                   {wrongAnswers.map((answer, index) => (
-                    <Badge 
-                      key={index} 
+                    <Badge
+                      key={index}
                       variant="destructive"
                       className="text-xs py-1"
                     >
@@ -285,13 +340,12 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
                 onShowSolution={onShow}
                 onPrevLevel={prevLevel}
                 onNextLevel={nextLevel}
-                canRemove={slotIndices.some(i => i !== null && !hintIndices.includes(i))}
-                canClear={
-                  slotIndices.filter(i => i !== null).length > hintIndices.length
-                }
+                canRemove={slotIndices.some(i => i !== null && !hintIndices.includes(i as number))}
+                canClear={slotIndices.filter(i => i !== null).length > hintIndices.length}
                 canCheck={answerSlots.every(ch => ch !== '')}
                 canPrev={currentLevelIndex > 0}
                 canNext={currentLevelIndex < levels.length - 1}
+                canHint={canHint} // <-- pass canHint to match GameControls props
                 gameState={gameState}
                 labels={{
                   remove: t.remove,
@@ -312,17 +366,17 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
         {gameMode === 'competitive' && teams.length > 0 && (
           <Card>
             <CardHeader>
-              <CardTitle className="text-center">Scoreboard</CardTitle>
+              <CardTitle className="text-center">{t.scoreboard}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid gap-2">
                 {teams.map((team, index) => (
-                  <div 
-                    key={team.id} 
+                  <div
+                    key={team.id}
                     className={cn(
                       "flex justify-between items-center p-3 rounded-lg",
-                      index === currentTeam 
-                        ? "bg-primary/20 border border-primary" 
+                      index === currentTeam
+                        ? "bg-primary/20 border border-primary"
                         : "bg-muted"
                     )}
                   >
@@ -332,9 +386,15 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
                         <Badge className="ml-2">{t.currentTurn}</Badge>
                       )}
                     </div>
-                    <Badge variant={index === currentTeam ? 'default' : 'secondary'}>
-                      {team.score}
-                    </Badge>
+                    <div className="flex items-center gap-3">
+                      <Badge variant={index === currentTeam ? 'default' : 'secondary'}>
+                        {team.score}
+                      </Badge>
+                      <div className="text-sm text-gray-600 dark:text-gray-400 flex items-center">
+                        <span className="mr-1">{team.hintsRemaining}</span>
+                        <Lightbulb className="w-4 h-4 text-yellow-500" aria-hidden="true" />
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>

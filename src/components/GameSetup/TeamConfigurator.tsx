@@ -1,3 +1,4 @@
+// src/components/TeamConfigurator.tsx
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -21,10 +22,13 @@ interface TeamConfiguratorProps {
 const TeamConfigurator: React.FC<TeamConfiguratorProps> = ({ onTeamsConfigured, onBack }) => {
   const { initializeTeams } = useGameMode();
   const { t, dir } = useTranslation();
+
   const [teamCount, setTeamCount] = useState(2);
   const [teamNames, setTeamNames] = useState<string[]>(
     Array.from({ length: 2 }, (_, i) => `${t.team} ${i + 1}`)
   );
+  // New: hints per team (global setting for the whole game)
+  const [hintsPerTeam, setHintsPerTeam] = useState<number>(3);
 
   const handleTeamCountChange = (newCount: number) => {
     if (newCount < 2 || newCount > 8) return;
@@ -41,7 +45,8 @@ const TeamConfigurator: React.FC<TeamConfiguratorProps> = ({ onTeamsConfigured, 
   };
 
   const handleContinue = () => {
-    initializeTeams(teamCount, teamNames);
+    // Initialize teams in context with hintsPerTeam included
+    initializeTeams(teamCount, teamNames, hintsPerTeam);
     onTeamsConfigured({ count: teamCount, names: teamNames });
   };
 
@@ -109,6 +114,32 @@ const TeamConfigurator: React.FC<TeamConfiguratorProps> = ({ onTeamsConfigured, 
                   </div>
                 ))}
               </div>
+            </div>
+
+            {/* New: hints per team configurator */}
+            <div className="space-y-2">
+              <Label className="text-lg font-semibold">{t.hintsPerTeam}</Label>
+              <div className="flex items-center gap-4 justify-center">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setHintsPerTeam(h => Math.max(0, h - 1))}
+                  disabled={hintsPerTeam <= 0}
+                >
+                  <Minus className="w-4 h-4" />
+                </Button>
+                <div className="text-xl font-medium min-w-[3rem] text-center">{hintsPerTeam}</div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setHintsPerTeam(h => Math.min(99, h + 1))}
+                >
+                  <Plus className="w-4 h-4" />
+                </Button>
+              </div>
+              <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
+                {t.hintsPerTeamDesc}
+              </p>
             </div>
 
             <div className="flex justify-between pt-4">

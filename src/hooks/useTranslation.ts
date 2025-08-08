@@ -91,7 +91,11 @@ export const useTranslation = () => {
             numTeamsDesc: "Choose the number of teams (2-8 teams)",
             teamNames: "Team Names",
             team: "Team",
-            
+            hintsPerTeam: "Hints per Team",
+            hintsPerTeamDesc: "Set how many hints each team can use for the entire game (shared across levels).",
+            hints: "Hints",
+            noHintsLeft: "No hints left for your team!",
+            scoreboard: "Scoreboard",
             currentTurn: "Current Turn",
             points: "Points",
         },
@@ -182,9 +186,13 @@ export const useTranslation = () => {
             numTeamsDesc: "اختر عدد الفرق (2-8 فرق)",
             teamNames: "أسماء الفرق",
             team: "فريق",
-            
+            hintsPerTeam: "التلميحات لكل فريق",
+            hintsPerTeamDesc: "حدد عدد التلميحات التي يمكن لكل فريق استخدامها طوال اللعبة (مشتركة على مستوى اللعب).",
+            hints: "تلميحات",
+            noHintsLeft: "لا توجد تلميحات متبقية لفريقك!",
+            scoreboard: "لوحة النتائج",
             currentTurn: "الدور الحالي",
-            points: "النقاط",
+            points: "نقاط",
         }
     } as const;
 

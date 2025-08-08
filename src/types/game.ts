@@ -1,3 +1,4 @@
+// src/types/game.ts
 export type Language = 'en' | 'ar';
 export type GameMode = 'single' | 'competitive';
 export type GameType = 'clue' | 'formation' | 'category';
@@ -7,6 +8,7 @@ export interface Team {
   id: number;
   name: string;
   score: number;
+  hintsRemaining: number;
 }
 
 export interface Scores {
@@ -26,9 +28,11 @@ export interface GameModeContextType {
   setCurrentTeam: React.Dispatch<React.SetStateAction<number>>;
   scores: Scores;
   setScores: React.Dispatch<React.SetStateAction<Scores>>;
-  initializeTeams: (teamCount: number, names?: string[]) => void;
+  initializeTeams: (teamCount: number, names?: string[], hintsPerTeam?: number) => void;
   renameTeam: (teamId: number, newName: string) => void;
   updateScore: (teamId: number, points: number) => void;
+  // Decrement a hint for the specified team. Returns true if a hint was consumed.
+  consumeHint: (teamId: number) => boolean;
   nextTurn: (outcome: 'win' | 'lose') => void;
   resetGame: () => void;
   isRTL: boolean;

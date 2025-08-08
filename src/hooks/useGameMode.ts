@@ -1,3 +1,4 @@
+// src/hooks/useGameMode.ts
 import { useContext } from 'react';
 import { GameModeContext } from '@/contexts/GameModeContext';
 import type { GameModeContextType } from '@/types/game';
