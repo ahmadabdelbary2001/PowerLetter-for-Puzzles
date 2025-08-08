@@ -6,7 +6,7 @@ import './index.css';
 import './App.css';
 
 import { ThemeProvider } from './contexts/ThemeProvider';
-import { GameModeProvider } from './contexts/GameModeContext';
+import { GameModeProvider } from './contexts/GameModeProvider';
 import { useGameMode } from './hooks/useGameMode';
 
 import ModeToggler from './components/GameSetup/ModeToggler';

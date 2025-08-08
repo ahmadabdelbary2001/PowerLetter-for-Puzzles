@@ -90,7 +90,10 @@ export const useTranslation = () => {
             numTeams: "Number of Teams",
             numTeamsDesc: "Choose the number of teams (2-8 teams)",
             teamNames: "Team Names",
-            team: "Team"
+            team: "Team",
+            
+            currentTurn: "Current Turn",
+            points: "Points",
         },
         ar: {
             // Language Selector
@@ -178,7 +181,10 @@ export const useTranslation = () => {
             numTeams: "عدد الفرق",
             numTeamsDesc: "اختر عدد الفرق (2-8 فرق)",
             teamNames: "أسماء الفرق",
-            team: "فريق"
+            team: "فريق",
+            
+            currentTurn: "الدور الحالي",
+            points: "النقاط",
         }
     } as const;
 

@@ -1,5 +1,4 @@
-/* src/components/GameScreens/ClueGame/ClueGameScreen.tsx */
-import React, { useReducer, useEffect, useState } from 'react';
+import React, { useReducer, useEffect, useState, useCallback } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -8,18 +7,19 @@ import { LetterGrid } from './LetterGrid';
 import GameControls from './GameControls';
 import { ArrowLeft, ArrowRight, Trophy } from 'lucide-react';
 import { useGameMode } from '@/hooks/useGameMode';
-import { loadLevels, generateLetters } from '../../../lib/gameUtils';
+import { loadLevels, generateLetters } from '@/lib/gameUtils';
 import type { Difficulty } from '@/types/game';
 import { reducer } from './gameReducer';
 import type { State, Action } from './gameReducer';
 import { useTranslation } from '@/hooks/useTranslation';
+import { cn } from '@/lib/utils';
 
 interface ClueGameScreenProps {
   onBack: () => void;
 }
 
 const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
-  const { language, gameMode, updateScore, currentTeam, teams, nextTurn } = useGameMode();
+  const { language, gameMode, updateScore, currentTeam, setCurrentTeam, teams, nextTurn } = useGameMode();
   const { t, dir } = useTranslation();
   const [levels, setLevels] = useState<{ id: string; difficulty: Difficulty; clue: string; solution: string }[]>([]);
   const [currentLevelIndex, setCurrentLevelIndex] = useState(0);
@@ -27,6 +27,7 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
   const [loading, setLoading] = useState(true);
   const [notification, setNotification] = useState<{message: string, type: 'error' | 'success'} | null>(null);
   const [wrongAnswers, setWrongAnswers] = useState<string[]>([]);
+  const [pointsAwarded, setPointsAwarded] = useState(false); // Track if points have been awarded for current question
 
   const [state, dispatch] = useReducer<React.Reducer<State, Action>>(reducer, {
     slotIndices: [],
@@ -46,8 +47,8 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
     });
   }, [language]);
 
-  // Reset on level change
-  useEffect(() => {
+  // Reset on level change and set starting team based on question number
+  const resetLevel = useCallback(() => {
     if (!levels.length) return;
     const lvl = levels[currentLevelIndex];
     const sol = lvl.solution.replace(/\s/g, '');
@@ -55,7 +56,18 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
     dispatch({ type: 'RESET', solutionLen: sol.length });
     setWrongAnswers([]);
     setNotification(null);
-  }, [levels, currentLevelIndex, language]);
+    setPointsAwarded(false); // Reset points awarded flag
+    
+    // Set starting team based on question number (q % n)
+    if (teams.length > 0) {
+      const startingTeam = currentLevelIndex % teams.length;
+      setCurrentTeam(startingTeam);
+    }
+  }, [levels, currentLevelIndex, language, teams.length, setCurrentTeam]);
+
+  useEffect(() => {
+    resetLevel();
+  }, [resetLevel]);
 
   // Handle game state changes
   useEffect(() => {
@@ -70,45 +82,53 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
       // Show error notification
       setNotification({ message: t.wrongAnswer, type: 'error' });
       
-      // Reset game after delay
+      // Reset game after delay and move to next team
       const timer = setTimeout(() => {
         dispatch({ type: 'CLEAR' });
-        nextTurn('lose');
+        if (teams.length > 1) {
+          setCurrentTeam(prev => (prev + 1) % teams.length);
+        }
         setNotification(null);
+        nextTurn('lose');
       }, 2000);
       
       return () => clearTimeout(timer);
     }
-  }, [state.gameState, t.wrongAnswer, nextTurn]);
+  }, [state.gameState, state.answerSlots, wrongAnswers, t.wrongAnswer, teams.length, setCurrentTeam, nextTurn]);
+
+  // Handle win - award points
+  useEffect(() => {
+    if (state.gameState === 'won' && currentLevel && !pointsAwarded) {
+      const getPoints = () => {
+        switch (currentLevel.difficulty) {
+          case 'easy': return 10;
+          case 'medium': return 20;
+          case 'hard': return 30;
+          default: return 10;
+        }
+      };
+
+      if (gameMode === 'competitive' && teams.length > 0) {
+        const points = getPoints();
+        updateScore(teams[currentTeam].id, points);
+        setNotification({ message: `+${points} ${t.congrats}`, type: 'success' });
+        setPointsAwarded(true); // Mark points as awarded for this question
+      } else {
+        setNotification({ message: t.congrats, type: 'success' });
+        setPointsAwarded(true); // Mark points as awarded for this question
+      }
+    }
+  }, [state.gameState, currentLevel, gameMode, teams, currentTeam, updateScore, t.congrats, pointsAwarded]);
 
   if (loading) return <p>Loading...</p>;
 
   // Handlers for letter grid & controls
-  const onLetterClick = (i: number) =>
-    dispatch({ type: 'PLACE', gridIndex: i, letter: letters[i] });
+  const onLetterClick = (i: number) => dispatch({ type: 'PLACE', gridIndex: i, letter: letters[i] });
   const onRemove = () => dispatch({ type: 'REMOVE_LAST' });
   const onClear = () => dispatch({ type: 'CLEAR' });
   const onHint = () => dispatch({ type: 'HINT', solution, letters });
   const onShow = () => dispatch({ type: 'SHOW', solution, letters });
-  const onCheck = () => {
-    dispatch({ type: 'CHECK', solution });
-
-    if (state.gameState === 'won' && gameMode === 'competitive') {
-      // Award points
-      const pts =
-        currentLevel.difficulty === 'easy'
-          ? 10
-          : currentLevel.difficulty === 'medium'
-          ? 20
-          : 30;
-      updateScore(teams[currentTeam].id, pts);
-      nextTurn('win');
-      setNotification({
-        message: `+${pts} ${t.congrats}`,
-        type: 'success',
-      });
-    }
-  };
+  const onCheck = () => dispatch({ type: 'CHECK', solution });
 
   const onResetLevel = () => {
     if (currentLevel) {
@@ -119,12 +139,20 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
     dispatch({ type: 'RESET', solutionLen: solution.length });
     setNotification(null);
     setWrongAnswers([]); // Clear wrong answers on reset
+    setPointsAwarded(false); // Reset points awarded flag
   };
 
-  const prevLevel = () =>
-    currentLevelIndex > 0 && setCurrentLevelIndex(i => i - 1);
-  const nextLevel = () =>
-    currentLevelIndex < levels.length - 1 && setCurrentLevelIndex(i => i + 1);
+  const prevLevel = () => {
+    if (currentLevelIndex > 0) {
+      setCurrentLevelIndex(i => i - 1);
+    }
+  };
+  
+  const nextLevel = () => {
+    if (currentLevelIndex < levels.length - 1) {
+      setCurrentLevelIndex(i => i + 1);
+    }
+  };
 
   const { slotIndices, answerSlots, hintIndices, gameState } = state;
 
@@ -291,11 +319,19 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
                 {teams.map((team, index) => (
                   <div 
                     key={team.id} 
-                    className={`flex justify-between items-center p-3 rounded-lg ${
-                      index === currentTeam ? 'bg-primary/20 border border-primary' : 'bg-muted'
-                    }`}
+                    className={cn(
+                      "flex justify-between items-center p-3 rounded-lg",
+                      index === currentTeam 
+                        ? "bg-primary/20 border border-primary" 
+                        : "bg-muted"
+                    )}
                   >
-                    <span className="font-medium">{team.name}</span>
+                    <div className="flex items-center">
+                      <span className="font-medium">{team.name}</span>
+                      {index === currentTeam && (
+                        <Badge className="ml-2">{t.currentTurn}</Badge>
+                      )}
+                    </div>
                     <Badge variant={index === currentTeam ? 'default' : 'secondary'}>
                       {team.score}
                     </Badge>
