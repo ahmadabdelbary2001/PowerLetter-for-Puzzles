@@ -96,7 +96,7 @@ const GameControls: React.FC<Props> = ({
   // Render different controls when game is won
   if (gameState === 'won') {
     return (
-      <div className="flex flex-wrap justify-center gap-3">
+      <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
         {/* Only show reset button in single player mode
          * In competitive mode, we don't allow resetting to maintain game flow
          */}
@@ -148,36 +148,36 @@ const GameControls: React.FC<Props> = ({
 
   // Render controls for active gameplay
   return (
-    <div className="flex flex-wrap gap-2 justify-center mt-4">
+    <div className="flex flex-wrap gap-1 sm:gap-2 justify-center mt-4">
       {/* Remove last letter button */}
-      <Button onClick={onRemoveLetter} disabled={!canRemove} variant="outline">
-        <Delete className="w-4 h-4 mr-2" />
-        {labels.remove}
+      <Button onClick={onRemoveLetter} disabled={!canRemove} variant="outline" className="text-xs sm:text-sm">
+        <Delete className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+        <span className="text-xs sm:text-sm">{labels.remove}</span>
       </Button>
 
       {/* Clear entire answer button */}
-      <Button onClick={onClearAnswer} disabled={!canClear} variant="outline">
-        <RotateCcw className="w-4 h-4 mr-2" />
-        {labels.clear}
+      <Button onClick={onClearAnswer} disabled={!canClear} variant="outline" className="text-xs sm:text-sm">
+        <RotateCcw className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+        <span className="text-xs sm:text-sm">{labels.clear}</span>
       </Button>
 
       {/* Hint button - shows remaining hints if available */}
-      <Button variant="outline" onClick={onHint} disabled={!canHint}>
-        <Lightbulb className="w-4 h-4 mr-2" />
-        {labels.hint}
-        {hintsRemaining !== undefined && ` (${hintsRemaining})`}
+      <Button variant="outline" onClick={onHint} disabled={!canHint} className="text-xs sm:text-sm">
+        <Lightbulb className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+        <span className="text-xs sm:text-sm">{labels.hint}</span>
+        {hintsRemaining !== undefined && <span className="text-xs sm:text-sm"> ({hintsRemaining})</span>}
       </Button>
 
       {/* Check answer button - primary action */}
-      <Button onClick={onCheckAnswer} disabled={!canCheck} className="bg-blue-600 hover:bg-blue-700 text-white">
-        <CheckCircle className="w-4 h-4 mr-2" />
-        {labels.check}
+      <Button onClick={onCheckAnswer} disabled={!canCheck} className="bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm">
+        <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+        <span className="text-xs sm:text-sm">{labels.check}</span>
       </Button>
 
       {/* Show solution button */}
-      <Button variant="outline" onClick={onShowSolution} className="flex items-center gap-2">
-        <Eye className="w-4 h-4 mr-2" />
-        {labels.showSolution}
+      <Button variant="outline" onClick={onShowSolution} className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
+        <Eye className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+        <span className="text-xs sm:text-sm">{labels.showSolution}</span>
       </Button>
     </div>
   );

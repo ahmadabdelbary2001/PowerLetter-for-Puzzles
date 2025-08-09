@@ -207,12 +207,12 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
 
   return (
     <div
-      className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4"
+      className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-6"
       dir={dir}
     >
-      <div className="mx-auto max-w-5xl space-y-6">
+      <div className="mx-auto max-w-5xl space-y-4 sm:space-y-6">
         {/* ← Back & Team Status */}
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
           <Button variant="ghost" onClick={onBack} className="flex items-center gap-2">
             {dir === 'rtl' ? (
               <>
@@ -229,7 +229,7 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
 
           {/* Team badges + scores + hints remaining */}
           {gameMode === 'competitive' && teams.length > 0 && (
-            <div className="flex gap-2 items-center">
+            <div className="flex flex-wrap gap-2 items-center justify-start sm:justify-end w-full sm:w-auto">
               {teams.map((team, idx) => (
                 <Badge
                   key={team.id}
@@ -271,11 +271,11 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
           </Badge>
         </div>
 
-        <Card className="mb-6">
+        <Card className="mb-4 sm:mb-6">
           <CardHeader>
             <CardTitle className="text-center">{currentLevel?.clue}</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-8">
+          <CardContent className="space-y-6 sm:space-y-8">
             {/* Solution & Grid */}
             <SolutionBoxes solution={solution} currentWord={answerSlots.join('')} />
             <LetterGrid
@@ -292,7 +292,7 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = ({ onBack }) => {
                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
                   {t.wrongAttempts}:
                 </p>
-                <div className="flex flex-wrap gap-2 justify-center">
+                <div className="flex flex-wrap gap-1 sm:gap-2 justify-center">
                   {wrongAnswers.map((answer, index) => (
                     <Badge
                       key={index}

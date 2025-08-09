@@ -1,7 +1,7 @@
 export const DIFFICULTY_SETTINGS = {
-  easy: { totalLetters: 10 },
-  medium: { totalLetters: 14 },
-  hard: { totalLetters: 20 }
+  easy: { totalLetters: 12 },
+  medium: { totalLetters: 18 },
+  hard: { totalLetters: 24 }
 };
 
 type LanguageCode = 'en' | 'ar';
