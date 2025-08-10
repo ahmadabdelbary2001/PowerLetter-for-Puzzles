@@ -7,7 +7,6 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import GameTypeSelector from "./pages/GameTypeSelector";
 import { ThemeProvider } from "./contexts/ThemeProvider";
-import ModeToggler from "./components/GameSetup/ModeToggler";
 import GameModeSelector from "./components/GameSetup/GameModeSelector";
 import TeamConfigurator from "./components/GameSetup/TeamConfigurator";
 import ClueGameScreen from "./components/GameScreens/ClueGame/ClueGameScreen";
@@ -30,7 +29,6 @@ const App = () => (
             <Route path="/PowerLetter-for-Puzzles/game/:gameType/:language" element={<ClueGameScreen onBack={() => {}} />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
-          <ModeToggler />
         </BrowserRouter>
       </ThemeProvider>
     </TooltipProvider>

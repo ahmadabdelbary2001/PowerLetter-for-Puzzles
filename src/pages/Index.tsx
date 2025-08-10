@@ -1,4 +1,3 @@
-// src/pages/Index.tsx
 import { useEffect } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { Header } from "@/components/layout/Header";
@@ -18,7 +17,6 @@ const Index = () => {
 
   // Determine current view based on route (strip the basename if present)
   const getCurrentView = () => {
-    // remove the repo base path if the router isn't hiding it from pathname
     const path = location.pathname.startsWith(BASE_PATH)
       ? location.pathname.slice(BASE_PATH.length) || "/"
       : location.pathname || "/";
@@ -38,24 +36,19 @@ const Index = () => {
   }, [language, setLanguage]);
 
   const handleStartPlaying = () => {
-    // navigate will be prefixed by the BrowserRouter basename
     navigate("/games");
   };
 
   const handleSelectGame = (selectedGameType: GameType) => {
-    setGameMode('single');
+    setGameMode("single");
     navigate(`/PowerLetter-for-Puzzles/game/${selectedGameType}/${currentLanguage}`);
   };
 
-
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-      <Header
-        currentView={currentView}
-      />
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex flex-col">
+      <Header currentView={currentView} />
 
-      <main className="min-h-[calc(100vh-4rem)]">
+      <main className="flex-1 min-h-[calc(100vh-4rem)] sm:min-h-[calc(100vh-5rem)]">
         {currentView === "home" && <HeroSection onStartPlaying={handleStartPlaying} />}
 
         {currentView === "selection" && (
@@ -65,7 +58,6 @@ const Index = () => {
         {/* other views (play, etc.) will render here */}
       </main>
 
-      {/* show the footer on every page */}
       <Footer />
     </div>
   );
