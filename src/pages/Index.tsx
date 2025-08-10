@@ -1,3 +1,4 @@
+// src/pages/Index.tsx
 import { useEffect } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { Header } from "@/components/layout/Header";
@@ -7,24 +8,19 @@ import Footer from "@/components/layout/Footer";
 import type { Language, GameType } from "@/types/game";
 import { useGameMode } from "@/hooks/useGameMode";
 
-const BASE_PATH = "/PowerLetter-for-Puzzles/"; // keep in sync with BrowserRouter basename
-
 const Index = () => {
   const navigate = useNavigate();
   const { gameType, language } = useParams();
   const location = useLocation();
   const { language: currentLanguage, setLanguage, setGameMode } = useGameMode();
 
-  // Determine current view based on route (strip the basename if present)
+  // Determine current view based on route (no manual BASE_PATH slicing)
   const getCurrentView = () => {
-    const path = location.pathname.startsWith(BASE_PATH)
-      ? location.pathname.slice(BASE_PATH.length) || "/"
-      : location.pathname || "/";
-
-    if (path === "/") return "home";
-    if (path === "/games") return "selection";
-    if (gameType) return "play";
-    return "home";
+    const path = location.pathname || '/';
+    if (path === '/' || path === '') return 'home';
+    if (path === '/games') return 'selection';
+    if (gameType) return 'play';
+    return 'home';
   };
 
   const currentView = getCurrentView();
@@ -37,7 +33,7 @@ const Index = () => {
 
   const handleSelectGame = (selectedGameType: GameType) => {
     setGameMode("single");
-    navigate(`/PowerLetter-for-Puzzles/game/${selectedGameType}/${currentLanguage}`);
+    navigate(`/game/${selectedGameType}/${currentLanguage}`);
   };
 
   return (
@@ -48,7 +44,7 @@ const Index = () => {
         {currentView === "home" && <HeroSection />}
 
         {currentView === "selection" && (
-          <GameTypeSelector onGameTypeSelect={(t) => handleSelectGame(t)} onBack={() => navigate("/PowerLetter-for-Puzzles/")} />
+          <GameTypeSelector onGameTypeSelect={(t) => handleSelectGame(t)} onBack={() => navigate("/")} />
         )}
 
         {/* other views (play, etc.) will render here */}

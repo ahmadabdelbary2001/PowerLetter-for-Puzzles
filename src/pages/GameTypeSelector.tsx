@@ -8,6 +8,7 @@ import type { GameType as GameModeType } from '@/types/game';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Header } from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import { useNavigate } from 'react-router-dom';
 
 interface GameType {
   id: string;
@@ -26,6 +27,7 @@ interface GameTypeSelectorProps {
 const GameTypeSelector: React.FC<GameTypeSelectorProps> = ({ onGameTypeSelect }) => {
   const { gameType, setGameType } = useGameMode();
   const { t, dir } = useTranslation();
+  const navigate = useNavigate();
 
   const gameTypes: GameType[] = [
     {
@@ -80,7 +82,7 @@ const GameTypeSelector: React.FC<GameTypeSelectorProps> = ({ onGameTypeSelect })
   const handleGameTypeSelect = (typeId: GameModeType): void => {
     setGameType(typeId);
     // Navigate to game mode selection page
-    window.location.href = `/PowerLetter-for-Puzzles/game-mode/${typeId}`;
+    navigate(`/game-mode/${typeId}`);
   };
 
   return (
