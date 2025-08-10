@@ -21,7 +21,7 @@ const GameModeSelector: React.FC<GameModeSelectorProps> = ({ onModeSelect }) => 
   const [selectedMode, setSelectedMode] = useState<'single' | 'competitive' | ''>('');
   
   const handleBack = () => {
-    navigate('/PowerLetter-for-Puzzles/games');
+    navigate('/games');
   };
 
   const gameModes = [
@@ -53,11 +53,11 @@ const GameModeSelector: React.FC<GameModeSelectorProps> = ({ onModeSelect }) => 
       
       // If single player, start the game
       if (selectedMode === 'single') {
-        navigate(`/PowerLetter-for-Puzzles/game/${gameType}`);
+        navigate(`/game/${gameType}`);
       } 
       // If competitive mode, go to team configuration
       else if (selectedMode === 'competitive') {
-        navigate(`/PowerLetter-for-Puzzles/team-config/${gameType}`);
+        navigate(`/team-config/${gameType}`);
       }
       
       onModeSelect(selectedMode);

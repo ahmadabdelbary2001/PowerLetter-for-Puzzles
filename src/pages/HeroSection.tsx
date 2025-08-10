@@ -8,7 +8,7 @@ export default function HeroSection() {
   const navigate = useNavigate();
   
   const handleStartPlaying = () => {
-    navigate("/PowerLetter-for-Puzzles/games");
+    navigate("/games");
   };
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-secondary/5 py-10 md:py-20 px-4 sm:px-6 lg:px-8">

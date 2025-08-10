@@ -19,14 +19,14 @@ const App = () => (
       <ThemeProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
+        <BrowserRouter basename="/PowerLetter-for-Puzzles">
           <Routes>
-            <Route path="/PowerLetter-for-Puzzles/" element={<Index />} />
-            <Route path="/PowerLetter-for-Puzzles/games" element={<GameTypeSelector onGameTypeSelect={() => {}} onBack={() => {}} />} />
-            <Route path="/PowerLetter-for-Puzzles/game-mode/:gameType" element={<GameModeSelector onModeSelect={() => {}} onBack={() => {}} />} />
-            <Route path="/PowerLetter-for-Puzzles/team-config/:gameType" element={<TeamConfigurator />} />
-            <Route path="/PowerLetter-for-Puzzles/game/:gameType" element={<ClueGameScreen onBack={() => {}} />} />
-            <Route path="/PowerLetter-for-Puzzles/game/:gameType/:language" element={<ClueGameScreen onBack={() => {}} />} />
+            <Route path="/" element={<Index />} />
+            <Route path="/games" element={<GameTypeSelector onGameTypeSelect={() => {}} onBack={() => {}} />} />
+            <Route path="/game-mode/:gameType" element={<GameModeSelector onModeSelect={() => {}} onBack={() => {}} />} />
+            <Route path="/team-config/:gameType" element={<TeamConfigurator />} />
+            <Route path="/game/:gameType" element={<ClueGameScreen onBack={() => {}} />} />
+            <Route path="/game/:gameType/:language" element={<ClueGameScreen onBack={() => {}} />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

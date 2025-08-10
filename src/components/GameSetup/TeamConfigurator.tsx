@@ -56,7 +56,7 @@ const TeamConfigurator: React.FC<TeamConfiguratorProps> = ({ onTeamsConfigured }
     initializeTeams(teamCount, teamNames, hintsPerTeam);
     if (onTeamsConfigured) onTeamsConfigured({ count: teamCount, names: teamNames });
     // Navigate to the game
-    navigate(`/PowerLetter-for-Puzzles/game/${gameType}`);
+    navigate(`/game/${gameType}`);
   };
 
   return (
@@ -152,7 +152,7 @@ const TeamConfigurator: React.FC<TeamConfiguratorProps> = ({ onTeamsConfigured }
               </div>
 
               <div className="flex justify-between pt-4">
-                <Button variant="outline" onClick={() => navigate(`/PowerLetter-for-Puzzles/game-mode/${gameType}`)} className="flex items-center gap-2">
+                <Button variant="outline" onClick={() => navigate(`/game-mode/${gameType}`)} className="flex items-center gap-2">
                   {dir === 'rtl' ? (
                     <>
                       <ArrowRight className="w-4 h-4" />

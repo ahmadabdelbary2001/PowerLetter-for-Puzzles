@@ -58,7 +58,7 @@ export function Header({ currentView, showLanguage = true }: HeaderProps) {
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center h-16 justify-between">
         {/* Logo / Brand */}
-        <Link to="/PowerLetter-for-Puzzles/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+        <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
           <div className="relative">
             <div className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
               ⚡
@@ -80,7 +80,7 @@ export function Header({ currentView, showLanguage = true }: HeaderProps) {
 
         {/* Desktop nav (hidden on small screens) */}
         <nav className="hidden sm:flex items-center gap-1" role="navigation" aria-label="Main">
-          <Link to="/PowerLetter-for-Puzzles/">
+          <Link to="/">
             <Button
               variant="ghost"
               size="sm"
@@ -93,7 +93,7 @@ export function Header({ currentView, showLanguage = true }: HeaderProps) {
             </Button>
           </Link>
 
-          <Link to="/PowerLetter-for-Puzzles/games">
+          <Link to="/games">
             <Button
               variant="ghost"
               size="sm"
@@ -157,13 +157,13 @@ export function Header({ currentView, showLanguage = true }: HeaderProps) {
           className="sm:hidden border-t border-border/40 bg-background/95"
         >
           <div className="px-4 py-3 space-y-2">
-            <Link to="/PowerLetter-for-Puzzles/" onClick={() => setMobileOpen(false)} className="block">
+            <Link to="/" onClick={() => setMobileOpen(false)} className="block">
               <Button variant="ghost" size="sm" className={cn("w-full text-left", currentView === "home" && "bg-accent")}>
                 Home
               </Button>
             </Link>
 
-            <Link to="/PowerLetter-for-Puzzles/games" onClick={() => setMobileOpen(false)} className="block">
+            <Link to="/games" onClick={() => setMobileOpen(false)} className="block">
               <Button variant="ghost" size="sm" className={cn("w-full text-left", currentView === "selection" && "bg-accent")}>
                 Games
               </Button>

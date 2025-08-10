@@ -258,10 +258,10 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = () => {
   const handleBack = () => {
     // route according to current gameMode
     if (gameMode === "competitive") {
-      navigate(`/PowerLetter-for-Puzzles/team-config/${gameType}`);
+      navigate(`/team-config/${gameType}`);
     } else {
       // single player -> return to mode selection for this game type
-      navigate(`/PowerLetter-for-Puzzles/game-mode/${gameType}`);
+      navigate(`/game-mode/${gameType}`);
     }
   };
 
