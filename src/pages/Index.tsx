@@ -35,10 +35,6 @@ const Index = () => {
     }
   }, [language, setLanguage]);
 
-  const handleStartPlaying = () => {
-    navigate("/games");
-  };
-
   const handleSelectGame = (selectedGameType: GameType) => {
     setGameMode("single");
     navigate(`/PowerLetter-for-Puzzles/game/${selectedGameType}/${currentLanguage}`);
@@ -49,7 +45,7 @@ const Index = () => {
       <Header currentView={currentView} />
 
       <main className="flex-1 min-h-[calc(100vh-4rem)] sm:min-h-[calc(100vh-5rem)]">
-        {currentView === "home" && <HeroSection onStartPlaying={handleStartPlaying} />}
+        {currentView === "home" && <HeroSection />}
 
         {currentView === "selection" && (
           <GameTypeSelector onGameTypeSelect={(t) => handleSelectGame(t)} onBack={() => navigate("/PowerLetter-for-Puzzles/")} />

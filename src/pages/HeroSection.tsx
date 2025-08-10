@@ -3,11 +3,7 @@ import { Badge } from "../components/ui/badge";
 import { useTranslation } from "../hooks/useTranslation";
 import { useNavigate } from "react-router-dom";
 
-interface HeroSectionProps {
-  onStartPlaying: () => void;
-}
-
-export default function HeroSection({ onStartPlaying }: HeroSectionProps) {
+export default function HeroSection() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   
