@@ -4,16 +4,25 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { User, Users, ArrowRight, ArrowLeft, Trophy, Target } from 'lucide-react';
 import { useGameMode } from '../../hooks/useGameMode';
 import { useTranslation } from '@/hooks/useTranslation';
+import { Header } from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
+import { useNavigate, useParams } from 'react-router-dom';
 
 interface GameModeSelectorProps {
   onModeSelect: (modeId: 'single' | 'competitive') => void;
   onBack: () => void;
 }
 
-const GameModeSelector: React.FC<GameModeSelectorProps> = ({ onModeSelect, onBack }) => {
+const GameModeSelector: React.FC<GameModeSelectorProps> = ({ onModeSelect }) => {
   const { setGameMode } = useGameMode();
   const { t, dir } = useTranslation();
+  const navigate = useNavigate();
+  const { gameType } = useParams<{ gameType: string }>();
   const [selectedMode, setSelectedMode] = useState<'single' | 'competitive' | ''>('');
+  
+  const handleBack = () => {
+    navigate('/PowerLetter-for-Puzzles/games');
+  };
 
   const gameModes = [
     {
@@ -41,21 +50,30 @@ const GameModeSelector: React.FC<GameModeSelectorProps> = ({ onModeSelect, onBac
   const handleContinue = () => {
     if (selectedMode) {
       setGameMode(selectedMode);
+      
+      // If single player, start the game
+      if (selectedMode === 'single') {
+        navigate(`/PowerLetter-for-Puzzles/game/${gameType}`);
+      } 
+      // If competitive mode, go to team configuration
+      else if (selectedMode === 'competitive') {
+        navigate(`/PowerLetter-for-Puzzles/team-config/${gameType}`);
+      }
+      
       onModeSelect(selectedMode);
     }
   };
 
   return (
-    <div 
-      className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4"
-      dir={dir}
-    >
-      <div className="max-w-4xl w-full">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+      <Header currentView="selection" />
+      <main className="min-h-[calc(100vh-4rem)]">
+      <div className="container mx-auto px-4 py-8 max-w-6xl" dir={dir}>
         {/* Header */}
         <div className="text-center mb-12">
           <div className={`flex items-center justify-center mb-4`}>
             <Trophy className="w-10 h-10 text-blue-600 dark:text-blue-400" />
-            <h1 className={`text-3xl font-bold text-gray-800 dark:text-white ${dir === 'rtl' ? 'mr-3' : 'ml-3'}`}>
+            <h1 className={`text-3xl font-bold dark:text-white ${dir === 'rtl' ? 'mr-3' : 'ml-3'}`}>
               {t.selectMode}
             </h1>
           </div>
@@ -120,7 +138,7 @@ const GameModeSelector: React.FC<GameModeSelectorProps> = ({ onModeSelect, onBac
 
         {/* Navigation Buttons */}
         <div className="flex justify-between">
-          <Button variant="outline" onClick={onBack} className="flex items-center gap-2">
+          <Button variant="outline" onClick={handleBack} className="flex items-center gap-2">
             {/* Reverse arrow direction for RTL */}
             {dir === 'rtl' ? (
               <>
@@ -155,6 +173,8 @@ const GameModeSelector: React.FC<GameModeSelectorProps> = ({ onModeSelect, onBac
           )}
         </div>
       </div>
+      </main>
+      <Footer />
     </div>
   );
 };

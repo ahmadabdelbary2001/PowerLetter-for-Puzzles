@@ -16,11 +16,33 @@ interface GameModeProviderProps {
 }
 
 export const GameModeProvider: React.FC<GameModeProviderProps> = ({ children }) => {
-  const [language, setLanguage] = useState<Language>('en');
-  const [gameMode, setGameMode] = useState<GameMode>('single');
+  // Initialize language from localStorage or default to 'en'
+  const [language, setLanguage] = useState<Language>(() => {
+    const savedLanguage = localStorage.getItem('powerletter-language');
+    return (savedLanguage as Language) || 'en';
+  });
+
+  // Save language to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('powerletter-language', language);
+  }, [language]);
+
+  // Initialize game mode from localStorage or default to 'single'
+  const [gameMode, setGameMode] = useState<GameMode>(() => {
+    const savedGameMode = localStorage.getItem('powerletter-gamemode');
+    return (savedGameMode as GameMode) || 'single';
+  });
+
+  // Save game mode to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('powerletter-gamemode', gameMode);
+  }, [gameMode]);
   const [gameType, setGameType] = useState<GameType>('clue');
   const [teams, setTeams] = useState<Team[]>([]);
-  const [currentTeam, setCurrentTeam] = useState<number>(0);
+  const [currentTeam, setCurrentTeam] = useState<number>(() => {
+    const savedCurrentTeam = localStorage.getItem('powerletter-currentteam');
+    return savedCurrentTeam ? parseInt(savedCurrentTeam) : 0;
+  });
   const [scores, setScores] = useState<Scores>({});
 
   // Keep a ref to teams for callbacks that might otherwise capture a stale value.
@@ -41,7 +63,12 @@ export const GameModeProvider: React.FC<GameModeProviderProps> = ({ children }) 
       hintsRemaining: hintsPerTeam,
     }));
     setTeams(newTeams);
+    // Save teams to localStorage
+    localStorage.setItem('powerletter-teams', JSON.stringify(newTeams));
+
     setCurrentTeam(0);
+    // Save current team to localStorage
+    localStorage.setItem('powerletter-currentteam', '0');
 
     // Initialize scores to 0 for each team
     const initialScores: Scores = {};
@@ -49,6 +76,8 @@ export const GameModeProvider: React.FC<GameModeProviderProps> = ({ children }) 
       initialScores[team.id] = 0;
     });
     setScores(initialScores);
+    // Save scores to localStorage
+    localStorage.setItem('powerletter-scores', JSON.stringify(initialScores));
   }, []);
 
   const renameTeam = useCallback((teamId: number, newName: string) => {
@@ -56,8 +85,18 @@ export const GameModeProvider: React.FC<GameModeProviderProps> = ({ children }) 
   }, []);
 
   const updateScore = useCallback((teamId: number, points: number) => {
-    setScores(prev => ({ ...prev, [teamId]: (prev[teamId] || 0) + points }));
-    setTeams(prev => prev.map(team => team.id === teamId ? { ...team, score: (team.score || 0) + points } : team));
+    setScores(prev => {
+      const newScores = { ...prev, [teamId]: (prev[teamId] || 0) + points };
+      // Save scores to localStorage
+      localStorage.setItem('powerletter-scores', JSON.stringify(newScores));
+      return newScores;
+    });
+    setTeams(prev => {
+      const newTeams = prev.map(team => team.id === teamId ? { ...team, score: (team.score || 0) + points } : team);
+      // Save teams to localStorage
+      localStorage.setItem('powerletter-teams', JSON.stringify(newTeams));
+      return newTeams;
+    });
   }, []);
 
   /**
@@ -69,7 +108,12 @@ export const GameModeProvider: React.FC<GameModeProviderProps> = ({ children }) 
     if (!current || current.hintsRemaining <= 0) {
       return false;
     }
-    setTeams(prev => prev.map(t => t.id === teamId ? { ...t, hintsRemaining: Math.max(0, t.hintsRemaining - 1) } : t));
+    setTeams(prev => {
+      const newTeams = prev.map(t => t.id === teamId ? { ...t, hintsRemaining: Math.max(0, t.hintsRemaining - 1) } : t);
+      // Save teams to localStorage
+      localStorage.setItem('powerletter-teams', JSON.stringify(newTeams));
+      return newTeams;
+    });
     return true;
   }, []);
 
@@ -95,8 +139,13 @@ export const GameModeProvider: React.FC<GameModeProviderProps> = ({ children }) 
 
   const resetGame = useCallback(() => {
     setTeams([]);
+    localStorage.removeItem('powerletter-teams');
+
     setCurrentTeam(0);
+    localStorage.removeItem('powerletter-currentteam');
+
     setScores({});
+    localStorage.removeItem('powerletter-scores');
   }, []);
 
   const isRTL = language === 'ar';

@@ -98,7 +98,24 @@ export const useTranslation = () => {
             scoreboard: "Scoreboard",
             currentTurn: "Current Turn",
             points: "Points",
+
+            // Hero Section
+            betaStatus: "Now in Beta",
+            wordPuzzles: "Word Puzzles",
+            heroDescription: "Challenge your mind with our collection of educational word puzzle games. Master vocabulary in both Arabic and English through engaging gameplay.",
+            startPlaying: "Start Playing Now",
+            howToPlay: "How to Play",
+            gameTypes: "Game Types",
+            languages: "Languages",
+            learning: "Learning",
+            herofeatures: [
+                "🎯 Multiple game types with unique challenges",
+                "🌍 Full Arabic and English support with RTL",
+                "🧠 Educational focus with word meanings",
+                "💡 Smart hint system to guide learning"
+            ],
         },
+
         ar: {
             // Language Selector
             languageSelectorSubtitle: "اختر لغتك المفضلة لبدء مغامرة ألغاز الكلمات",
@@ -193,7 +210,23 @@ export const useTranslation = () => {
             scoreboard: "لوحة النتائج",
             currentTurn: "الدور الحالي",
             points: "نقاط",
-        }
+
+            // Hero Section
+            betaStatus: "الآن في نسخة تجريبية",
+            wordPuzzles: "ألغاز الكلمات",
+            heroDescription: "تحدى عقلك مع مجموعتنا من ألغاز الكلمات التعليمية. أتقن المفردات في كل من العربية والإنجليزية من خلال لعبة جذابة.",
+            startPlaying: "ابدأ اللعب الآن",
+            howToPlay: "كيف تلعب",
+            gameTypes: "أنواع الألعاب",
+            languages: "اللغات",
+            learning: "التعلم",
+            herofeatures: [
+                "🎯 أنواع ألعاب متعددة مع تحديات فريدة",
+                "🌍 دعم كامل للغة العربية والإنجليزية مع RTL",
+                "🧠 تركيز تعليمي مع معاني الكلمات",
+                "💡 نظام تلميحات ذكي لتوجيه التعلم"
+            ],
+        },
     } as const;
 
     const t = language === 'ar' ? texts.ar : texts.en;

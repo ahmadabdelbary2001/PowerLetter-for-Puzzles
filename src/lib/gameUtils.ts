@@ -87,10 +87,12 @@ export async function loadLevels(
   solution: string;
 }[]> {
   try {
-    const module =
-      language === 'ar'
-        ? await import('@/data/ar/clueLevels.json')
-        : await import('@/data/en/clueLevels.json');
+    let module;
+    if (language === 'ar') {
+      module = await import('@/data/ar/clueLevels.json');
+    } else {
+      module = await import('@/data/en/clueLevels.json');
+    }
     const levels = module.default?.levels || module.levels || [];
     
     // Validate and cast difficulty
