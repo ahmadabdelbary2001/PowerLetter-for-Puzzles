@@ -8,7 +8,7 @@ import { LetterGrid } from "./LetterGrid";
 import GameControls from "./GameControls";
 import { ArrowLeft, ArrowRight, Trophy, Lightbulb } from "lucide-react";
 import { useGameMode } from "@/hooks/useGameMode";
-import { loadLevels, generateLetters } from "@/lib/gameUtils";
+import { loadLevels, generateLetters } from "@/features/clue-game/engine";
 import type { Difficulty } from "@/types/game";
 import { reducer } from "./gameReducer";
 import type { State, Action } from "./gameReducer";
@@ -34,8 +34,6 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = () => {
     currentTeam,
     setCurrentTeam,
     teams,
-    setTeams,
-    setScores,
     nextTurn,
     consumeHint,
   } = useGameMode();
@@ -50,34 +48,6 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = () => {
       }
     }
   }, [params.language, language, setLanguage]);
-
-  // Initialize teams if in competitive mode and no teams are loaded
-  useEffect(() => {
-    if (gameMode === 'competitive' && teams.length === 0) {
-      // Try to get teams from localStorage
-      const savedTeams = localStorage.getItem('powerletter-teams');
-      if (savedTeams) {
-        try {
-          const parsedTeams = JSON.parse(savedTeams);
-          setTeams(parsedTeams);
-
-          // Restore scores
-          const savedScores = localStorage.getItem('powerletter-scores');
-          if (savedScores) {
-            setScores(JSON.parse(savedScores));
-          }
-
-          // Set current team
-          const savedCurrentTeam = localStorage.getItem('powerletter-currentteam');
-          if (savedCurrentTeam) {
-            setCurrentTeam(parseInt(savedCurrentTeam));
-          }
-        } catch (e) {
-          console.error('Error parsing saved teams:', e);
-        }
-      }
-    }
-  }, [gameMode, teams.length]); // Removing setTeams, setScores, setCurrentTeam from dependencies as they are stable
 
   const { t, dir } = useTranslation();
   const [levels, setLevels] = useState<{ id: string; difficulty: Difficulty; clue: string; solution: string }[]>([]);
@@ -191,8 +161,6 @@ const ClueGameScreen: React.FC<ClueGameScreenProps> = () => {
       }
     }
   }, [state.gameState, currentLevel, gameMode, teams, currentTeam, updateScore, t.congrats, pointsAwarded]);
-
-  if (loading) return <p>Loading...</p>;
 
   // Handlers for letter grid & controls
   const onLetterClick = (i: number) => dispatch({ type: "PLACE", gridIndex: i, letter: letters[i] });

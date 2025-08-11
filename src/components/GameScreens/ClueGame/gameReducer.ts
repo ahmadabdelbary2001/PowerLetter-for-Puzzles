@@ -30,26 +30,26 @@ export function reducer(state: State, action: Action): State {
       };
     }
 
-case 'PLACE': {
-  // Find clicked slot position
-  const slotPos = state.slotIndices.findIndex(idx => idx === action.gridIndex);
-  if (slotPos !== -1) {
-    const si = [...state.slotIndices];
-    const as = [...state.answerSlots];
-    si[slotPos] = null;
-    as[slotPos] = '';
-    return { ...state, slotIndices: si, answerSlots: as, gameState: 'playing' };
-  }
-  
-  // Place in first empty slot
-  const empty = state.slotIndices.indexOf(null);
-  if (empty === -1) return state;
-  const si = [...state.slotIndices];
-  const as = [...state.answerSlots];
-  si[empty] = action.gridIndex;
-  as[empty] = action.letter;
-  return { ...state, slotIndices: si, answerSlots: as };
-}
+    case 'PLACE': {
+      // Find clicked slot position
+      const slotPos = state.slotIndices.findIndex(idx => idx === action.gridIndex);
+      if (slotPos !== -1) {
+        const si = [...state.slotIndices];
+        const as = [...state.answerSlots];
+        si[slotPos] = null;
+        as[slotPos] = '';
+        return { ...state, slotIndices: si, answerSlots: as, gameState: 'playing' };
+      }
+      
+      // Place in first empty slot
+      const empty = state.slotIndices.indexOf(null);
+      if (empty === -1) return state;
+      const si = [...state.slotIndices];
+      const as = [...state.answerSlots];
+      si[empty] = action.gridIndex;
+      as[empty] = action.letter;
+      return { ...state, slotIndices: si, answerSlots: as };
+    }
 
     case 'REMOVE_LAST': {
       // find last non-hint slot
@@ -139,7 +139,10 @@ case 'PLACE': {
     }
 
     case 'CHECK': {
-      if (state.answerSlots.join('') === action.solution) {
+      const normalize = (s: string) => s.replace(/\s/g, '').normalize('NFC');
+      const current = normalize(state.answerSlots.join(''));
+      const expected = normalize(action.solution);
+      if (current === expected) {
         return { ...state, gameState: 'won' };
       } else {
         return { ...state, gameState: 'failed' };
