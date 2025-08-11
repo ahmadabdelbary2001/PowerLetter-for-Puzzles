@@ -83,7 +83,16 @@ export const useTranslation = () => {
                 "Scoring system",
                 "Turn-based play"
             ],
-            
+
+            selectCategory: "Select a Category",
+            selectDifficulty: "Select Difficulty",
+            animals: "Animals",
+            science: "Science",
+            geography: "Geography",
+            generalKnowledge: "General",
+            loading: "Loading",
+            noLevelsFound: "No levels found for this selection.",
+
             // Team Configurator
             teamSetup: "Team Setup",
             teamSetupDesc: "Configure teams for competitive play",
@@ -195,6 +204,15 @@ export const useTranslation = () => {
                 "نظام نقاط",
                 "دوران الأدوار"
             ],
+
+            selectCategory: "اختر فئة",
+            selectDifficulty: "اختر الصعوبة",
+            animals: "حيوانات",
+            science: "علوم",
+            geography: "جغرافيا",
+            generalKnowledge: "عام",
+            loading: "جاري التحميل",
+            noLevelsFound: "لم يتم العثور على مستويات لهذا الاختيار.",
 
             // Team Configurator
             teamSetup: "إعداد الفرق",

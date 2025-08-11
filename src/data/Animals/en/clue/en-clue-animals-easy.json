@@ -1,0 +1,8 @@
+{
+  "levels": [
+    { "id": "animals-en-easy-1", "clue": "This farm animal says 'oink'", "solution": "PIG" },
+    { "id": "animals-en-easy-2", "clue": "A pet that barks", "solution": "DOG" },
+    { "id": "animals-en-easy-3", "clue": "King of the jungle", "solution": "LION" },
+    { "id": "animals-en-easy-4", "clue": "This animal gives us milk", "solution": "COW" }
+  ]
+}

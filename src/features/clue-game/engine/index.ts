@@ -1,6 +1,6 @@
 // src/features/clue-game/engine/index.ts
-export type LanguageCode = 'en' | 'ar';
-export type Difficulty = 'easy' | 'medium' | 'hard';
+import type { Language, Difficulty, GameCategory } from '@/types/game';
+export type { Language, Difficulty, GameCategory };
 
 export interface Level {
   id: string;
@@ -9,101 +9,97 @@ export interface Level {
   solution: string;
 }
 
-/**
- * Per-game difficulty settings (total letters shown on the board).
- * Keep this local to the Clue engine so different games can have different settings.
- */
+// Define a type for the structure of the imported JSON module
+interface LevelModule {
+  default?: {
+    levels?: unknown[];
+  };
+  levels?: unknown[];
+}
+
 export const DIFFICULTY_SETTINGS: Record<Difficulty, { totalLetters: number }> = {
   easy: { totalLetters: 12 },
   medium: { totalLetters: 18 },
   hard: { totalLetters: 24 },
 };
 
-/**
- * Basic Arabic normalization (conservative).
- * Remove common diacritics and normalize some hamza/tā' forms.
- * Tweak this to match your wordlist preprocessing.
- */
 function normalizeArabic(text: string) {
   return text
     .normalize('NFC')
-    .replace(/[\u064B-\u065F\u0610-\u061A\u06D6-\u06ED]/g, '') // diacritics
+    .replace(/[\u064B-\u065F\u0610-\u061A\u06D6-\u06ED]/g, '')
     .replace(/[إأآ]/g, 'ا')
     .replace(/[ى]/g, 'ي')
     .replace(/ؤ/g, 'و')
     .replace(/ئ/g, 'ي')
-    .replace(/ة/g, 'ه'); // optional mapping
+    .replace(/ة/g, 'ه');
 }
 
-/** Normalize a single letter to canonical form for this engine. */
-export function normalizeLetter(letter: string, lang: LanguageCode) {
+export function normalizeLetterForComparison(letter: string, lang: Language) {
   if (lang === 'ar') return normalizeArabic(letter).trim();
   return letter.toLocaleUpperCase();
 }
 
-/**
- * Build the letters to display for a level: solution letters + extra random letters, shuffled.
- * This uses two small helpers from shared lib: generateRandomLetters and shuffleArray (imported).
- */
 import { generateRandomLetters, shuffleArray } from '@/lib/gameUtils';
 
 export function generateLetters(
   solution: string,
   difficulty: Difficulty,
-  language: LanguageCode = 'en'
+  language: Language = 'en'
 ): string[] {
   const settings = DIFFICULTY_SETTINGS[difficulty];
-
-  const normalizedSolution =
-    language === 'ar' ? normalizeArabic(solution) : solution.toLocaleUpperCase();
-
-  const solutionLetters = normalizedSolution.replace(/\s/g, '').split('').map(ch => normalizeLetter(ch, language));
-
-  // ensure we never ask for negative extras
+  const solutionLetters = (language === 'en' ? solution.toLocaleUpperCase() : solution)
+    .replace(/\s/g, '')
+    .split('');
+  const normalizedSolutionLetters = solutionLetters.map(ch => normalizeLetterForComparison(ch, language));
   const total = Math.max(settings.totalLetters, solutionLetters.length);
   const extraCount = Math.max(0, total - solutionLetters.length);
-
-  const extra = generateRandomLetters(extraCount, solutionLetters, language).map(l => normalizeLetter(l, language));
+  const extra = generateRandomLetters(extraCount, normalizedSolutionLetters, language);
   return shuffleArray([...solutionLetters, ...extra]);
 }
 
-/**
- * Load levels JSON for the given language.
- * Keeps format-guarding and returns Level[].
- */
-export async function loadLevels(language: LanguageCode): Promise<Level[]> {
+export async function loadLevels(
+  language: Language,
+  category: GameCategory,
+  difficulty: Difficulty
+): Promise<Level[]> {
   try {
-    let module: { default?: { levels?: unknown[] }, levels?: unknown[] };
-    if (language === 'ar') {
-      module = await import('@/data/ar/clueLevels.json');
-    } else {
-      module = await import('@/data/en/clueLevels.json');
+    const categoryTitleCase = category.charAt(0).toUpperCase() + category.slice(1);
+    const path = `/src/data/${categoryTitleCase}/${language}/clue/${language}-clue-${category}-${difficulty}.json`;
+    
+    const modules = import.meta.glob('/src/data/**/*.json');
+    const moduleLoader = modules[path];
+
+    if (!moduleLoader) {
+      throw new Error(`Module not found for path: ${path}`);
     }
+
+    // FIX: Safely cast the loaded module to the expected type.
+    const module = (await moduleLoader()) as LevelModule;
     const levels = module.default?.levels || module.levels || [];
-    // validate/cast difficulty
-    return levels.map((lvl: unknown) => {
-      // Type guard to ensure lvl is an object with expected properties
+
+    if (levels.length === 0) {
+      throw new Error("No 'levels' array found in the JSON file.");
+    }
+
+    return levels.map((lvl: unknown): Level => {
       if (typeof lvl === 'object' && lvl !== null) {
         const levelObj = lvl as Record<string, unknown>;
-        const difficulty = (['easy', 'medium', 'hard'].includes(String(levelObj.difficulty)) ? String(levelObj.difficulty) : 'easy') as Difficulty;
         return {
           id: String(levelObj.id ?? `${difficulty}-${Math.random().toString(36).slice(2,8)}`),
           clue: String(levelObj.clue ?? ''),
           solution: String(levelObj.solution ?? ''),
           difficulty,
-        } as Level;
+        };
       }
-      // Fallback if lvl is not an object
-      const difficulty: Difficulty = 'easy';
-      return {
-        id: `${difficulty}-${Math.random().toString(36).slice(2,8)}`,
-        clue: '',
-        solution: '',
-        difficulty,
-      } as Level;
+      return { id: 'malformed', clue: 'Invalid level format', solution: 'ERROR', difficulty };
     });
   } catch (err) {
-    console.error('Clue engine: failed to load levels', err);
-    return [];
+    console.error(`Clue engine: failed to load levels for ${language}/${category}/${difficulty}. Error:`, err);
+    return [{
+      id: 'error-level',
+      difficulty: 'easy',
+      clue: 'Could not load levels. Please check the file path and content.',
+      solution: 'ERROR'
+    }];
   }
 }

@@ -1,0 +1,8 @@
+{
+  "levels": [
+    { "id": "animals-en-medium-1", "clue": "A tall African animal with a very long neck", "solution": "GIRAFFE" },
+    { "id": "animals-en-medium-2", "clue": "A black and white bear from China", "solution": "PANDA" },
+    { "id": "animals-en-medium-3", "clue": "A slow-moving reptile with a shell", "solution": "TURTLE" },
+    { "id": "animals-en-medium-4", "clue": "A clever sea mammal that clicks and whistles", "solution": "DOLPHIN" }
+  ]
+}

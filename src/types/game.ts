@@ -3,6 +3,7 @@ export type Language = 'en' | 'ar';
 export type GameMode = 'single' | 'competitive';
 export type GameType = 'clue' | 'formation' | 'category';
 export type Difficulty = 'easy' | 'medium' | 'hard';
+export type GameCategory = 'animals' | 'science' | 'geography' | 'general';
 
 export interface Team {
   id: number;
@@ -15,25 +16,30 @@ export interface Scores {
   [teamId: number]: number;
 }
 
-export interface GameModeContextType {
+// This interface defines the shape of our Zustand store
+export interface GameState {
   language: Language;
-  setLanguage: React.Dispatch<React.SetStateAction<Language>>;
   gameMode: GameMode;
-  setGameMode: React.Dispatch<React.SetStateAction<GameMode>>;
-  gameType: GameType;
-  setGameType: React.Dispatch<React.SetStateAction<GameType>>;
+  gameType: GameType | null;
+  category: GameCategory;
+  difficulty: Difficulty;
   teams: Team[];
-  setTeams: React.Dispatch<React.SetStateAction<Team[]>>;
   currentTeam: number;
-  setCurrentTeam: React.Dispatch<React.SetStateAction<number>>;
   scores: Scores;
-  setScores: React.Dispatch<React.SetStateAction<Scores>>;
+  isRTL: boolean;
+
+  // Actions
+  setLanguage: (language: Language) => void;
+  setGameMode: (mode: GameMode) => void;
+  setGameType: (type: GameType) => void;
+  setCategory: (category: GameCategory) => void;
+  setDifficulty: (difficulty: Difficulty) => void;
+  setTeams: (teams: Team[]) => void;
+  setCurrentTeam: (teamId: number) => void;
   initializeTeams: (teamCount: number, names?: string[], hintsPerTeam?: number) => void;
   renameTeam: (teamId: number, newName: string) => void;
   updateScore: (teamId: number, points: number) => void;
-  // Decrement a hint for the specified team. Returns true if a hint was consumed.
   consumeHint: (teamId: number) => boolean;
   nextTurn: (outcome: 'win' | 'lose') => void;
   resetGame: () => void;
-  isRTL: boolean;
 }

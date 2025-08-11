@@ -1,180 +1,150 @@
+// src/components/GameSetup/GameModeSelector.tsx
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { User, Users, ArrowRight, ArrowLeft, Trophy, Target } from 'lucide-react';
+import { Card, CardTitle } from '@/components/ui/card';
+import { User, Users, ArrowRight, ArrowLeft, PawPrint, FlaskConical, Globe, BrainCircuit } from 'lucide-react';
 import { useGameMode } from '../../hooks/useGameMode';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Header } from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
 import { useNavigate, useParams } from 'react-router-dom';
+import { cn } from '@/lib/utils';
+import type { GameCategory, Difficulty } from '@/types/game';
 
-interface GameModeSelectorProps {
-  onModeSelect: (modeId: 'single' | 'competitive') => void;
-  onBack: () => void;
-}
+// --- Helper Components for Steps ---
 
-const GameModeSelector: React.FC<GameModeSelectorProps> = ({ onModeSelect }) => {
-  const { setGameMode } = useGameMode();
+const StepIndicator: React.FC<{ currentStep: number; totalSteps: number }> = ({ currentStep, totalSteps }) => (
+  <div className="flex justify-center gap-2 mb-8">
+    {Array.from({ length: totalSteps }).map((_, i) => (
+      <div
+        key={i}
+        className={cn(
+          'h-2 rounded-full transition-all duration-300',
+          i + 1 === currentStep ? 'w-8 bg-blue-500' : 'w-4 bg-gray-300 dark:bg-gray-600'
+        )}
+      />
+    ))}
+  </div>
+);
+
+const categories = [
+  { id: 'animals', icon: <PawPrint size={48} />, labelKey: 'animals' },
+  { id: 'science', icon: <FlaskConical size={48} />, labelKey: 'science' },
+  { id: 'geography', icon: <Globe size={48} />, labelKey: 'geography' },
+  { id: 'general', icon: <BrainCircuit size={48} />, labelKey: 'generalKnowledge' },
+] as const;
+
+const difficulties = [
+  { id: 'easy', labelKey: 'easy', color: 'bg-green-500' },
+  { id: 'medium', labelKey: 'medium', color: 'bg-yellow-500' },
+  { id: 'hard', labelKey: 'hard', color: 'bg-red-500' },
+] as const;
+
+
+// --- Main Component ---
+
+const GameModeSelector: React.FC = () => {
+  const { setGameMode, setCategory, setDifficulty } = useGameMode();
   const { t, dir } = useTranslation();
   const navigate = useNavigate();
   const { gameType } = useParams<{ gameType: string }>();
-  const [selectedMode, setSelectedMode] = useState<'single' | 'competitive' | ''>('');
-  
+
+  const [step, setStep] = useState(1); // 1: Mode, 2: Category, 3: Difficulty
+
   const handleBack = () => {
-    navigate('/games');
+    if (step > 1) {
+      setStep(s => s - 1);
+    } else {
+      navigate('/games');
+    }
   };
 
-  const gameModes = [
-    {
-      id: 'single',
-      title: t.singlePlayer,
-      description: t.singlePlayerDesc,
-      icon: <User className="w-8 h-8" />,
-      features: t.singleFeatures,
-      color: 'blue',
-    },
-    {
-      id: 'competitive',
-      title: t.competitive,
-      description: t.competitiveDesc,
-      icon: <Users className="w-8 h-8" />,
-      features: t.competitiveFeatures,
-      color: 'blue',
-    },
-  ] as const;
-
-  const handleModeSelect = (modeId: 'single' | 'competitive') => {
-    setSelectedMode(modeId);
+  const handleModeSelect = (mode: 'single' | 'competitive') => {
+    setGameMode(mode);
+    setStep(2); // Always go to category selection next
   };
 
-  const handleContinue = () => {
-    if (selectedMode) {
-      setGameMode(selectedMode);
-      
-      // If single player, start the game
-      if (selectedMode === 'single') {
-        navigate(`/game/${gameType}`);
-      } 
-      // If competitive mode, go to team configuration
-      else if (selectedMode === 'competitive') {
-        navigate(`/team-config/${gameType}`);
-      }
-      
-      onModeSelect(selectedMode);
+  const handleCategorySelect = (category: GameCategory) => {
+    setCategory(category);
+    setStep(3);
+  };
+
+  const handleDifficultySelect = (difficulty: Difficulty) => {
+    setDifficulty(difficulty);
+    const { gameMode } = useGameMode.getState(); // Get current mode to decide where to go
+
+    // This is the final step, navigate to the correct next screen
+    if (gameMode === 'competitive') {
+      navigate(`/team-config/${gameType}`);
+    } else {
+      navigate(`/game/${gameType}`);
+    }
+  };
+
+  const renderStepContent = () => {
+    switch (step) {
+      case 1: // Select Mode
+        return (
+          <>
+            <h2 className="text-2xl sm:text-3xl font-bold text-center mb-6">{t.selectMode}</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card onClick={() => handleModeSelect('single')} className="text-center p-6 cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors duration-300 hover:shadow-xl">
+                <User className="mx-auto text-blue-500 mb-4" size={64} />
+                <CardTitle className="text-xl font-semibold">{t.singlePlayer}</CardTitle>
+              </Card>
+              <Card onClick={() => handleModeSelect('competitive')} className="text-center p-6 cursor-pointer hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors duration-300 hover:shadow-xl">
+                <Users className="mx-auto text-green-500 mb-4" size={64} />
+                <CardTitle className="text-xl font-semibold">{t.competitive}</CardTitle>
+              </Card>
+            </div>
+          </>
+        );
+      case 2: // Select Category
+        return (
+          <>
+            <h2 className="text-2xl sm:text-3xl font-bold text-center mb-6">{t.selectCategory}</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+              {categories.map(cat => (
+                <Card key={cat.id} onClick={() => handleCategorySelect(cat.id as GameCategory)} className="text-center p-4 cursor-pointer hover:scale-105 hover:shadow-xl transition-transform duration-300">
+                  <div className="text-gray-700 dark:text-gray-300">{cat.icon}</div>
+                  <p className="mt-2 font-semibold text-sm sm:text-base">{t[cat.labelKey]}</p>
+                </Card>
+              ))}
+            </div>
+          </>
+        );
+      case 3: // Select Difficulty
+        return (
+          <>
+            <h2 className="text-2xl sm:text-3xl font-bold text-center mb-6">{t.selectDifficulty}</h2>
+            <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-8">
+              {difficulties.map(diff => (
+                <Button key={diff.id} onClick={() => handleDifficultySelect(diff.id as Difficulty)} className={cn('h-24 w-full sm:w-40 text-xl font-bold text-white shadow-lg hover:scale-105 transition-transform', diff.color)}>
+                  {t[diff.labelKey]}
+                </Button>
+              ))}
+            </div>
+          </>
+        );
+      default:
+        return null;
     }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
       <Header currentView="selection" />
-      <main className="min-h-[calc(100vh-4rem)]">
-      <div className="container mx-auto px-4 py-8 max-w-6xl" dir={dir}>
-        {/* Header */}
-        <div className="text-center mb-12">
-          <div className={`flex items-center justify-center mb-4`}>
-            <Trophy className="w-10 h-10 text-blue-600 dark:text-blue-400" />
-            <h1 className={`text-3xl font-bold dark:text-white ${dir === 'rtl' ? 'mr-3' : 'ml-3'}`}>
-              {t.selectMode}
-            </h1>
-          </div>
-          <p className="text-lg text-gray-600 dark:text-gray-300">
-            {t.selectModeDesc}
-          </p>
-        </div>
-
-        {/* Game Mode Cards */}
-        <div className="grid md:grid-cols-2 gap-8 mb-8">
-          {gameModes.map((mode) => (
-            <Card
-              key={mode.id}
-              onClick={() => handleModeSelect(mode.id)}
-              className={`
-                cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-105
-                ${selectedMode === mode.id
-                  ? `ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-900/20`
-                  : 'hover:bg-gray-50 dark:hover:bg-gray-800'}
-              `}
-            >
-              <CardHeader className={`text-center`}>
-                <div className={`flex justify-center mb-4 text-blue-600 dark:text-blue-400`}>
-                  {mode.icon}
-                </div>
-                <CardTitle className="text-2xl">{mode.title}</CardTitle>
-                <CardDescription className="text-lg">{mode.description}</CardDescription>
-              </CardHeader>
-
-              <CardContent>
-                <div className="space-y-3 mb-6">
-                  <h4 className={`font-medium text-sm text-gray-700 dark:text-gray-300`}>
-                    {t.features}:
-                  </h4>
-                  <ul className={`text-sm text-gray-600 dark:text-gray-400 space-y-1`}>
-                    {mode.features.map((feature, index) => (
-                      <li key={index} className={`flex items-center`}>
-                        <span className={`w-1.5 h-1.5 bg-blue-400 rounded-full ${dir === 'rtl' ? 'ml-3' : 'mr-3'}`}></span>
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <Button
-                  className="w-full"
-                  variant={selectedMode === mode.id ? 'default' : 'outline'}
-                >
-                  {selectedMode === mode.id ? (
-                    <>
-                      <span>{t.selected}</span>
-                      <Target className="w-4 h-4 ml-2" />
-                    </>
-                  ) : (
-                    <span>{t.select}</span>
-                  )}
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/* Navigation Buttons */}
-        <div className="flex justify-between">
+      <main className="container mx-auto px-4 py-8 max-w-4xl" dir={dir}>
+        <StepIndicator currentStep={step} totalSteps={3} />
+        <Card className="p-6 sm:p-10 bg-card/80 backdrop-blur-sm">
+          {renderStepContent()}
+        </Card>
+        <div className="mt-8 flex justify-start">
           <Button variant="outline" onClick={handleBack} className="flex items-center gap-2">
-            {/* Reverse arrow direction for RTL */}
-            {dir === 'rtl' ? (
-              <>
-                <ArrowRight className="w-4 h-4" />
-                {t.back}
-              </>
-            ) : (
-              <>
-                <ArrowLeft className="w-4 h-4" />
-                {t.back}
-              </>
-            )}
+            {dir === 'rtl' ? <ArrowRight className="w-4 h-4" /> : <ArrowLeft className="w-4 h-4" />}
+            {t.back}
           </Button>
-          {selectedMode && (
-            <Button
-              onClick={handleContinue}
-              className="flex items-center gap-2"
-            >
-              {/* Reverse arrow direction for RTL */}
-              {dir === 'rtl' ? (
-                <>
-                  {t.continue}
-                  <ArrowLeft className="w-4 h-4" />
-                </>
-              ) : (
-                <>
-                  {t.continue}
-                  <ArrowRight className="w-4 h-4" />
-                </>
-              )}
-            </Button>
-          )}
         </div>
-      </div>
       </main>
-      <Footer />
     </div>
   );
 };
