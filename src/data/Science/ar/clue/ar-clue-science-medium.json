@@ -1,0 +1,12 @@
+{
+  "levels": [
+    { "id": "science-ar-medium-1", "clue": "القوة التي تبقينا على سطح الأرض", "solution": "الجاذبية" },
+    { "id": "science-ar-medium-2", "clue": "العضو الذي يضخ الدم في الجسم", "solution": "قلب" },
+    { "id": "science-ar-medium-3", "clue": "علم دراسة الكائنات الحية", "solution": "علم الأحياء" },
+    { "id": "science-ar-medium-4", "clue": "وحدة الشدة الكهربائية في النظام الدولي", "solution": "أمبير" },
+    { "id": "science-ar-medium-5", "clue": "تحول المادة من الحالة السائلة إلى الغازية", "solution": "تبخر" },
+    { "id": "science-ar-medium-6", "clue": "العنصر الأكثر وفرة في الغلاف الجوي للأرض", "solution": "نيتروجين" },
+    { "id": "science-ar-medium-7", "clue": "دراسة الكائنات الحية وبيئاتها", "solution": "بيولوجيا" },
+    { "id": "science-ar-medium-8", "clue": "الطاقة المتجددة من الرياح", "solution": "طاقة الرياح" }
+  ]
+}

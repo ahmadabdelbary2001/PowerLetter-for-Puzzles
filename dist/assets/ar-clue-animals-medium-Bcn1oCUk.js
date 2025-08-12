@@ -1,0 +1,1 @@
+const i=[{id:"animals-ar-medium-1",clue:"سفينة الصحراء",solution:"جمل"},{id:"animals-ar-medium-2",clue:"حيوان مخطط بالأبيض والأسود",solution:"حمار وحشي"},{id:"animals-ar-medium-3",clue:"أسرع حيوان بري",solution:"فهد"},{id:"animals-ar-medium-4",clue:"حيوان يبني السدود في الأنهار",solution:"قندس"}],l={levels:i};export{l as default,i as levels};

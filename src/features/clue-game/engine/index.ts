@@ -1,5 +1,6 @@
 // src/features/clue-game/engine/index.ts
 import type { Language, Difficulty, GameCategory } from '@/types/game';
+import { shuffleArray } from '@/lib/gameUtils';
 export type { Language, Difficulty, GameCategory };
 
 export interface Level {
@@ -9,59 +10,99 @@ export interface Level {
   solution: string;
 }
 
-// Define a type for the structure of the imported JSON module
 interface LevelModule {
-  default?: {
-    levels?: unknown[];
-  };
+  default?: { levels?: unknown[] };
   levels?: unknown[];
 }
 
+// Difficulty settings for letter generation
 export const DIFFICULTY_SETTINGS: Record<Difficulty, { totalLetters: number }> = {
   easy: { totalLetters: 12 },
   medium: { totalLetters: 18 },
   hard: { totalLetters: 24 },
 };
 
-function normalizeArabic(text: string) {
+// Normalize Arabic characters for comparison purposes
+function normalizeArabicForComparison(text: string): string {
   return text
-    .normalize('NFC')
-    .replace(/[\u064B-\u065F\u0610-\u061A\u06D6-\u06ED]/g, '')
-    .replace(/[إأآ]/g, 'ا')
-    .replace(/[ى]/g, 'ي')
-    .replace(/ؤ/g, 'و')
-    .replace(/ئ/g, 'ي')
-    .replace(/ة/g, 'ه');
+    .replace(/أ|إ|آ/g, 'ا')
+    .replace(/ة/g, 'ه')
+    .replace(/ى/g, 'ي');
 }
 
-export function normalizeLetterForComparison(letter: string, lang: Language) {
-  if (lang === 'ar') return normalizeArabic(letter).trim();
-  return letter.toLocaleUpperCase();
+// Normalize letters for comparison
+function normalizeLetterForComparison(letter: string): string {
+  if (/[؀-ۿ]/.test(letter)) {
+    return normalizeArabicForComparison(letter);
+  }
+  return letter.toLowerCase();
 }
 
-import { generateRandomLetters, shuffleArray } from '@/lib/gameUtils';
-
-export function generateLetters(
-  solution: string,
-  difficulty: Difficulty,
-  language: Language = 'en'
-): string[] {
+// Generate letters for the game grid
+export function generateLetters(solution: string, difficulty: Difficulty, language: Language): string[] {
+  // FIX: Remove spaces from the solution string before splitting it into letters.
+  const solutionLetters = solution.replace(/\s/g, '').split('');
   const settings = DIFFICULTY_SETTINGS[difficulty];
-  const solutionLetters = (language === 'en' ? solution.toLocaleUpperCase() : solution)
-    .replace(/\s/g, '')
-    .split('');
-  const normalizedSolutionLetters = solutionLetters.map(ch => normalizeLetterForComparison(ch, language));
+
+  // Create a frequency map of solution letters
+  const frequencyMap: Record<string, number> = {};
+  solutionLetters.forEach(letter => {
+    const normalized = normalizeLetterForComparison(letter);
+    frequencyMap[normalized] = (frequencyMap[normalized] || 0) + 1;
+  });
+
+  // Create an array with the valid solution letters (no spaces)
+  const letters = [...solutionLetters];
+
+  // Add extra letters based on difficulty
   const total = Math.max(settings.totalLetters, solutionLetters.length);
   const extraCount = Math.max(0, total - solutionLetters.length);
-  const extra = generateRandomLetters(extraCount, normalizedSolutionLetters, language);
-  return shuffleArray([...solutionLetters, ...extra]);
+
+  // Define alphabet based on language
+  let alphabet: string[] = [];
+  if (language === 'ar') {
+    // Arabic alphabet (without spaces)
+    alphabet = 'ابتثجحخدذرزسشصضطظعغفقكلمنهوي'.split('');
+  } else {
+    // English alphabet (without spaces)
+    alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
+  }
+
+  // Add random letters
+  for (let i = 0; i < extraCount; i++) {
+    const randomLetter = alphabet[Math.floor(Math.random() * alphabet.length)];
+    letters.push(randomLetter);
+  }
+
+  // Shuffle the letters
+  return shuffleArray(letters);
 }
 
+/**
+ * Load levels JSON dynamically.
+ * Handles the special 'general' category by fetching, filtering,
+ * and shuffling levels from all other categories.
+ */
 export async function loadLevels(
   language: Language,
   category: GameCategory,
   difficulty: Difficulty
 ): Promise<Level[]> {
+  const ALL_CATEGORIES: GameCategory[] = ['animals', 'science', 'geography'];
+
+  if (category === 'general') {
+    const allGeneralLevels: Level[] = [];
+    const promises = ALL_CATEGORIES.map(cat => 
+      loadLevels(language, cat, difficulty)
+    );
+    const results = await Promise.all(promises);
+    results.forEach(levelSet => {
+      const validLevels = levelSet.filter(lvl => lvl.solution !== 'ERROR');
+      allGeneralLevels.push(...validLevels);
+    });
+    return shuffleArray(allGeneralLevels);
+  }
+
   try {
     const categoryTitleCase = category.charAt(0).toUpperCase() + category.slice(1);
     const path = `/src/data/${categoryTitleCase}/${language}/clue/${language}-clue-${category}-${difficulty}.json`;
@@ -73,8 +114,7 @@ export async function loadLevels(
       throw new Error(`Module not found for path: ${path}`);
     }
 
-    // FIX: Safely cast the loaded module to the expected type.
-    const module = (await moduleLoader()) as LevelModule;
+    const module = await moduleLoader() as LevelModule;
     const levels = module.default?.levels || module.levels || [];
 
     if (levels.length === 0) {

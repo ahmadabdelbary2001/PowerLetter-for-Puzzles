@@ -112,7 +112,7 @@ const ClueGameScreen: React.FC = () => {
       if (gameMode === "competitive") {
         const points = getPoints();
         updateScore(teams[currentTeam].id, points);
-        setNotification({ message: `+${points} ${t.congrats}`, type: "success" });
+        setNotification({ message: `${t.congrats} +${points}`, type: "success" });
       } else {
         setNotification({ message: t.congrats, type: "success" });
       }
@@ -136,38 +136,22 @@ const ClueGameScreen: React.FC = () => {
     updateScore, nextTurn, t.congrats, t.wrongAnswer, wrongAnswers
   ]);
 
-  const nextLevel = useCallback(() => {
-    if (currentLevelIndex < levels.length - 1) {
-      // In competitive mode, advancing the level also advances the turn.
-      if (gameMode === 'competitive') {
-        // If the game was won, it's a 'win' for the turn. Otherwise, it's a 'lose' (e.g., from Show Solution).
-        const outcome = state.gameState === 'won' ? 'win' : 'lose';
-        nextTurn(outcome);
-      }
-      setCurrentLevelIndex(i => i + 1);
-    }
-  }, [currentLevelIndex, levels.length, gameMode, nextTurn, state.gameState]);
-
-  // FIX: This callback now provides a better message and handles the turn correctly.
   const onShow = useCallback(() => {
     if (state.gameState !== 'playing') return;
-
-    // Reveal the answer in the grid and set the state to 'won' to show the green checkmarks.
     dispatch({ type: "SHOW", solution, letters });
+    setNotification({ message: `${t.solutionWas}: ${solution}`, type: "error" });
 
-    // Set a specific, user-friendly notification for this action.
-    const solutionMessage = `${t.solutionWas}: ${solution}`;
-    setNotification({ message: solutionMessage, type: "error" }); // Use 'error' style for a penalty action.
-
-    // In competitive mode, this action counts as a loss and the turn must pass.
     if (gameMode === 'competitive') {
-      // We use a timeout to allow the user to see the solution before the next level loads.
-      // The 'nextLevel' function will handle advancing the turn.
       setTimeout(() => {
-        nextLevel();
-      }, 2500); // A slightly longer delay
+        if (currentLevelIndex < levels.length - 1) {
+          if (gameMode === 'competitive') {
+            nextTurn('lose');
+          }
+          setCurrentLevelIndex(i => i + 1);
+        }
+      }, 2500);
     }
-  }, [state.gameState, solution, letters, gameMode, nextLevel, t.solutionWas]);
+  }, [state.gameState, solution, letters, gameMode, nextTurn, currentLevelIndex, levels.length, t.solutionWas]);
 
   const onResetLevel = useCallback(() => {
     if (currentLevel) {
@@ -180,6 +164,16 @@ const ClueGameScreen: React.FC = () => {
 
   const prevLevel = useCallback(() => { if (currentLevelIndex > 0) setCurrentLevelIndex(i => i - 1); }, [currentLevelIndex]);
 
+  const nextLevel = useCallback(() => {
+    if (currentLevelIndex < levels.length - 1) {
+      if (gameMode === 'competitive') {
+        const outcome = state.gameState === 'won' ? 'win' : 'lose';
+        nextTurn(outcome);
+      }
+      setCurrentLevelIndex(i => i + 1);
+    }
+  }, [currentLevelIndex, levels.length, gameMode, nextTurn, state.gameState]);
+
   const handleBack = useCallback(() => {
     navigate(`/game-mode/${params.gameType}`);
   }, [navigate, params.gameType]);
@@ -188,10 +182,12 @@ const ClueGameScreen: React.FC = () => {
   useEffect(() => {
     let mounted = true;
     setLoading(true);
+    // This effect runs once when the settings change.
+    // The `loadLevels` function now handles the "general" category logic.
     loadLevels(language, category, difficulty)
       .then((lvls) => {
         if (!mounted) return;
-        setLevels(lvls);
+        setLevels(lvls); // The fetched list (shuffled for 'general') is stored.
       })
       .catch(() => {
         if (!mounted) return;
@@ -201,7 +197,7 @@ const ClueGameScreen: React.FC = () => {
         if (mounted) setLoading(false);
       });
     return () => { mounted = false; };
-  }, [language, category, difficulty]);
+  }, [language, category, difficulty]); // It will only re-fetch if these change.
 
   useEffect(() => {
     if (levels.length > 0 && levels[0].solution !== 'ERROR') {

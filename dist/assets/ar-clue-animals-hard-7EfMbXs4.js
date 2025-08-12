@@ -1,0 +1,1 @@
+const a=[{id:"animals-ar-hard-1",clue:"حيوان برمائي يغير لونه",solution:"حرباء"},{id:"animals-ar-hard-2",clue:"طائر لا يطير يعيش في القطب الجنوبي",solution:"بطريق"},{id:"animals-ar-hard-3",clue:"حيوان منقرض من العصر الجليدي يشبه الفيل",solution:"ماموث"},{id:"animals-ar-hard-4",clue:"كائن بحري له ثمانية أذرع",solution:"أخطبوط"}],l={levels:a};export{l as default,a as levels};
