@@ -18,13 +18,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Header } from "@/components/layout/Header";
 
 const ClueGameScreen: React.FC = () => {
-  // --- Hooks ---
   const navigate = useNavigate();
   const params = useParams<{ gameType?: string }>();
 
   const {
     language,
-    category,
+    categories,
     difficulty,
     gameMode,
     updateScore,
@@ -54,7 +53,6 @@ const ClueGameScreen: React.FC = () => {
   const currentLevel = levels[currentLevelIndex];
   const solution = currentLevel?.solution.replace(/\s/g, "") ?? "";
 
-  // --- Callbacks ---
   const resetLevel = useCallback(() => {
     if (!levels.length || !currentLevel) return;
     const sol = currentLevel.solution.replace(/\s/g, "");
@@ -89,6 +87,16 @@ const ClueGameScreen: React.FC = () => {
     }
     dispatch({ type: "HINT", solution, letters });
   }, [gameMode, teams, currentTeam, consumeHint, t.noHintsLeft, solution, letters]);
+
+  const nextLevel = useCallback(() => {
+    if (currentLevelIndex < levels.length - 1) {
+      if (gameMode === 'competitive') {
+        const outcome = state.gameState === 'won' ? 'win' : 'lose';
+        nextTurn(outcome);
+      }
+      setCurrentLevelIndex(i => i + 1);
+    }
+  }, [currentLevelIndex, levels.length, gameMode, nextTurn, state.gameState]);
 
   const onCheck = useCallback(() => {
     if (state.gameState !== 'playing') return;
@@ -143,15 +151,10 @@ const ClueGameScreen: React.FC = () => {
 
     if (gameMode === 'competitive') {
       setTimeout(() => {
-        if (currentLevelIndex < levels.length - 1) {
-          if (gameMode === 'competitive') {
-            nextTurn('lose');
-          }
-          setCurrentLevelIndex(i => i + 1);
-        }
+        nextLevel();
       }, 2500);
     }
-  }, [state.gameState, solution, letters, gameMode, nextTurn, currentLevelIndex, levels.length, t.solutionWas]);
+  }, [state.gameState, solution, letters, gameMode, nextLevel, t.solutionWas]);
 
   const onResetLevel = useCallback(() => {
     if (currentLevel) {
@@ -164,30 +167,17 @@ const ClueGameScreen: React.FC = () => {
 
   const prevLevel = useCallback(() => { if (currentLevelIndex > 0) setCurrentLevelIndex(i => i - 1); }, [currentLevelIndex]);
 
-  const nextLevel = useCallback(() => {
-    if (currentLevelIndex < levels.length - 1) {
-      if (gameMode === 'competitive') {
-        const outcome = state.gameState === 'won' ? 'win' : 'lose';
-        nextTurn(outcome);
-      }
-      setCurrentLevelIndex(i => i + 1);
-    }
-  }, [currentLevelIndex, levels.length, gameMode, nextTurn, state.gameState]);
-
   const handleBack = useCallback(() => {
     navigate(`/game-mode/${params.gameType}`);
   }, [navigate, params.gameType]);
 
-  // --- Effects ---
   useEffect(() => {
     let mounted = true;
     setLoading(true);
-    // This effect runs once when the settings change.
-    // The `loadLevels` function now handles the "general" category logic.
-    loadLevels(language, category, difficulty)
+    loadLevels(language, categories, difficulty)
       .then((lvls) => {
         if (!mounted) return;
-        setLevels(lvls); // The fetched list (shuffled for 'general') is stored.
+        setLevels(lvls);
       })
       .catch(() => {
         if (!mounted) return;
@@ -197,7 +187,7 @@ const ClueGameScreen: React.FC = () => {
         if (mounted) setLoading(false);
       });
     return () => { mounted = false; };
-  }, [language, category, difficulty]); // It will only re-fetch if these change.
+  }, [language, categories, difficulty]);
 
   useEffect(() => {
     if (levels.length > 0 && levels[0].solution !== 'ERROR') {
@@ -205,7 +195,6 @@ const ClueGameScreen: React.FC = () => {
     }
   }, [currentLevelIndex, levels, resetLevel]);
 
-  // --- Render Logic ---
   if (loading) return <div className="flex justify-center items-center h-screen"><p>{t.loading}...</p></div>;
 
   if (!levels.length || levels[0].solution === 'ERROR') {

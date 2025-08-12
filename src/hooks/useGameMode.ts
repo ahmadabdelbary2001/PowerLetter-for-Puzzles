@@ -1,27 +1,33 @@
 // src/hooks/useGameMode.ts
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { GameState, Team } from '@/types/game';
+import type { GameState, Team, GameCategory } from '@/types/game';
 
-export const useGameMode = create<GameState>()(
+// واجهة الحالة الجديدة مع تعديل نوع الفئة
+export interface GameStateWithMultiCategory extends Omit<GameState, 'category' | 'setCategory'> {
+  categories: GameCategory[]; // FIX: Changed from 'category' to 'categories' (plural array)
+  setCategories: (categories: GameCategory[]) => void; // FIX: New setter for the array
+}
+
+export const useGameMode = create<GameStateWithMultiCategory>()(
   persist(
     (set, get) => ({
-      // Initial state
+      // Initial state values
       language: 'en',
       gameMode: 'single',
       gameType: 'clue',
-      category: 'animals',
+      categories: ['animals'], // FIX: Default to an array with one category
       difficulty: 'easy',
       teams: [],
       currentTeam: 0,
       scores: {},
       isRTL: false,
 
-      // Actions
+      // Implementations of all actions
       setLanguage: (language) => set({ language, isRTL: language === 'ar' }),
       setGameMode: (gameMode) => set({ gameMode }),
       setGameType: (gameType) => set({ gameType }),
-      setCategory: (category) => set({ category }),
+      setCategories: (categories) => set({ categories }), // FIX: Implement the new setter
       setDifficulty: (difficulty) => set({ difficulty }),
       setTeams: (teams) => set({ teams }),
       setCurrentTeam: (currentTeam) => set({ currentTeam }),
@@ -43,7 +49,6 @@ export const useGameMode = create<GameState>()(
         }));
       },
 
-      // FIX: Ensure scores are always treated as numbers to prevent concatenation.
       updateScore: (teamId, points) => {
         set((state) => {
           const currentScore = Number(state.scores[teamId] || 0);

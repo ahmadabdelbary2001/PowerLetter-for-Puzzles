@@ -2,15 +2,13 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardTitle } from '@/components/ui/card';
-import { User, Users, ArrowRight, ArrowLeft, PawPrint, FlaskConical, Globe, BrainCircuit } from 'lucide-react';
+import { User, Users, ArrowRight, ArrowLeft, PawPrint, FlaskConical, Globe, BrainCircuit, Check } from 'lucide-react';
 import { useGameMode } from '../../hooks/useGameMode';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Header } from '@/components/layout/Header';
 import { useNavigate, useParams } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import type { GameCategory, Difficulty } from '@/types/game';
-
-// --- Helper Components for Steps ---
 
 const StepIndicator: React.FC<{ currentStep: number; totalSteps: number }> = ({ currentStep, totalSteps }) => (
   <div className="flex justify-center gap-2 mb-8">
@@ -26,11 +24,11 @@ const StepIndicator: React.FC<{ currentStep: number; totalSteps: number }> = ({ 
   </div>
 );
 
-const categories = [
+const categoriesData = [
+  { id: 'general', icon: <BrainCircuit size={48} />, labelKey: 'generalKnowledge' },
   { id: 'animals', icon: <PawPrint size={48} />, labelKey: 'animals' },
   { id: 'science', icon: <FlaskConical size={48} />, labelKey: 'science' },
   { id: 'geography', icon: <Globe size={48} />, labelKey: 'geography' },
-  { id: 'general', icon: <BrainCircuit size={48} />, labelKey: 'generalKnowledge' },
 ] as const;
 
 const difficulties = [
@@ -39,16 +37,13 @@ const difficulties = [
   { id: 'hard', labelKey: 'hard', color: 'bg-red-500' },
 ] as const;
 
-
-// --- Main Component ---
-
 const GameModeSelector: React.FC = () => {
-  const { setGameMode, setCategory, setDifficulty } = useGameMode();
+  const { setGameMode, categories: selectedCategories, setCategories, setDifficulty } = useGameMode();
   const { t, dir } = useTranslation();
   const navigate = useNavigate();
   const { gameType } = useParams<{ gameType: string }>();
 
-  const [step, setStep] = useState(1); // 1: Mode, 2: Category, 3: Difficulty
+  const [step, setStep] = useState(1);
 
   const handleBack = () => {
     if (step > 1) {
@@ -60,19 +55,35 @@ const GameModeSelector: React.FC = () => {
 
   const handleModeSelect = (mode: 'single' | 'competitive') => {
     setGameMode(mode);
-    setStep(2); // Always go to category selection next
+    setStep(2);
   };
 
-  const handleCategorySelect = (category: GameCategory) => {
-    setCategory(category);
-    setStep(3);
+  const handleCategoryToggle = (category: GameCategory) => {
+    if (category === 'general') {
+      setCategories(['general']);
+      return;
+    }
+
+    const newSelection = selectedCategories.includes(category)
+      ? selectedCategories.filter(c => c !== category && c !== 'general')
+      : [...selectedCategories.filter(c => c !== 'general'), category];
+
+    if (newSelection.length === 0) {
+      setCategories(['general']); // Default to general if nothing is selected
+    } else {
+      setCategories(newSelection);
+    }
+  };
+
+  const handleContinueFromCategories = () => {
+    if (selectedCategories.length > 0) {
+      setStep(3);
+    }
   };
 
   const handleDifficultySelect = (difficulty: Difficulty) => {
     setDifficulty(difficulty);
-    const { gameMode } = useGameMode.getState(); // Get current mode to decide where to go
-
-    // This is the final step, navigate to the correct next screen
+    const { gameMode } = useGameMode.getState();
     if (gameMode === 'competitive') {
       navigate(`/team-config/${gameType}`);
     } else {
@@ -82,7 +93,7 @@ const GameModeSelector: React.FC = () => {
 
   const renderStepContent = () => {
     switch (step) {
-      case 1: // Select Mode
+      case 1:
         return (
           <>
             <h2 className="text-2xl sm:text-3xl font-bold text-center mb-6">{t.selectMode}</h2>
@@ -98,21 +109,42 @@ const GameModeSelector: React.FC = () => {
             </div>
           </>
         );
-      case 2: // Select Category
+      case 2:
         return (
           <>
-            <h2 className="text-2xl sm:text-3xl font-bold text-center mb-6">{t.selectCategory}</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold text-center mb-2">{t.selectCategory}</h2>
+            <p className="text-center text-muted-foreground mb-6">{t.selectCategoryDesc}</p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-              {categories.map(cat => (
-                <Card key={cat.id} onClick={() => handleCategorySelect(cat.id as GameCategory)} className="text-center p-4 cursor-pointer hover:scale-105 hover:shadow-xl transition-transform duration-300">
-                  <div className="text-gray-700 dark:text-gray-300">{cat.icon}</div>
-                  <p className="mt-2 font-semibold text-sm sm:text-base">{t[cat.labelKey]}</p>
-                </Card>
-              ))}
+              {categoriesData.map(cat => {
+                const isSelected = selectedCategories.includes(cat.id);
+                return (
+                  <Card
+                    key={cat.id}
+                    onClick={() => handleCategoryToggle(cat.id as GameCategory)}
+                    className={cn(
+                      "text-center p-4 cursor-pointer hover:shadow-xl transition-all duration-300 relative",
+                      isSelected ? "ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-900/20" : "hover:bg-gray-50 dark:hover:bg-gray-800"
+                    )}
+                  >
+                    {isSelected && (
+                      <div className="absolute top-2 right-2 bg-blue-500 text-white rounded-full p-1">
+                        <Check size={16} />
+                      </div>
+                    )}
+                    <div className="text-gray-700 dark:text-gray-300">{cat.icon}</div>
+                    <p className="mt-2 font-semibold text-sm sm:text-base">{t[cat.labelKey]}</p>
+                  </Card>
+                );
+              })}
+            </div>
+            <div className="flex justify-center mt-8">
+              <Button onClick={handleContinueFromCategories} disabled={selectedCategories.length === 0}>
+                {t.continue} {dir === 'rtl' ? <ArrowLeft className="w-4 h-4 mr-2" /> : <ArrowRight className="w-4 h-4 ml-2" />}
+              </Button>
             </div>
           </>
         );
-      case 3: // Select Difficulty
+      case 3:
         return (
           <>
             <h2 className="text-2xl sm:text-3xl font-bold text-center mb-6">{t.selectDifficulty}</h2>

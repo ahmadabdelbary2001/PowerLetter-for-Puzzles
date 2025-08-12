@@ -85,61 +85,72 @@ export function generateLetters(solution: string, difficulty: Difficulty, langua
  */
 export async function loadLevels(
   language: Language,
-  category: GameCategory,
+  categories: GameCategory[], // FIX: Accepts an array of categories
   difficulty: Difficulty
 ): Promise<Level[]> {
   const ALL_CATEGORIES: GameCategory[] = ['animals', 'science', 'geography'];
+  let categoriesToLoad = categories;
 
-  if (category === 'general') {
-    const allGeneralLevels: Level[] = [];
-    const promises = ALL_CATEGORIES.map(cat => 
-      loadLevels(language, cat, difficulty)
-    );
-    const results = await Promise.all(promises);
-    results.forEach(levelSet => {
-      const validLevels = levelSet.filter(lvl => lvl.solution !== 'ERROR');
-      allGeneralLevels.push(...validLevels);
-    });
-    return shuffleArray(allGeneralLevels);
+  // If 'general' is selected, it overrides everything and loads all categories.
+  if (categories.includes('general')) {
+    categoriesToLoad = ALL_CATEGORIES;
   }
 
-  try {
-    const categoryTitleCase = category.charAt(0).toUpperCase() + category.slice(1);
-    const path = `/src/data/${categoryTitleCase}/${language}/clue/${language}-clue-${category}-${difficulty}.json`;
-    
-    const modules = import.meta.glob('/src/data/**/*.json');
-    const moduleLoader = modules[path];
+  const allLevels: Level[] = [];
 
-    if (!moduleLoader) {
-      throw new Error(`Module not found for path: ${path}`);
-    }
+  // Use Promise.all to fetch levels from all selected categories concurrently.
+  const promises = categoriesToLoad.map(async (cat) => {
+    try {
+      const categoryTitleCase = cat.charAt(0).toUpperCase() + cat.slice(1);
+      const path = `/src/data/${categoryTitleCase}/${language}/clue/${language}-clue-${cat}-${difficulty}.json`;
+      
+      const modules = import.meta.glob('/src/data/**/*.json');
+      const moduleLoader = modules[path];
 
-    const module = await moduleLoader() as LevelModule;
-    const levels = module.default?.levels || module.levels || [];
-
-    if (levels.length === 0) {
-      throw new Error("No 'levels' array found in the JSON file.");
-    }
-
-    return levels.map((lvl: unknown): Level => {
-      if (typeof lvl === 'object' && lvl !== null) {
-        const levelObj = lvl as Record<string, unknown>;
-        return {
-          id: String(levelObj.id ?? `${difficulty}-${Math.random().toString(36).slice(2,8)}`),
-          clue: String(levelObj.clue ?? ''),
-          solution: String(levelObj.solution ?? ''),
-          difficulty,
-        };
+      if (!moduleLoader) {
+        console.warn(`Module not found for path: ${path}`);
+        return []; // Return empty array if a category file doesn't exist
       }
-      return { id: 'malformed', clue: 'Invalid level format', solution: 'ERROR', difficulty };
-    });
-  } catch (err) {
-    console.error(`Clue engine: failed to load levels for ${language}/${category}/${difficulty}. Error:`, err);
+
+      const module = (await moduleLoader()) as LevelModule;
+      const levels = module.default?.levels || module.levels || [];
+
+      return levels.map((lvl: unknown): Level | null => {
+        if (typeof lvl === 'object' && lvl !== null) {
+          const levelObj = lvl as Record<string, unknown>;
+          return {
+            id: String(levelObj.id ?? `${difficulty}-${Math.random().toString(36).slice(2,8)}`),
+            clue: String(levelObj.clue ?? ''),
+            solution: String(levelObj.solution ?? ''),
+            difficulty,
+          };
+        }
+        return null;
+      }).filter((l): l is Level => l !== null); // Filter out any null (malformed) levels
+
+    } catch (err) {
+      console.error(`Clue engine: failed to load levels for ${language}/${cat}/${difficulty}.`, err);
+      return []; // Return empty array on error for this category
+    }
+  });
+
+  const results = await Promise.all(promises);
+  
+  // Flatten the array of arrays into a single array of levels
+  results.forEach(levelSet => {
+    allLevels.push(...levelSet);
+  });
+
+  // If no levels were found at all, return the error-state level.
+  if (allLevels.length === 0) {
     return [{
       id: 'error-level',
       difficulty: 'easy',
-      clue: 'Could not load levels. Please check the file path and content.',
+      clue: 'Could not load levels for the selected categories. Please check your selection.',
       solution: 'ERROR'
     }];
   }
+
+  // Shuffle the final combined list for a random experience
+  return shuffleArray(allLevels);
 }

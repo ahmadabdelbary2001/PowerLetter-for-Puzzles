@@ -87,6 +87,7 @@ export const useTranslation = () => {
 
             selectCategory: "Select a Category",
             selectDifficulty: "Select Difficulty",
+            selectCategoryDesc: "You can pick one or more topics, or choose 'General' to include them all.",
             animals: "Animals",
             science: "Science",
             geography: "Geography",
@@ -209,10 +210,11 @@ export const useTranslation = () => {
 
             selectCategory: "اختر فئة",
             selectDifficulty: "اختر الصعوبة",
+            selectCategoryDesc: "يمكنك اختيار فئة أو أكثر، أو اختيار \"منوع\" لتشمل الكل.",
             animals: "حيوانات",
             science: "علوم",
             geography: "جغرافيا",
-            generalKnowledge: "عام",
+            generalKnowledge: "منوع",
             loading: "جاري التحميل",
             noLevelsFound: "لم يتم العثور على مستويات لهذا الاختيار.",
 
