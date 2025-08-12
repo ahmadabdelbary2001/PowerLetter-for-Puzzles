@@ -9,6 +9,7 @@ export type State = {
   gameState: GameState;
 };
 
+// FIX: Add the new action type to the union
 export type Action =
   | { type: 'RESET'; solutionLen: number }
   | { type: 'PLACE'; gridIndex: number; letter: string }
@@ -16,7 +17,8 @@ export type Action =
   | { type: 'CLEAR' }
   | { type: 'HINT'; solution: string; letters: string[] }
   | { type: 'SHOW'; solution: string; letters: string[] }
-  | { type: 'CHECK'; solution: string };
+  | { type: 'CHECK'; solution: string }
+  | { type: 'SET_GAME_STATE'; payload: GameState }; // New action
 
 export function reducer(state: State, action: Action): State {
   switch (action.type) {
@@ -31,7 +33,6 @@ export function reducer(state: State, action: Action): State {
     }
 
     case 'PLACE': {
-      // Find clicked slot position
       const slotPos = state.slotIndices.findIndex(idx => idx === action.gridIndex);
       if (slotPos !== -1) {
         const si = [...state.slotIndices];
@@ -41,7 +42,6 @@ export function reducer(state: State, action: Action): State {
         return { ...state, slotIndices: si, answerSlots: as, gameState: 'playing' };
       }
       
-      // Place in first empty slot
       const empty = state.slotIndices.indexOf(null);
       if (empty === -1) return state;
       const si = [...state.slotIndices];
@@ -52,7 +52,6 @@ export function reducer(state: State, action: Action): State {
     }
 
     case 'REMOVE_LAST': {
-      // find last non-hint slot
       let last = -1;
       for (let i = state.slotIndices.length - 1; i >= 0; i--) {
         const gi = state.slotIndices[i];
@@ -81,12 +80,10 @@ export function reducer(state: State, action: Action): State {
 
     case 'HINT': {
       const solArr = action.solution.split('');
-      // 1) find first wrong or empty slot
       const pos = solArr.findIndex((ch, i) => state.answerSlots[i] !== ch);
       if (pos < 0) return state;
       const target = solArr[pos];
 
-      // 2) remove any misplaced instance of this letter
       const siPre = [...state.slotIndices];
       const asPre = [...state.answerSlots];
       for (let i = 0; i < siPre.length; i++) {
@@ -94,7 +91,6 @@ export function reducer(state: State, action: Action): State {
         if (
           idx !== null &&
           action.letters[idx] === target &&
-          // not already a correct hint position
           solArr[i] !== target
         ) {
           siPre[i] = null;
@@ -102,13 +98,11 @@ export function reducer(state: State, action: Action): State {
         }
       }
 
-      // 3) pick a fresh grid‐index for the hint
       const avail = action.letters.findIndex(
         (l, i) => l === target && !siPre.includes(i) && !state.hintIndices.includes(i)
       );
       if (avail < 0) return state;
 
-      // 4) place the hint into the correct slot
       siPre[pos] = avail;
       asPre[pos] = target;
 
@@ -147,6 +141,11 @@ export function reducer(state: State, action: Action): State {
       } else {
         return { ...state, gameState: 'failed' };
       }
+    }
+
+    // FIX: Add the case for the new action
+    case 'SET_GAME_STATE': {
+      return { ...state, gameState: action.payload };
     }
 
     default:

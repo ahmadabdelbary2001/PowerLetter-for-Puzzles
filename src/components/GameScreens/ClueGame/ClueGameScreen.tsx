@@ -1,6 +1,6 @@
 // src/components/GameScreens/ClueGame/ClueGameScreen.tsx
 import React, { useReducer, useEffect, useState, useCallback } from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"; 
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { SolutionBoxes } from "./SolutionBoxes";
@@ -50,7 +50,6 @@ const ClueGameScreen: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [notification, setNotification] = useState<{ message: string; type: "error" | "success" } | null>(null);
   const [wrongAnswers, setWrongAnswers] = useState<string[]>([]);
-  const [pointsAwarded, setPointsAwarded] = useState(false);
 
   const currentLevel = levels[currentLevelIndex];
   const solution = currentLevel?.solution.replace(/\s/g, "") ?? "";
@@ -63,7 +62,6 @@ const ClueGameScreen: React.FC = () => {
     dispatch({ type: "RESET", solutionLen: sol.length });
     setWrongAnswers([]);
     setNotification(null);
-    setPointsAwarded(false);
 
     if (teams.length > 0) {
       const startingTeam = currentLevelIndex % teams.length;
@@ -71,7 +69,12 @@ const ClueGameScreen: React.FC = () => {
     }
   }, [levels, currentLevel, currentLevelIndex, language, teams.length, setCurrentTeam]);
 
-  const onLetterClick = useCallback((i: number) => dispatch({ type: "PLACE", gridIndex: i, letter: letters[i] }), [letters]);
+  const onLetterClick = useCallback((i: number) => {
+    if (state.gameState === 'playing') {
+      dispatch({ type: "PLACE", gridIndex: i, letter: letters[i] });
+    }
+  }, [state.gameState, letters]);
+
   const onRemove = useCallback(() => dispatch({ type: "REMOVE_LAST" }), []);
   const onClear = useCallback(() => dispatch({ type: "CLEAR" }), []);
 
@@ -87,8 +90,84 @@ const ClueGameScreen: React.FC = () => {
     dispatch({ type: "HINT", solution, letters });
   }, [gameMode, teams, currentTeam, consumeHint, t.noHintsLeft, solution, letters]);
 
-  const onShow = useCallback(() => dispatch({ type: "SHOW", solution, letters }), [solution, letters]);
-  const onCheck = useCallback(() => dispatch({ type: "CHECK", solution }), [solution]);
+  const onCheck = useCallback(() => {
+    if (state.gameState !== 'playing') return;
+
+    const currentAnswer = state.answerSlots.join('');
+    const isCorrect = currentAnswer === solution;
+
+    if (isCorrect) {
+      dispatch({ type: "SET_GAME_STATE", payload: "won" });
+
+      const getPoints = () => {
+        if (!currentLevel) return 0;
+        switch (currentLevel.difficulty) {
+          case "easy": return 10;
+          case "medium": return 20;
+          case "hard": return 30;
+          default: return 10;
+        }
+      };
+
+      if (gameMode === "competitive") {
+        const points = getPoints();
+        updateScore(teams[currentTeam].id, points);
+        setNotification({ message: `+${points} ${t.congrats}`, type: "success" });
+      } else {
+        setNotification({ message: t.congrats, type: "success" });
+      }
+    } else {
+      dispatch({ type: "SET_GAME_STATE", payload: "failed" });
+      if (currentAnswer && !wrongAnswers.includes(currentAnswer)) {
+        setWrongAnswers(prev => [...prev, currentAnswer]);
+      }
+      setNotification({ message: t.wrongAnswer, type: "error" });
+
+      setTimeout(() => {
+        dispatch({ type: "CLEAR" });
+        dispatch({ type: "SET_GAME_STATE", payload: "playing" });
+        if (gameMode === 'competitive') {
+          nextTurn("lose");
+        }
+      }, 2000);
+    }
+  }, [
+    state.gameState, state.answerSlots, solution, currentLevel, gameMode, teams, currentTeam,
+    updateScore, nextTurn, t.congrats, t.wrongAnswer, wrongAnswers
+  ]);
+
+  const nextLevel = useCallback(() => {
+    if (currentLevelIndex < levels.length - 1) {
+      // In competitive mode, advancing the level also advances the turn.
+      if (gameMode === 'competitive') {
+        // If the game was won, it's a 'win' for the turn. Otherwise, it's a 'lose' (e.g., from Show Solution).
+        const outcome = state.gameState === 'won' ? 'win' : 'lose';
+        nextTurn(outcome);
+      }
+      setCurrentLevelIndex(i => i + 1);
+    }
+  }, [currentLevelIndex, levels.length, gameMode, nextTurn, state.gameState]);
+
+  // FIX: This callback now provides a better message and handles the turn correctly.
+  const onShow = useCallback(() => {
+    if (state.gameState !== 'playing') return;
+
+    // Reveal the answer in the grid and set the state to 'won' to show the green checkmarks.
+    dispatch({ type: "SHOW", solution, letters });
+
+    // Set a specific, user-friendly notification for this action.
+    const solutionMessage = `${t.solutionWas}: ${solution}`;
+    setNotification({ message: solutionMessage, type: "error" }); // Use 'error' style for a penalty action.
+
+    // In competitive mode, this action counts as a loss and the turn must pass.
+    if (gameMode === 'competitive') {
+      // We use a timeout to allow the user to see the solution before the next level loads.
+      // The 'nextLevel' function will handle advancing the turn.
+      setTimeout(() => {
+        nextLevel();
+      }, 2500); // A slightly longer delay
+    }
+  }, [state.gameState, solution, letters, gameMode, nextLevel, t.solutionWas]);
 
   const onResetLevel = useCallback(() => {
     if (currentLevel) {
@@ -97,11 +176,9 @@ const ClueGameScreen: React.FC = () => {
     dispatch({ type: "RESET", solutionLen: solution.length });
     setNotification(null);
     setWrongAnswers([]);
-    setPointsAwarded(false);
   }, [currentLevel, solution.length, language]);
 
   const prevLevel = useCallback(() => { if (currentLevelIndex > 0) setCurrentLevelIndex(i => i - 1); }, [currentLevelIndex]);
-  const nextLevel = useCallback(() => { if (currentLevelIndex < levels.length - 1) setCurrentLevelIndex(i => i + 1); }, [currentLevelIndex, levels.length]);
 
   const handleBack = useCallback(() => {
     navigate(`/game-mode/${params.gameType}`);
@@ -127,49 +204,14 @@ const ClueGameScreen: React.FC = () => {
   }, [language, category, difficulty]);
 
   useEffect(() => {
-    // Only reset if levels are valid and loaded
     if (levels.length > 0 && levels[0].solution !== 'ERROR') {
         resetLevel();
     }
   }, [currentLevelIndex, levels, resetLevel]);
 
-  useEffect(() => {
-    if (state.gameState !== "failed") return;
-    const currentAnswer = state.answerSlots.join("");
-    if (!wrongAnswers.includes(currentAnswer)) setWrongAnswers(prev => [...prev, currentAnswer]);
-    setNotification({ message: t.wrongAnswer, type: "error" });
-    const timer = setTimeout(() => {
-      dispatch({ type: "CLEAR" });
-      if (teams.length > 1) nextTurn("lose");
-      setNotification(null);
-    }, 2000);
-    return () => clearTimeout(timer);
-  }, [state.gameState, state.answerSlots, wrongAnswers, t.wrongAnswer, teams.length, nextTurn]);
-
-  useEffect(() => {
-    if (state.gameState !== "won" || !currentLevel || pointsAwarded) return;
-    const getPoints = () => {
-      switch (currentLevel.difficulty) {
-        case "easy": return 10;
-        case "medium": return 20;
-        case "hard": return 30;
-        default: return 10;
-      }
-    };
-    if (gameMode === "competitive" && teams.length > 0) {
-      const points = getPoints();
-      updateScore(teams[currentTeam].id, points);
-      setNotification({ message: `+${points} ${t.congrats}`, type: "success" });
-    } else {
-      setNotification({ message: t.congrats, type: "success" });
-    }
-    setPointsAwarded(true);
-  }, [state.gameState, currentLevel, gameMode, teams, currentTeam, updateScore, t.congrats, pointsAwarded]);
-
   // --- Render Logic ---
   if (loading) return <div className="flex justify-center items-center h-screen"><p>{t.loading}...</p></div>;
-  
-  // Improved error display
+
   if (!levels.length || levels[0].solution === 'ERROR') {
     return (
         <div className="flex flex-col justify-center items-center h-screen gap-4 p-4 text-center">
@@ -242,28 +284,25 @@ const ClueGameScreen: React.FC = () => {
                   <span className="text-lg font-semibold">{t.congrats}</span>
                 </div>
               )}
-              {gameState !== 'failed' && (
-                <>
-                  <GameControls
-                    onReset={onResetLevel}
-                    onRemoveLetter={onRemove}
-                    onClearAnswer={onClear}
-                    onHint={onHint}
-                    onCheckAnswer={onCheck}
-                    onShowSolution={onShow}
-                    onPrevLevel={prevLevel}
-                    onNextLevel={nextLevel}
-                    canRemove={slotIndices.some(i => i !== null && !hintIndices.includes(i as number))}
-                    canClear={slotIndices.filter(i => i !== null).length > hintIndices.length}
-                    canCheck={answerSlots.every(ch => ch !== '')}
-                    canPrev={currentLevelIndex > 0}
-                    canNext={currentLevelIndex < levels.length - 1}
-                    canHint={canHint}
-                    gameState={gameState}
-                    labels={{ remove: t.remove, clear: t.clear, hint: t.hint, check: t.check, showSolution: t.showSolution, reset: t.reset, prev: t.prev, next: t.next }}
-                  />
-                </>
-              )}
+
+              <GameControls
+                onReset={onResetLevel}
+                onRemoveLetter={onRemove}
+                onClearAnswer={onClear}
+                onHint={onHint}
+                onCheckAnswer={onCheck}
+                onShowSolution={onShow}
+                onPrevLevel={prevLevel}
+                onNextLevel={nextLevel}
+                canRemove={slotIndices.some(i => i !== null && !hintIndices.includes(i as number))}
+                canClear={slotIndices.filter(i => i !== null).length > hintIndices.length}
+                canCheck={answerSlots.every(ch => ch !== '')}
+                canPrev={currentLevelIndex > 0}
+                canNext={currentLevelIndex < levels.length - 1}
+                canHint={canHint}
+                gameState={gameState}
+                labels={{ remove: t.remove, clear: t.clear, hint: t.hint, check: t.check, showSolution: t.showSolution, reset: t.reset, prev: t.prev, next: t.next }}
+              />
             </CardContent>
           </Card>
 

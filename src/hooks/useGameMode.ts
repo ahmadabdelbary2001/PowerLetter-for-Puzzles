@@ -3,22 +3,21 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { GameState, Team } from '@/types/game';
 
-// Create the Zustand store, which implements the GameState interface
 export const useGameMode = create<GameState>()(
   persist(
     (set, get) => ({
-      // Initial state values
+      // Initial state
       language: 'en',
       gameMode: 'single',
       gameType: 'clue',
-      category: 'animals', // Default category
-      difficulty: 'easy',   // Default difficulty
+      category: 'animals',
+      difficulty: 'easy',
       teams: [],
       currentTeam: 0,
       scores: {},
       isRTL: false,
 
-      // Implementations of all actions
+      // Actions
       setLanguage: (language) => set({ language, isRTL: language === 'ar' }),
       setGameMode: (gameMode) => set({ gameMode }),
       setGameType: (gameType) => set({ gameType }),
@@ -44,11 +43,16 @@ export const useGameMode = create<GameState>()(
         }));
       },
 
+      // FIX: Ensure scores are always treated as numbers to prevent concatenation.
       updateScore: (teamId, points) => {
         set((state) => {
-          const newScores = { ...state.scores, [teamId]: (state.scores[teamId] || 0) + points };
+          const currentScore = Number(state.scores[teamId] || 0);
+          const pointsToAdd = Number(points);
+          const newScore = currentScore + pointsToAdd;
+
+          const newScores = { ...state.scores, [teamId]: newScore };
           const newTeams = state.teams.map((team) =>
-            team.id === teamId ? { ...team, score: newScores[teamId] } : team
+            team.id === teamId ? { ...team, score: newScore } : team
           );
           return { scores: newScores, teams: newTeams };
         });
@@ -63,12 +67,24 @@ export const useGameMode = create<GameState>()(
         return true;
       },
 
-      nextTurn: () => {
+      nextTurn: (outcome: 'win' | 'lose') => {
         set((state) => {
-          if (state.teams.length > 0) {
-            return { currentTeam: (state.currentTeam + 1) % state.teams.length };
+          const { teams, currentTeam, gameMode } = state;
+          const n = teams.length;
+          if (gameMode !== 'competitive' || n < 2) return {};
+
+          let next: number;
+          if (outcome === 'win') {
+            next = (currentTeam + 1) % n;
+          } else {
+            if (n % 2 === 0) {
+              next = (currentTeam - 1 + n) % n;
+            } else {
+              const half = Math.floor(n / 2);
+              next = (currentTeam - half + n) % n;
+            }
           }
-          return {};
+          return { currentTeam: next };
         });
       },
 
@@ -81,7 +97,7 @@ export const useGameMode = create<GameState>()(
       },
     }),
     {
-      name: 'powerletter-game-storage', // This is the key for localStorage
+      name: 'powerletter-game-storage',
     }
   )
 );
