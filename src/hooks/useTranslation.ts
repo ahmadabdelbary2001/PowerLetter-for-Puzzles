@@ -66,7 +66,22 @@ export const useTranslation = () => {
                 "Hint system"
             ],
             moreGames: "More games and features coming soon! Stay tuned for updates.",
-            
+
+            // translations for Kids Game section
+            kidsGamesTitle: "Kids Puzzles",
+            kidsGamesDesc: "Fun and educational games designed for children.",
+            imageClueTitle: "Picture to Word",
+            imageClueDesc: "Form the word that matches the picture from the given letters.",
+            imageClueFeatures: ["Builds spelling skills", "Visual association", "Audio support"],
+
+            wordChoiceTitle: "Find the Word",
+            wordChoiceDesc: "Look at the picture and choose the correct word from a list.",
+            wordChoiceFeatures: ["Improves reading", "Multiple choice", "Immediate feedback"],
+
+            pictureChoiceTitle: "Find the Picture",
+            pictureChoiceDesc: "Read the word and choose the picture that matches it.",
+            pictureChoiceFeatures: ["Tests comprehension", "Visual recognition", "Fun and interactive"],
+
             // Game Mode Selector
             selectMode: "Choose Game Mode",
             selectModeDesc: "How would you like to play today?",
@@ -190,6 +205,21 @@ export const useTranslation = () => {
             ],
             moreGames: "المزيد من الألعاب والمميزات قريباً! ابق متابعاً للتحديثات.",
             
+            // translations for Kids Game section
+            kidsGamesTitle: "ألغاز الأطفال",
+            kidsGamesDesc: "ألعاب ممتعة وتعليمية مصممة خصيصاً للأطفال.",
+            imageClueTitle: "صورة وكلمة",
+            imageClueDesc: "كوّن الكلمة التي تطابق الصورة من الحروف المعطاة.",
+            imageClueFeatures: ["تنمية مهارات الإملاء", "ربط بصري", "دعم صوتي"],
+
+            wordChoiceTitle: "ابحث عن الكلمة",
+            wordChoiceDesc: "انظر إلى الصورة واختر الكلمة الصحيحة من القائمة.",
+            wordChoiceFeatures: ["تحسين القراءة", "اختيار من متعدد", "تقييم فوري"],
+
+            pictureChoiceTitle: "ابحث عن الصورة",
+            pictureChoiceDesc: "اقرأ الكلمة واختر الصورة التي تطابقها.",
+            pictureChoiceFeatures: ["اختبار الفهم", "تمييز بصري", "ممتعة وتفاعلية"],
+
             // Game Mode Selector
             selectMode: "اختر نمط اللعب",
             selectModeDesc: "كيف تريد أن تلعب اليوم؟",

@@ -1,7 +1,13 @@
 // src/types/game.ts
 export type Language = 'en' | 'ar';
 export type GameMode = 'single' | 'competitive';
-export type GameType = 'clue' | 'formation' | 'category';
+export type GameType = 
+  | 'clue' 
+  | 'formation' 
+  | 'category' 
+  | 'image-clue'      // Picture -> Word
+  | 'word-choice'     // Picture -> Choose Word
+  | 'picture-choice'; // Word -> Choose Picture
 export type Difficulty = 'easy' | 'medium' | 'hard';
 export type GameCategory = 'animals' | 'science' | 'geography' | 'general';
 

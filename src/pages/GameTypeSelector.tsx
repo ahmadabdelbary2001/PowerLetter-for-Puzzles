@@ -116,7 +116,7 @@ const GameTypeSelector: React.FC<GameTypeSelectorProps> = ({ onGameTypeSelect })
               `}
               onClick={() => type.status === 'available' && handleGameTypeSelect(type.id as GameModeType)}
             >
-              <CardHeader className={`text-center pb-4 ${dir === 'rtl' ? 'text-right' : ''}`}>
+              <CardHeader className={`text-center pb-4`}>
                 <div className={`flex justify-center mb-4 text-primary dark:text-primary/80`}>
                   <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
                     {type.icon}
