@@ -107,6 +107,8 @@ export const useTranslation = () => {
             science: "Science",
             geography: "Geography",
             generalKnowledge: "General",
+            fruits: "Fruits",
+            shapes: "Shapes",
             loading: "Loading",
             noLevelsFound: "No levels found for this selection.",
 
@@ -245,6 +247,8 @@ export const useTranslation = () => {
             science: "علوم",
             geography: "جغرافيا",
             generalKnowledge: "منوع",
+            fruits: "فواكه",
+            shapes: "أشكال",
             loading: "جاري التحميل",
             noLevelsFound: "لم يتم العثور على مستويات لهذا الاختيار.",
 

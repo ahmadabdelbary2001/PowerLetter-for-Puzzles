@@ -10,33 +10,33 @@ import { useGameMode } from '@/hooks/useGameMode';
  */
 interface Props {
   /** Callback to reset the current game */
-  onReset: () => void;
+  onReset?: () => void;
   /** Callback to remove the last entered letter */
   onRemoveLetter: () => void;
   /** Callback to clear the entire answer */
   onClearAnswer: () => void;
   /** Callback to request a hint */
-  onHint: () => void;
+  onHint?: () => void;
   /** Callback to check if the current answer is correct */
   onCheckAnswer: () => void;
   /** Callback to show the solution */
-  onShowSolution: () => void;
+  onShowSolution?: () => void;
   /** Callback to navigate to the previous level */
-  onPrevLevel: () => void;
+  onPrevLevel?: () => void;
   /** Callback to navigate to the next level */
-  onNextLevel: () => void;
+  onNextLevel?: () => void;
   /** Flag indicating if remove letter action is available */
-  canRemove: boolean;
+  canRemove?: boolean;
   /** Flag indicating if clear answer action is available */
-  canClear: boolean;
+  canClear?: boolean;
   /** Flag indicating if check answer action is available */
-  canCheck: boolean;
+  canCheck?: boolean;
   /** Flag indicating if previous level navigation is available */
-  canPrev: boolean;
+  canPrev?: boolean;
   /** Flag indicating if next level navigation is available */
-  canNext: boolean;
+  canNext?: boolean;
   /** Flag indicating if hint action is available */
-  canHint: boolean;
+  canHint?: boolean;
   /** Number of hints remaining for the current team */
   hintsRemaining?: number;
   /** Current state of the game */
@@ -52,6 +52,7 @@ interface Props {
     prev: string;
     next: string;
   };
+  isKidsMode?: boolean;
 }
 
 /**
@@ -81,7 +82,8 @@ const GameControls: React.FC<Props> = ({
   canHint,
   hintsRemaining,
   gameState,
-  labels
+  labels,
+  isKidsMode = false,
 }) => {
   // Get text direction based on current language
   const { dir } = useTranslation();
@@ -92,6 +94,25 @@ const GameControls: React.FC<Props> = ({
   // Determine if we should show reset and previous buttons
   // In competitive mode, we hide these buttons
   const showResetAndPrev = gameMode !== 'competitive';
+
+  if (isKidsMode) {
+    return (
+      <div className="flex flex-wrap gap-2 sm:gap-3 justify-center mt-4">
+        <Button onClick={onRemoveLetter} disabled={!canRemove} variant="outline" className="text-lg py-6 flex-1">
+          <Delete className="w-5 h-5 mr-2" />
+          {labels.remove}
+        </Button>
+        <Button onClick={onClearAnswer} disabled={!canClear} variant="outline" className="text-lg py-6 flex-1">
+          <RotateCcw className="w-5 h-5 mr-2" />
+          {labels.clear}
+        </Button>
+        <Button onClick={onCheckAnswer} disabled={!canCheck} className="bg-blue-600 hover:bg-blue-700 text-white text-lg py-6 flex-1">
+          <CheckCircle className="w-5 h-5 mr-2" />
+          {labels.check}
+        </Button>
+      </div>
+    );
+  }
 
   // Render different controls when game is won
   if (gameState === 'won') {

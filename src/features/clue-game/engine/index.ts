@@ -10,6 +10,14 @@ export interface Level {
   solution: string;
 }
 
+export interface ImageLevel {
+  id: string;
+  difficulty: 'easy';
+  image: string;
+  sound: string;
+  solution: string;
+}
+
 interface LevelModule {
   default?: { levels?: unknown[] };
   levels?: unknown[];
@@ -65,7 +73,7 @@ export function generateLetters(solution: string, difficulty: Difficulty, langua
     alphabet = 'ابتثجحخدذرزسشصضطظعغفقكلمنهوي'.split('');
   } else {
     // English alphabet (without spaces)
-    alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
+    alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
   }
 
   // Add random letters
@@ -153,4 +161,54 @@ export async function loadLevels(
 
   // Shuffle the final combined list for a random experience
   return shuffleArray(allLevels);
+}
+
+export async function loadImageClueLevels(
+  language: Language,
+  category: GameCategory
+): Promise<ImageLevel[]> {
+  try {
+    // Example path: /src/data/Animals/en/image-clue/data.json
+    const categoryTitleCase = category.charAt(0).toUpperCase() + category.slice(1);
+    const path = `/src/data/${categoryTitleCase}/${language}/image-clue/data.json`;
+    
+    const modules = import.meta.glob('/src/data/**/*.json');
+    const moduleLoader = modules[path];
+
+    if (!moduleLoader) {
+      throw new Error(`Module not found for path: ${path}`);
+    }
+
+    const module = (await moduleLoader()) as { default?: { levels?: unknown[] } };
+    const levels = module.default?.levels || [];
+
+    if (levels.length === 0) {
+      throw new Error("No 'levels' array found in the JSON file.");
+    }
+
+    const validatedLevels = levels.map((lvl: unknown): ImageLevel | null => {
+      if (typeof lvl === 'object' && lvl !== null && 'id' in lvl && 'image' in lvl && 'sound' in lvl && 'solution' in lvl) {
+        return {
+          id: String(lvl.id),
+          difficulty: 'easy', // Assume all kids levels are easy for now
+          image: String(lvl.image),
+          sound: String(lvl.sound),
+          solution: String(lvl.solution),
+        };
+      }
+      return null;
+    }).filter((l): l is ImageLevel => l !== null);
+
+    return shuffleArray(validatedLevels);
+
+  } catch (err) {
+    console.error(`ImageClue Engine: failed to load levels for ${language}/${category}. Error:`, err);
+    return [{
+      id: 'error-level',
+      difficulty: 'easy',
+      image: '/assets/images/error.png', // A placeholder error image
+      sound: '',
+      solution: 'ERROR'
+    }];
+  }
 }
