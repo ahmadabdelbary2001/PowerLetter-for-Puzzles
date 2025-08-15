@@ -1,0 +1,1 @@
+const s=[{id:"wc-ar-animal-1",image:"/assets/images/animals/cat.webp",sound:"/assets/sounds/ar/animals/قطة.mp3",solution:"قطة",options:["كلب","سمكة","أسد"]}],a={levels:s};export{a as default,s as levels};
