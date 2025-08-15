@@ -1,80 +1,66 @@
 // src/hooks/useSolverWorker.ts
-import { useEffect, useRef } from 'react';
-
-type WorkerRequest = {
-  type: 'find';
-  id: number;
-  letters: string[];
-  lang?: 'en' | 'ar';
-  minLen?: number;
-};
+import { useEffect, useRef, useCallback } from 'react';
 
 type WorkerResponse = {
   id: number;
-  type: 'result';
-  results: string[];
+  type: 'result' | 'error';
+  // FIX: Use 'unknown' instead of 'any'
+  payload: unknown;
 };
 
 export function useSolverWorker() {
   const workerRef = useRef<Worker | null>(null);
-  const callbacksRef = useRef<Map<number, (res: string[]) => void>>(new Map());
+  // FIX: Use 'unknown' for the callback payloads
+  const callbacksRef = useRef<Map<number, (payload: unknown) => void>>(new Map());
+  const errorCallbacksRef = useRef<Map<number, (error: unknown) => void>>(new Map());
   const idRef = useRef<number>(1);
 
   useEffect(() => {
     const worker = new Worker(new URL('../workers/solver.worker.ts', import.meta.url), { type: 'module' });
     workerRef.current = worker;
 
-    // Create a local copy of the callbacks ref for the cleanup function
-    const callbacksMap = callbacksRef.current;
-
-    const onMessage = (ev: MessageEvent) => {
-      const data = ev.data as unknown;
-      if (!data || typeof data !== 'object') return;
-      const resp = data as WorkerResponse;
-      if (typeof resp.id !== 'number') return;
-      const cb = callbacksMap.get(resp.id);
-      if (cb) {
-        cb(resp.results ?? []);
-        callbacksMap.delete(resp.id);
+    const onMessage = (ev: MessageEvent<WorkerResponse>) => {
+      const { id, type, payload } = ev.data;
+      if (type === 'result') {
+        const cb = callbacksRef.current.get(id);
+        cb?.(payload);
+      } else if (type === 'error') {
+        const errCb = errorCallbacksRef.current.get(id);
+        errCb?.(payload);
       }
-    };
-
-    const onError = (err: ErrorEvent) => {
-      callbacksMap.forEach((cb) => cb([]));
-      callbacksMap.clear();
-      console.error('Solver worker error', err);
+      callbacksRef.current.delete(id);
+      errorCallbacksRef.current.delete(id);
     };
 
     worker.addEventListener('message', onMessage);
-    worker.addEventListener('error', onError);
+    worker.addEventListener('error', (err) => console.error('Solver worker error:', err));
 
     return () => {
-      // Use the local copy of callbacksMap in the cleanup function
-      callbacksMap.forEach((cb) => cb([]));
-      callbacksMap.clear();
-
-      worker.removeEventListener('message', onMessage);
-      worker.removeEventListener('error', onError);
       worker.terminate();
       workerRef.current = null;
     };
-    // empty deps: mount/unmount once
   }, []);
 
-  const findWords = (letters: string[], lang: 'en' | 'ar' = 'en', minLen = 2): Promise<string[]> => {
-    return new Promise((resolve) => {
-      const id = idRef.current++;
-      callbacksRef.current.set(id, resolve);
-      const w = workerRef.current;
-      if (w) {
-        const msg: WorkerRequest = { type: 'find', id, letters, lang, minLen };
-        w.postMessage(msg);
-      } else {
-        callbacksRef.current.delete(id);
-        resolve([]);
+  // A generic function to call any task on the worker
+  const callWorker = useCallback(<T,>(task: string, payload: unknown): Promise<T> => {
+    return new Promise((resolve, reject) => {
+      const worker = workerRef.current;
+      if (!worker) {
+        return reject(new Error("Solver worker is not available."));
       }
+      const id = idRef.current++;
+      // The 'result as T' cast is acceptable here because the caller defines the expected type T
+      callbacksRef.current.set(id, (result) => resolve(result as T));
+      errorCallbacksRef.current.set(id, reject);
+      
+      worker.postMessage({ id, task, payload });
     });
-  };
+  }, []);
+
+  // Specific, strongly-typed function for finding words
+  const findWords = useCallback((letters: string[], lang: 'en' | 'ar', category: string, minLen = 2): Promise<string[]> => {
+    return callWorker<string[]>('find-words-from-letters', { letters, lang, category, minLen });
+  }, [callWorker]);
 
   return { findWords };
 }

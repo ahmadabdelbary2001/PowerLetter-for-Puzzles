@@ -10,42 +10,40 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import type { GameCategory } from '@/types/game';
 
-// Helper component for step indicators
+// --- Helper Components for Steps ---
 const StepIndicator: React.FC<{ currentStep: number; totalSteps: number }> = ({ currentStep, totalSteps }) => (
   <div className="flex justify-center gap-2 mb-8">
     {Array.from({ length: totalSteps }).map((_, i) => (
       <div
         key={i}
-        className={cn(
-          'h-2 rounded-full transition-all duration-300',
-          i + 1 === currentStep ? 'w-8 bg-green-500' : 'w-4 bg-gray-300 dark:bg-gray-600'
-        )}
+        className={cn('h-2 rounded-full transition-all duration-300', i + 1 === currentStep ? 'w-8 bg-green-500' : 'w-4 bg-gray-300 dark:bg-gray-600')}
       />
     ))}
   </div>
 );
 
-// Categories specifically for kids' games
-const kidsCategories = [
+const categoriesData = [
   { id: 'animals', icon: <PawPrint size={48} />, labelKey: 'animals' },
   { id: 'fruits', icon: <Apple size={48} />, labelKey: 'fruits' },
   { id: 'shapes', icon: <Shapes size={48} />, labelKey: 'shapes' },
   { id: 'general', icon: <BrainCircuit size={48} />, labelKey: 'generalKnowledge' },
 ] as const;
 
+// --- Main Component ---
 const KidsGameModeSelector: React.FC = () => {
-  // FIX: Use the plural 'categories' state from the hook
-  const { setGameMode, categories: selectedCategories, setCategories } = useGameMode();
+  const { setGameMode, setCategories } = useGameMode();
   const { t, dir } = useTranslation();
   const navigate = useNavigate();
   const { gameType } = useParams<{ gameType: string }>();
 
-  const [step, setStep] = useState(1); // 1: Mode, 2: Category
+  const [step, setStep] = useState(1);
+  const [selectedCategories, setSelectedCategories] = useState<GameCategory[]>([]);
 
   const handleBack = () => {
     if (step > 1) {
       setStep(s => s - 1);
     } else {
+      // FIX: The back button on the first step should go to the Kids Game selection screen.
       navigate('/kids-games');
     }
   };
@@ -55,33 +53,28 @@ const KidsGameModeSelector: React.FC = () => {
     setStep(2);
   };
 
-  // FIX: Implement the exact same multi-select logic as the main game selector
   const handleCategoryToggle = (category: GameCategory) => {
     if (category === 'general') {
-      setCategories(['general']);
+      setSelectedCategories(['general']);
       return;
     }
-
-    const newSelection = selectedCategories.includes(category)
-      ? selectedCategories.filter(c => c !== category && c !== 'general')
-      : [...selectedCategories.filter(c => c !== 'general'), category];
-
-    if (newSelection.length === 0) {
-      setCategories(['general']); // Default to general if nothing is selected
-    } else {
-      setCategories(newSelection);
-    }
+    setSelectedCategories(prev => {
+      const newSelection = prev.filter(c => c !== 'general');
+      if (newSelection.includes(category)) {
+        return newSelection.filter(c => c !== category);
+      } else {
+        return [...newSelection, category];
+      }
+    });
   };
 
-  // FIX: This function now navigates to the game screen since there's no difficulty step
   const handleContinueFromCategories = () => {
-    if (selectedCategories.length > 0) {
-      const { gameMode } = useGameMode.getState();
-      if (gameMode === 'competitive') {
-        navigate(`/team-config/${gameType}`);
-      } else {
-        navigate(`/game/${gameType}`);
-      }
+    setCategories(selectedCategories);
+    const { gameMode } = useGameMode.getState();
+    if (gameMode === 'competitive') {
+      navigate(`/team-config/${gameType}`);
+    } else {
+      navigate(`/game/${gameType}`);
     }
   };
 
@@ -103,13 +96,13 @@ const KidsGameModeSelector: React.FC = () => {
             </div>
           </>
         );
-      case 2: // Select Category (Multi-select UI)
+      case 2: // Select Category
         return (
           <>
             <h2 className="text-2xl sm:text-3xl font-bold text-center mb-2">{t.selectCategory}</h2>
             <p className="text-center text-muted-foreground mb-6">{t.selectCategoryDesc}</p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-              {kidsCategories.map(cat => {
+              {categoriesData.map(cat => {
                 const isSelected = selectedCategories.includes(cat.id as GameCategory);
                 return (
                   <Card
@@ -117,11 +110,11 @@ const KidsGameModeSelector: React.FC = () => {
                     onClick={() => handleCategoryToggle(cat.id as GameCategory)}
                     className={cn(
                       "text-center p-4 cursor-pointer hover:shadow-xl transition-all duration-300 relative",
-                      isSelected ? "ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-900/20" : "hover:bg-gray-50 dark:hover:bg-gray-800"
+                      isSelected ? "ring-2 ring-green-500 bg-green-50 dark:bg-green-900/20" : "hover:bg-gray-50 dark:hover:bg-gray-800"
                     )}
                   >
                     {isSelected && (
-                      <div className="absolute top-2 right-2 bg-blue-500 text-white rounded-full p-1">
+                      <div className="absolute top-2 right-2 bg-green-500 text-white rounded-full p-1">
                         <Check size={16} />
                       </div>
                     )}

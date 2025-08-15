@@ -1,10 +1,20 @@
 // src/workers/solver.worker.ts
-type FindMsg = { type: 'find'; id: number; letters: string[]; lang?: 'en' | 'ar'; minLen?: number; category: string };
-type ResponseMsg = { id: number; type: 'result'; results: string[] };
 
-const WORDSET_CACHE: Record<string, Set<string>> = {};
+// --- Generic Message Protocol ---
+type WorkerRequest = {
+  id: number;
+  task: string;
+  payload: unknown;
+};
 
-function normalizeArabic(text: string) {
+type WorkerResponse = {
+  id: number;
+  type: 'result' | 'error';
+  payload: unknown;
+};
+
+// --- Normalization (Utility) ---
+function normalizeArabic(text: string): string {
   return text
     .normalize('NFC')
     .replace(/[\u064B-\u065F\u0610-\u061A\u06D6-\u06ED]/g, '')
@@ -16,115 +26,137 @@ function normalizeArabic(text: string) {
     .trim();
 }
 
-function normalizeWordForComparison(word: string, lang: 'en' | 'ar') {
+function normalizeWordForComparison(word: string, lang: 'en' | 'ar'): string {
   if (lang === 'ar') return normalizeArabic(word);
   return word.normalize('NFC').toLocaleUpperCase();
 }
 
-type WordsModule = { default?: { words?: string[] } | string[]; words?: string[] };
+// --- Data Management (Singleton) ---
+const dataManager = {
+  _wordsetCache: new Map<string, Set<string>>(),
+  _originalWordsCache: new Map<string, string[]>(),
 
-async function getWordsetFor(lang: 'en' | 'ar', category: string): Promise<Set<string>> {
-  const cacheKey = `${category}-${lang}`;
-  if (WORDSET_CACHE[cacheKey]) {
-    return WORDSET_CACHE[cacheKey];
-  }
-
-  const newWordset = new Set<string>();
-  try {
-    const categoryTitleCase = category.charAt(0).toUpperCase() + category.slice(1);
-    const filePath = `/src/data/${categoryTitleCase}/${lang}/clue/${lang}-clue-${category}-words.json`;
-    const modules = import.meta.glob('/src/data/**/*.json');
-    const moduleLoader = modules[filePath];
-    if (!moduleLoader) throw new Error(`Wordset module not found at ${filePath}`);
-    
-    const wordsMod = (await moduleLoader()) as WordsModule | null;
-
-    if (wordsMod) {
-      // FIX: Check if default is an array before trying to access properties on it.
-      let arr: string[] = [];
-      if (Array.isArray(wordsMod.default)) {
-        arr = wordsMod.default;
-      } else {
-        arr = wordsMod.default?.words ?? wordsMod.words ?? [];
-      }
-      arr.forEach((w) => { if (w) newWordset.add(normalizeWordForComparison(String(w), lang)); });
+  async getWordData(lang: 'en' | 'ar', category: string): Promise<{ wordset: Set<string>; originalWords: string[] }> {
+    const cacheKey = `${category}-${lang}`;
+    if (this._wordsetCache.has(cacheKey) && this._originalWordsCache.has(cacheKey)) {
+      return {
+        wordset: this._wordsetCache.get(cacheKey)!,
+        originalWords: this._originalWordsCache.get(cacheKey)!,
+      };
     }
-  } catch (err) {
-    console.error(`Solver: Failed to build wordset for ${cacheKey}`, err);
-  }
 
-  WORDSET_CACHE[cacheKey] = newWordset;
-  return newWordset;
-}
+    try {
+      const categoryTitleCase = category.charAt(0).toUpperCase() + category.slice(1);
+      const path = `/src/data/${categoryTitleCase}/${lang}/clue/${lang}-clue-${category}-words.json`;
+      
+      const modules = import.meta.glob('/src/data/**/*.json');
+      const moduleLoader = modules[path];
+      if (!moduleLoader) throw new Error(`Wordset module not found at ${path}`);
 
-function canFormWordFromLetters(word: string, letters: string[]) {
-  const pool: Record<string, number> = {};
-  for (const ch of letters) {
-    const c = normalizeWordForComparison(ch, 'ar');
-    pool[c] = (pool[c] ?? 0) + 1;
-  }
+      const wordsMod = (await moduleLoader()) as { default?: { words?: string[] } | string[] };
+      
+      let words: string[] = [];
+      if (wordsMod?.default) {
+        words = Array.isArray(wordsMod.default) ? wordsMod.default : wordsMod.default.words ?? [];
+      }
 
-  for (const ch of word.split('')) {
-    const c = ch;
-    if (!pool[c] || pool[c] <= 0) return false;
-    pool[c]--;
+      const wordset = new Set(words.map(w => normalizeWordForComparison(w, lang)));
+      
+      this._wordsetCache.set(cacheKey, wordset);
+      this._originalWordsCache.set(cacheKey, words);
+
+      return { wordset, originalWords: words };
+    } catch (err) {
+      console.error(`DataManager: Failed to load word data for ${cacheKey}`, err);
+      return { wordset: new Set(), originalWords: [] };
+    }
+  },
+};
+
+// --- Solver Functions (Task Implementations) ---
+
+function canFormWord(word: string, letterPool: Map<string, number>): boolean {
+  const currentPool = new Map(letterPool);
+  for (const char of word) {
+    const count = currentPool.get(char) ?? 0;
+    if (count === 0) return false;
+    currentPool.set(char, count - 1);
   }
   return true;
 }
 
-async function findWordsFromLetters(letters: string[], lang: 'en' | 'ar', category: string, minLen = 2) {
-  const WORDSET = await getWordsetFor(lang, category);
-  if (!WORDSET || WORDSET.size === 0) return [];
+// Define a specific type for this task's payload
+type FindWordsPayload = {
+  letters: string[];
+  lang: 'en' | 'ar';
+  category: string;
+  minLen: number;
+};
 
-  const normalizedLetters = letters.map(l => normalizeWordForComparison(l, lang));
+// Create a type guard to check if a payload matches the expected shape
+function isFindWordsPayload(payload: unknown): payload is FindWordsPayload {
+  return (
+    typeof payload === 'object' &&
+    payload !== null &&
+    'letters' in payload &&
+    'lang' in payload &&
+    'category' in payload &&
+    'minLen' in payload
+  );
+}
+
+async function findWordsFromLetters(payload: FindWordsPayload): Promise<string[]> {
+  const { letters, lang, category, minLen } = payload;
+  const { originalWords } = await dataManager.getWordData(lang, category);
+
+  const letterPool = new Map<string, number>();
+  letters.forEach(l => {
+    const normalized = normalizeWordForComparison(l, lang);
+    letterPool.set(normalized, (letterPool.get(normalized) ?? 0) + 1);
+  });
+
   const results: string[] = [];
-  
-  const categoryTitleCase = category.charAt(0).toUpperCase() + category.slice(1);
-  const filePath = `/src/data/${categoryTitleCase}/${lang}/clue/${lang}-clue-${category}-words.json`;
-  const modules = import.meta.glob('/src/data/**/*.json');
-  const moduleLoader = modules[filePath];
-  if (!moduleLoader) return [];
-
-  const wordsMod = (await moduleLoader()) as WordsModule | null;
-  
-  // FIX: Same logic as getWordsetFor to safely extract the array.
-  let originalWords: string[] = [];
-  if (wordsMod) {
-    if (Array.isArray(wordsMod.default)) {
-      originalWords = wordsMod.default;
-    } else {
-      originalWords = wordsMod.default?.words ?? wordsMod.words ?? [];
-    }
-  }
-
   for (const originalWord of originalWords) {
-    const normalized = normalizeWordForComparison(originalWord, lang);
-    if (normalized.length < minLen) continue;
-    if (canFormWordFromLetters(normalized, normalizedLetters)) {
-        results.push(originalWord);
+    const normalizedWord = normalizeWordForComparison(originalWord, lang);
+    if (normalizedWord.length < minLen) continue;
+    if (canFormWord(normalizedWord, letterPool)) {
+      results.push(originalWord);
     }
   }
   return results;
 }
 
-self.addEventListener('message', async (ev: MessageEvent) => {
-  const possible = ev.data as unknown;
-  if (!possible || typeof possible !== 'object') return;
-  const msg = possible as FindMsg;
-  if (msg.type !== 'find') return;
+// --- Task Registry ---
+const solverTasks: Record<string, (payload: unknown) => Promise<unknown>> = {
+  // FIX: Create a wrapper function that performs type checking before calling the specific solver.
+  'find-words-from-letters': (payload: unknown) => {
+    if (isFindWordsPayload(payload)) {
+      return findWordsFromLetters(payload);
+    }
+    // If the payload is not the correct shape, reject the promise.
+    return Promise.reject(new Error("Invalid payload for task 'find-words-from-letters'"));
+  },
+};
 
-  const lang = msg.lang === 'ar' ? 'ar' : 'en';
-  const minLen = msg.minLen ?? 2;
-  const letters = msg.letters ?? [];
-  const category = msg.category;
+// --- Main Worker Event Listener ---
+self.addEventListener('message', async (ev: MessageEvent<WorkerRequest>) => {
+  const { id, task, payload } = ev.data;
 
-  if (!category) {
-    console.error("Solver: Category not provided in 'find' message.");
-    postMessage({ id: msg.id, type: 'result', results: [] });
+  const solverFunction = solverTasks[task];
+  if (!solverFunction) {
+    const errorMsg = `Unknown task: ${task}`;
+    console.error(errorMsg);
+    postMessage({ id, type: 'error', payload: errorMsg });
     return;
   }
 
-  const results = await findWordsFromLetters(letters, lang, category, minLen);
-  const resp: ResponseMsg = { id: msg.id, type: 'result', results };
-  postMessage(resp);
+  try {
+    const result = await solverFunction(payload);
+    const response: WorkerResponse = { id, type: 'result', payload: result };
+    postMessage(response);
+  } catch (err) {
+    const errorMsg = err instanceof Error ? err.message : String(err);
+    console.error(`Error executing task '${task}':`, err);
+    postMessage({ id, type: 'error', payload: errorMsg });
+  }
 });
