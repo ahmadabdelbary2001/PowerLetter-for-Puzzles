@@ -1,11 +1,12 @@
 // src/components/GameScreens/ImgClueGame/ImgClueGameScreen.tsx
 import React, { useReducer, useEffect, useState, useCallback, useRef } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { SolutionBoxes } from "../ClueGame/SolutionBoxes";
 import { LetterGrid } from "../ClueGame/LetterGrid";
 import GameControls from "../ClueGame/GameControls";
-import { ArrowLeft, ArrowRight, Volume2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Volume2, Lightbulb } from "lucide-react";
 import { useGameMode } from "@/hooks/useGameMode";
 import { loadImageClueLevels, generateLetters } from "@/features/clue-game/engine";
 import type { ImageLevel } from "@/features/clue-game/engine";
@@ -14,11 +15,12 @@ import type { State, Action } from "../ClueGame/gameReducer";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useNavigate, useParams } from "react-router-dom";
 import { Header } from "@/components/layout/Header";
+import { cn } from "@/lib/utils";
 
 const ImgClueGameScreen: React.FC = () => {
   const navigate = useNavigate();
   const params = useParams<{ gameType?: string }>();
-  const { language, categories } = useGameMode();
+  const { language, categories, gameMode, updateScore, currentTeam, setCurrentTeam, teams, nextTurn } = useGameMode();
   const { t, dir } = useTranslation();
   const audioRef = useRef<HTMLAudioElement>(null);
 
@@ -52,7 +54,10 @@ const ImgClueGameScreen: React.FC = () => {
     setLetters(generateLetters(currentLevel.solution, 'easy', language));
     dispatch({ type: "RESET", solutionLen: solution.length });
     setNotification(null);
-  }, [levels, currentLevel, language, solution.length]);
+    if (teams.length > 0) {
+      setCurrentTeam(currentLevelIndex % teams.length);
+    }
+  }, [levels, currentLevel, currentLevelIndex, language, teams.length, setCurrentTeam, solution.length]);
 
   const onLetterClick = useCallback((i: number) => {
     if (state.gameState === 'playing') dispatch({ type: "PLACE", gridIndex: i, letter: letters[i] });
@@ -72,9 +77,16 @@ const ImgClueGameScreen: React.FC = () => {
   const onCheck = useCallback(() => {
     if (state.gameState !== 'playing') return;
     const isCorrect = state.answerSlots.join('') === solution;
+
     if (isCorrect) {
       dispatch({ type: "SET_GAME_STATE", payload: "won" });
-      setNotification({ message: t.congrats, type: "success" });
+      const points = 10; // All kids' levels are 'easy' and worth 10 points
+      if (gameMode === "competitive" && teams.length > 0) {
+        updateScore(teams[currentTeam].id, points);
+        setNotification({ message: `${t.congrats} +${points}`, type: "success" });
+      } else {
+        setNotification({ message: t.congrats, type: "success" });
+      }
     } else {
       dispatch({ type: "SET_GAME_STATE", payload: "failed" });
       setNotification({ message: t.wrongAnswer, type: "error" });
@@ -82,15 +94,17 @@ const ImgClueGameScreen: React.FC = () => {
         dispatch({ type: "CLEAR" });
         dispatch({ type: "SET_GAME_STATE", payload: "playing" });
         setNotification(null);
+        if (gameMode === 'competitive') {
+          nextTurn("lose");
+        }
       }, 1500);
     }
-  }, [state.gameState, state.answerSlots, solution, t.congrats, t.wrongAnswer]);
+  }, [state.gameState, state.answerSlots, solution, gameMode, teams, currentTeam, updateScore, nextTurn, t.congrats, t.wrongAnswer]);
 
   const handleBack = useCallback(() => navigate(`/game-mode/${params.gameType}`), [navigate, params.gameType]);
 
   useEffect(() => {
     setLoading(true);
-    // FIX: Pass the entire 'categories' array to the loading function.
     loadImageClueLevels(language, categories)
       .then(setLevels)
       .finally(() => setLoading(false));
@@ -115,9 +129,21 @@ const ImgClueGameScreen: React.FC = () => {
       <Header currentView="play" showLanguage={false} />
       <div className="min-h-screen bg-gradient-to-br from-green-50 to-yellow-50 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-6" dir={dir}>
         <div className="mx-auto max-w-2xl space-y-4 sm:space-y-6">
-          <Button variant="ghost" onClick={handleBack} className="flex items-center gap-2">
-            {dir === "rtl" ? <ArrowRight /> : <ArrowLeft />} {t.back}
-          </Button>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
+            <Button variant="ghost" onClick={handleBack} className="flex items-center gap-2">
+              {dir === "rtl" ? <ArrowRight /> : <ArrowLeft />} {t.back}
+            </Button>
+            {gameMode === "competitive" && teams.length > 0 && (
+              <div className="flex flex-wrap gap-2 items-center justify-start sm:justify-end w-full sm:w-auto">
+                {teams.map((team, idx) => (
+                  <Badge key={team.id} variant={idx === currentTeam ? "default" : "secondary"} className="px-3 flex items-center gap-2">
+                    <span className="font-medium">{team.name}:</span>
+                    <span>{team.score}</span>
+                  </Badge>
+                ))}
+              </div>
+            )}
+          </div>
 
           <Card className="mb-4 sm:mb-6 overflow-hidden">
             <CardContent className="p-4 space-y-6">
@@ -157,6 +183,31 @@ const ImgClueGameScreen: React.FC = () => {
               )}
             </CardContent>
           </Card>
+
+          {gameMode === 'competitive' && teams.length > 0 && (
+            <Card>
+              <CardHeader><CardTitle className="text-center">{t.scoreboard}</CardTitle></CardHeader>
+              <CardContent>
+                <div className="grid gap-2">
+                  {teams.map((team, index) => (
+                    <div key={team.id} className={cn("flex justify-between items-center p-3 rounded-lg", index === currentTeam ? "bg-primary/20 border border-primary" : "bg-muted")}>
+                      <div className="flex items-center">
+                        <span className="font-medium">{team.name}</span>
+                        {index === currentTeam && <Badge className="ml-2">{t.currentTurn}</Badge>}
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <Badge variant={index === currentTeam ? 'default' : 'secondary'}>{team.score}</Badge>
+                        <div className="text-sm text-gray-600 dark:text-gray-400 flex items-center">
+                          <span className="mr-1">{team.hintsRemaining}</span>
+                          <Lightbulb className="w-4 h-4 text-yellow-500" />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </>

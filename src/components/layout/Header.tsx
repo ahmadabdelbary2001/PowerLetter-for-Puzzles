@@ -5,12 +5,12 @@ import { Badge } from "@/components/ui/badge";
 import LanguageSelector from "@/components/layout/LanguageSelector";
 import { cn } from "@/lib/utils";
 import { useGameMode } from "@/hooks/useGameMode";
-import { Menu, ToyBrick } from "lucide-react"; // FIX: Import ToyBrick icon
+import { Menu, ToyBrick } from "lucide-react";
 import React, { useEffect, useRef } from "react";
 import ModeToggler from "./ModeToggler";
 
 interface HeaderProps {
-  currentView?: "home" | "selection" | "play" | "kids"; // FIX: Add 'kids' view
+  currentView?: "home" | "selection" | "play" | "kids";
   showLanguage?: boolean;
 }
 
