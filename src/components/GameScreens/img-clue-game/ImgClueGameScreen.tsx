@@ -3,15 +3,15 @@ import React, { useReducer, useEffect, useState, useCallback, useRef } from "rea
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { SolutionBoxes } from "../ClueGame/SolutionBoxes";
-import { LetterGrid } from "../ClueGame/LetterGrid";
-import GameControls from "../ClueGame/GameControls";
+import { SolutionBoxes } from "../clue-game/SolutionBoxes";
+import { LetterGrid } from "../clue-game/LetterGrid";
+import GameControls from "../clue-game/GameControls";
 import { ArrowLeft, ArrowRight, Volume2, Lightbulb } from "lucide-react";
 import { useGameMode } from "@/hooks/useGameMode";
-import { loadImageClueLevels, generateLetters } from "@/features/clue-game/engine";
-import type { ImageLevel } from "@/features/clue-game/engine";
-import { reducer } from "../ClueGame/gameReducer";
-import type { State, Action } from "../ClueGame/gameReducer";
+import { loadImageClueLevels, generateLetters } from "@/features/img-clue-game/engine";
+import type { ImageLevel } from "@/features/img-clue-game/engine";
+import { reducer } from "../clue-game/gameReducer";
+import type { State, Action } from "../clue-game/gameReducer";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useNavigate, useParams } from "react-router-dom";
 import { Header } from "@/components/layout/Header";
@@ -51,7 +51,8 @@ const ImgClueGameScreen: React.FC = () => {
 
   const resetLevel = useCallback(() => {
     if (!levels.length || !currentLevel) return;
-    setLetters(generateLetters(currentLevel.solution, 'easy', language));
+    // FIX: Removed the extra 'easy' argument. The function now only needs 2 arguments.
+    setLetters(generateLetters(currentLevel.solution, language));
     dispatch({ type: "RESET", solutionLen: solution.length });
     setNotification(null);
     if (teams.length > 0) {
@@ -80,7 +81,7 @@ const ImgClueGameScreen: React.FC = () => {
 
     if (isCorrect) {
       dispatch({ type: "SET_GAME_STATE", payload: "won" });
-      const points = 10; // All kids' levels are 'easy' and worth 10 points
+      const points = 10;
       if (gameMode === "competitive" && teams.length > 0) {
         updateScore(teams[currentTeam].id, points);
         setNotification({ message: `${t.congrats} +${points}`, type: "success" });

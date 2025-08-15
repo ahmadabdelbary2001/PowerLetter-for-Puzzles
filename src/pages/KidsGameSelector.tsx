@@ -40,7 +40,7 @@ const KidsGameSelector: React.FC = () => {
       title: t.wordChoiceTitle,
       description: t.wordChoiceDesc,
       icon: <CheckSquare className="w-8 h-8" />,
-      status: 'coming_soon',
+      status: 'available',
       features: t.wordChoiceFeatures,
     },
     {

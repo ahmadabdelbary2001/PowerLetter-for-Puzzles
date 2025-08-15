@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import Sonner from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useParams } from "react-router-dom"; 
+import { BrowserRouter, Routes, Route, useParams } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import GameTypeSelector from "./pages/GameTypeSelector";
@@ -11,8 +11,9 @@ import { ThemeProvider } from "./contexts/ThemeProvider";
 import GameModeSelector from "./components/GameSetup/GameModeSelector";
 import KidsGameModeSelector from "./components/GameSetup/KidsGameModeSelector";
 import TeamConfigurator from "./components/GameSetup/TeamConfigurator";
-import ClueGameScreen from "./components/GameScreens/ClueGame/ClueGameScreen";
-import ImgClueGameScreen from "./components/GameScreens/ImgClueGame/ImgClueGameScreen";
+import ClueGameScreen from "./components/GameScreens/clue-game/ClueGameScreen";
+import ImgClueGameScreen from "./components/GameScreens/img-clue-game/ImgClueGameScreen";
+import WordChoiceScreen from "./components/GameScreens/word-choice-game/WordChoiceScreen";
 import KidsGameSelector from "./pages/KidsGameSelector";
 
 const queryClient = new QueryClient();
@@ -23,11 +24,16 @@ const GameModeSelectorWrapper = () => {
   return isKidsGame ? <KidsGameModeSelector /> : <GameModeSelector />;
 };
 
-// FIX: Create a new wrapper for the actual game screen
 const GameScreenWrapper = () => {
   const { gameType } = useParams<{ gameType: string }>();
-  const isKidsGame = gameType === 'image-clue';
-  return isKidsGame ? <ImgClueGameScreen /> : <ClueGameScreen />;
+  
+  if (gameType === 'image-clue') {
+    return <ImgClueGameScreen />;
+  }
+  if (gameType === 'word-choice') {
+    return <WordChoiceScreen />;
+  }
+  return <ClueGameScreen />;
 };
 
 const App = () => (
