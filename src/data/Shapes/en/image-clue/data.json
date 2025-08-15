@@ -1,0 +1,10 @@
+{
+    "levels": [
+        {
+            "id": "img-en-shapes-1",
+            "image": "/assets/images/shapes/triangle.png",
+            "sound": "/assets/sounds/en/shapes/triangle.mp3",
+            "solution": "TRIANGLE"
+        }
+    ]
+}

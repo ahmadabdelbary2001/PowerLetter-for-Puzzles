@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardTitle } from '@/components/ui/card';
-import { User, Users, ArrowRight, ArrowLeft, PawPrint, Apple, Shapes } from 'lucide-react';
+import { User, Users, ArrowRight, ArrowLeft, PawPrint, Apple, Shapes, BrainCircuit, Check } from 'lucide-react';
 import { useGameMode } from '../../hooks/useGameMode';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Header } from '@/components/layout/Header';
@@ -28,12 +28,14 @@ const StepIndicator: React.FC<{ currentStep: number; totalSteps: number }> = ({ 
 // Categories specifically for kids' games
 const kidsCategories = [
   { id: 'animals', icon: <PawPrint size={48} />, labelKey: 'animals' },
-  { id: 'fruits', icon: <Apple size={48} />, labelKey: 'fruits' }, // Example new category
-  { id: 'shapes', icon: <Shapes size={48} />, labelKey: 'shapes' }, // Example new category
+  { id: 'fruits', icon: <Apple size={48} />, labelKey: 'fruits' },
+  { id: 'shapes', icon: <Shapes size={48} />, labelKey: 'shapes' },
+  { id: 'general', icon: <BrainCircuit size={48} />, labelKey: 'generalKnowledge' },
 ] as const;
 
 const KidsGameModeSelector: React.FC = () => {
-  const { setGameMode, setCategories } = useGameMode();
+  // FIX: Use the plural 'categories' state from the hook
+  const { setGameMode, categories: selectedCategories, setCategories } = useGameMode();
   const { t, dir } = useTranslation();
   const navigate = useNavigate();
   const { gameType } = useParams<{ gameType: string }>();
@@ -44,24 +46,42 @@ const KidsGameModeSelector: React.FC = () => {
     if (step > 1) {
       setStep(s => s - 1);
     } else {
-      navigate('/kids-games'); // Go back to the kids' game selection
+      navigate('/kids-games');
     }
   };
 
   const handleModeSelect = (mode: 'single' | 'competitive') => {
     setGameMode(mode);
-    setStep(2); // Go to category selection
+    setStep(2);
   };
 
-  const handleCategorySelect = (category: GameCategory) => {
-    setCategories([category]); // Kids games are single-category for simplicity
-    const { gameMode } = useGameMode.getState();
+  // FIX: Implement the exact same multi-select logic as the main game selector
+  const handleCategoryToggle = (category: GameCategory) => {
+    if (category === 'general') {
+      setCategories(['general']);
+      return;
+    }
 
-    // This is the final step for kids, navigate to the correct screen
-    if (gameMode === 'competitive') {
-      navigate(`/team-config/${gameType}`);
+    const newSelection = selectedCategories.includes(category)
+      ? selectedCategories.filter(c => c !== category && c !== 'general')
+      : [...selectedCategories.filter(c => c !== 'general'), category];
+
+    if (newSelection.length === 0) {
+      setCategories(['general']); // Default to general if nothing is selected
     } else {
-      navigate(`/game/${gameType}`);
+      setCategories(newSelection);
+    }
+  };
+
+  // FIX: This function now navigates to the game screen since there's no difficulty step
+  const handleContinueFromCategories = () => {
+    if (selectedCategories.length > 0) {
+      const { gameMode } = useGameMode.getState();
+      if (gameMode === 'competitive') {
+        navigate(`/team-config/${gameType}`);
+      } else {
+        navigate(`/game/${gameType}`);
+      }
     }
   };
 
@@ -83,17 +103,38 @@ const KidsGameModeSelector: React.FC = () => {
             </div>
           </>
         );
-      case 2: // Select Category
+      case 2: // Select Category (Multi-select UI)
         return (
           <>
-            <h2 className="text-2xl sm:text-3xl font-bold text-center mb-6">{t.selectCategory}</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
-              {kidsCategories.map(cat => (
-                <Card key={cat.id} onClick={() => handleCategorySelect(cat.id as GameCategory)} className="text-center p-4 cursor-pointer hover:scale-105 hover:shadow-xl transition-transform duration-300">
-                  <div className="text-gray-700 dark:text-gray-300">{cat.icon}</div>
-                  <p className="mt-2 font-semibold text-sm sm:text-base">{t[cat.labelKey]}</p>
-                </Card>
-              ))}
+            <h2 className="text-2xl sm:text-3xl font-bold text-center mb-2">{t.selectCategory}</h2>
+            <p className="text-center text-muted-foreground mb-6">{t.selectCategoryDesc}</p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+              {kidsCategories.map(cat => {
+                const isSelected = selectedCategories.includes(cat.id as GameCategory);
+                return (
+                  <Card
+                    key={cat.id}
+                    onClick={() => handleCategoryToggle(cat.id as GameCategory)}
+                    className={cn(
+                      "text-center p-4 cursor-pointer hover:shadow-xl transition-all duration-300 relative",
+                      isSelected ? "ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-900/20" : "hover:bg-gray-50 dark:hover:bg-gray-800"
+                    )}
+                  >
+                    {isSelected && (
+                      <div className="absolute top-2 right-2 bg-blue-500 text-white rounded-full p-1">
+                        <Check size={16} />
+                      </div>
+                    )}
+                    <div className="text-gray-700 dark:text-gray-300">{cat.icon}</div>
+                    <p className="mt-2 font-semibold text-sm sm:text-base">{t[cat.labelKey]}</p>
+                  </Card>
+                );
+              })}
+            </div>
+            <div className="flex justify-center mt-8">
+              <Button onClick={handleContinueFromCategories} disabled={selectedCategories.length === 0}>
+                {t.continue} {dir === 'rtl' ? <ArrowLeft className="w-4 h-4 mr-2" /> : <ArrowRight className="w-4 h-4 ml-2" />}
+              </Button>
             </div>
           </>
         );

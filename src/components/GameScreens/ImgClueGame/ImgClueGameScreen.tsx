@@ -35,11 +35,7 @@ const ImgClueGameScreen: React.FC = () => {
   const currentLevel = levels[currentLevelIndex];
   const solution = currentLevel?.solution.replace(/\s/g, "") ?? "";
 
-  // FIX: Create a function to construct the correct public asset path
   const getAssetPath = (path: string) => {
-    // import.meta.env.BASE_URL is provided by Vite. It's usually '/' in dev
-    // and '/PowerLetter-for-Puzzles/' in production.
-    // We remove leading/trailing slashes to avoid doubles.
     const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
     const assetPath = path.replace(/^\//, '');
     return `${baseUrl}/${assetPath}`;
@@ -94,7 +90,8 @@ const ImgClueGameScreen: React.FC = () => {
 
   useEffect(() => {
     setLoading(true);
-    loadImageClueLevels(language, categories[0])
+    // FIX: Pass the entire 'categories' array to the loading function.
+    loadImageClueLevels(language, categories)
       .then(setLevels)
       .finally(() => setLoading(false));
   }, [language, categories]);
@@ -125,12 +122,10 @@ const ImgClueGameScreen: React.FC = () => {
           <Card className="mb-4 sm:mb-6 overflow-hidden">
             <CardContent className="p-4 space-y-6">
               <div className="relative aspect-video bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center">
-                {/* FIX: Use the getAssetPath function to build the correct src */}
                 <img src={getAssetPath(currentLevel.image)} alt={solution} className="max-h-full max-w-full object-contain" />
                 <Button size="icon" onClick={playSound} className="absolute top-3 right-3 rounded-full bg-black/50 hover:bg-black/70">
                   <Volume2 className="h-6 w-6 text-white" />
                 </Button>
-                {/* FIX: Also use getAssetPath for the audio source */}
                 <audio ref={audioRef} src={getAssetPath(currentLevel.sound)} preload="auto" />
               </div>
 

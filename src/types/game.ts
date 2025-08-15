@@ -9,7 +9,7 @@ export type GameType =
   | 'word-choice'     // Picture -> Choose Word
   | 'picture-choice'; // Word -> Choose Picture
 export type Difficulty = 'easy' | 'medium' | 'hard';
-export type GameCategory = 'animals' | 'science' | 'geography' | 'general';
+export type GameCategory = 'animals' | 'science' | 'geography' | 'fruits' | 'shapes' | 'general';
 
 export interface Team {
   id: number;
