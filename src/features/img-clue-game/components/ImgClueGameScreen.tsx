@@ -1,14 +1,14 @@
 // src/components/GameScreens/img-clue-game/ImgClueGameScreen.tsx
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { SolutionBoxes } from "../SolutionBoxes";
-import { LetterGrid } from "../LetterGrid";
-import GameControls from "../GameControls";
+import { SolutionBoxes } from "@/components/game/SolutionBoxes";
+import { LetterGrid } from "@/components/game/LetterGrid";
+import GameControls from "@/components/game/GameControls";
 import { ArrowLeft, ArrowRight, Volume2 } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
-import { GameLayout } from "../GameLayout";
-import { useImageClueGame } from "@/features/img-clue-game/hooks/useImageClueGame";
-import type { ImageLevel } from "@/features/img-clue-game/engine";
+import { GameLayout } from "@/components/layout/GameLayout";
+import { useImageClueGame } from "../hooks/useImageClueGame";
+import type { ImageLevel } from "../engine";
 
 const ImgClueGameScreen: React.FC = () => {
   const { t, dir } = useTranslation();

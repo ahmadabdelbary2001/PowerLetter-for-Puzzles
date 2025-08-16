@@ -5,8 +5,8 @@ import { useGameMode } from '@/hooks/useGameMode';
 import { useTranslation } from '@/hooks/useTranslation';
 import { loadImageClueLevels, generateLetters } from '../engine';
 import type { ImageLevel } from '../engine';
-import { reducer } from '@/components/GameScreens/gameReducer';
-import type { State, Action } from '@/components/GameScreens/gameReducer';
+import { reducer } from '@/components/game/gameReducer';
+import type { State, Action } from '@/components/game/gameReducer';
 
 export function useImageClueGame() {
   const navigate = useNavigate();

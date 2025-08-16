@@ -1,16 +1,18 @@
-// src/components/GameScreens/clue-game/ClueGameScreen.tsx
+// src/features/clue-game/components/ClueGameScreen.tsx
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { SolutionBoxes } from "../SolutionBoxes";
-import { LetterGrid } from "../LetterGrid";
-import GameControls from "../GameControls";
+import { SolutionBoxes } from "@/components/game/SolutionBoxes";
+import { LetterGrid } from "@/components/game/LetterGrid";
+import GameControls from "@/components/game/GameControls";
 import { useTranslation } from "@/hooks/useTranslation";
-import { GameLayout } from "../GameLayout";
-import { useClueGame } from "@/features/clue-game/hooks/useClueGame";
+import { GameLayout } from "@/components/layout/GameLayout";
+import { useClueGame } from "../hooks/useClueGame";
+// FIX: Removed unused useGameMode import
 
 const ClueGameScreen: React.FC = () => {
   const { t } = useTranslation();
+  // FIX: Removed unused gameMode variable
 
   const {
     loading,
@@ -32,9 +34,14 @@ const ClueGameScreen: React.FC = () => {
     onClear,
     onHint,
     nextLevel,
-    prevLevel, // FIX: This will now be used
+    prevLevel,
     handleBack,
-    resetLevel, // FIX: Destructure resetLevel
+    resetLevel,
+    canRemove,
+    canClear,
+    canCheck,
+    canHint,
+    // FIX: Removed unused handleRevealOrListSolutions
   } = useClueGame();
 
   if (loading) {
@@ -82,19 +89,21 @@ const ClueGameScreen: React.FC = () => {
         onCheckAnswer={onCheck}
         onHint={onHint}
         onShowSolution={onShow}
-        onReset={resetLevel} // FIX: Pass resetLevel to the component
-        onPrevLevel={prevLevel} // FIX: Pass prevLevel to the component
+        onReset={resetLevel}
+        onPrevLevel={prevLevel}
         onNextLevel={nextLevel}
-        canRemove={slotIndices.some(i => i !== null && !hintIndices.includes(i as number))}
-        canClear={slotIndices.filter(i => i !== null).length > hintIndices.length}
-        canCheck={answerSlots.every(ch => ch !== '')}
+        canRemove={canRemove}
+        canClear={canClear}
+        canCheck={canCheck}
+        canHint={canHint}
         canPrev={currentLevelIndex > 0}
         canNext={currentLevelIndex < levels.length - 1}
-        canHint={gameState === 'playing'}
         gameState={gameState}
         isKidsMode={false}
         labels={{ remove: t.remove, clear: t.clear, check: t.check, hint: t.hint, showSolution: t.showSolution, reset: t.reset, prev: t.prev, next: t.next }}
       />
+
+      {/* The solver button was removed in the previous step, so no need for the handleRevealOrListSolutions function */}
     </GameLayout>
   );
 };

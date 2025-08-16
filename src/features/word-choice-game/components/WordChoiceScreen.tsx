@@ -3,7 +3,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, Volume2, CheckCircle, XCircle } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
-import { GameLayout } from "../GameLayout";
+import { GameLayout } from "@/components/layout/GameLayout";
 import { useWordChoiceGame } from "@/features/word-choice-game/hooks/useWordChoice";
 import { cn } from "@/lib/utils";
 

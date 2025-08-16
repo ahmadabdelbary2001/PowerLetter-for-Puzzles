@@ -6,8 +6,9 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { useSolverWorker } from '@/hooks/useSolverWorker';
 import { loadLevels, generateLetters } from '../engine';
 import type { Level } from '../engine';
-import { reducer } from '@/components/GameScreens/gameReducer';
-import type { State, Action } from '@/components/GameScreens/gameReducer';
+import { reducer } from '@/components/game/gameReducer';
+import type { State, Action } from '@/components/game/gameReducer';
+import { useGameControls } from './useGameControls'; // Import the new hook
 
 export function useClueGame() {
   const navigate = useNavigate();
@@ -22,6 +23,9 @@ export function useClueGame() {
     hintIndices: [],
     gameState: "playing",
   });
+
+  // Use the shared hook for control state
+  const { canRemove, canClear, canCheck, canHint } = useGameControls(state);
 
   const [levels, setLevels] = useState<Level[]>([]);
   const [currentLevelIndex, setCurrentLevelIndex] = useState(0);
@@ -187,5 +191,10 @@ export function useClueGame() {
     handleBack,
     handleRevealOrListSolutions,
     resetLevel,
+    // Return the calculated control states
+    canRemove,
+    canClear,
+    canCheck,
+    canHint,
   };
 }

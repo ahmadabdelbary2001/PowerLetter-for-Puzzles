@@ -82,6 +82,17 @@ export const useTranslation = () => {
             pictureChoiceDesc: "Read the word and choose the picture that matches it.",
             pictureChoiceFeatures: ["Tests comprehension", "Visual recognition", "Fun and interactive"],
 
+            // Puzzle descriptions
+            pictureToWordTitle: "Picture to Word",
+            pictureToWordDesc: "Form the word that matches the picture from the given letters.",
+            pictureToWordFeatures: ["Builds spelling skills", "Visual association", "Audio support"],
+            findTheWordTitle: "Find the Word",
+            findTheWordDesc: "Look at the picture and choose the correct word from a list.",
+            findTheWordFeatures: ["Improves reading", "Multiple choice", "Immediate feedback"],
+            findThePictureTitle: "Find the Picture",
+            findThePictureDesc: "Read the word and choose the picture that matches it.",
+            findThePictureFeatures: ["Tests comprehension", "Visual recognition", "Fun and interactive"],
+
             // Game Mode Selector
             selectMode: "Choose Game Mode",
             selectModeDesc: "How would you like to play today?",
@@ -221,6 +232,17 @@ export const useTranslation = () => {
             pictureChoiceTitle: "ابحث عن الصورة",
             pictureChoiceDesc: "اقرأ الكلمة واختر الصورة التي تطابقها.",
             pictureChoiceFeatures: ["اختبار الفهم", "تمييز بصري", "ممتعة وتفاعلية"],
+
+            // Puzzle descriptions
+            pictureToWordTitle: "صورة وكلمة",
+            pictureToWordDesc: "كوّن الكلمة التي تطابق الصورة من الحروف المعطاة.",
+            pictureToWordFeatures: ["تنمية مهارات الإملاء", "ربط بصري", "دعم صوتي"],
+            findTheWordTitle: "ابحث عن الكلمة",
+            findTheWordDesc: "انظر إلى الصورة واختر الكلمة الصحيحة من القائمة.",
+            findTheWordFeatures: ["تحسين القراءة", "اختيار من متعدد", "تقييم فوري"],
+            findThePictureTitle: "ابحث عن الصورة",
+            findThePictureDesc: "اقرأ الكلمة واختر الصورة التي تطابقها.",
+            findThePictureFeatures: ["اختبار الفهم", "تمييز بصري", "ممتعة وتفاعلية"],
 
             // Game Mode Selector
             selectMode: "اختر نمط اللعب",

@@ -1,50 +1,55 @@
-// src/components/GameSetup/KidsGameModeSelector.tsx
+// src\components\setup\GameModeSelector.tsx
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardTitle } from '@/components/ui/card';
-import { User, Users, ArrowRight, ArrowLeft, PawPrint, Apple, Shapes, BrainCircuit, Check } from 'lucide-react';
-import { useGameMode } from '../../hooks/useGameMode';
+import { User, Users, ArrowRight, ArrowLeft, PawPrint, FlaskConical, Globe, BrainCircuit, Check } from 'lucide-react';
+import { useGameMode } from '@/hooks/useGameMode';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Header } from '@/components/layout/Header';
 import { useNavigate, useParams } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import type { GameCategory } from '@/types/game';
+import type { GameCategory, Difficulty } from '@/types/game';
 
-// --- Helper Components for Steps ---
 const StepIndicator: React.FC<{ currentStep: number; totalSteps: number }> = ({ currentStep, totalSteps }) => (
   <div className="flex justify-center gap-2 mb-8">
     {Array.from({ length: totalSteps }).map((_, i) => (
       <div
         key={i}
-        className={cn('h-2 rounded-full transition-all duration-300', i + 1 === currentStep ? 'w-8 bg-green-500' : 'w-4 bg-gray-300 dark:bg-gray-600')}
+        className={cn(
+          'h-2 rounded-full transition-all duration-300',
+          i + 1 === currentStep ? 'w-8 bg-blue-500' : 'w-4 bg-gray-300 dark:bg-gray-600'
+        )}
       />
     ))}
   </div>
 );
 
 const categoriesData = [
-  { id: 'animals', icon: <PawPrint size={48} />, labelKey: 'animals' },
-  { id: 'fruits', icon: <Apple size={48} />, labelKey: 'fruits' },
-  { id: 'shapes', icon: <Shapes size={48} />, labelKey: 'shapes' },
   { id: 'general', icon: <BrainCircuit size={48} />, labelKey: 'generalKnowledge' },
+  { id: 'animals', icon: <PawPrint size={48} />, labelKey: 'animals' },
+  { id: 'science', icon: <FlaskConical size={48} />, labelKey: 'science' },
+  { id: 'geography', icon: <Globe size={48} />, labelKey: 'geography' },
 ] as const;
 
-// --- Main Component ---
-const KidsGameModeSelector: React.FC = () => {
-  const { setGameMode, setCategories } = useGameMode();
+const difficulties = [
+  { id: 'easy', labelKey: 'easy', color: 'bg-green-500' },
+  { id: 'medium', labelKey: 'medium', color: 'bg-yellow-500' },
+  { id: 'hard', labelKey: 'hard', color: 'bg-red-500' },
+] as const;
+
+const GameModeSelector: React.FC = () => {
+  const { setGameMode, categories: selectedCategories, setCategories, setDifficulty } = useGameMode();
   const { t, dir } = useTranslation();
   const navigate = useNavigate();
   const { gameType } = useParams<{ gameType: string }>();
 
   const [step, setStep] = useState(1);
-  const [selectedCategories, setSelectedCategories] = useState<GameCategory[]>([]);
 
   const handleBack = () => {
     if (step > 1) {
       setStep(s => s - 1);
     } else {
-      // FIX: The back button on the first step should go to the Kids Game selection screen.
-      navigate('/kids-games');
+      navigate('/games');
     }
   };
 
@@ -55,21 +60,29 @@ const KidsGameModeSelector: React.FC = () => {
 
   const handleCategoryToggle = (category: GameCategory) => {
     if (category === 'general') {
-      setSelectedCategories(['general']);
+      setCategories(['general']);
       return;
     }
-    setSelectedCategories(prev => {
-      const newSelection = prev.filter(c => c !== 'general');
-      if (newSelection.includes(category)) {
-        return newSelection.filter(c => c !== category);
-      } else {
-        return [...newSelection, category];
-      }
-    });
+
+    const newSelection = selectedCategories.includes(category)
+      ? selectedCategories.filter(c => c !== category && c !== 'general')
+      : [...selectedCategories.filter(c => c !== 'general'), category];
+
+    if (newSelection.length === 0) {
+      setCategories(['general']); // Default to general if nothing is selected
+    } else {
+      setCategories(newSelection);
+    }
   };
 
   const handleContinueFromCategories = () => {
-    setCategories(selectedCategories);
+    if (selectedCategories.length > 0) {
+      setStep(3);
+    }
+  };
+
+  const handleDifficultySelect = (difficulty: Difficulty) => {
+    setDifficulty(difficulty);
     const { gameMode } = useGameMode.getState();
     if (gameMode === 'competitive') {
       navigate(`/team-config/${gameType}`);
@@ -80,7 +93,7 @@ const KidsGameModeSelector: React.FC = () => {
 
   const renderStepContent = () => {
     switch (step) {
-      case 1: // Select Mode
+      case 1:
         return (
           <>
             <h2 className="text-2xl sm:text-3xl font-bold text-center mb-6">{t.selectMode}</h2>
@@ -96,25 +109,25 @@ const KidsGameModeSelector: React.FC = () => {
             </div>
           </>
         );
-      case 2: // Select Category
+      case 2:
         return (
           <>
             <h2 className="text-2xl sm:text-3xl font-bold text-center mb-2">{t.selectCategory}</h2>
             <p className="text-center text-muted-foreground mb-6">{t.selectCategoryDesc}</p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
               {categoriesData.map(cat => {
-                const isSelected = selectedCategories.includes(cat.id as GameCategory);
+                const isSelected = selectedCategories.includes(cat.id);
                 return (
                   <Card
                     key={cat.id}
                     onClick={() => handleCategoryToggle(cat.id as GameCategory)}
                     className={cn(
                       "text-center p-4 cursor-pointer hover:shadow-xl transition-all duration-300 relative",
-                      isSelected ? "ring-2 ring-green-500 bg-green-50 dark:bg-green-900/20" : "hover:bg-gray-50 dark:hover:bg-gray-800"
+                      isSelected ? "ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-900/20" : "hover:bg-gray-50 dark:hover:bg-gray-800"
                     )}
                   >
                     {isSelected && (
-                      <div className="absolute top-2 right-2 bg-green-500 text-white rounded-full p-1">
+                      <div className="absolute top-2 right-2 bg-blue-500 text-white rounded-full p-1">
                         <Check size={16} />
                       </div>
                     )}
@@ -131,16 +144,29 @@ const KidsGameModeSelector: React.FC = () => {
             </div>
           </>
         );
+      case 3:
+        return (
+          <>
+            <h2 className="text-2xl sm:text-3xl font-bold text-center mb-6">{t.selectDifficulty}</h2>
+            <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-8">
+              {difficulties.map(diff => (
+                <Button key={diff.id} onClick={() => handleDifficultySelect(diff.id as Difficulty)} className={cn('h-24 w-full sm:w-40 text-xl font-bold text-white shadow-lg hover:scale-105 transition-transform', diff.color)}>
+                  {t[diff.labelKey]}
+                </Button>
+              ))}
+            </div>
+          </>
+        );
       default:
         return null;
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-background to-yellow-50 dark:from-gray-900 dark:to-gray-800">
-      <Header currentView="kids" />
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+      <Header currentView="selection" />
       <main className="container mx-auto px-4 py-8 max-w-4xl" dir={dir}>
-        <StepIndicator currentStep={step} totalSteps={2} />
+        <StepIndicator currentStep={step} totalSteps={3} />
         <Card className="p-6 sm:p-10 bg-card/80 backdrop-blur-sm">
           {renderStepContent()}
         </Card>
@@ -155,4 +181,4 @@ const KidsGameModeSelector: React.FC = () => {
   );
 };
 
-export default KidsGameModeSelector;
+export default GameModeSelector;
