@@ -24,7 +24,7 @@ export const GameLayout: React.FC<GameLayoutProps> = ({ children, title, levelIn
     <>
       <Header currentView="play" showLanguage={false} />
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-6" dir={dir}>
-        <div className="mx-auto max-w-3xl space-y-4 sm:space-y-6">
+        <div className="mx-auto max-w-5xl space-y-4 sm:space-y-6">
           {/* Top Bar: Back Button & Team Status */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
             <Button variant="ghost" onClick={onBack} className="flex items-center gap-2">

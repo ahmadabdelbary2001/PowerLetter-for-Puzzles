@@ -1,27 +1,25 @@
 // src/features/word-choice-game/hooks/useWordChoice.ts
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useGameMode } from '@/hooks/useGameMode';
-import { loadWordChoiceLevels } from '../engine';
-import type { WordChoiceLevel } from '../engine';
 import { shuffleArray } from '@/lib/gameUtils';
+// FIX: Import the engine, not a non-existent function
+import { wordChoiceGameEngine, type WordChoiceLevel } from '../engine';
 
 export function useWordChoiceGame() {
   const navigate = useNavigate();
-  const params = useParams<{ gameType?: string }>();
-  const { language, categories, gameMode, updateScore, currentTeam, teams, nextTurn } = useGameMode();
-  const audioRef = useRef<HTMLAudioElement>(null);
+  const { language, categories } = useGameMode();
 
   const [levels, setLevels] = useState<WordChoiceLevel[]>([]);
-  const [currentLevelIndex, setCurrentLevelIndex] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [answerStatus, setAnswerStatus] = useState<'idle' | 'correct' | 'incorrect'>('idle');
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [currentLevelIndex, setCurrentLevelIndex] = useState(0);
   const [shuffledOptions, setShuffledOptions] = useState<string[]>([]);
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [answerStatus, setAnswerStatus] = useState<'correct' | 'incorrect' | 'idle'>('idle');
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   const currentLevel = levels[currentLevelIndex];
 
-  // --- Asset and Sound Handling ---
   const getAssetPath = (path: string) => {
     const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
     const assetPath = path.replace(/^\//, '');
@@ -34,55 +32,45 @@ export function useWordChoiceGame() {
     }
   }, []);
 
-  // --- Core Game Logic Callbacks ---
   const nextLevel = useCallback(() => {
     if (currentLevelIndex < levels.length - 1) {
       setCurrentLevelIndex(i => i + 1);
-      setAnswerStatus('idle');
       setSelectedOption(null);
+      setAnswerStatus('idle');
     } else {
       navigate('/kids-games');
     }
   }, [currentLevelIndex, levels.length, navigate]);
 
-  const handleOptionClick = (option: string) => {
+  const handleOptionClick = useCallback((option: string) => {
     if (answerStatus !== 'idle') return;
-
     setSelectedOption(option);
-    const isCorrect = option === currentLevel.solution;
-
-    if (isCorrect) {
+    if (option === currentLevel.solution) {
       setAnswerStatus('correct');
-      const points = 10; // All kids' levels are worth 10 points
-      if (gameMode === "competitive" && teams.length > 0) {
-        updateScore(teams[currentTeam].id, points);
-      }
+      setTimeout(nextLevel, 1200);
     } else {
       setAnswerStatus('incorrect');
-      if (gameMode === 'competitive') {
-        nextTurn('lose');
-      }
     }
-  };
+  }, [answerStatus, currentLevel, nextLevel]);
 
-  const handleBack = useCallback(() => navigate(`/game-mode/${params.gameType}`), [navigate, params.gameType]);
+  const handleBack = useCallback(() => {
+    navigate('/kids-games');
+  }, [navigate]);
 
-  // --- Data Loading and Level Setup Effects ---
   useEffect(() => {
     setLoading(true);
-    loadWordChoiceLevels(language, categories)
+    // FIX: Use the engine to load levels
+    wordChoiceGameEngine.loadLevels({ language, categories })
       .then(setLevels)
       .finally(() => setLoading(false));
   }, [language, categories]);
 
   useEffect(() => {
     if (currentLevel) {
-      const options = shuffleArray([...currentLevel.options, currentLevel.solution]);
-      setShuffledOptions(options);
+      setShuffledOptions(shuffleArray([...currentLevel.options]));
     }
   }, [currentLevel]);
 
-  // Return all state and functions the UI component needs
   return {
     loading,
     currentLevel,

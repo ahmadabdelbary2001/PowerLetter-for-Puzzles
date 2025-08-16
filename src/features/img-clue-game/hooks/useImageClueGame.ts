@@ -1,25 +1,19 @@
 // src/features/img-clue-game/hooks/useImageClueGame.ts
-import { useState, useEffect, useCallback, useReducer, useRef } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useGameMode } from '@/hooks/useGameMode';
-import { useTranslation } from '@/hooks/useTranslation';
-import { loadImageClueLevels, generateLetters } from '../engine';
-import type { ImageLevel } from '../engine';
-import { reducer } from '@/components/game/gameReducer';
-import type { State, Action } from '@/components/game/gameReducer';
+import { useReducer, useEffect, useState, useCallback, useRef } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useGameMode } from "@/hooks/useGameMode";
+import { reducer, type State, type Action } from "@/components/game/gameReducer";
+import { imgClueGameEngine, type ImageLevel } from "../engine";
+import { generateLetters } from "@/lib/gameUtils";
 
 export function useImageClueGame() {
   const navigate = useNavigate();
   const params = useParams<{ gameType?: string }>();
-  const { language, categories, gameMode, updateScore, currentTeam, setCurrentTeam, teams, nextTurn } = useGameMode();
-  const { t } = useTranslation();
+  const { language, categories } = useGameMode();
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const [state, dispatch] = useReducer<React.Reducer<State, Action>>(reducer, {
-    slotIndices: [],
-    answerSlots: [],
-    hintIndices: [],
-    gameState: "playing",
+    slotIndices: [], answerSlots: [], hintIndices: [], gameState: "playing",
   });
 
   const [levels, setLevels] = useState<ImageLevel[]>([]);
@@ -31,7 +25,6 @@ export function useImageClueGame() {
   const currentLevel = levels[currentLevelIndex];
   const solution = currentLevel?.solution.replace(/\s/g, "") ?? "";
 
-  // --- Asset and Sound Handling ---
   const getAssetPath = (path: string) => {
     const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
     const assetPath = path.replace(/^\//, '');
@@ -44,82 +37,62 @@ export function useImageClueGame() {
     }
   }, []);
 
-  // --- Core Game Logic Callbacks ---
   const resetLevel = useCallback(() => {
     if (!levels.length || !currentLevel) return;
-    setLetters(generateLetters(currentLevel.solution, language));
+    // FIX: Call the imported generateLetters function correctly
+    setLetters(generateLetters(currentLevel.solution, 'easy', language, true));
     dispatch({ type: "RESET", solutionLen: solution.length });
     setNotification(null);
-    if (teams.length > 0) {
-      setCurrentTeam(currentLevelIndex % teams.length);
-    }
-  }, [levels, currentLevel, currentLevelIndex, language, teams.length, setCurrentTeam, solution.length]);
+  }, [levels, currentLevel, language, solution.length]);
 
   const nextLevel = useCallback(() => {
     if (currentLevelIndex < levels.length - 1) {
       setCurrentLevelIndex(i => i + 1);
     } else {
-      // Navigate back to the selection screen when all levels are done
       navigate('/kids-games');
     }
   }, [currentLevelIndex, levels.length, navigate]);
 
   const onCheck = useCallback(() => {
+    // This logic can be expanded for competitive mode later if needed
     if (state.gameState !== 'playing') return;
     const isCorrect = state.answerSlots.join('') === solution;
-
     if (isCorrect) {
       dispatch({ type: "SET_GAME_STATE", payload: "won" });
-      const points = 10; // All kids' levels are worth 10 points
-      if (gameMode === "competitive" && teams.length > 0) {
-        updateScore(teams[currentTeam].id, points);
-        setNotification({ message: `${t.congrats} +${points}`, type: "success" });
-      } else {
-        setNotification({ message: t.congrats, type: "success" });
-      }
+      setNotification({ message: "Correct!", type: "success" });
     } else {
       dispatch({ type: "SET_GAME_STATE", payload: "failed" });
-      setNotification({ message: t.wrongAnswer, type: "error" });
+      setNotification({ message: "Try again!", type: "error" });
       setTimeout(() => {
         dispatch({ type: "CLEAR" });
         dispatch({ type: "SET_GAME_STATE", payload: "playing" });
         setNotification(null);
-        if (gameMode === 'competitive') {
-          nextTurn("lose");
-        }
       }, 1500);
     }
-  }, [state.gameState, state.answerSlots, solution, gameMode, teams, currentTeam, updateScore, nextTurn, t.congrats, t.wrongAnswer]);
+  }, [state.gameState, state.answerSlots, solution]);
 
-  // --- UI Interaction Callbacks ---
+  const handleBack = useCallback(() => {
+    navigate(`/game-mode/${params.gameType}`);
+  }, [navigate, params.gameType]);
+
+  useEffect(() => {
+    setLoading(true);
+    imgClueGameEngine.loadLevels({ language, categories })
+      .then(setLevels)
+      .finally(() => setLoading(false));
+  }, [language, categories]);
+
+  useEffect(() => {
+    if (levels.length > 0) resetLevel();
+  }, [currentLevelIndex, levels, resetLevel]);
+
   const onLetterClick = useCallback((i: number) => {
     if (state.gameState === 'playing') dispatch({ type: "PLACE", gridIndex: i, letter: letters[i] });
   }, [state.gameState, letters]);
 
   const onRemove = useCallback(() => dispatch({ type: "REMOVE_LAST" }), []);
   const onClear = useCallback(() => dispatch({ type: "CLEAR" }), []);
-  
-  // FIX: The back button now correctly uses the gameType from the URL parameters.
-  const handleBack = useCallback(() => {
-    navigate(`/game-mode/${params.gameType}`);
-  }, [navigate, params.gameType]);
 
-  // --- Data Loading Effect ---
-  useEffect(() => {
-    setLoading(true);
-    loadImageClueLevels(language, categories)
-      .then(setLevels)
-      .finally(() => setLoading(false));
-  }, [language, categories]);
-
-  // --- Level Reset Effect ---
-  useEffect(() => {
-    if (levels.length > 0) {
-      resetLevel();
-    }
-  }, [currentLevelIndex, levels, resetLevel]);
-
-  // Return all the state and functions the UI component needs
   return {
     loading,
     levels,

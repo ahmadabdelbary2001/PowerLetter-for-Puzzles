@@ -4,11 +4,11 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useSolverWorker } from '@/hooks/useSolverWorker';
-import { loadLevels, generateLetters } from '../engine';
-import type { Level } from '../engine';
+import { clueGameEngine, type Level } from '../engine';
+import { generateLetters } from '@/lib/gameUtils';
 import { reducer } from '@/components/game/gameReducer';
 import type { State, Action } from '@/components/game/gameReducer';
-import { useGameControls } from './useGameControls'; // Import the new hook
+import { useGameControls } from './useGameControls';
 
 export function useClueGame() {
   const navigate = useNavigate();
@@ -24,7 +24,6 @@ export function useClueGame() {
     gameState: "playing",
   });
 
-  // Use the shared hook for control state
   const { canRemove, canClear, canCheck, canHint } = useGameControls(state);
 
   const [levels, setLevels] = useState<Level[]>([]);
@@ -39,6 +38,7 @@ export function useClueGame() {
 
   const resetLevel = useCallback(() => {
     if (!levels.length || !currentLevel) return;
+    // FIX: Call the imported generateLetters function correctly
     setLetters(generateLetters(currentLevel.solution, currentLevel.difficulty, language));
     dispatch({ type: "RESET", solutionLen: solution.length });
     setWrongAnswers([]);
@@ -158,7 +158,8 @@ export function useClueGame() {
 
   useEffect(() => {
     setLoading(true);
-    loadLevels(language, categories, difficulty)
+    // FIX: Use the engine instance to load levels
+    clueGameEngine.loadLevels({ language, categories, difficulty })
       .then(setLevels)
       .finally(() => setLoading(false));
   }, [language, categories, difficulty]);
@@ -191,7 +192,6 @@ export function useClueGame() {
     handleBack,
     handleRevealOrListSolutions,
     resetLevel,
-    // Return the calculated control states
     canRemove,
     canClear,
     canCheck,
