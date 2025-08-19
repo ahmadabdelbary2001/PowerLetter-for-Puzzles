@@ -1,3 +1,4 @@
+// src/components/molecules/GameControls.tsx
 import React from 'react';
 import { GameButton } from '@/components/atoms/GameButton';
 import { Lightbulb, RotateCcw, RefreshCw, Delete, CheckCircle, Eye, ArrowLeft, ArrowRight } from 'lucide-react';

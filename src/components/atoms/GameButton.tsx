@@ -1,3 +1,4 @@
+// src/components/atoms/GameButton.tsx
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { LucideIcon } from "lucide-react";

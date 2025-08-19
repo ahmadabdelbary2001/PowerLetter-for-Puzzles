@@ -1,3 +1,4 @@
+// src/components/molecules/DifficultySelector.tsx
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/hooks/useTranslation";

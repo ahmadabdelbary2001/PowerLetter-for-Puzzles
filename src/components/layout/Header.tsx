@@ -1,13 +1,13 @@
 // src/components/layout/Header.tsx
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import LanguageSelector from "@/components/layout/LanguageSelector";
+import LanguageSelector from "@/components/molecules/LanguageSelector";
 import { cn } from "@/lib/utils";
 import { useGameMode } from "@/hooks/useGameMode";
 import { Menu, ToyBrick } from "lucide-react";
 import React, { useEffect, useRef } from "react";
-import ModeToggler from "./ModeToggler";
+import ModeToggler from "@/components/molecules/ModeToggler";
+import { Logo } from "@/components/atoms/Logo";
 
 interface HeaderProps {
   currentView?: "home" | "selection" | "play" | "kids";
@@ -52,23 +52,7 @@ export function Header({ currentView, showLanguage = true }: HeaderProps) {
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center h-16 justify-between">
         {/* Logo / Brand */}
-        <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-          <div className="relative">
-            <div className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              ⚡
-            </div>
-            <div className="absolute -top-1 -right-1 w-2 h-2 bg-gradient-to-r from-warning to-warning-light rounded-full animate-pulse" />
-          </div>
-          <div className="hidden sm:block">
-            <h1 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              PowerLetter
-            </h1>
-            <p className="text-xs text-muted-foreground -mt-1">Educational Puzzles</p>
-          </div>
-          <Badge variant="outline" className="ml-2 text-xs bg-gradient-to-r from-primary/10 to-secondary/10 hidden sm:inline">
-            Beta
-          </Badge>
-        </Link>
+        <Logo />
 
         {/* Desktop nav */}
         <nav className="hidden sm:flex items-center gap-1" role="navigation" aria-label="Main">

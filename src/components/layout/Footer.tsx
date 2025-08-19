@@ -1,3 +1,4 @@
+// src/components/layout/Footer.tsx
 export default function Footer() {
   return (
     <footer className="site-footer bg-background/95 border-t border-border/40">

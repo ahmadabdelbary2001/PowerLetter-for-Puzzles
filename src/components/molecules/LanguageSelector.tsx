@@ -1,4 +1,4 @@
-// src/components/layout/LanguageSelector.tsx
+// src/components/molecules/LanguageSelector.tsx
 import React, { useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Globe } from "lucide-react";

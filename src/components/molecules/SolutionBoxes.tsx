@@ -1,3 +1,4 @@
+// src/components/molecules/SolutionBoxes.tsx
 import { useState, useEffect } from "react"
 import { SolutionBox } from "@/components/atoms/SolutionBox"
 import { cn } from "@/lib/utils"
@@ -45,7 +46,7 @@ export function SolutionBoxes({ solution, currentWord, className }: SolutionBoxe
           key={index}
           char={currentChars[index] || ''}
           filled={!!currentChars[index]}
-          deviceType={deviceType}
+          size={deviceType}
         />
       ))}
     </div>

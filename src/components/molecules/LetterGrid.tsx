@@ -1,3 +1,4 @@
+// src/components/molecules/LetterGrid.tsx
 import { useState, useEffect } from "react"
 import { LetterBox } from "@/components/atoms/LetterBox"
 import { cn } from "@/lib/utils"

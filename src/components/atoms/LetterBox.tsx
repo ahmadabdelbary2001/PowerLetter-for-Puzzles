@@ -1,3 +1,4 @@
+// src/components/atoms/LetterBox.tsx
 import { cn } from "@/lib/utils"
 
 interface LetterBoxProps {

@@ -1,4 +1,4 @@
-// src/components/GameScreens/GameLayout.tsx
+// src/components/layout/GameLayout.tsx
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
@@ -8,6 +8,7 @@ import { useGameMode } from '@/hooks/useGameMode';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Header } from '@/components/layout/Header';
 import { Scoreboard } from '@/components/molecules/Scoreboard';
+import { TeamDisplay } from '@/components/molecules/TeamDisplay';
 
 interface GameLayoutProps {
   children: React.ReactNode;
@@ -31,13 +32,7 @@ export const GameLayout: React.FC<GameLayoutProps> = ({ children, title, levelIn
               {dir === "rtl" ? <ArrowRight /> : <ArrowLeft />} {t.back}
             </Button>
             {gameMode === "competitive" && teams.length > 0 && (
-              <div className="flex flex-wrap gap-2 items-center justify-start sm:justify-end w-full sm:w-auto">
-                {teams.map((team, idx) => (
-                  <Badge key={team.id} variant={idx === currentTeam ? "default" : "secondary"} className="px-3">
-                    {team.name}: {team.score}
-                  </Badge>
-                ))}
-              </div>
+              <TeamDisplay teams={teams} currentTeam={currentTeam} showScore={true} />
             )}
           </div>
 
