@@ -1,4 +1,4 @@
-// src/components/GameSetup/TeamConfigurator.tsx
+// src/pages/TeamConfigurator.tsx
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,7 +13,7 @@ import { Label } from '@/components/ui/label';
 import { Users, Plus, Minus, ArrowRight, ArrowLeft } from 'lucide-react';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useTranslation } from '@/hooks/useTranslation';
-import { Header } from '@/components/layout/Header';
+import { Header } from '@/components/organisms/Header';
 import { useNavigate, useParams } from 'react-router-dom';
 
 const TeamConfigurator: React.FC = () => {

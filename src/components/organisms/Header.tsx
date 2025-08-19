@@ -1,4 +1,4 @@
-// src/components/layout/Header.tsx
+// src/components/organisms/Header.tsx
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import LanguageSelector from "@/components/molecules/LanguageSelector";

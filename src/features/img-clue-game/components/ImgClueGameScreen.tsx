@@ -3,10 +3,10 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { SolutionBoxes } from "@/components/molecules/SolutionBoxes";
 import { LetterGrid } from "@/components/molecules/LetterGrid";
-import GameControls from "@/components/molecules/GameControls";
+import GameControls from "@/components/organisms/GameControls";
 import { ArrowLeft, ArrowRight, Volume2 } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
-import { GameLayout } from "@/components/layout/GameLayout";
+import { GameLayout } from "@/components/templates/GameLayout";
 import { useImageClueGame } from "../hooks/useImageClueGame";
 import type { ImageLevel } from "../engine";
 

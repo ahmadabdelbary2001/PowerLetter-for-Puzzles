@@ -1,11 +1,11 @@
-// src/components/GameSetup/KidsGameModeSelector.tsx
+// src/components/organisms/KidsGameModeSelector.tsx
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ArrowRight, ArrowLeft, PawPrint, Apple, Shapes, BrainCircuit } from 'lucide-react';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useTranslation } from '@/hooks/useTranslation';
-import { Header } from '@/components/layout/Header';
+import { Header } from '@/components/organisms/Header';
 import { StepIndicator } from '@/components/atoms/StepIndicator';
 import { ModeSelector } from '@/components/molecules/ModeSelector';
 import { CategorySelector } from '@/components/molecules/CategorySelector';

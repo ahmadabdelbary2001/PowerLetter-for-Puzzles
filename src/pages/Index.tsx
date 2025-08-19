@@ -1,10 +1,10 @@
 // src/pages/Index.tsx
 import { useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
-import { Header } from "@/components/layout/Header";
+import { Header } from "@/components/organisms/Header";
 import HeroSection from "@/pages/HeroSection";
 import GameTypeSelector from "@/pages/GameTypeSelector";
-import Footer from "@/components/layout/Footer";
+import Footer from "@/components/organisms/Footer";
 import type { Language } from "@/types/game";
 import { useGameMode } from "@/hooks/useGameMode";
 

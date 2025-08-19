@@ -1,5 +1,4 @@
-// src/components/GameScreens/ClueGame/gameReducer.ts
-
+// src/components/game/gameReducer.ts
 export type GameState = 'playing' | 'won' | 'failed';
 
 export type State = {

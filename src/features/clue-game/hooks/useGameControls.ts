@@ -1,6 +1,6 @@
 // src/features/clue-game/hooks/useGameControls.ts
 import { useMemo } from 'react';
-import type { State } from '@/components/game/gameReducer';
+import type { State } from '@/lib/gameReducer';
 import { useGameMode } from '@/hooks/useGameMode';
 
 export function useGameControls(state: State) {

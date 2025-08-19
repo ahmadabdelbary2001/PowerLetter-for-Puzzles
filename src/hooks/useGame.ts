@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback, useReducer } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { IGameEngine } from '@/games/engine/types';
-import { reducer, type State, type Action } from '@/components/game/gameReducer';
+import { reducer, type State, type Action } from '@/lib/gameReducer';
 import type { Language, GameCategory, Difficulty } from '@/types/game';
 
 /**

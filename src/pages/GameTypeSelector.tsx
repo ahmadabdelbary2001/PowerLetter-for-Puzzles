@@ -6,8 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { Lock, Search } from 'lucide-react'; // Import Search for the button
 import { useGameMode } from '@/hooks/useGameMode';
 import { useTranslation } from '@/hooks/useTranslation';
-import { Header } from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
+import { Header } from '@/components/organisms/Header';
+import Footer from '@/components/organisms/Footer';
 import { useNavigate } from 'react-router-dom';
 import { GAME_REGISTRY, type GameConfig } from '@/games/GameRegistry';
 import { cn } from '@/lib/utils';

@@ -4,9 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { SolutionBoxes } from "@/components/molecules/SolutionBoxes";
 import { LetterGrid } from "@/components/molecules/LetterGrid";
-import GameControls from "@/components/molecules/GameControls";
+import GameControls from "@/components/organisms/GameControls";
 import { useTranslation } from "@/hooks/useTranslation";
-import { GameLayout } from "@/components/layout/GameLayout";
+import { GameLayout } from "@/components/templates/GameLayout";
 import { useClueGame } from "../hooks/useClueGame";
 // FIX: Removed unused useGameMode import
 

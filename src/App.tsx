@@ -9,9 +9,9 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import GameTypeSelector from "./pages/GameTypeSelector";
 import { ThemeProvider } from "./contexts/ThemeProvider";
-import GameModeSelector from "./components/setup/GameModeSelector";
-import KidsGameModeSelector from "./components/setup/KidsGameModeSelector";
-import TeamConfigurator from "./components/setup/TeamConfigurator";
+import GameModeSelector from "./components/organisms/GameModeSelector";
+import KidsGameModeSelector from "./components/organisms/KidsGameModeSelector";
+import TeamConfigurator from "./pages/TeamConfigurator";
 import KidsGameSelector from "./pages/KidsGameSelector";
 import { getGameConfig } from './games/GameRegistry';
 

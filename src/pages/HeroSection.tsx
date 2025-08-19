@@ -1,3 +1,4 @@
+// src/pages/HeroSection.tsx
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 import { useTranslation } from "../hooks/useTranslation";

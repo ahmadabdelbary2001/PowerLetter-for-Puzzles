@@ -1,4 +1,4 @@
-// src/components/layout/GameLayout.tsx
+// src/components/templates/GameLayout.tsx
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useTranslation } from '@/hooks/useTranslation';
-import { Header } from '@/components/layout/Header';
+import { Header } from '@/components/organisms/Header';
 import { Scoreboard } from '@/components/molecules/Scoreboard';
 import { TeamDisplay } from '@/components/molecules/TeamDisplay';
 
