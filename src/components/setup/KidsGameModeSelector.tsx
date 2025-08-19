@@ -1,21 +1,22 @@
 // src/components/GameSetup/KidsGameModeSelector.tsx
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardTitle } from '@/components/ui/card';
-import { User, Users, ArrowRight, ArrowLeft, PawPrint, Apple, Shapes, BrainCircuit, Check } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { ArrowRight, ArrowLeft, PawPrint, Apple, Shapes, BrainCircuit } from 'lucide-react';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Header } from '@/components/layout/Header';
 import { StepIndicator } from '@/components/atoms/StepIndicator';
+import { ModeSelector } from '@/components/molecules/ModeSelector';
+import { CategorySelector } from '@/components/molecules/CategorySelector';
 import { useNavigate, useParams } from 'react-router-dom';
-import { cn } from '@/lib/utils';
 import type { GameCategory } from '@/types/game';
 
 const categoriesData = [
+  { id: 'general', icon: <BrainCircuit size={48} />, labelKey: 'generalKnowledge' },
   { id: 'animals', icon: <PawPrint size={48} />, labelKey: 'animals' },
   { id: 'fruits', icon: <Apple size={48} />, labelKey: 'fruits' },
   { id: 'shapes', icon: <Shapes size={48} />, labelKey: 'shapes' },
-  { id: 'general', icon: <BrainCircuit size={48} />, labelKey: 'generalKnowledge' },
 ] as const;
 
 // --- Main Component ---
@@ -70,49 +71,18 @@ const KidsGameModeSelector: React.FC = () => {
   const renderStepContent = () => {
     switch (step) {
       case 1: // Select Mode
-        return (
-          <>
-            <h2 className="text-2xl sm:text-3xl font-bold text-center mb-6">{t.selectMode}</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card onClick={() => handleModeSelect('single')} className="text-center p-6 cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors duration-300 hover:shadow-xl">
-                <User className="mx-auto text-blue-500 mb-4" size={64} />
-                <CardTitle className="text-xl font-semibold">{t.singlePlayer}</CardTitle>
-              </Card>
-              <Card onClick={() => handleModeSelect('competitive')} className="text-center p-6 cursor-pointer hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors duration-300 hover:shadow-xl">
-                <Users className="mx-auto text-green-500 mb-4" size={64} />
-                <CardTitle className="text-xl font-semibold">{t.competitive}</CardTitle>
-              </Card>
-            </div>
-          </>
-        );
+        return <ModeSelector onSelect={handleModeSelect} />;
       case 2: // Select Category
         return (
           <>
             <h2 className="text-2xl sm:text-3xl font-bold text-center mb-2">{t.selectCategory}</h2>
             <p className="text-center text-muted-foreground mb-6">{t.selectCategoryDesc}</p>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-              {categoriesData.map(cat => {
-                const isSelected = selectedCategories.includes(cat.id as GameCategory);
-                return (
-                  <Card
-                    key={cat.id}
-                    onClick={() => handleCategoryToggle(cat.id as GameCategory)}
-                    className={cn(
-                      "text-center p-4 cursor-pointer hover:shadow-xl transition-all duration-300 relative",
-                      isSelected ? "ring-2 ring-green-500 bg-green-50 dark:bg-green-900/20" : "hover:bg-gray-50 dark:hover:bg-gray-800"
-                    )}
-                  >
-                    {isSelected && (
-                      <div className="absolute top-2 right-2 bg-green-500 text-white rounded-full p-1">
-                        <Check size={16} />
-                      </div>
-                    )}
-                    <div className="text-gray-700 dark:text-gray-300">{cat.icon}</div>
-                    <p className="mt-2 font-semibold text-sm sm:text-base">{t[cat.labelKey]}</p>
-                  </Card>
-                );
-              })}
-            </div>
+            <CategorySelector 
+              categories={[...categoriesData]} 
+              selectedCategories={selectedCategories} 
+              onCategoryToggle={handleCategoryToggle}
+              className="gap-4 sm:gap-6"
+            />
             <div className="flex justify-center mt-8">
               <Button onClick={handleContinueFromCategories} disabled={selectedCategories.length === 0}>
                 {t.continue} {dir === 'rtl' ? <ArrowLeft className="w-4 h-4 mr-2" /> : <ArrowRight className="w-4 h-4 ml-2" />}
