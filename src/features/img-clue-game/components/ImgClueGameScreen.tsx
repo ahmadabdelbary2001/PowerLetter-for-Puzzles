@@ -1,8 +1,8 @@
 // src/components/GameScreens/img-clue-game/ImgClueGameScreen.tsx
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { SolutionBoxes } from "@/components/game/SolutionBoxes";
-import { LetterGrid } from "@/components/game/LetterGrid";
+import { SolutionBoxes } from "@/components/molecules/SolutionBoxes";
+import { LetterGrid } from "@/components/molecules/LetterGrid";
 import GameControls from "@/components/game/GameControls";
 import { ArrowLeft, ArrowRight, Volume2 } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";

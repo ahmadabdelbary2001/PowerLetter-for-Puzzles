@@ -1,5 +1,6 @@
-import { cn } from "@/lib/utils"
 import { useState, useEffect } from "react"
+import { SolutionBox } from "@/components/atoms/SolutionBox"
+import { cn } from "@/lib/utils"
 
 interface SolutionBoxesProps {
   solution: string
@@ -10,7 +11,7 @@ interface SolutionBoxesProps {
 export function SolutionBoxes({ solution, currentWord, className }: SolutionBoxesProps) {
   const solutionChars = [...solution];
   const currentChars = [...currentWord];
-  
+
   // State to track device type
   const [deviceType, setDeviceType] = useState<'mobile' | 'tablet' | 'computer'>('mobile');
 
@@ -29,10 +30,10 @@ export function SolutionBoxes({ solution, currentWord, className }: SolutionBoxe
 
     // Initial check
     checkDeviceType();
-    
+
     // Add event listener for window resize
     window.addEventListener('resize', checkDeviceType);
-    
+
     // Cleanup
     return () => window.removeEventListener('resize', checkDeviceType);
   }, []);
@@ -40,18 +41,12 @@ export function SolutionBoxes({ solution, currentWord, className }: SolutionBoxe
   return (
     <div className={cn("flex flex-wrap justify-center gap-2", className)}>
       {solutionChars.map((_, index) => (
-        <div
+        <SolutionBox
           key={index}
-          className={cn(
-            deviceType === 'computer' ? "w-12 h-12 text-lg" : 
-            deviceType === 'tablet' ? "w-10 h-10 text-md" : 
-            "w-8 h-8 text-sm",
-            "border-2 rounded-lg flex items-center justify-center font-bold",
-            currentChars[index] ? "bg-primary border-primary text-primary-foreground" : "bg-card"
-          )}
-        >
-          {currentChars[index] || ''}
-        </div>
+          char={currentChars[index] || ''}
+          filled={!!currentChars[index]}
+          deviceType={deviceType}
+        />
       ))}
     </div>
   );
