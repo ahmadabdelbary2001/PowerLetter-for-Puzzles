@@ -6,21 +6,10 @@ import { User, Users, ArrowRight, ArrowLeft, PawPrint, Apple, Shapes, BrainCircu
 import { useGameMode } from '@/hooks/useGameMode';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Header } from '@/components/layout/Header';
+import { StepIndicator } from '@/components/atoms/StepIndicator';
 import { useNavigate, useParams } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import type { GameCategory } from '@/types/game';
-
-// --- Helper Components for Steps ---
-const StepIndicator: React.FC<{ currentStep: number; totalSteps: number }> = ({ currentStep, totalSteps }) => (
-  <div className="flex justify-center gap-2 mb-8">
-    {Array.from({ length: totalSteps }).map((_, i) => (
-      <div
-        key={i}
-        className={cn('h-2 rounded-full transition-all duration-300', i + 1 === currentStep ? 'w-8 bg-green-500' : 'w-4 bg-gray-300 dark:bg-gray-600')}
-      />
-    ))}
-  </div>
-);
 
 const categoriesData = [
   { id: 'animals', icon: <PawPrint size={48} />, labelKey: 'animals' },

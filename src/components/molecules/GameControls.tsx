@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '@/components/ui/button';
+import { GameButton } from '@/components/atoms/GameButton';
 import { Lightbulb, RotateCcw, RefreshCw, Delete, CheckCircle, Eye, ArrowLeft, ArrowRight } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useGameMode } from '@/hooks/useGameMode';
@@ -57,15 +57,15 @@ interface Props {
 
 /**
  * GameControls component - Renders game control buttons based on game state
- * 
+ *
  * This component conditionally renders different sets of buttons based on:
  * - Current game state (playing, won, failed)
  * - Game mode (single player vs competitive)
  * - Available actions (canRemove, canCheck, etc.)
- * 
+ *
  * In competitive mode, it hides Reset and Previous buttons to maintain game flow
  */
-const GameControls: React.FC<Props> = ({
+export const GameControls: React.FC<Props> = ({
   onReset,
   onRemoveLetter,
   onClearAnswer,
@@ -87,10 +87,10 @@ const GameControls: React.FC<Props> = ({
 }) => {
   // Get text direction based on current language
   const { dir } = useTranslation();
-  
+
   // Get current game mode to determine which buttons to show
   const { gameMode } = useGameMode();
-  
+
   // Determine if we should show reset and previous buttons
   // In competitive mode, we hide these buttons
   const showResetAndPrev = gameMode !== 'competitive';
@@ -98,18 +98,31 @@ const GameControls: React.FC<Props> = ({
   if (isKidsMode) {
     return (
       <div className="flex flex-wrap gap-2 sm:gap-3 justify-center mt-4">
-        <Button onClick={onRemoveLetter} disabled={!canRemove} variant="outline" className="text-lg py-6 flex-1">
-          <Delete className="w-5 h-5 mr-2" />
+        <GameButton 
+          onClick={onRemoveLetter} 
+          disabled={!canRemove} 
+          icon={Delete}
+          className="text-lg py-6 flex-1"
+        >
           {labels.remove}
-        </Button>
-        <Button onClick={onClearAnswer} disabled={!canClear} variant="outline" className="text-lg py-6 flex-1">
-          <RotateCcw className="w-5 h-5 mr-2" />
+        </GameButton>
+        <GameButton 
+          onClick={onClearAnswer} 
+          disabled={!canClear} 
+          icon={RotateCcw}
+          className="text-lg py-6 flex-1"
+        >
           {labels.clear}
-        </Button>
-        <Button onClick={onCheckAnswer} disabled={!canCheck} className="bg-blue-600 hover:bg-blue-700 text-white text-lg py-6 flex-1">
-          <CheckCircle className="w-5 h-5 mr-2" />
+        </GameButton>
+        <GameButton 
+          onClick={onCheckAnswer} 
+          disabled={!canCheck} 
+          icon={CheckCircle}
+          isPrimary={true}
+          className="text-lg py-6 flex-1"
+        >
           {labels.check}
-        </Button>
+        </GameButton>
       </div>
     );
   }
@@ -122,46 +135,29 @@ const GameControls: React.FC<Props> = ({
          * In competitive mode, we don't allow resetting to maintain game flow
          */}
         {showResetAndPrev && (
-          <Button variant="outline" onClick={onReset}>
-            <RefreshCw className="h-4 w-4 mr-2" />
+          <GameButton onClick={onReset} icon={RefreshCw}>
             {labels.reset}
-          </Button>
+          </GameButton>
         )}
         {/* Only show previous button in single player mode
          * In competitive mode, players must progress forward only
          */}
         {showResetAndPrev && canPrev && (
-          <Button 
-            variant="outline" 
-            onClick={onPrevLevel} 
-            className="flex items-center gap-2"
+          <GameButton
+            onClick={onPrevLevel}
+            icon={dir === 'rtl' ? ArrowRight : ArrowLeft}
           >
-            {/* Direction-aware arrow icon based on text direction */}
-            {dir === 'rtl' ? (
-              <ArrowRight className="h-4 w-4" />
-            ) : (
-              <ArrowLeft className="h-4 w-4" />
-            )}
             {labels.prev}
-          </Button>
+          </GameButton>
         )}
         {canNext && (
-          <Button 
-            onClick={onNextLevel} 
-            className="flex items-center gap-2"
+          <GameButton
+            onClick={onNextLevel}
+            icon={dir === 'rtl' ? ArrowLeft : ArrowRight}
+            isPrimary={true}
           >
-            {dir === 'rtl' ? (
-              <>
-                {labels.next}
-                <ArrowLeft className="h-4 w-4" />
-              </>
-            ) : (
-              <>
-                {labels.next}
-                <ArrowRight className="h-4 w-4" />
-              </>
-            )}
-          </Button>
+            {labels.next}
+          </GameButton>
         )}
       </div>
     );
@@ -171,35 +167,55 @@ const GameControls: React.FC<Props> = ({
   return (
     <div className="flex flex-wrap gap-1 sm:gap-2 justify-center mt-4">
       {/* Remove last letter button */}
-      <Button onClick={onRemoveLetter} disabled={!canRemove} variant="outline" className="text-xs sm:text-sm">
-        <Delete className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-        <span className="text-xs sm:text-sm">{labels.remove}</span>
-      </Button>
+      <GameButton 
+        onClick={onRemoveLetter} 
+        disabled={!canRemove} 
+        icon={Delete}
+        className="text-xs sm:text-sm"
+      >
+        {labels.remove}
+      </GameButton>
 
       {/* Clear entire answer button */}
-      <Button onClick={onClearAnswer} disabled={!canClear} variant="outline" className="text-xs sm:text-sm">
-        <RotateCcw className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-        <span className="text-xs sm:text-sm">{labels.clear}</span>
-      </Button>
+      <GameButton 
+        onClick={onClearAnswer} 
+        disabled={!canClear} 
+        icon={RotateCcw}
+        className="text-xs sm:text-sm"
+      >
+        {labels.clear}
+      </GameButton>
 
       {/* Hint button - shows remaining hints if available */}
-      <Button variant="outline" onClick={onHint} disabled={!canHint} className="text-xs sm:text-sm">
-        <Lightbulb className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-        <span className="text-xs sm:text-sm">{labels.hint}</span>
+      <GameButton 
+        onClick={onHint} 
+        disabled={!canHint} 
+        icon={Lightbulb}
+        className="text-xs sm:text-sm"
+      >
+        {labels.hint}
         {hintsRemaining !== undefined && <span className="text-xs sm:text-sm"> ({hintsRemaining})</span>}
-      </Button>
+      </GameButton>
 
       {/* Check answer button - primary action */}
-      <Button onClick={onCheckAnswer} disabled={!canCheck} className="bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm">
-        <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-        <span className="text-xs sm:text-sm">{labels.check}</span>
-      </Button>
+      <GameButton 
+        onClick={onCheckAnswer} 
+        disabled={!canCheck} 
+        icon={CheckCircle}
+        isPrimary={true}
+        className="text-xs sm:text-sm"
+      >
+        {labels.check}
+      </GameButton>
 
       {/* Show solution button */}
-      <Button variant="outline" onClick={onShowSolution} className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
-        <Eye className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-        <span className="text-xs sm:text-sm">{labels.showSolution}</span>
-      </Button>
+      <GameButton 
+        onClick={onShowSolution} 
+        icon={Eye}
+        className="text-xs sm:text-sm"
+      >
+        {labels.showSolution}
+      </GameButton>
     </div>
   );
 };
