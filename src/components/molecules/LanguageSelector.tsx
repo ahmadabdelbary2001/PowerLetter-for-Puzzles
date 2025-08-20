@@ -1,20 +1,44 @@
 // src/components/molecules/LanguageSelector.tsx
+/**
+ * LanguageSelector - A dropdown component for selecting the application language
+ * 
+ * This component provides a dropdown menu for users to select their preferred language.
+ * It supports both compact and full display modes, and is accessible with keyboard
+ * navigation and screen reader support.
+ */
 import React, { useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Globe } from "lucide-react";
 import type { Language } from "@/types/game";
 
+/**
+ * Props for the LanguageSelector component
+ */
 interface LanguageSelectorProps {
+  /** The currently selected language */
   currentLanguage: Language;
+  /** Callback function when a language is selected */
   onLanguageChange: (language: Language) => void;
+  /** Whether to display in compact mode (smaller button) */
   compact?: boolean;
 }
 
+/**
+ * Available languages with their display names and flag emojis
+ */
 const languages: Array<{ code: Language; name: string; flag: string }> = [
   { code: "en", name: "English", flag: "🇺🇸" },
   { code: "ar", name: "العربية", flag: "🇸🇦" },
 ];
 
+/**
+ * LanguageSelector component - A dropdown for language selection
+ * 
+ * This component renders a dropdown button that shows the current language
+ * and allows users to select from available languages. It has two display modes:
+ * compact (shows only language code) and full (shows language name and flag).
+ * The component is accessible, supporting keyboard navigation and screen readers.
+ */
 export default function LanguageSelector({
   currentLanguage,
   onLanguageChange,
@@ -24,12 +48,19 @@ export default function LanguageSelector({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
 
+  /**
+   * Handles language selection from the dropdown
+   * @param language - The selected language code
+   */
   const handleLanguageSelect = (language: Language) => {
     onLanguageChange(language);
     setIsOpen(false);
     buttonRef.current?.focus();
   };
 
+  /**
+   * Effect to handle clicks outside the component to close the dropdown
+   */
   useEffect(() => {
     function handleOutside(e: MouseEvent) {
       if (!containerRef.current) return;
@@ -40,6 +71,9 @@ export default function LanguageSelector({
     return () => document.removeEventListener("mousedown", handleOutside);
   }, []);
 
+  /**
+   * Effect to handle Escape key to close the dropdown
+   */
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") {
@@ -53,7 +87,9 @@ export default function LanguageSelector({
 
   const currentLang = languages.find((lang) => lang.code === currentLanguage);
 
-  // Dropdown list: right-aligned on desktop, full-width on small screens
+  /**
+   * Dropdown list component - right-aligned on desktop, full-width on small screens
+   */
   const list = (
     <div
       ref={containerRef}
@@ -83,6 +119,7 @@ export default function LanguageSelector({
     </div>
   );
 
+  // Compact mode display
   if (compact) {
     return (
       <div className="relative inline-block">
@@ -105,7 +142,7 @@ export default function LanguageSelector({
     );
   }
 
-  // default (desktop): show full name and flag, but compact visually on small screens
+  // Default (desktop) display: show full name and flag, but compact visually on small screens
   return (
     <div className="relative inline-block">
       <Button

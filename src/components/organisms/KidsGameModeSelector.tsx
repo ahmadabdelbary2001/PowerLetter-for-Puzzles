@@ -1,4 +1,9 @@
 // src/components/organisms/KidsGameModeSelector.tsx
+/**
+ * KidsGameModeSelector component - A simplified version of GameModeSelector for kids
+ * Features colorful UI, kid-friendly categories, and a simpler 2-step process
+ * Allows selection of game mode and categories appropriate for children
+ */
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -12,6 +17,7 @@ import { CategorySelector } from '@/components/molecules/CategorySelector';
 import { useNavigate, useParams } from 'react-router-dom';
 import type { GameCategory } from '@/types/game';
 
+// Kid-friendly categories with colorful icons and translation keys
 const categoriesData = [
   { id: 'general', icon: <BrainCircuit size={48} />, labelKey: 'generalKnowledge' },
   { id: 'animals', icon: <PawPrint size={48} />, labelKey: 'animals' },
@@ -21,28 +27,33 @@ const categoriesData = [
 
 // --- Main Component ---
 const KidsGameModeSelector: React.FC = () => {
+  // Custom hooks for game state and translation
   const { setGameMode, setCategories } = useGameMode();
   const { t, dir } = useTranslation();
   const navigate = useNavigate();
   const { gameType } = useParams<{ gameType: string }>();
 
+  // State for current step and selected categories
   const [step, setStep] = useState(1);
   const [selectedCategories, setSelectedCategories] = useState<GameCategory[]>([]);
 
+  // Handle back navigation - either to previous step or to kids games page
   const handleBack = () => {
     if (step > 1) {
       setStep(s => s - 1);
     } else {
-      // FIX: The back button on the first step should go to the Kids Game selection screen.
+      // Navigate back to kids games selection screen when on first step
       navigate('/kids-games');
     }
   };
 
+  // Handle game mode selection and advance to category selection
   const handleModeSelect = (mode: 'single' | 'competitive') => {
     setGameMode(mode);
     setStep(2);
   };
 
+  // Handle category selection with special logic for 'general' category
   const handleCategoryToggle = (category: GameCategory) => {
     if (category === 'general') {
       setSelectedCategories(['general']);
@@ -58,6 +69,7 @@ const KidsGameModeSelector: React.FC = () => {
     });
   };
 
+  // Finalize selections and navigate to appropriate game screen
   const handleContinueFromCategories = () => {
     setCategories(selectedCategories);
     const { gameMode } = useGameMode.getState();
@@ -68,6 +80,7 @@ const KidsGameModeSelector: React.FC = () => {
     }
   };
 
+  // Render content based on current step
   const renderStepContent = () => {
     switch (step) {
       case 1: // Select Mode
@@ -77,9 +90,9 @@ const KidsGameModeSelector: React.FC = () => {
           <>
             <h2 className="text-2xl sm:text-3xl font-bold text-center mb-2">{t.selectCategory}</h2>
             <p className="text-center text-muted-foreground mb-6">{t.selectCategoryDesc}</p>
-            <CategorySelector 
-              categories={[...categoriesData]} 
-              selectedCategories={selectedCategories} 
+            <CategorySelector
+              categories={[...categoriesData]}
+              selectedCategories={selectedCategories}
               onCategoryToggle={handleCategoryToggle}
               className="gap-4 sm:gap-6"
             />
@@ -99,10 +112,12 @@ const KidsGameModeSelector: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-background to-yellow-50 dark:from-gray-900 dark:to-gray-800">
       <Header currentView="kids" />
       <main className="container mx-auto px-4 py-8 max-w-4xl" dir={dir}>
+        {/* Step indicator showing progress through the simplified 2-step process */}
         <StepIndicator currentStep={step} totalSteps={2} />
         <Card className="p-6 sm:p-10 bg-card/80 backdrop-blur-sm">
           {renderStepContent()}
         </Card>
+        {/* Back navigation button */}
         <div className="mt-8 flex justify-start">
           <Button variant="outline" onClick={handleBack} className="flex items-center gap-2">
             {dir === 'rtl' ? <ArrowRight className="w-4 h-4" /> : <ArrowLeft className="w-4 h-4" />}

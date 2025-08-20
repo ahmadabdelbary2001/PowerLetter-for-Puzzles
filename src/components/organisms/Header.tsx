@@ -1,4 +1,9 @@
 // src/components/organisms/Header.tsx
+/**
+ * Header component - The main navigation header for the PowerLetter application
+ * Features responsive design with desktop and mobile navigation
+ * Includes language selector, mode toggler, and navigation links
+ */
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import LanguageSelector from "@/components/molecules/LanguageSelector";
@@ -9,22 +14,33 @@ import React, { useEffect, useRef } from "react";
 import ModeToggler from "@/components/molecules/ModeToggler";
 import { Logo } from "@/components/atoms/Logo";
 
+/**
+ * Props for the Header component
+ */
 interface HeaderProps {
+  /** Current active view for highlighting navigation */
   currentView?: "home" | "selection" | "play" | "kids";
+  /** Whether to show language selector */
   showLanguage?: boolean;
 }
 
 export function Header({ currentView, showLanguage = true }: HeaderProps) {
+  // Get current language and language change function from game mode context
   const { language: currentLanguage, setLanguage: onLanguageChange } = useGameMode();
+  // State for mobile menu open/close
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  // ID for mobile navigation accessibility
   const mobileNavId = "mobile-navigation";
 
+  // Refs for mobile panel and toggle button
   const mobilePanelRef = useRef<HTMLDivElement | null>(null);
   const toggleButtonRef = useRef<HTMLButtonElement | null>(null);
 
+  // Effect to handle closing mobile menu when clicking outside
   useEffect(() => {
     if (!mobileOpen) return;
 
+    // Handle clicks outside the mobile menu
     function handleOutside(e: MouseEvent | TouchEvent) {
       const target = e.target as Node | null;
       if (!target) return;
@@ -33,14 +49,17 @@ export function Header({ currentView, showLanguage = true }: HeaderProps) {
       setMobileOpen(false);
     }
 
+    // Handle escape key press
     function handleEsc(e: KeyboardEvent) {
       if (e.key === "Escape") setMobileOpen(false);
     }
 
+    // Add event listeners
     document.addEventListener("mousedown", handleOutside);
     document.addEventListener("touchstart", handleOutside);
     document.addEventListener("keydown", handleEsc);
 
+    // Clean up event listeners
     return () => {
       document.removeEventListener("mousedown", handleOutside);
       document.removeEventListener("touchstart", handleOutside);
@@ -74,7 +93,7 @@ export function Header({ currentView, showLanguage = true }: HeaderProps) {
               Games
             </Button>
           </Link>
-          {/* FIX: Add Kids Section Link */}
+          {/* Kids section link with toy brick icon */}
           <Link to="/kids-games">
             <Button
               variant="ghost"
@@ -95,6 +114,7 @@ export function Header({ currentView, showLanguage = true }: HeaderProps) {
 
         {/* Right side controls */}
         <div className="flex items-center gap-3">
+          {/* Language selector - different styles for desktop and mobile */}
           {showLanguage && (
             <>
               <div className="hidden sm:block">
@@ -105,12 +125,14 @@ export function Header({ currentView, showLanguage = true }: HeaderProps) {
               </div>
             </>
           )}
+          {/* Mode toggler - different styles for desktop and mobile */}
           <div className="hidden sm:block">
             <ModeToggler />
           </div>
           <div className="sm:hidden">
             <ModeToggler compact />
           </div>
+          {/* Mobile menu toggle button */}
           <div className="sm:hidden">
             <button
               ref={toggleButtonRef}
@@ -126,7 +148,7 @@ export function Header({ currentView, showLanguage = true }: HeaderProps) {
         </div>
       </div>
 
-      {/* Mobile panel */}
+      {/* Mobile panel - only shown when mobileOpen is true */}
       {mobileOpen && (
         <div
           id={mobileNavId}
@@ -144,7 +166,7 @@ export function Header({ currentView, showLanguage = true }: HeaderProps) {
                 Games
               </Button>
             </Link>
-            {/* FIX: Add Kids Section Link to Mobile Menu */}
+            {/* Kids section link for mobile menu */}
             <Link to="/kids-games" onClick={() => setMobileOpen(false)} className="block">
               <Button variant="ghost" size="sm" className={cn("w-full justify-start flex items-center gap-2", currentView === "kids" && "bg-accent")}>
                 <ToyBrick className="w-4 h-4 text-green-500" />

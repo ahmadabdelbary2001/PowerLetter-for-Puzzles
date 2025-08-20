@@ -1,16 +1,41 @@
 // src/components/atoms/LetterBox.tsx
+/**
+ * LetterBox - A component for displaying individual letters in word games
+ * 
+ * This component renders a clickable box containing a single letter.
+ * It supports different visual states for selection, hints, and disabled states.
+ * The component is responsive and adjusts its size based on the device type.
+ */
 import { cn } from "@/lib/utils"
 
+/**
+ * Props for the LetterBox component
+ */
 interface LetterBoxProps {
+  /** The letter to display in the box */
   letter: string
+  /** Whether this letter box is currently selected */
   isSelected?: boolean
+  /** Whether this letter is a hint (automatically revealed) */
   isHint?: boolean
+  /** Whether the letter box is disabled (non-interactive) */
   disabled?: boolean
+  /** Callback function when the letter box is clicked */
   onClick?: () => void
+  /** Additional CSS classes for custom styling */
   className?: string
+  /** The type of device for responsive sizing */
   deviceType?: 'mobile' | 'tablet' | 'computer'
 }
 
+/**
+ * LetterBox component - Displays a single letter in a styled box
+ * 
+ * This component is used in word games to display individual letters that players
+ * can select to form words. It has different visual states for selected letters,
+ * hint letters, and disabled letters. The component is responsive and adjusts
+ * its size based on the device type.
+ */
 export function LetterBox({
   letter,
   isSelected = false,

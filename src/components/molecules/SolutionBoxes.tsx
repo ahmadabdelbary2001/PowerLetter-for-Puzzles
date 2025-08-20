@@ -1,8 +1,20 @@
 // src/components/molecules/SolutionBoxes.tsx
+/**
+ * SolutionBoxes is a molecule component that displays a series of boxes representing
+ * the solution to a puzzle. Each box can be filled with a letter from the current word.
+ * The component adapts its size based on the device type (mobile, tablet, or desktop).
+ */
 import { useState, useEffect } from "react"
 import { SolutionBox } from "@/components/atoms/SolutionBox"
 import { cn } from "@/lib/utils"
 
+/**
+ * Props for the SolutionBoxes component
+ * @interface SolutionBoxesProps
+ * @property {string} solution - The target solution word to be displayed
+ * @property {string} currentWord - The current word entered by the user
+ * @property {string} [className] - Optional CSS class for styling
+ */
 interface SolutionBoxesProps {
   solution: string
   currentWord: string
