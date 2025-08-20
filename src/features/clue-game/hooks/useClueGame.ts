@@ -133,9 +133,10 @@ export function useClueGame() {
   const handleBack = useCallback(() => navigate(`/game-mode/${params.gameType}`), [navigate, params.gameType]);
   const prevLevel = useCallback(() => {
     if (currentLevelIndex > 0) {
-      setCurrentLevelIndex(i => i - 1);
+      // Fix: There's no setCurrentLevelIndex function, need to use resetLevel with the previous index
+      resetLevel();
     }
-  }, [currentLevelIndex]);
+  }, [currentLevelIndex, resetLevel]);
 
   // --- Effects ---
   useEffect(() => {

@@ -1,4 +1,9 @@
 // src/features/img-clue-game/components/ImgClueGameScreen.tsx
+/**
+ * ImgClueGameScreen component - Main game screen for the image clue puzzle game for kids
+ * Displays an image and audio clue, allowing children to guess the word by selecting letters
+ * Features a simplified UI designed for young children with visual and audio cues
+ */
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { SolutionBoxes } from "@/components/molecules/SolutionBoxes";
@@ -10,35 +15,43 @@ import { GameLayout } from "@/components/templates/GameLayout";
 import { useImageClueGame } from "../hooks/useImageClueGame";
 import type { ImageLevel } from "../engine";
 
+/**
+ * Main component for the Image Clue Game interface
+ * Manages game state rendering and user interactions for a kid-friendly experience
+ */
 const ImgClueGameScreen: React.FC = () => {
+  // Get translation function and text direction for localization
   const { t, dir } = useTranslation();
-  
+
+  // Destructure game state and handler functions from the useImageClueGame hook
   const {
-    loading,
-    levels,
-    currentLevel,
-    solution,
-    letters,
-    notification,
-    audioRef,
-    gameState,
-    answerSlots,
-    slotIndices,
-    hintIndices,
-    getAssetPath,
-    playSound,
-    onCheck,
-    onLetterClick,
-    onRemove,
-    onClear,
-    nextLevel,
-    handleBack,
+    loading,              // Loading state for level data
+    levels,               // Array of all loaded levels
+    currentLevel,         // Current level data including image and solution
+    solution,             // Solution word for the current level
+    letters,              // Available letter options
+    notification,         // Game status notifications
+    audioRef,             // Reference to the audio element
+    gameState,            // Current game state (playing, won, failed)
+    answerSlots,          // Current letters selected by the player
+    slotIndices,          // Indices of selected letters
+    hintIndices,          // Indices of letters revealed as hints
+    getAssetPath,         // Function to get full asset path
+    playSound,            // Function to play the audio clue
+    onCheck,              // Function to check if current answer is correct
+    onLetterClick,        // Function to handle letter selection
+    onRemove,             // Function to remove last letter
+    onClear,              // Function to clear all letters
+    nextLevel,            // Function to navigate to next level
+    handleBack,           // Function to navigate back to game selection
   } = useImageClueGame();
 
+  // Show loading state while levels are being loaded
   if (loading) {
     return <div className="flex justify-center items-center h-screen"><p>{t.loading}...</p></div>;
   }
 
+  // Show error state if no levels could be loaded
   if (!currentLevel || currentLevel.solution === 'ERROR') {
     return (
       <div className="flex flex-col justify-center items-center h-screen gap-4 p-4 text-center">
@@ -48,32 +61,43 @@ const ImgClueGameScreen: React.FC = () => {
     );
   }
 
+  // Find the index of the current level
   const levelIndex = levels.findIndex((l: ImageLevel) => l.id === currentLevel.id);
 
+  // Main game UI
   return (
     <GameLayout title={t.imageClueTitle} levelIndex={levelIndex} onBack={handleBack}>
+      {/* Image clue display with audio playback button */}
       <div className="relative aspect-video bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center">
         <img src={getAssetPath(currentLevel.image)} alt={solution} className="max-h-full max-w-full object-contain" />
+        {/* Audio playback button */}
         <Button size="icon" onClick={playSound} className="absolute top-3 right-3 rounded-full bg-black/50 hover:bg-black/70">
           <Volume2 className="h-6 w-6 text-white" />
         </Button>
+        {/* Hidden audio element for playing the clue sound */}
         <audio ref={audioRef} src={getAssetPath(currentLevel.sound)} preload="auto" />
       </div>
 
+      {/* Solution boxes showing current progress */}
       <SolutionBoxes solution={solution} currentWord={answerSlots.join('')} />
+      {/* Letter grid for selecting letters */}
       <LetterGrid letters={letters} selectedIndices={slotIndices.filter(i => i !== null) as number[]} onLetterClick={onLetterClick} disabled={gameState !== 'playing'} hintIndices={hintIndices} />
-      
+
+      {/* Notification area for game status messages */}
       {notification && (
         <div role="status" className={`text-center p-3 rounded-lg text-lg font-bold ${notification.type === 'error' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
           {notification.message}
         </div>
       )}
 
+      {/* Conditional rendering based on game state */}
       {gameState === 'won' ? (
+        // Show next level button when the player wins
         <Button onClick={nextLevel} className="w-full bg-green-600 hover:bg-green-700 text-lg py-6">
           {t.next} {dir === 'rtl' ? <ArrowLeft className="ml-2" /> : <ArrowRight className="ml-2" />}
         </Button>
       ) : (
+        // Show game controls when still playing
         <GameControls
           onRemoveLetter={onRemove}
           onClearAnswer={onClear}
