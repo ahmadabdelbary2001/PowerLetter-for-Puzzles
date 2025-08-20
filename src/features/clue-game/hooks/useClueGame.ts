@@ -23,6 +23,7 @@ export function useClueGame() {
   // --- Clue-Game Specific State ---
   const [letters, setLetters] = useState<string[]>([]);
   const [wrongAnswers, setWrongAnswers] = useState<string[]>([]);
+  const [attemptedTeams, setAttemptedTeams] = useState<Set<number>>(new Set()); // Track which teams have attempted the current question
   const { canRemove, canClear, canCheck, canHint } = useGameControls(gameState);
 
   // --- Clue-Game Specific Callbacks ---
@@ -43,6 +44,13 @@ export function useClueGame() {
       if (gameMode === "competitive") {
         updateScore(teams[currentTeam].id, points);
         setNotification({ message: `${t.congrats} +${points}`, type: "success" });
+        // In competitive mode, automatically move to next level after a correct answer
+        setTimeout(() => {
+          nextLevel();
+          // Reset the game state to playing for the next level
+          dispatch({ type: "SET_GAME_STATE", payload: "playing" });
+          setNotification(null);
+        }, 2000);
       } else {
         setNotification({ message: t.congrats, type: "success" });
       }
@@ -53,14 +61,48 @@ export function useClueGame() {
         setWrongAnswers(prev => [...prev, currentAnswer]);
       }
       setNotification({ message: t.wrongAnswer, type: "error" });
-      setTimeout(() => {
-        dispatch({ type: "CLEAR" });
-        dispatch({ type: "SET_GAME_STATE", payload: "playing" });
-        setNotification(null);
-        if (gameMode === 'competitive') nextTurn("lose");
-      }, 2000);
+
+      // Track which teams have attempted the question in competitive mode
+      if (gameMode === 'competitive') {
+        // Add current team to attempted teams
+        const newAttemptedTeams = new Set(attemptedTeams);
+        newAttemptedTeams.add(currentTeam);
+        setAttemptedTeams(newAttemptedTeams);
+
+        // Check if all teams have attempted the question
+        if (newAttemptedTeams.size === teams.length) {
+          // All teams have attempted and failed, show solution and move to next level
+          setTimeout(() => {
+            dispatch({ type: "SHOW", solution, letters });
+            setNotification({ message: `${t.solutionWas}: ${solution}`, type: "error" });
+            // Reset attempted teams for the next question
+            setAttemptedTeams(new Set());
+            // Move to next level after showing solution
+            setTimeout(() => {
+              nextLevel();
+              dispatch({ type: "SET_GAME_STATE", payload: "playing" });
+              setNotification(null);
+            }, 2500);
+          }, 2000);
+        } else {
+          // Not all teams have attempted yet, just pass to next team
+          setTimeout(() => {
+            dispatch({ type: "CLEAR" });
+            dispatch({ type: "SET_GAME_STATE", payload: "playing" });
+            setNotification(null);
+            nextTurn("lose");
+          }, 2000);
+        }
+      } else {
+        // Non-competitive mode behavior
+        setTimeout(() => {
+          dispatch({ type: "CLEAR" });
+          dispatch({ type: "SET_GAME_STATE", payload: "playing" });
+          setNotification(null);
+        }, 2000);
+      }
     }
-  }, [gameState, solution, currentLevel, gameMode, teams, currentTeam, updateScore, nextTurn, t, wrongAnswers, dispatch, setNotification]);
+  }, [gameState, solution, currentLevel, gameMode, teams, currentTeam, updateScore, nextTurn, nextLevel, t, wrongAnswers, dispatch, setNotification, attemptedTeams, letters]);
 
   const onShow = useCallback(() => {
     if (gameState.gameState !== 'playing') return;
@@ -69,7 +111,11 @@ export function useClueGame() {
     if (gameMode === 'competitive') {
       setTimeout(() => {
         nextTurn('lose');
+        // Automatically move to next level without showing the "Next" button
         nextLevel();
+        // Reset the game state to playing for the next level
+        dispatch({ type: "SET_GAME_STATE", payload: "playing" });
+        setNotification(null);
       }, 2500);
     }
   }, [gameState.gameState, solution, letters, gameMode, nextTurn, nextLevel, t.solutionWas, dispatch, setNotification]);
@@ -85,7 +131,11 @@ export function useClueGame() {
 
   const handleRevealOrListSolutions = useCallback(async () => { /* ... unchanged ... */ }, [/* ... */]);
   const handleBack = useCallback(() => navigate(`/game-mode/${params.gameType}`), [navigate, params.gameType]);
-  const prevLevel = useCallback(() => { if (currentLevelIndex > 0) { /* ... */ } }, [currentLevelIndex]);
+  const prevLevel = useCallback(() => {
+    if (currentLevelIndex > 0) {
+      setCurrentLevelIndex(i => i - 1);
+    }
+  }, [currentLevelIndex]);
 
   // --- Effects ---
   useEffect(() => {
@@ -95,6 +145,8 @@ export function useClueGame() {
     if (teams.length > 0) {
       setCurrentTeam(currentLevelIndex % teams.length);
     }
+    // Clear wrong answers when moving to a new level
+    setWrongAnswers([]);
   }, [currentLevel, language, teams.length, currentLevelIndex, setCurrentTeam]);
 
   return {

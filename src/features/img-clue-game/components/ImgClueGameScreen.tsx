@@ -1,4 +1,4 @@
-// src/components/GameScreens/img-clue-game/ImgClueGameScreen.tsx
+// src/features/img-clue-game/components/ImgClueGameScreen.tsx
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { SolutionBoxes } from "@/components/molecules/SolutionBoxes";

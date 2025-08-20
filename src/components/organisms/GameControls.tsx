@@ -99,25 +99,25 @@ export const GameControls: React.FC<Props> = ({
   if (isKidsMode) {
     return (
       <div className="flex flex-wrap gap-2 sm:gap-3 justify-center mt-4">
-        <GameButton 
-          onClick={onRemoveLetter} 
-          disabled={!canRemove} 
+        <GameButton
+          onClick={onRemoveLetter}
+          disabled={!canRemove}
           icon={Delete}
           className="text-lg py-6 flex-1"
         >
           {labels.remove}
         </GameButton>
-        <GameButton 
-          onClick={onClearAnswer} 
-          disabled={!canClear} 
+        <GameButton
+          onClick={onClearAnswer}
+          disabled={!canClear}
           icon={RotateCcw}
           className="text-lg py-6 flex-1"
         >
           {labels.clear}
         </GameButton>
-        <GameButton 
-          onClick={onCheckAnswer} 
-          disabled={!canCheck} 
+        <GameButton
+          onClick={onCheckAnswer}
+          disabled={!canCheck}
           icon={CheckCircle}
           isPrimary={true}
           className="text-lg py-6 flex-1"
@@ -151,7 +151,10 @@ export const GameControls: React.FC<Props> = ({
             {labels.prev}
           </GameButton>
         )}
-        {canNext && (
+        {/* Only show next button in single player mode
+         * In competitive mode, we automatically move to the next level
+         */}
+        {showResetAndPrev && canNext && (
           <GameButton
             onClick={onNextLevel}
             icon={dir === 'rtl' ? ArrowLeft : ArrowRight}
@@ -168,9 +171,9 @@ export const GameControls: React.FC<Props> = ({
   return (
     <div className="flex flex-wrap gap-1 sm:gap-2 justify-center mt-4">
       {/* Remove last letter button */}
-      <GameButton 
-        onClick={onRemoveLetter} 
-        disabled={!canRemove} 
+      <GameButton
+        onClick={onRemoveLetter}
+        disabled={!canRemove}
         icon={Delete}
         className="text-xs sm:text-sm"
       >
@@ -178,9 +181,9 @@ export const GameControls: React.FC<Props> = ({
       </GameButton>
 
       {/* Clear entire answer button */}
-      <GameButton 
-        onClick={onClearAnswer} 
-        disabled={!canClear} 
+      <GameButton
+        onClick={onClearAnswer}
+        disabled={!canClear}
         icon={RotateCcw}
         className="text-xs sm:text-sm"
       >
@@ -188,9 +191,9 @@ export const GameControls: React.FC<Props> = ({
       </GameButton>
 
       {/* Hint button - shows remaining hints if available */}
-      <GameButton 
-        onClick={onHint} 
-        disabled={!canHint} 
+      <GameButton
+        onClick={onHint}
+        disabled={!canHint}
         icon={Lightbulb}
         className="text-xs sm:text-sm"
       >
@@ -199,9 +202,9 @@ export const GameControls: React.FC<Props> = ({
       </GameButton>
 
       {/* Check answer button - primary action */}
-      <GameButton 
-        onClick={onCheckAnswer} 
-        disabled={!canCheck} 
+      <GameButton
+        onClick={onCheckAnswer}
+        disabled={!canCheck}
         icon={CheckCircle}
         isPrimary={true}
         className="text-xs sm:text-sm"
@@ -209,14 +212,16 @@ export const GameControls: React.FC<Props> = ({
         {labels.check}
       </GameButton>
 
-      {/* Show solution button */}
-      <GameButton 
-        onClick={onShowSolution} 
-        icon={Eye}
-        className="text-xs sm:text-sm"
-      >
-        {labels.showSolution}
-      </GameButton>
+      {/* Show solution button - hidden in competitive mode */}
+      {showResetAndPrev && (
+        <GameButton
+          onClick={onShowSolution}
+          icon={Eye}
+          className="text-xs sm:text-sm"
+        >
+          {labels.showSolution}
+        </GameButton>
+      )}
     </div>
   );
 };

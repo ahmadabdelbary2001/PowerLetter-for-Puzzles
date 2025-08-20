@@ -1,4 +1,4 @@
-// src/components/GameScreens/word-choice-game/WordChoiceScreen.tsx
+// src/features/word-choice-game/components/WordChoiceScreen.tsx
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, Volume2, CheckCircle, XCircle } from "lucide-react";
