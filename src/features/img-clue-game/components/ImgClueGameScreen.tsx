@@ -66,7 +66,12 @@ const ImgClueGameScreen: React.FC = () => {
 
   // Main game UI
   return (
-    <GameLayout title={t.imageClueTitle} levelIndex={levelIndex} onBack={handleBack}>
+    <GameLayout
+      title={t.imageClueTitle}
+      levelIndex={levelIndex}
+      onBack={handleBack}
+      layoutType="image"
+    >
       {/* Image clue display with audio playback button */}
       <div className="relative aspect-video bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center">
         <img src={getAssetPath(currentLevel.image)} alt={solution} className="max-h-full max-w-full object-contain" />

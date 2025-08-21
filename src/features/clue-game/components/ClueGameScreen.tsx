@@ -24,32 +24,32 @@ const ClueGameScreen: React.FC = () => {
 
   // Destructure game state and handler functions from the useClueGame hook
   const {
-    loading,              // Loading state for level data
-    currentLevel,         // Current level data including clue and solution
-    solution,             // Solution word for the current level
-    letters,              // Available letter options
-    notification,         // Game status notifications
-    wrongAnswers,         // Array of incorrect answers submitted
-    gameState,            // Current game state (playing, won, failed)
-    answerSlots,          // Current letters selected by the player
-    slotIndices,          // Indices of selected letters
-    hintIndices,          // Indices of letters revealed as hints
-    currentLevelIndex,    // Index of current level in the levels array
-    levels,               // Array of all loaded levels
-    onCheck,              // Function to check if current answer is correct
-    onShow,               // Function to show the solution
-    onLetterClick,        // Function to handle letter selection
-    onRemove,             // Function to remove last letter
-    onClear,              // Function to clear all letters
-    onHint,               // Function to request a hint
-    nextLevel,            // Function to navigate to next level
-    prevLevel,            // Function to navigate to previous level
-    handleBack,           // Function to navigate back to game selection
-    resetLevel,           // Function to reset the current level
-    canRemove,            // Flag indicating if remove action is available
-    canClear,             // Flag indicating if clear action is available
-    canCheck,             // Flag indicating if check action is available
-    canHint,              // Flag indicating if hint action is available
+    loading,
+    currentLevel,
+    solution,
+    letters,
+    notification,
+    wrongAnswers,
+    gameState,
+    answerSlots,
+    slotIndices,
+    hintIndices,
+    currentLevelIndex,
+    levels,
+    onCheck,
+    onShow,
+    onLetterClick,
+    onRemove,
+    onClear,
+    onHint,
+    nextLevel,
+    prevLevel,
+    handleBack,
+    resetLevel,
+    canRemove,
+    canClear,
+    canCheck,
+    canHint,
   } = useClueGame();
 
   // Show loading state while levels are being loaded
@@ -69,14 +69,12 @@ const ClueGameScreen: React.FC = () => {
 
   // Main game UI
   return (
-    <GameLayout title={currentLevel.clue} levelIndex={currentLevelIndex} onBack={handleBack}>
-      {/* Difficulty badge in top right corner */}
-      <div className="absolute top-4 right-4">
-        <Badge variant={currentLevel.difficulty === 'easy' ? 'default' : currentLevel.difficulty === 'medium' ? 'secondary' : 'destructive'}>
-          {t[currentLevel.difficulty]}
-        </Badge>
-      </div>
-
+    <GameLayout
+      title={currentLevel.clue}
+      levelIndex={currentLevelIndex}
+      onBack={handleBack}
+      difficulty={currentLevel.difficulty}
+    >
       {/* Solution boxes showing current progress */}
       <SolutionBoxes solution={solution} currentWord={answerSlots.join('')} />
       {/* Letter grid for selecting letters */}

@@ -45,7 +45,12 @@ const WordChoiceScreen: React.FC = () => {
   }
 
   return (
-    <GameLayout title={t.wordChoiceTitle} levelIndex={0} onBack={handleBack}>
+    <GameLayout
+      title={t.wordChoiceTitle}
+      levelIndex={0}
+      onBack={handleBack}
+      layoutType="image"
+    >
       {/* Image and Sound Button Section */}
       <div className="relative aspect-video bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center">
         {/* Display the image for the current level */}
@@ -58,8 +63,13 @@ const WordChoiceScreen: React.FC = () => {
         <audio ref={audioRef} src={getAssetPath(currentLevel.sound)} preload="auto" />
       </div>
 
-      {/* Word Choice Buttons Section */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
+      {/*
+        * FIX: The grid is now responsive.
+        * - It defaults to 2 columns for mobile/tablet.
+        * - It switches to 4 columns (a single row) on large screens (lg).
+        * - It still falls back to 1 column on extremely narrow screens (<200px).
+        */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 max-[200px]:grid-cols-1 gap-3 pt-4">
         {shuffledOptions.map((option) => {
           // Check if this option is currently selected by the user
           const isSelected = selectedOption === option;
@@ -73,7 +83,7 @@ const WordChoiceScreen: React.FC = () => {
               // Disable buttons after an answer has been selected
               disabled={answerStatus !== 'idle'}
               className={cn(
-                "text-lg h-20 flex items-center justify-center gap-2",
+                "text-base h-16 flex items-center justify-center gap-2 transition-all duration-300",
                 // Style when this option is selected and correct
                 isSelected && answerStatus === 'correct' && "bg-green-500 hover:bg-green-600 border-2 border-green-700",
                 // Style when this option is selected and incorrect
