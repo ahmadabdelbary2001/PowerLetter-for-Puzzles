@@ -82,20 +82,58 @@ npm run deploy
 ```
 PowerLetter-for-Puzzles/
 ├── public/
+│   ├── assets/
+│   │   ├── images/
+│   │   └── sounds/
+│   └── vite.svg
 ├── src/
 │   ├── assets/
 │   ├── components/
-│   │   ├── GameScreens/
-│   │   ├── GameSetup/
+│   │   ├── atoms/
+│   │   ├── molecules/
+│   │   ├── organisms/
+│   │   ├── templates/
 │   │   └── ui/
 │   ├── contexts/
+│   │   ├── ThemeContext.ts
+│   │   └── ThemeProvider.tsx
 │   ├── data/
 │   │   ├── ar/
 │   │   └── en/
+│   ├── features/
+│   │   ├── clue-game/
+│   │   ├── img-clue-game/
+│   │   └── word-choice-game/
+│   ├── games/
+│   │   ├── GameRegistry.ts
+│   │   └── engine/
 │   ├── hooks/
-│   ├── lib/
-│   └── types/
+│   │   ├── use-mobile.tsx
+│   │   ├── use-toast.ts
+│   │   ├── useGame.ts
+│   │   ├── useGameMode.ts
+│   │   ├── useSolverWorker.ts
+│   │   ├── useTheme.ts
+│   │   └── useTranslation.ts
+│   ├── pages/
+│   │   ├── GameTypeSelector.tsx
+│   │   ├── HeroSection.tsx
+│   │   ├── Index.tsx
+│   │   ├── KidsGameSelector.tsx
+│   │   ├── NotFound.tsx
+│   │   └── TeamConfigurator.tsx
+│   ├── types/
+│   │   └── game.ts
+│   ├── workers/
+│   │   └── solver.worker.ts
+│   ├── App.css
+│   ├── App.tsx
+│   ├── main.tsx
+│   └── vite-env.d.ts
+├── scripts/
+│   └── copy-404.cjs
 ├── .gitignore
+├── eslint.config.js
 ├── index.html
 ├── package.json
 ├── package-lock.json
