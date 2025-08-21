@@ -42,10 +42,8 @@ class WordChoiceGameEngine implements IGameEngine<WordChoiceLevel> {
     // Create a promise for each category to load its levels
     const promises = categoriesToLoad.map(async (cat) => {
       try {
-        // Convert category name to TitleCase for file path construction
-        const categoryTitleCase = cat.charAt(0).toUpperCase() + cat.slice(1);
         // Construct the path to the JSON file containing the levels for this category and language
-        const path = `/src/data/${categoryTitleCase}/${language}/word-choice/data.json`;
+        const path = `/src/data/${language}/word-choice/${cat}/data.json`;
         // Get all JSON files in the data directory
         const modules = import.meta.glob('/src/data/**/*.json');
         // Get the loader function for the specific path

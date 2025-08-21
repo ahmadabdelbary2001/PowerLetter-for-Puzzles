@@ -55,10 +55,8 @@ class ClueGameEngine implements IGameEngine<Level> {
     // Create promises to load levels for each category
     const promises = categoriesToLoad.map(async (cat) => {
       try {
-        // Format category name for path construction
-        const categoryTitleCase = cat.charAt(0).toUpperCase() + cat.slice(1);
         // Construct path to the JSON file containing levels
-        const path = `/src/data/${categoryTitleCase}/${language}/clue/${language}-clue-${cat}-${difficulty}.json`;
+        const path = `/src/data/${language}/clue/${cat}/${language}-clue-${cat}-${difficulty}.json`;
         // Get all JSON import modules
         const modules = import.meta.glob('/src/data/**/*.json');
         // Find the specific module loader for our path

@@ -53,10 +53,8 @@ class ImgClueGameEngine implements IGameEngine<ImageLevel> {
     // Create promises to load levels for each category
     const promises = categoriesToLoad.map(async (cat) => {
       try {
-        // Format category name for path construction
-        const categoryTitleCase = cat.charAt(0).toUpperCase() + cat.slice(1);
         // Construct path to the JSON file containing levels
-        const path = `/src/data/${categoryTitleCase}/${language}/image-clue/data.json`;
+        const path = `/src/data/${language}/image-clue/${cat}/data.json`;
         // Get all JSON import modules
         const modules = import.meta.glob('/src/data/**/*.json');
         // Find the specific module loader for our path
