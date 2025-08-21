@@ -1,9 +1,15 @@
 // src/pages/GameTypeSelector.tsx
+/**
+ * @description This page displays a selection of games for the main (adult) category.
+ * It fetches game configurations from the `GAME_REGISTRY`, filters for 'adult' games,
+ * and renders them as a grid of interactive cards. Users can select an available game
+ * to proceed to the game mode configuration screen.
+ */
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Lock, Search } from 'lucide-react'; // Import Search for the button
+import { Lock, Search } from 'lucide-react';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Header } from '@/components/organisms/Header';
@@ -12,13 +18,28 @@ import { useNavigate } from 'react-router-dom';
 import { GAME_REGISTRY, type GameConfig } from '@/games/GameRegistry';
 import { cn } from '@/lib/utils';
 
+/**
+ * The GameTypeSelector component renders a list of available games.
+ * It handles user interaction for selecting a game and navigating to the next step.
+ * Games marked as 'coming-soon' are displayed but disabled.
+ *
+ * @returns {JSX.Element} The rendered game selection page.
+ */
 const GameTypeSelector: React.FC = () => {
+  // Hooks for global state, translation, and navigation
   const { gameType, setGameType } = useGameMode();
   const { t, dir } = useTranslation();
   const navigate = useNavigate();
 
+  // Filter the central registry to get only adult games
   const adultGames = GAME_REGISTRY.filter(game => game.type === 'adult');
 
+  /**
+   * Handles the selection of a game type.
+   * It updates the global state with the selected game ID and navigates
+   * to the game mode selection screen for that game.
+   * @param {GameConfig['id']} typeId - The ID of the selected game.
+   */
   const handleGameTypeSelect = (typeId: GameConfig['id']): void => {
     setGameType(typeId);
     navigate(`/game-mode/${typeId}`);
@@ -29,6 +50,7 @@ const GameTypeSelector: React.FC = () => {
       <Header currentView="selection" />
       <main className="min-h-[calc(100vh-8rem)]">
         <div className="container mx-auto px-4 py-8 max-w-6xl" dir={dir}>
+          {/* Page Header */}
           <div className="text-center mb-8 md:mb-12">
             <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-4">
               {t.selectGame}
@@ -38,6 +60,7 @@ const GameTypeSelector: React.FC = () => {
             </p>
           </div>
 
+          {/* Game Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             {adultGames.map((type) => (
               <Card

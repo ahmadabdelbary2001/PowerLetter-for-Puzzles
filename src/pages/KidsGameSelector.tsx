@@ -1,4 +1,9 @@
 // src/pages/KidsGameSelector.tsx
+/**
+ * @description This page displays a selection of games specifically designed for children.
+ * It fetches game configurations from the `GAME_REGISTRY`, filters for 'kids' games,
+ * and renders them with a more playful and colorful UI theme.
+ */
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,13 +17,26 @@ import { useNavigate } from 'react-router-dom';
 import { GAME_REGISTRY, type GameConfig } from '@/games/GameRegistry';
 import { cn } from '@/lib/utils';
 
+/**
+ * The KidsGameSelector component provides a curated list of games suitable for children.
+ * It uses a distinct visual style to differentiate it from the main game selection screen.
+ *
+ * @returns {JSX.Element} The rendered kids' game selection page.
+ */
 const KidsGameSelector: React.FC = () => {
+  // Hooks for global state, translation, and navigation
   const { gameType, setGameType } = useGameMode();
   const { t, dir } = useTranslation();
   const navigate = useNavigate();
 
+  // Filter the central registry to get only kids' games
   const kidsGames = GAME_REGISTRY.filter(game => game.type === 'kids');
 
+  /**
+   * Handles the selection of a kids' game.
+   * Updates the global state and navigates to the game mode configuration screen.
+   * @param {GameConfig['id']} gameId - The ID of the selected game.
+   */
   const handleGameSelect = (gameId: GameConfig['id']) => {
     setGameType(gameId);
     navigate(`/game-mode/${gameId}`);
@@ -29,6 +47,7 @@ const KidsGameSelector: React.FC = () => {
       <Header currentView="kids" />
       <main className="min-h-[calc(100vh-8rem)]">
         <div className="container mx-auto px-4 py-8 max-w-6xl" dir={dir}>
+          {/* Page Header with playful icon */}
           <div className="text-center mb-8 md:mb-12">
             <div className="flex items-center justify-center mb-4">
               <ToyBrick className="w-10 h-10 text-green-600 dark:text-green-400" />
@@ -41,6 +60,7 @@ const KidsGameSelector: React.FC = () => {
             </p>
           </div>
 
+          {/* Game Cards Grid with kid-friendly styling */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             {kidsGames.map((type) => (
               <Card

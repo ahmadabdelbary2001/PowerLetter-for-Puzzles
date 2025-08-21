@@ -130,7 +130,7 @@ export function Header({ currentView, showLanguage = true }: HeaderProps) {
             <ModeToggler />
           </div>
           <div className="sm:hidden">
-            <ModeToggler compact />
+            <ModeToggler />
           </div>
           {/* Mobile menu toggle button */}
           <div className="sm:hidden">
