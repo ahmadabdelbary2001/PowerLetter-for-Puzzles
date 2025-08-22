@@ -6,6 +6,7 @@ import { Puzzle, Search, Image as ImageIcon, CheckSquare, BookOpen, SpellCheck }
 const ClueGameScreen = React.lazy(() => import('@/features/clue-game/components/ClueGameScreen'));
 const ImgClueGameScreen = React.lazy(() => import('@/features/img-clue-game/components/ImgClueGameScreen'));
 const WordChoiceScreen = React.lazy(() => import('@/features/word-choice-game/components/WordChoiceScreen'));
+const FormationGameScreen = React.lazy(() => import('@/features/formation-game/components/FormationGameScreen'));
 
 // This type ensures that any key from the translation file is considered valid.
 type TranslationKeys = string;
@@ -40,9 +41,9 @@ export const GAME_REGISTRY: GameConfig[] = [
     titleKey: 'formationTitle',
     descriptionKey: 'formationDesc',
     featuresKey: 'formationFeatures',
-    component: ClueGameScreen, // Placeholder component
+    component: FormationGameScreen,
     icon: React.createElement(Puzzle, { className: "w-8 h-8" }),
-    status: 'coming-soon',
+    status: 'available', // FIX: Change status to available
   },
   // FIX: Add the "Category Guess" game
   {

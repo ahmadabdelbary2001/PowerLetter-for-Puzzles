@@ -2,6 +2,7 @@
 import { clueGameEngine } from '@/features/clue-game/engine';
 import { imgClueGameEngine } from '@/features/img-clue-game/engine';
 import { wordChoiceGameEngine } from '@/features/word-choice-game/engine';
+import { formationGameEngine } from '@/features/formation-game/engine';
 import type { GameConfig } from '../GameRegistry';
 
 export function getGameEngine(gameId: GameConfig['id']) {
@@ -12,10 +13,11 @@ export function getGameEngine(gameId: GameConfig['id']) {
       return imgClueGameEngine;
     case 'word-choice':
       return wordChoiceGameEngine;
-    
+    case 'formation':
+      return formationGameEngine;
+
     // FIX: Handle 'coming-soon' games gracefully.
     // This satisfies the exhaustive check for TypeScript.
-    case 'formation':
     case 'category':
     case 'picture-choice':
       // For games that are coming soon, we can throw a specific error

@@ -1,0 +1,113 @@
+{
+  "levels": [
+    {
+      "id": "en-easy-5",
+      "baseLetters": "LEAST",
+      "words": ["LEAST","STEAL","SLATE","TALES","SEAT","EAT","TEA","ALE","SET","LAST","SALTE"],
+      "solution": "LEAST",
+      "grid": [
+        { "x": 1, "y": 0, "letter": "L", "words": [0, 9] },
+        { "x": 2, "y": 0, "letter": "E", "words": [0] },
+        { "x": 3, "y": 0, "letter": "A", "words": [0, 6] },
+        { "x": 4, "y": 0, "letter": "S", "words": [0, 2] },
+        { "x": 5, "y": 0, "letter": "T", "words": [0] },
+
+        { "x": 1, "y": -2, "letter": "S", "words": [1] },
+        { "x": 1, "y": -1, "letter": "T", "words": [1] },
+        { "x": 1, "y": 0, "letter": "L", "words": [1,0] },
+        { "x": 1, "y": 1, "letter": "E", "words": [1] },
+        { "x": 1, "y": 2, "letter": "A", "words": [1,3] },
+
+        { "x": 3, "y": 2, "letter": "T", "words": [2,3] },
+        { "x": 4, "y": 2, "letter": "E", "words": [2] },
+
+        { "x": 0, "y": 1, "letter": "S", "words": [4] },
+        { "x": 1, "y": 1, "letter": "E", "words": [4,1] },
+        { "x": 2, "y": 1, "letter": "A", "words": [4] },
+        { "x": 3, "y": 1, "letter": "T", "words": [4] }
+      ]
+    },
+    {
+      "id": "en-easy-1",
+      "baseLetters": "ATE",
+      "words": ["ATE", "TEA", "EAT"],
+      "solution": "ATE",
+      "grid": [
+        { "x": 1, "y": 0, "letter": "T", "words": [1] },
+        { "x": 0, "y": 1, "letter": "A", "words": [0] },
+        { "x": 1, "y": 1, "letter": "E", "words": [0, 1, 2] },
+        { "x": 2, "y": 1, "letter": "A", "words": [2] },
+        { "x": 1, "y": 2, "letter": "A", "words": [1] },
+        { "x": 2, "y": 2, "letter": "T", "words": [2] }
+      ]
+    },
+    {
+      "id": "en-easy-2",
+      "baseLetters": "NOW",
+      "words": ["NOW", "OWN", "WON"],
+      "solution": "NOW",
+      "grid": [
+        { "x": 0, "y": 0, "letter": "N", "words": [0] },
+        { "x": 1, "y": 0, "letter": "O", "words": [0] },
+        { "x": 2, "y": 0, "letter": "W", "words": [0] },
+        { "x": 0, "y": 1, "letter": "O", "words": [1] },
+        { "x": 0, "y": 2, "letter": "W", "words": [1, 2] },
+        { "x": 1, "y": 2, "letter": "O", "words": [2] },
+        { "x": 2, "y": 2, "letter": "N", "words": [2] }
+      ]
+    },
+    {
+      "id": "en-easy-3",
+      "baseLetters": "ART",
+      "words": ["ART", "RAT", "TAR"],
+      "solution": "ART",
+      "grid": [
+        { "x": 0, "y": 1, "letter": "A", "words": [0] },
+        { "x": 1, "y": 1, "letter": "R", "words": [0, 1] },
+        { "x": 2, "y": 1, "letter": "T", "words": [0] },
+        { "x": 1, "y": 0, "letter": "R", "words": [2] },
+        { "x": 1, "y": 2, "letter": "A", "words": [1, 2] },
+        { "x": 1, "y": 3, "letter": "T", "words": [1] },
+        { "x": 2, "y": 2, "letter": "A", "words": [2] },
+        { "x": 3, "y": 2, "letter": "R", "words": [2] }
+      ]
+    },
+    {
+      "id": "en-easy-4",
+      "baseLetters": "CARE",
+      "words": ["CARE", "RACE", "ACRE", "CAR", "ACE", "ARE", "EAR", "ERA"],
+      "solution": "CARE",
+      "grid": [
+        { "x": 2, "y": 0, "letter": "C", "words": [0, 3] },
+        { "x": 2, "y": 1, "letter": "A", "words": [0, 4] },
+        { "x": 2, "y": 2, "letter": "R", "words": [0, 1, 6] },
+        { "x": 2, "y": 3, "letter": "E", "words": [0, 2, 7] },
+        { "x": 0, "y": 2, "letter": "R", "words": [1] },
+        { "x": 1, "y": 2, "letter": "A", "words": [1, 2, 5] },
+        { "x": 3, "y": 2, "letter": "C", "words": [1] },
+        { "x": 4, "y": 2, "letter": "E", "words": [1] },
+        { "x": 0, "y": 3, "letter": "E", "words": [7] },
+        { "x": 1, "y": 3, "letter": "R", "words": [7] },
+        { "x": 3, "y": 3, "letter": "A", "words": [2] }
+      ]
+    },
+    {
+      "id": "en-easy-5",
+      "baseLetters": "DEAL",
+      "words": ["DEAL", "LEAD", "LADE", "ALE", "DAL", "LAD"],
+      "solution": "DEAL",
+      "grid": [
+        { "x": 1, "y": 0, "letter": "D", "words": [0, 4] },
+        { "x": 1, "y": 1, "letter": "E", "words": [0] },
+        { "x": 1, "y": 2, "letter": "A", "words": [0, 3] },
+        { "x": 1, "y": 3, "letter": "L", "words": [0, 1, 5] },
+        { "x": 0, "y": 3, "letter": "L", "words": [1] },
+        { "x": 2, "y": 3, "letter": "A", "words": [1, 2] },
+        { "x": 3, "y": 3, "letter": "D", "words": [1] },
+        { "x": 0, "y": 2, "letter": "A", "words": [3] },
+        { "x": 2, "y": 2, "letter": "D", "words": [2] },
+        { "x": 2, "y": 1, "letter": "A", "words": [2] }
+      ]
+    }
+  ]
+}

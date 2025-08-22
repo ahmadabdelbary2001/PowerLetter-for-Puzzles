@@ -1,10 +1,10 @@
 // src\components\organisms\GameModeSelector.tsx
 /**
- * GameModeSelector component - A multi-step wizard for configuring game settings
- * Allows users to select game mode, categories, and difficulty level
- * Features a step-by-step UI with navigation controls
+ * @description A multi-step wizard for configuring game settings.
+ * Allows users to select game mode, categories, and difficulty level.
+ * Features a step-by-step UI with navigation controls.
  */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ArrowRight, ArrowLeft, PawPrint, FlaskConical, Globe, BrainCircuit } from 'lucide-react';
@@ -18,32 +18,40 @@ import { DifficultySelector } from '@/components/molecules/DifficultySelector';
 import { useNavigate, useParams } from 'react-router-dom';
 import type { GameCategory, Difficulty } from '@/types/game';
 
-// Available game categories with icons and translation keys
 const categoriesData = [
-  { id: 'general', icon: <BrainCircuit size={48} />, labelKey: 'generalKnowledge' },
-  { id: 'animals', icon: <PawPrint size={48} />, labelKey: 'animals' },
-  { id: 'science', icon: <FlaskConical size={48} />, labelKey: 'science' },
-  { id: 'geography', icon: <Globe size={48} />, labelKey: 'geography' },
+    { id: 'general', icon: <BrainCircuit size={48} />, labelKey: 'generalKnowledge' },
+    { id: 'animals', icon: <PawPrint size={48} />, labelKey: 'animals' },
+    { id: 'science', icon: <FlaskConical size={48} />, labelKey: 'science' },
+    { id: 'geography', icon: <Globe size={48} />, labelKey: 'geography' },
 ] as const;
 
-// Available difficulty levels with labels and color indicators
 const difficulties = [
-  { id: 'easy', labelKey: 'easy', color: 'bg-green-500' },
-  { id: 'medium', labelKey: 'medium', color: 'bg-yellow-500' },
-  { id: 'hard', labelKey: 'hard', color: 'bg-red-500' },
+    { id: 'easy', labelKey: 'easy', color: 'bg-green-500' },
+    { id: 'medium', labelKey: 'medium', color: 'bg-yellow-500' },
+    { id: 'hard', labelKey: 'hard', color: 'bg-red-500' },
 ] as const;
+
 
 const GameModeSelector: React.FC = () => {
-  // Custom hooks for game state and translation
   const { setGameMode, categories: selectedCategories, setCategories, setDifficulty } = useGameMode();
   const { t, dir } = useTranslation();
   const navigate = useNavigate();
   const { gameType } = useParams<{ gameType: string }>();
 
-  // Current step in the selection process (1-3)
-  const [step, setStep] = useState(1);
+  // FIX: Determine if the category step should be skipped for the current game type.
+  const skipCategoryStep = gameType === 'formation';
 
-  // Handle back navigation - either to previous step or to games page
+  const [step, setStep] = useState(1);
+  const totalSteps = skipCategoryStep ? 2 : 3;
+
+  // FIX: If skipping category step, set a default category automatically.
+  useEffect(() => {
+    if (skipCategoryStep) {
+      setCategories(['general']);
+    }
+  }, [skipCategoryStep, setCategories]);
+
+
   const handleBack = () => {
     if (step > 1) {
       setStep(s => s - 1);
@@ -52,38 +60,32 @@ const GameModeSelector: React.FC = () => {
     }
   };
 
-  // Handle game mode selection and advance to next step
   const handleModeSelect = (mode: 'single' | 'competitive') => {
     setGameMode(mode);
     setStep(2);
   };
 
-  // Handle category selection with special logic for 'general' category
   const handleCategoryToggle = (category: GameCategory) => {
     if (category === 'general') {
       setCategories(['general']);
       return;
     }
-
     const newSelection = selectedCategories.includes(category)
       ? selectedCategories.filter(c => c !== category && c !== 'general')
       : [...selectedCategories.filter(c => c !== 'general'), category];
-
     if (newSelection.length === 0) {
-      setCategories(['general']); // Default to general if nothing is selected
+      setCategories(['general']);
     } else {
       setCategories(newSelection);
     }
   };
 
-  // Proceed to difficulty selection if at least one category is selected
   const handleContinueFromCategories = () => {
     if (selectedCategories.length > 0) {
       setStep(3);
     }
   };
 
-  // Handle difficulty selection and navigate to appropriate game screen
   const handleDifficultySelect = (difficulty: Difficulty) => {
     setDifficulty(difficulty);
     const { gameMode } = useGameMode.getState();
@@ -94,12 +96,17 @@ const GameModeSelector: React.FC = () => {
     }
   };
 
-  // Render content based on current step
   const renderStepContent = () => {
-    switch (step) {
-      case 1:
+    // FIX: Adjust step logic based on whether the category step is skipped.
+    let currentStepLogic = step;
+    if (skipCategoryStep && step === 2) {
+      currentStepLogic = 3; // If skipping, step 2 is actually the difficulty selection.
+    }
+
+    switch (currentStepLogic) {
+      case 1: // Step 1: Select Mode
         return <ModeSelector onSelect={handleModeSelect} />;
-      case 2:
+      case 2: // Step 2: Select Category (only if not skipped)
         return (
           <>
             <h2 className="text-2xl sm:text-3xl font-bold text-center mb-2">{t.selectCategory}</h2>
@@ -116,7 +123,7 @@ const GameModeSelector: React.FC = () => {
             </div>
           </>
         );
-      case 3:
+      case 3: // Step 3 (or 2 if skipping): Select Difficulty
         return (
           <>
             <h2 className="text-2xl sm:text-3xl font-bold text-center mb-6">{t.selectDifficulty}</h2>
@@ -135,12 +142,10 @@ const GameModeSelector: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
       <Header currentView="selection" />
       <main className="container mx-auto px-4 py-8 max-w-4xl" dir={dir}>
-        {/* Step indicator showing progress through the selection process */}
-        <StepIndicator currentStep={step} totalSteps={3} />
+        <StepIndicator currentStep={step} totalSteps={totalSteps} />
         <Card className="p-6 sm:p-10 bg-card/80 backdrop-blur-sm">
           {renderStepContent()}
         </Card>
-        {/* Back navigation button */}
         <div className="mt-8 flex justify-start">
           <Button variant="outline" onClick={handleBack} className="flex items-center gap-2">
             {dir === 'rtl' ? <ArrowRight className="w-4 h-4" /> : <ArrowLeft className="w-4 h-4" />}
