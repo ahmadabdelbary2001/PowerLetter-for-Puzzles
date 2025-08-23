@@ -52,10 +52,22 @@ export function GameButton({
       variant={isPrimary ? "default" : variant}
       className={cn(
         isPrimary && "bg-blue-600 hover:bg-blue-700 text-white",
+        "text-xs sm:text-sm md:text-base", // Responsive text sizing
+        "font-medium",
+        "transition-all duration-200",
+        "disabled:opacity-70 disabled:cursor-not-allowed",
+        "h-auto", // Allow height to be responsive
+        "flex items-center justify-center", // Ensure content is centered
+        "whitespace-nowrap", // Prevent text wrapping
+        "rounded-md", // Consistent border radius
+        "overflow-hidden", // Ensure content doesn't overflow
+        "min-w-fit", // Adjust width based on content
         className
       )}
     >
-      {Icon && <Icon className="w-4 h-4 mr-2" />}
+      {Icon && (
+        <Icon className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2 flex-shrink-0" />
+      )}
       {children}
     </Button>
   );

@@ -1,7 +1,7 @@
 // src/features/formation-game/components/FormationGameScreen.tsx
 /**
  * @description The main UI component for the Word Formation Challenge.
- * It now composes atomic and molecular components and uses a simplified, custom control bar.
+ * Features a compact, responsive layout with an integrated word display and optimized spacing.
  */
 import React from 'react';
 import { GameLayout } from '@/components/templates/GameLayout';
@@ -10,7 +10,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { RotateCcw, Check, Lightbulb } from 'lucide-react';
 import { CrosswordGrid } from '@/components/molecules/CrosswordGrid';
 import { LetterCircle } from '@/components/molecules/LetterCircle';
-import { GameButton } from '@/components/atoms/GameButton'; // FIX: Import GameButton for the controls
+import { GameButton } from '@/components/atoms/GameButton';
 
 const FormationGameScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -51,17 +51,24 @@ const FormationGameScreen: React.FC = () => {
       onBack={handleBack}
       difficulty={currentLevel.difficulty}
     >
-      <div className="flex flex-col items-center gap-4 sm:gap-6">
+      {/* FIX: Reduced vertical gaps for a more compact layout. */}
+      <div className="flex flex-col items-center gap-2 sm:gap-3">
+        {/* The crossword grid. */}
         <CrosswordGrid grid={currentLevel.grid} revealedCells={revealedCells} />
 
-        <div className="h-8 text-center font-semibold text-primary">
+        {/* Display for the current word being formed */}
+        <div className="h-8 sm:h-10 flex justify-center items-center mb-1 sm:mb-2">
+          <div className="text-2xl sm:text-3xl font-bold text-primary tracking-wider">
+            {currentInput || "..."}
+          </div>
+        </div>
+
+        {/* Notification area for feedback. */}
+        <div className="h-5 sm:h-6 text-center font-semibold text-primary text-sm">
           {notification}
         </div>
 
-        <div className="h-12 w-full max-w-xs bg-muted rounded-lg flex items-center justify-center text-2xl font-bold tracking-widest">
-          {currentInput || <span className="text-muted-foreground/50">{t.typeAWord || "Type a word"}</span>}
-        </div>
-
+        {/* The circular letter selection wheel. */}
         <LetterCircle
           letters={letters}
           usedLetterIndices={Array.from(usedLetterIndices)}
@@ -69,14 +76,14 @@ const FormationGameScreen: React.FC = () => {
           onShuffle={onShuffle}
         />
 
-        {/* FIX: Replaced GameControls with a simple, dedicated control bar */}
-        <div className="flex w-full max-w-xs justify-center gap-2 sm:gap-4">
+        {/* FIX: Control bar with responsive button sizes and tighter spacing. */}
+        <div className="flex w-full max-w-xs justify-center gap-1 sm:gap-2 px-1 flex-wrap sm:flex-nowrap items-center">
           <GameButton
             variant="outline"
             onClick={onRemoveLast}
             disabled={currentInput.length === 0}
             icon={RotateCcw}
-            className="flex-1"
+            className="flex-1 min-w-[80px] sm:min-w-[100px] py-1.5 sm:py-2 h-auto text-xs sm:text-sm px-2"
           >
             {t.remove}
           </GameButton>
@@ -85,7 +92,7 @@ const FormationGameScreen: React.FC = () => {
             onClick={onHint}
             disabled={revealedCells.size >= currentLevel.grid.length}
             icon={Lightbulb}
-            className="flex-1"
+            className="flex-1 min-w-[80px] sm:min-w-[100px] py-1.5 sm:py-2 h-auto text-xs sm:text-sm px-2"
           >
             {t.hint}
           </GameButton>
@@ -94,7 +101,7 @@ const FormationGameScreen: React.FC = () => {
             onClick={onCheckWord}
             disabled={currentInput.length < 2}
             icon={Check}
-            className="flex-1"
+            className="flex-1 min-w-[120px] sm:min-w-[160px] py-2 sm:py-2.5 h-auto text-xs sm:text-sm px-3.5 text-center whitespace-nowrap font-semibold"
           >
             {t.check}
           </GameButton>

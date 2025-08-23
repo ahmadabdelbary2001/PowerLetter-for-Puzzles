@@ -27,10 +27,10 @@ export const CrosswordGrid: React.FC<CrosswordGridProps> = ({
   useEffect(() => {
     const updateCellSize = () => {
       const screenWidth = window.innerWidth;
-      if (screenWidth < 380) setCellSize(30);
-      else if (screenWidth < 640) setCellSize(35);
-      else if (screenWidth < 768) setCellSize(40);
-      else setCellSize(45);
+      if (screenWidth < 380) setCellSize(28);
+      else if (screenWidth < 640) setCellSize(32);
+      else if (screenWidth < 768) setCellSize(36);
+      else setCellSize(40);
     };
     updateCellSize();
     window.addEventListener('resize', updateCellSize);
@@ -49,9 +49,9 @@ export const CrosswordGrid: React.FC<CrosswordGridProps> = ({
   });
 
   return (
-    <div className={cn("flex flex-col gap-1 w-full overflow-x-auto py-2", className)}>
+    <div className={cn("flex flex-col gap-0.5 sm:gap-1 w-full overflow-x-auto py-1.5 sm:py-2", className)}>
       {gridMatrix.map((row, y) => (
-        <div key={y} className="flex gap-1 justify-center">
+        <div key={y} className="flex gap-0.5 sm:gap-1 justify-center">
           {row.map((cell, x) => (
             <GridCellComponent
               key={`${x}-${y}`}

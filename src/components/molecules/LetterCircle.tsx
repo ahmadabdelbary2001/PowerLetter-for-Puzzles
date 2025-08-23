@@ -29,14 +29,15 @@ export const LetterCircle: React.FC<LetterCircleProps> = ({
 }) => {
   const [circleSize, setCircleSize] = useState(180);
   const [buttonSize, setButtonSize] = useState(40);
+  const [iconSize, setIconSize] = useState(24);
 
   useEffect(() => {
     const updateSizes = () => {
       const screenWidth = window.innerWidth;
-      if (screenWidth < 380) { setCircleSize(140); setButtonSize(32); }
-      else if (screenWidth < 640) { setCircleSize(160); setButtonSize(36); }
-      else if (screenWidth < 768) { setCircleSize(180); setButtonSize(40); }
-      else { setCircleSize(200); setButtonSize(44); }
+      if (screenWidth < 380) { setCircleSize(120); setButtonSize(28); setIconSize(16); }
+      else if (screenWidth < 640) { setCircleSize(140); setButtonSize(32); setIconSize(20); }
+      else if (screenWidth < 768) { setCircleSize(160); setButtonSize(36); setIconSize(24); }
+      else { setCircleSize(180); setButtonSize(40); setIconSize(28); }
     };
     updateSizes();
     window.addEventListener('resize', updateSizes);
@@ -44,10 +45,10 @@ export const LetterCircle: React.FC<LetterCircleProps> = ({
   }, []);
 
   return (
-    <div className={cn("relative mx-auto my-4", className)} style={{ width: `${circleSize}px`, height: `${circleSize}px` }}>
+    <div className={cn("relative mx-auto my-0 sm:my-1", className)} style={{ width: `${circleSize}px`, height: `${circleSize}px` }}>
       {letters.map((letter, i) => {
         const angle = (i / letters.length) * 2 * Math.PI;
-        const radius = letters.length > 6 ? circleSize * 0.4 : circleSize * 0.35;
+        const radius = letters.length > 6 ? circleSize * 0.45 : circleSize * 0.42;
         const x = Math.cos(angle) * radius;
         const y = Math.sin(angle) * radius;
         const isDisabled = usedLetterIndices.includes(i);
@@ -80,7 +81,7 @@ export const LetterCircle: React.FC<LetterCircleProps> = ({
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
         style={{ width: `${buttonSize * 1.6}px`, height: `${buttonSize * 1.6}px` }}
       >
-        <RefreshCw className="text-muted-foreground" style={{ width: `${buttonSize * 0.6}px`, height: `${buttonSize * 0.6}px` }} />
+        <RefreshCw className="text-muted-foreground" style={{ width: `${iconSize}px`, height: `${iconSize}px` }} />
       </Button>
     </div>
   );
