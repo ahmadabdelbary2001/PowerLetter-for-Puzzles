@@ -11,7 +11,7 @@ const ModeToggler: FC = () => {
     <StyledWrapper>
       <label className="switch" aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}>
         <input 
-          defaultChecked={true}
+
           id="checkbox" 
           type="checkbox" 
           checked={!isDark}
