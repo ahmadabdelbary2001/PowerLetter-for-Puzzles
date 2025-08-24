@@ -6,9 +6,12 @@ import React, { useEffect } from 'react';
 import { useLetterFlowGame } from '../hooks/useLetterFlowGame';
 import type { letterFlowLevel } from '../engine';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Shuffle, Lightbulb } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Shuffle, Lightbulb } from 'lucide-react';
+import { useTranslation } from "@/hooks/useTranslation";
 
 const LetterFlowGameScreen: React.FC = () => {
+  const { t, dir } = useTranslation();
+
   useEffect(() => {
     // Fix for passive event listener issue
     const originalAddEventListener = EventTarget.prototype.addEventListener;
@@ -115,7 +118,7 @@ const LetterFlowGameScreen: React.FC = () => {
 
     return (
       <div className="mt-6">
-        <div className="text-lg font-semibold mb-2">Connected Letters:</div>
+        <div className="text-lg font-semibold mb-2">{t.selected}:</div>
         <div className="flex flex-wrap gap-2">
           {foundWords.map((wordPath, index) => (
             <div
@@ -150,35 +153,34 @@ const LetterFlowGameScreen: React.FC = () => {
   // Render the game screen
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen">
-        <div className="text-xl">Loading game...</div>
+      <div className={`flex flex-col items-center justify-center min-h-screen ${dir === 'rtl' ? 'text-right' : ''}`} dir={dir}>
+        <div className="text-xl">{t.loading}...</div>
       </div>
     );
   }
 
   if (!currentLevel) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen">
-        <div className="text-xl">No level found.</div>
+      <div className={`flex flex-col items-center justify-center min-h-screen ${dir === 'rtl' ? 'text-right' : ''}`} dir={dir}>
+        <div className="text-xl">{t.noLevelsFound}</div>
         <Button onClick={handleBack} className="mt-4">
-          Back to Game Selection
+          {t.back}
         </Button>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4">
+    <div className={`flex flex-col items-center justify-center min-h-screen p-4`} dir={dir}>
       {renderNotification()}
 
       <div className="w-full max-w-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <Button onClick={handleBack} variant="outline" size="sm">
-            <ArrowLeft className="w-4 h-4 mr-1" />
-            Back
+        <div className={`flex items-center justify-between mb-6`}>
+          <Button variant="ghost" onClick={handleBack} className="flex items-center gap-2">
+            {dir === "rtl" ? <ArrowRight /> : <ArrowLeft />} {t.back}
           </Button>
-          <h1 className="text-2xl font-bold">Letter Flow</h1>
+          <h1 className="text-2xl font-bold">{t.letterFlowTitle}</h1>
           <div className="w-16"></div> {/* Spacer for alignment */}
         </div>
 
@@ -194,22 +196,22 @@ const LetterFlowGameScreen: React.FC = () => {
         <div className="flex justify-center gap-4 mt-6">
           <Button onClick={onHint} variant="outline">
             <Lightbulb className="w-4 h-4 mr-1" />
-            Hint
+            {t.hint}
           </Button>
           <Button onClick={onUndo} variant="outline">
-            <ArrowLeft className="w-4 h-4 mr-1 rotate-180" />
-            Undo
+            <ArrowLeft className={`w-4 h-4 ${dir === 'rtl' ? 'ml-1 rotate-0' : 'mr-1 rotate-180'}`} />
+            {t.undo}
           </Button>
           <Button onClick={onReset} variant="outline">
-            <Shuffle className="w-4 h-4 mr-1" />
-            Reset
+            <Shuffle className={`w-4 h-4 ${dir === 'rtl' ? 'ml-1' : 'mr-1'}`} />
+            {t.reset}
           </Button>
         </div>
 
         {/* Progress */}
         <div className="mt-6 text-center">
           <div className="text-gray-600">
-            Connected {foundWords.length} of {Math.floor((currentLevel as letterFlowLevel).endpoints.length / 2)} letter pairs
+            {t.selected} {foundWords.length} {t.of} {Math.floor((currentLevel as letterFlowLevel).endpoints.length / 2)}
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
             <div

@@ -29,6 +29,7 @@ export const useTranslation = () => {
             hint: "Hint",
             check: "Check Answer",
             showSolution: "Show Solution",
+            undo: "Undo",
             typeAWord: "Type a word",
             hintUsed: "Hint used!",
             prev: "Previous",
@@ -38,7 +39,8 @@ export const useTranslation = () => {
             features: "Features",
             select: "Select",
             selected: "Selected",
-            
+            of: "of",
+
             // Game Type Selector
             selectGame: "Choose Game Type",
             selectGameDesc: "Select the type of challenge you want to play",
@@ -190,6 +192,7 @@ export const useTranslation = () => {
             hint: "تلميح",
             check: "تحقق من الإجابة",
             showSolution: "أظهر الحل",
+            undo: "تراجع",
             typeAWord: "اكتب كلمة",
             hintUsed: "تم استخدام تلميح!",
             prev: "السابق",
@@ -199,7 +202,8 @@ export const useTranslation = () => {
             features: "الميزات",
             select: "اختر",
             selected: "مختار",
-            
+            of: "من",
+
             // Game Type Selector
             selectGame: "اختر نوع اللعبة",
             selectGameDesc: "اختر نوع التحدي الذي تريد أن تلعبه",
