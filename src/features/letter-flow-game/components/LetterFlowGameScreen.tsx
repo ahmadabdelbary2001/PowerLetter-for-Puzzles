@@ -37,6 +37,8 @@ const LetterFlowGameScreen: React.FC = () => {
     handleMouseEnter,
     handleMouseUp,
     onHint,
+    onUndo,
+    onReset,
   } = useLetterFlowGame();
 
   // Calculate the grid size based on the currentLevel if available, otherwise use board
@@ -194,9 +196,13 @@ const LetterFlowGameScreen: React.FC = () => {
             <Lightbulb className="w-4 h-4 mr-1" />
             Hint
           </Button>
-          <Button onClick={() => window.location.reload()} variant="outline">
+          <Button onClick={onUndo} variant="outline">
+            <ArrowLeft className="w-4 h-4 mr-1 rotate-180" />
+            Undo
+          </Button>
+          <Button onClick={onReset} variant="outline">
             <Shuffle className="w-4 h-4 mr-1" />
-            New Board
+            Reset
           </Button>
         </div>
 

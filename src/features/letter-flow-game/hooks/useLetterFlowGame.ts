@@ -289,6 +289,41 @@ export function useLetterFlowGame() {
     }
   }, [currentLevel, foundWords, gameMode, teams, currentTeam, consumeHint, t, getEndpointsForLetter]);
 
+  // Undo the last connection
+  const onUndo = useCallback(() => {
+    if (foundWords.length === 0) return;
+    
+    // Get the last connection
+    const lastConnection = foundWords[foundWords.length - 1];
+    
+    // Remove it from found words
+    setFoundWords(prev => prev.slice(0, -1));
+    
+    // Mark the cells as unused
+    setBoard(prev => prev.map(c => {
+      const wasUsed = lastConnection.cells.some(cell => cell.x === c.x && cell.y === c.y);
+      return wasUsed ? { ...c, isUsed: false } : c;
+    }));
+    
+    setNotification(`Undo: Removed connection for ${lastConnection.word}`);
+    setTimeout(() => setNotification(null), 1500);
+  }, [foundWords]);
+
+  // Reset the game
+  const onReset = useCallback(() => {
+    // Reset all connections
+    setFoundWords([]);
+    
+    // Reset all cells to unused
+    setBoard(prev => prev.map(c => ({
+      ...c,
+      isUsed: false
+    })));
+    
+    setNotification("Game reset");
+    setTimeout(() => setNotification(null), 1500);
+  }, []);
+
   const handleBack = useCallback(() => navigate(`/game-mode/${params.gameType}`), [navigate, params.gameType]);
 
   return {
@@ -308,5 +343,7 @@ export function useLetterFlowGame() {
     handleMouseUp,
     clearSelection: () => {}, // This was removed but UI might still expect it
     onHint,
+    onUndo,
+    onReset,
   };
 }
