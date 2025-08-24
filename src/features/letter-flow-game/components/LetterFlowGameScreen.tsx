@@ -6,8 +6,13 @@ import React, { useEffect } from 'react';
 import { useLetterFlowGame } from '../hooks/useLetterFlowGame';
 import type { letterFlowLevel } from '../engine';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight, Shuffle, Lightbulb } from 'lucide-react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useTranslation } from "@/hooks/useTranslation";
+import { LetterFlowBoard } from "@/components/molecules/LetterFlowBoard";
+import { FoundWords } from "@/components/molecules/FoundWords";
+import { LetterFlowGameControls } from "@/components/molecules/LetterFlowGameControls";
+import { GameProgress } from "@/components/molecules/GameProgress";
+import { Notification } from "@/components/atoms/Notification";
 
 const LetterFlowGameScreen: React.FC = () => {
   const { t, dir } = useTranslation();
@@ -44,71 +49,18 @@ const LetterFlowGameScreen: React.FC = () => {
     onReset,
   } = useLetterFlowGame();
 
-  // Calculate the grid size based on the currentLevel if available, otherwise use board
-  const gridSize = currentLevel && currentLevel.board.length > 0 
-    ? Math.sqrt(currentLevel.board.length) 
-    : Math.ceil(Math.sqrt(board.length));
-
   // Render the game board
   const renderBoard = () => {
     return (
-      <div
-        className="grid gap-1 mx-auto max-w-md"
-        style={{
-          gridTemplateColumns: `repeat(${gridSize}, minmax(0, 1fr))`,
-        }}
-      >
-        {board.map((cell) => {
-          const isSelected = selectedPath.some(c => c.x === cell.x && c.y === cell.y);
-          const isFound = foundWords.some(path => path.cells.some(c => c.x === cell.x && c.y === cell.y));
-
-          return (
-            <div
-              key={`${cell.x}-${cell.y}`}
-              onMouseDown={() => handleMouseDown(cell)}
-              onMouseEnter={() => handleMouseEnter(cell)}
-              onMouseUp={handleMouseUp}
-              onTouchStart={(e) => {
-                e.preventDefault();
-                handleMouseDown(cell);
-              }}
-              onTouchMove={(e) => {
-                // Use passive: false for preventDefault to work
-                e.preventDefault();
-                const touch = e.touches[0];
-                const element = document.elementFromPoint(touch.clientX, touch.clientY);
-                if (element && element.getAttribute('data-cell-x') && element.getAttribute('data-cell-y')) {
-                  const x = parseInt(element.getAttribute('data-cell-x') || '0');
-                  const y = parseInt(element.getAttribute('data-cell-y') || '0');
-                  const cell = board.find(c => c.x === x && c.y === y);
-                  if (cell) handleMouseEnter(cell);
-                }
-              }}
-              onTouchEnd={(e) => {
-                e.preventDefault();
-                handleMouseUp();
-              }}
-              className={`
-                aspect-square flex items-center justify-center rounded-md text-xl font-bold
-                cursor-pointer transition-all duration-200
-                ${isSelected
-                  ? 'bg-blue-500 text-white transform scale-105'
-                  : isFound
-                    ? 'bg-green-500 text-white'
-                    : activeLetter && cell.letter === activeLetter
-                      ? 'bg-blue-300 text-white'
-                      : 'bg-gray-100 hover:bg-gray-200'
-                }
-                ${isFound || (activeLetter && cell.letter === activeLetter) ? 'cursor-default' : ''}
-              `}
-              data-cell-x={cell.x}
-              data-cell-y={cell.y}
-            >
-              {cell.letter}
-            </div>
-          );
-        })}
-      </div>
+      <LetterFlowBoard
+        cells={board}
+        selectedPath={selectedPath}
+        foundWords={foundWords}
+        activeLetter={activeLetter}
+        onMouseDown={(cell) => handleMouseDown({ ...cell, isUsed: false })}
+        onMouseEnter={(cell) => handleMouseEnter({ ...cell, isUsed: false })}
+        onMouseUp={handleMouseUp}
+      />
     );
   };
 
@@ -117,19 +69,10 @@ const LetterFlowGameScreen: React.FC = () => {
     if (foundWords.length === 0) return null;
 
     return (
-      <div className="mt-6">
-        <div className="text-lg font-semibold mb-2">{t.selected}:</div>
-        <div className="flex flex-wrap gap-2">
-          {foundWords.map((wordPath, index) => (
-            <div
-              key={index}
-              className="bg-green-100 text-green-800 px-3 py-1 rounded-md"
-            >
-              {wordPath.word}
-            </div>
-          ))}
-        </div>
-      </div>
+      <FoundWords
+        foundWords={foundWords}
+        t={{ selected: t.selected }}
+      />
     );
   };
 
@@ -137,16 +80,21 @@ const LetterFlowGameScreen: React.FC = () => {
   const renderNotification = () => {
     if (!notification) return null;
 
+    // Determine notification type based on content
+    let type: 'success' | 'error' | 'warning' | 'info' = 'info';
+    if (notification.includes('congrats')) {
+      type = 'success';
+    } else if (notification.includes('Already found') || notification.includes('cannot cross')) {
+      type = 'warning';
+    } else if (notification.includes('must connect') || notification.includes('horizontal or vertical')) {
+      type = 'error';
+    }
+
     return (
-      <div className={`fixed top-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-md shadow-lg z-50 ${
-        notification.includes('congrats')
-          ? 'bg-green-500 text-white'
-          : notification.includes('Already found')
-            ? 'bg-yellow-500 text-white'
-            : 'bg-red-500 text-white'
-      }`}>
-        {notification}
-      </div>
+      <Notification
+        message={notification}
+        type={type}
+      />
     );
   };
 
@@ -193,33 +141,20 @@ const LetterFlowGameScreen: React.FC = () => {
         {renderFoundWords()}
 
         {/* Game Controls */}
-        <div className="flex justify-center gap-4 mt-6">
-          <Button onClick={onHint} variant="outline">
-            <Lightbulb className="w-4 h-4 mr-1" />
-            {t.hint}
-          </Button>
-          <Button onClick={onUndo} variant="outline">
-            <ArrowLeft className={`w-4 h-4 ${dir === 'rtl' ? 'ml-1 rotate-0' : 'mr-1 rotate-180'}`} />
-            {t.undo}
-          </Button>
-          <Button onClick={onReset} variant="outline">
-            <Shuffle className={`w-4 h-4 ${dir === 'rtl' ? 'ml-1' : 'mr-1'}`} />
-            {t.reset}
-          </Button>
-        </div>
+        <LetterFlowGameControls
+          onHint={onHint}
+          onUndo={onUndo}
+          onReset={onReset}
+          t={{ hint: t.hint, undo: t.undo, reset: t.reset }}
+          dir={dir as 'ltr' | 'rtl'}
+        />
 
         {/* Progress */}
-        <div className="mt-6 text-center">
-          <div className="text-gray-600">
-            {t.selected} {foundWords.length} {t.of} {Math.floor((currentLevel as letterFlowLevel).endpoints.length / 2)}
-          </div>
-          <div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
-            <div
-              className="bg-blue-600 h-2.5 rounded-full"
-              style={{ width: `${(foundWords.length / Math.floor((currentLevel as letterFlowLevel).endpoints.length / 2)) * 100}%` }}
-            ></div>
-          </div>
-        </div>
+        <GameProgress
+          foundWords={foundWords}
+          totalWords={Math.floor((currentLevel as letterFlowLevel).endpoints.length / 2)}
+          t={{ selected: t.selected, of: t.of }}
+        />
       </div>
     </div>
   );
