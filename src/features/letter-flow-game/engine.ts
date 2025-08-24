@@ -1,6 +1,6 @@
 // src/features/letter-flow-game/engine.ts
 /**
- * @description Game engine for the Word Flow game.
+ * @description Game engine for the Letter Flow game.
  * This engine handles loading levels and generating game boards for connecting letters to form words.
  */
 import type { Language, Difficulty, GameCategory } from '@/types/game';
@@ -27,9 +27,9 @@ export interface WordPath {
 }
 
 /**
- * Represents a complete level in the Word Flow game.
+ * Represents a complete level in the Letter Flow game.
  */
-export interface WordFlowLevel {
+export interface letterFlowLevel {
   id: string;           // Unique identifier for the level
   difficulty: Difficulty; // Difficulty level (easy, medium, hard)
   words: string[];      // Array of words that can be formed in this level
@@ -50,23 +50,23 @@ interface LevelModule {
 }
 
 /**
- * Implements the game engine for the Word Flow game.
+ * Implements the game engine for the Letter Flow game.
  * Handles loading levels from JSON files and generating game boards.
  */
-class WordFlowGameEngine implements IGameEngine<WordFlowLevel> {
+class letterFlowGameEngine implements IGameEngine<letterFlowLevel> {
   /**
    * Loads game levels based on the specified language, categories, and difficulty.
    * @param options - Configuration options for loading levels
    * @param options.language - The language to load levels for
    * @param options.categories - Array of game categories to filter by
    * @param options.difficulty - The difficulty level to load levels for
-   * @returns Promise<WordFlowLevel[]> - Array of loaded levels
+   * @returns Promise<letterFlowLevel[]> - Array of loaded levels
    */
   public async loadLevels(options: {
     language: Language;
     categories: GameCategory[];
     difficulty?: Difficulty;
-  }): Promise<WordFlowLevel[]> {
+  }): Promise<letterFlowLevel[]> {
     const { language, difficulty } = options;
     if (!difficulty) return []; // Return empty array if no difficulty specified
 
@@ -86,7 +86,7 @@ class WordFlowGameEngine implements IGameEngine<WordFlowLevel> {
       const levels = module.default?.levels || [];
 
       // Transform and validate each level
-      return levels.map((lvl: unknown): WordFlowLevel | null => {
+      return levels.map((lvl: unknown): letterFlowLevel | null => {
         // Check if the level has the required properties
         if (
           typeof lvl === 'object' && lvl !== null &&
@@ -127,14 +127,14 @@ class WordFlowGameEngine implements IGameEngine<WordFlowLevel> {
           };
         }
         return null; // Skip invalid levels
-      }).filter((l): l is WordFlowLevel => l !== null); // Filter out null values
+      }).filter((l): l is letterFlowLevel => l !== null); // Filter out null values
     } catch (err) {
       // Log error and return error level if loading fails
-      console.error(`WordFlowGameEngine: Failed to load levels for ${language}/${difficulty}.`, err);
+      console.error(`LetterFlowGameEngine: Failed to load levels for ${language}/${difficulty}.`, err);
       const errorBoard: BoardCell[] = [];
       // Ensure errorBoard has the correct type
       const typedErrorBoard: BoardCell[] = errorBoard;
-      const errorLevel: WordFlowLevel = {
+      const errorLevel: letterFlowLevel = {
         id: 'error' as string,
         difficulty: 'easy' as Difficulty,
         words: [] as string[],
@@ -181,4 +181,4 @@ class WordFlowGameEngine implements IGameEngine<WordFlowLevel> {
 }
 
 // Export a singleton instance of the game engine
-export const wordFlowGameEngine = new WordFlowGameEngine();
+export const letterFlowGameEngineInstance = new letterFlowGameEngine();

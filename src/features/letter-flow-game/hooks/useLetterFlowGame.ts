@@ -1,13 +1,13 @@
 // src/features/letter-flow-game/hooks/useLetterFlowGame.ts
 /**
- * @description Custom hook to manage the state and logic for the Word Flow game.
+ * @description Custom hook to manage the state and logic for the Letter Flow game.
  */
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useGame } from '@/hooks/useGame';
-import { wordFlowGameEngine, type WordFlowLevel, type BoardCell, type WordPath } from '../engine';
+import { letterFlowGameEngineInstance, type letterFlowLevel, type BoardCell, type WordPath } from '../engine';
 
 export function useLetterFlowGame() {
   const navigate = useNavigate();
@@ -15,8 +15,8 @@ export function useLetterFlowGame() {
   const { language, categories, difficulty, gameMode, teams, currentTeam, consumeHint } = useGameMode();
   const { t } = useTranslation();
 
-  const { loading, currentLevel, currentLevelIndex, nextLevel } = useGame<WordFlowLevel>(
-    wordFlowGameEngine,
+  const { loading, currentLevel, currentLevelIndex, nextLevel } = useGame<letterFlowLevel>(
+    letterFlowGameEngineInstance,
     { language, categories, difficulty }
   );
 
@@ -33,7 +33,7 @@ export function useLetterFlowGame() {
         setBoard(currentLevel.board);
       } else {
         // Otherwise generate a new board for the level
-        const newBoard = wordFlowGameEngine.generateBoard(
+        const newBoard = letterFlowGameEngineInstance.generateBoard(
           "",
           currentLevel.difficulty,
           language,

@@ -50,13 +50,13 @@ export const GAME_REGISTRY: GameConfig[] = [
     icon: React.createElement(Puzzle, { className: "w-8 h-8" }),
     status: 'available',
   },
-  // Add the new "Word Flow" game to the registry
+  // Add the new "Letter Flow" game to the registry
   {
     id: 'letter-flow',
     type: 'adult',
-    titleKey: 'wordFlowTitle',
-    descriptionKey: 'wordFlowDesc',
-    featuresKey: 'wordFlowFeatures',
+    titleKey: 'letterFlowTitle',
+    descriptionKey: 'letterFlowDesc',
+    featuresKey: 'letterFlowFeatures',
     component: LetterFlowGameScreen,
     icon: React.createElement(Share2, { className: "w-8 h-8" }), // Using 'Share2' icon for flow/connection
     status: 'available',

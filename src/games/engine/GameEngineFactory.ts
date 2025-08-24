@@ -8,7 +8,7 @@ import { clueGameEngine } from '@/features/clue-game/engine';
 import { imgClueGameEngine } from '@/features/img-clue-game/engine';
 import { wordChoiceGameEngine } from '@/features/word-choice-game/engine';
 import { formationGameEngine } from '@/features/formation-game/engine';
-import { wordFlowGameEngine } from '@/features/letter-flow-game/engine'
+import { letterFlowGameEngineInstance } from '@/features/letter-flow-game/engine'
 import type { GameConfig } from '../GameRegistry';
 
 export function getGameEngine(gameId: GameConfig['id']) {
@@ -22,7 +22,7 @@ export function getGameEngine(gameId: GameConfig['id']) {
     case 'formation':
       return formationGameEngine;
     case 'letter-flow':
-      return wordFlowGameEngine;
+      return letterFlowGameEngineInstance;
     
     case 'category':
     case 'picture-choice':

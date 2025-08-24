@@ -68,10 +68,10 @@ export const useTranslation = () => {
                 "Hint system"
             ],
             moreGames: "More games and features coming soon! Stay tuned for updates.",
-            // Add translations for Word Flow Game
-            wordFlowTitle: "Word Flow",
-            wordFlowDesc: "Connect matching letters to fill the grid and reveal the hidden word.",
-            wordFlowFeatures: [
+            // Add translations for Letter Flow Game
+            letterFlowTitle: "Letter Flow",
+            letterFlowDesc: "Connect matching letters to fill the grid and reveal the hidden word.",
+            letterFlowFeatures: [
                 "Spatial puzzle solving",
                 "Fill the entire grid",
                 "Combines logic and vocabulary"
@@ -228,11 +228,11 @@ export const useTranslation = () => {
                 "أدلة مفيدة",
                 "نظام تلميحات"
             ],
-            // Add translations for Word Flow Game
+            // Add translations for Letter Flow Game
             moreGames: "المزيد من الألعاب والمميزات قريباً! ابق متابعاً للتحديثات.",
-            wordFlowTitle: "مسار الكلمات",
-            wordFlowDesc: "صِل بين الحروف المتطابقة لملء الشبكة بالكامل وكشف الكلمة المخفية.",
-            wordFlowFeatures: [
+            letterFlowTitle: "مسار الحروف",
+            letterFlowDesc: "صِل بين الحروف المتطابقة لملء الشبكة بالكامل وكشف الكلمة المخفية.",
+            letterFlowFeatures: [
                 "ألغاز منطقية ومكانية",
                 "يجب ملء الشبكة بالكامل",
                 "تجمع بين المنطق والمفردات"

@@ -1,10 +1,10 @@
 // src/features/letter-flow-game/components/LetterFlowGameScreen.tsx
 /**
- * @description Screen component for the Word Flow game.
+ * @description Screen component for the Letter Flow game.
  */
 import React, { useEffect } from 'react';
 import { useLetterFlowGame } from '../hooks/useLetterFlowGame';
-import type { WordFlowLevel } from '../engine';
+import type { letterFlowLevel } from '../engine';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Shuffle, Lightbulb } from 'lucide-react';
 
@@ -176,7 +176,7 @@ const LetterFlowGameScreen: React.FC = () => {
             <ArrowLeft className="w-4 h-4 mr-1" />
             Back
           </Button>
-          <h1 className="text-2xl font-bold">Word Flow</h1>
+          <h1 className="text-2xl font-bold">Letter Flow</h1>
           <div className="w-16"></div> {/* Spacer for alignment */}
         </div>
 
@@ -203,12 +203,12 @@ const LetterFlowGameScreen: React.FC = () => {
         {/* Progress */}
         <div className="mt-6 text-center">
           <div className="text-gray-600">
-            Connected {foundWords.length} of {Math.floor((currentLevel as WordFlowLevel).endpoints.length / 2)} letter pairs
+            Connected {foundWords.length} of {Math.floor((currentLevel as letterFlowLevel).endpoints.length / 2)} letter pairs
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
             <div
               className="bg-blue-600 h-2.5 rounded-full"
-              style={{ width: `${(foundWords.length / Math.floor((currentLevel as WordFlowLevel).endpoints.length / 2)) * 100}%` }}
+              style={{ width: `${(foundWords.length / Math.floor((currentLevel as letterFlowLevel).endpoints.length / 2)) * 100}%` }}
             ></div>
           </div>
         </div>
