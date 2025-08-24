@@ -68,6 +68,14 @@ export const useTranslation = () => {
                 "Hint system"
             ],
             moreGames: "More games and features coming soon! Stay tuned for updates.",
+            // Add translations for Word Flow Game
+            wordFlowTitle: "Word Flow",
+            wordFlowDesc: "Connect matching letters to fill the grid and reveal the hidden word.",
+            wordFlowFeatures: [
+                "Spatial puzzle solving",
+                "Fill the entire grid",
+                "Combines logic and vocabulary"
+            ],
 
             // translations for Kids Game section
             kidsGamesTitle: "Kids Puzzles",
@@ -220,8 +228,16 @@ export const useTranslation = () => {
                 "أدلة مفيدة",
                 "نظام تلميحات"
             ],
+            // Add translations for Word Flow Game
             moreGames: "المزيد من الألعاب والمميزات قريباً! ابق متابعاً للتحديثات.",
-            
+            wordFlowTitle: "مسار الكلمات",
+            wordFlowDesc: "صِل بين الحروف المتطابقة لملء الشبكة بالكامل وكشف الكلمة المخفية.",
+            wordFlowFeatures: [
+                "ألغاز منطقية ومكانية",
+                "يجب ملء الشبكة بالكامل",
+                "تجمع بين المنطق والمفردات"
+            ],
+
             // translations for Kids Game section
             kidsGamesTitle: "ألغاز الأطفال",
             kidsGamesDesc: "ألعاب ممتعة وتعليمية مصممة خصيصاً للأطفال.",

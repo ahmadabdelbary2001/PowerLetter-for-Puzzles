@@ -1,18 +1,24 @@
 // src/games/GameRegistry.ts
+/**
+ * @description A central registry for all available games in the application.
+ * This file defines the configuration for each game, including its ID, title,
+ * description, icon, and associated React component.
+ */
 import React from 'react';
-import { Puzzle, Search, Image as ImageIcon, CheckSquare, BookOpen, SpellCheck } from 'lucide-react';
+import { Puzzle, Search, Image as ImageIcon, CheckSquare, SpellCheck, Share2 } from 'lucide-react';
 
 // Lazy load components for better performance
 const ClueGameScreen = React.lazy(() => import('@/features/clue-game/components/ClueGameScreen'));
 const ImgClueGameScreen = React.lazy(() => import('@/features/img-clue-game/components/ImgClueGameScreen'));
 const WordChoiceScreen = React.lazy(() => import('@/features/word-choice-game/components/WordChoiceScreen'));
 const FormationGameScreen = React.lazy(() => import('@/features/formation-game/components/FormationGameScreen'));
+const LetterFlowGameScreen = React.lazy(() => import('@/features/letter-flow-game/components/LetterFlowGameScreen'));
 
 // This type ensures that any key from the translation file is considered valid.
 type TranslationKeys = string;
 
 export interface GameConfig {
-  id: 'clue' | 'formation' | 'category' | 'image-clue' | 'word-choice' | 'picture-choice';
+  id: 'clue' | 'formation' | 'category' | 'image-clue' | 'word-choice' | 'picture-choice' | 'letter-flow'; // Add new game ID
   type: 'adult' | 'kids';
   titleKey: TranslationKeys;
   descriptionKey: TranslationKeys;
@@ -34,7 +40,6 @@ export const GAME_REGISTRY: GameConfig[] = [
     icon: React.createElement(Search, { className: "w-8 h-8" }),
     status: 'available',
   },
-  // FIX: Add the "Word Formation" game
   {
     id: 'formation',
     type: 'adult',
@@ -43,18 +48,18 @@ export const GAME_REGISTRY: GameConfig[] = [
     featuresKey: 'formationFeatures',
     component: FormationGameScreen,
     icon: React.createElement(Puzzle, { className: "w-8 h-8" }),
-    status: 'available', // FIX: Change status to available
+    status: 'available',
   },
-  // FIX: Add the "Category Guess" game
+  // Add the new "Word Flow" game to the registry
   {
-    id: 'category',
+    id: 'letter-flow',
     type: 'adult',
-    titleKey: 'categoryTitle',
-    descriptionKey: 'categoryDesc',
-    featuresKey: 'categoryFeatures',
-    component: ClueGameScreen, // Placeholder component
-    icon: React.createElement(BookOpen, { className: "w-8 h-8" }),
-    status: 'coming-soon',
+    titleKey: 'wordFlowTitle',
+    descriptionKey: 'wordFlowDesc',
+    featuresKey: 'wordFlowFeatures',
+    component: LetterFlowGameScreen,
+    icon: React.createElement(Share2, { className: "w-8 h-8" }), // Using 'Share2' icon for flow/connection
+    status: 'available',
   },
   
   // --- Kids Games ---

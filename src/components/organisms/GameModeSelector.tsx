@@ -39,7 +39,7 @@ const GameModeSelector: React.FC = () => {
   const { gameType } = useParams<{ gameType: string }>();
 
   // FIX: Determine if the category step should be skipped for the current game type.
-  const skipCategoryStep = gameType === 'formation';
+  const skipCategoryStep = gameType === 'formation' || gameType === 'letter-flow';
 
   const [step, setStep] = useState(1);
   const totalSteps = skipCategoryStep ? 2 : 3;
