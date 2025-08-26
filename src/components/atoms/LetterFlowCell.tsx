@@ -1,48 +1,25 @@
 // src/components/atoms/LetterFlowCell.tsx
-/**
- * LetterFlowCell - A component for displaying individual cells in the Letter Flow game board
- *
- * This component renders a single cell in the Letter Flow game grid that can be interactive.
- * It supports different visual states for selection, found paths, and active letters.
- * The component handles both mouse and touch events for interaction.
- */
-import { cn } from "@/lib/utils"
+import React, { useRef } from "react";
+import { cn } from "@/lib/utils";
 
-/**
- * Props for the LetterFlowCell component
- */
 interface LetterFlowCellProps {
-  /** The letter to display in the cell */
-  letter: string
-  /** X coordinate of the cell in the grid */
-  x: number
-  /** Y coordinate of the cell in the grid */
-  y: number
-  /** Whether this cell is currently selected in a path */
-  isSelected?: boolean
-  /** Whether this cell is part of a found word */
-  isFound?: boolean
-  /** Whether this cell has the currently active letter */
-  isActive?: boolean
-  /** Callback function when the cell is clicked */
-  onMouseDown?: (cell: {x: number, y: number, letter: string}) => void
-  /** Callback function when the mouse enters the cell */
-  onMouseEnter?: (cell: {x: number, y: number, letter: string}) => void
-  /** Callback function when the mouse is released */
-  onMouseUp?: () => void
-  /** Whether the cell is disabled (non-interactive) */
-  disabled?: boolean
-  /** Additional CSS classes for custom styling */
-  className?: string
+  letter: string;
+  x: number;
+  y: number;
+  isSelected?: boolean;
+  isFound?: boolean;
+  isActive?: boolean;
+  onMouseDown?: (cell: {x: number, y: number, letter: string}) => void;
+  onMouseEnter?: (cell: {x: number, y: number, letter: string}) => void;
+  onMouseUp?: () => void;
+  disabled?: boolean;
+  className?: string;
+  // visual props
+  connectionDirections?: string[];
+  connectionColor?: string | undefined;
+  cellColor?: string | undefined;
 }
 
-/**
- * LetterFlowCell component - Displays a single cell in the Letter Flow game grid
- *
- * This component is used in the Letter Flow game to display individual cells that players
- * can interact with to form paths. It has different visual states for selected cells,
- * found cells, and active cells. The component handles both mouse and touch events.
- */
 export function LetterFlowCell({
   letter,
   x,
@@ -54,50 +31,192 @@ export function LetterFlowCell({
   onMouseEnter,
   onMouseUp,
   disabled = false,
-  className
+  className,
+  connectionDirections = [],
+  connectionColor,
+  cellColor
 }: LetterFlowCellProps) {
+  const ref = useRef<HTMLDivElement | null>(null);
+
+  const handlePointerDown: React.PointerEventHandler = (e) => {
+    if (disabled) return;
+    (e.target as Element)?.setPointerCapture?.(e.pointerId);
+    onMouseDown?.({ x, y, letter });
+    e.preventDefault();
+  };
+
+  const handlePointerMove: React.PointerEventHandler = (e) => {
+    if (disabled) return;
+    const el = document.elementFromPoint(e.clientX, e.clientY) as Element | null;
+    const cellEl = el?.closest?.("[data-cell-x]") as Element | null;
+    if (cellEl) {
+      const cx = parseInt(cellEl.getAttribute("data-cell-x") || "0", 10);
+      const cy = parseInt(cellEl.getAttribute("data-cell-y") || "0", 10);
+      onMouseEnter?.({ x: cx, y: cy, letter: cellEl.textContent?.trim() || "" });
+    }
+  };
+
+  const handlePointerUp: React.PointerEventHandler = (e) => {
+    try {
+      (e.target as Element)?.releasePointerCapture?.(e.pointerId);
+    } catch (err) {
+      console.debug('releasePointerCapture failed', err);
+    }
+    onMouseUp?.();
+  };
+
+  // Touch event handlers for mobile devices
+  const handleTouchStart: React.TouchEventHandler = (e) => {
+    if (disabled) return;
+    e.preventDefault();
+
+    // Get the first touch
+    const touch = e.touches[0];
+    const element = document.elementFromPoint(touch.clientX, touch.clientY);
+
+    if (element && element.getAttribute('data-cell-x') && element.getAttribute('data-cell-y')) {
+      const x = parseInt(element.getAttribute('data-cell-x') || '0');
+      const y = parseInt(element.getAttribute('data-cell-y') || '0');
+      const letter = element.textContent?.trim() || '';
+      onMouseDown?.({ x, y, letter });
+    }
+  };
+
+  const handleTouchMove: React.TouchEventHandler = (e) => {
+    if (disabled) return;
+    e.preventDefault();
+
+    // Get the first touch
+    const touch = e.touches[0];
+    const element = document.elementFromPoint(touch.clientX, touch.clientY);
+
+    if (element && element.getAttribute('data-cell-x') && element.getAttribute('data-cell-y')) {
+      const x = parseInt(element.getAttribute('data-cell-x') || '0');
+      const y = parseInt(element.getAttribute('data-cell-y') || '0');
+      const letter = element.textContent?.trim() || '';
+      onMouseEnter?.({ x, y, letter });
+    }
+  };
+
+  const handleTouchEnd: React.TouchEventHandler = (e) => {
+    if (disabled) return;
+    e.preventDefault();
+    onMouseUp?.();
+  };
+
+  const onKeyDown: React.KeyboardEventHandler = (e) => {
+    if (disabled) return;
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      onMouseDown?.({ x, y, letter });
+    }
+  };
+
+  // render the center circle (letter) and connection pipes behind it
+  const circleSizePercent = 56;
+
+  // Use connectionColor first, then fallback to cellColor, then neutral
+  const dotColor = connectionColor ?? cellColor ?? undefined;
+
   return (
     <div
-      key={`${x}-${y}`}
-      onMouseDown={onMouseDown ? () => onMouseDown({x, y, letter}) : undefined}
-      onMouseEnter={onMouseEnter ? () => onMouseEnter({x, y, letter}) : undefined}
-      onMouseUp={onMouseUp}
-      onTouchStart={(e) => {
-        e.preventDefault();
-        onMouseDown?.({x, y, letter});
-      }}
-      onTouchMove={(e) => {
-        // Use passive: false for preventDefault to work
-        e.preventDefault();
-        const touch = e.touches[0];
-        const element = document.elementFromPoint(touch.clientX, touch.clientY);
-        if (element && element.getAttribute('data-cell-x') && element.getAttribute('data-cell-y')) {
-          const x = parseInt(element.getAttribute('data-cell-x') || '0');
-          const y = parseInt(element.getAttribute('data-cell-y') || '0');
-          // We don't have access to the full board here, so just pass the letter
-          onMouseEnter?.({x, y, letter});
-        }
-      }}
-      onTouchEnd={(e) => {
-        e.preventDefault();
-        onMouseUp?.();
-      }}
-      className={cn(
-        "aspect-square flex items-center justify-center rounded-md text-xl font-bold cursor-pointer transition-all duration-200",
-        {
-          "bg-blue-500 text-white transform scale-105": isSelected,
-          "bg-green-500 text-white": isFound,
-          "bg-blue-300 text-white": isActive && !isSelected && !isFound,
-          "bg-gray-100 hover:bg-gray-200": !isSelected && !isFound && !isActive,
-          "cursor-default": isFound || (isActive && !isSelected),
-        },
-        disabled && "opacity-70 cursor-not-allowed",
-        className
-      )}
+      ref={ref}
+      role="button"
+      tabIndex={disabled ? -1 : 0}
+      aria-disabled={disabled}
+      aria-pressed={isSelected || undefined}
       data-cell-x={x}
       data-cell-y={y}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onKeyDown={onKeyDown}
+      className={cn(
+        "aspect-square flex items-center justify-center rounded-md text-xl font-bold select-none relative transition-all duration-150",
+        {
+          "bg-gray-50": !isSelected && !isFound && !isActive,
+          "cursor-not-allowed opacity-70": disabled,
+        },
+        className
+      )}
     >
-      {letter}
+      {/* connection pipes (drawn behind the center dot) */}
+      {connectionDirections.includes('top') && (
+        <div
+          aria-hidden
+          className="absolute top-0 left-1/2 transform -translate-x-1/2"
+          style={{
+            width: `${Math.max(6, circleSizePercent * 0.08)}%`,
+            height: `40%`,
+            background: connectionColor,
+            borderRadius: 4,
+            zIndex: 0
+          }}
+        />
+      )}
+      {connectionDirections.includes('bottom') && (
+        <div
+          aria-hidden
+          className="absolute bottom-0 left-1/2 transform -translate-x-1/2"
+          style={{
+            width: `${Math.max(6, circleSizePercent * 0.08)}%`,
+            height: `40%`,
+            background: connectionColor,
+            borderRadius: 4,
+            zIndex: 0
+          }}
+        />
+      )}
+      {connectionDirections.includes('left') && (
+        <div
+          aria-hidden
+          className="absolute left-0 top-1/2 transform -translate-y-1/2"
+          style={{
+            height: `${Math.max(6, circleSizePercent * 0.08)}%`,
+            width: `40%`,
+            background: connectionColor,
+            borderRadius: 4,
+            zIndex: 0
+          }}
+        />
+      )}
+      {connectionDirections.includes('right') && (
+        <div
+          aria-hidden
+          className="absolute right-0 top-1/2 transform -translate-y-1/2"
+          style={{
+            height: `${Math.max(6, circleSizePercent * 0.08)}%`,
+            width: `40%`,
+            background: connectionColor,
+            borderRadius: 4,
+            zIndex: 0
+          }}
+        />
+      )}
+
+      {/* center dot (letter) on top of pipes */}
+      <div
+        className="flex items-center justify-center rounded-full z-10"
+        style={{
+          width: `${circleSizePercent}%`,
+          height: `${circleSizePercent}%`,
+          background: dotColor ?? '#ffffff',
+          boxShadow: dotColor ? '0 2px 8px rgba(0,0,0,0.12)' : undefined,
+          border: dotColor ? 'none' : '1px solid rgba(0,0,0,0.06)'
+        }}
+      >
+        {letter ? (
+          <span
+            className="text-sm font-bold"
+            style={{ color: dotColor ? '#fff' : '#111' }}
+          >
+            {letter}
+          </span>
+        ) : null}
+      </div>
     </div>
   );
 }

@@ -9,6 +9,12 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { useGame } from '@/hooks/useGame';
 import { letterFlowGameEngineInstance, type letterFlowLevel, type BoardCell, type WordPath } from '../engine';
 
+// Move COLORS to module scope so it's stable and doesn't need to be in callback deps
+const COLORS = [
+  '#FF5733', '#33FF57', '#3357FF', '#F333FF', '#FF33A1',
+  '#A133FF', '#33FFF0', '#FFD733', '#33FF96', '#FF9633'
+];
+
 export function useLetterFlowGame() {
   const navigate = useNavigate();
   const params = useParams<{ gameType?: string }>();
@@ -28,11 +34,9 @@ export function useLetterFlowGame() {
 
   useEffect(() => {
     if (currentLevel) {
-      // Use the board from currentLevel directly if it exists and has letters
       if (currentLevel.board && currentLevel.board.length > 0 && currentLevel.board.some(cell => cell.letter)) {
-        setBoard(currentLevel.board);
+        setBoard(currentLevel.board.map(c => ({ ...c })));
       } else {
-        // Otherwise generate a new board for the level
         const newBoard = letterFlowGameEngineInstance.generateBoard(
           "",
           currentLevel.difficulty,
@@ -47,13 +51,13 @@ export function useLetterFlowGame() {
     }
   }, [currentLevel, language]);
 
-  // Get endpoints for a specific letter
-  const getEndpointsForLetter = useCallback((letter: string) => {
-    if (!currentLevel) return [];
-    return currentLevel.endpoints.filter((endpoint: { letter: string }) => endpoint.letter === letter);
-  }, [currentLevel]);
+  const colorForLetter = useCallback((letter: string | undefined | null) => {
+    if (!letter) return undefined;
+    const code = letter.toUpperCase().charCodeAt(0) || 0;
+    const idx = (code - 65) % COLORS.length;
+    return COLORS[(idx + COLORS.length) % COLORS.length];
+  }, []);
 
-  // Check if a cell is an endpoint
   const isEndpoint = useCallback((cell: BoardCell) => {
     if (!currentLevel) return false;
     return currentLevel.endpoints.some((endpoint: { x: number; y: number; letter: string }) =>
@@ -61,267 +65,255 @@ export function useLetterFlowGame() {
     );
   }, [currentLevel]);
 
-  // Check if two cells are adjacent (horizontally or vertically)
   const areAdjacent = useCallback((cell1: BoardCell, cell2: BoardCell) => {
     const dx = Math.abs(cell1.x - cell2.x);
     const dy = Math.abs(cell1.y - cell2.y);
     return (dx === 1 && dy === 0) || (dx === 0 && dy === 1);
   }, []);
 
-  // Check if a path is valid (only horizontal or vertical moves)
   const isValidPath = useCallback((path: BoardCell[]) => {
     if (path.length < 2) return true;
-
     for (let i = 1; i < path.length; i++) {
-      if (!areAdjacent(path[i - 1], path[i])) {
-        return false;
-      }
+      if (!areAdjacent(path[i - 1], path[i])) return false;
     }
     return true;
   }, [areAdjacent]);
 
-  // Check if a path crosses any existing paths
-  const doesPathCrossExisting = useCallback((newPath: BoardCell[]) => {
-    if (foundWords.length === 0) return false;
-
-    // Get all cells from existing paths
-    const existingCells = foundWords.flatMap(path => path.cells);
-
-    // Check if any cell in the new path (except endpoints) intersects with existing paths
-    for (let i = 1; i < newPath.length - 1; i++) {
-      const cell = newPath[i];
-      if (existingCells.some(existing => existing.x === cell.x && existing.y === cell.y)) {
+  // NEW: treat cells with letters as blocks for other letters, and treat 'isUsed' cells as blocked
+  // unless editing/removing the existing connection for the same letter (we allow toggling by starting on an endpoint)
+  const isBlockedForActive = useCallback((cell: BoardCell, start: BoardCell | null, activeLetterLocal: string | null) => {
+    // empty cells are not letter-blocks
+    if (!cell.letter) {
+      // but if the cell is already used by a found connection, it is blocked for traversal
+      if (cell.isUsed) {
+        // allow traversal if user is editing the exact same connection that owns this cell:
+        // find the connection for activeLetterLocal (if any) and allow its own cells to be traversed while editing
+        if (activeLetterLocal) {
+          const ownConn = foundWords.find(p => p.word === activeLetterLocal);
+          if (ownConn && ownConn.cells.some(cc => cc.x === cell.x && cc.y === cell.y)) {
+            // allow editing your own connection's cells (so you can re-route it)
+            return false;
+          }
+        }
         return true;
       }
-    }
-
-    return false;
-  }, [foundWords]);
-
-  // Check if a cell is already used in a found path
-  const isCellUsed = useCallback((cell: BoardCell) => {
-    // Allow using cells that are part of the current path
-    if (selectedPath.length > 0 && selectedPath[0].x === cell.x && selectedPath[0].y === cell.y) {
       return false;
     }
-    return foundWords.some(path => path.cells.some(c => c.x === cell.x && c.y === cell.y));
-  }, [foundWords, selectedPath]);
+
+    // If cell has a letter:
+    // allow if it's the starting endpoint (so you can begin there)
+    if (start && cell.x === start.x && cell.y === start.y) return false;
+
+    // allow if it's the endpoint with the same active letter (target)
+    if (activeLetterLocal && cell.letter === activeLetterLocal && isEndpoint(cell)) return false;
+
+    // otherwise lettered cells are blocks
+    return true;
+  }, [foundWords, isEndpoint]);
+
+  const findOverlappingConnections = useCallback((newPath: BoardCell[]) => {
+    if (foundWords.length === 0) return [];
+    return foundWords.filter(path =>
+      path.cells.some(pc => newPath.some(nc => nc.x === pc.x && nc.y === pc.y))
+    );
+  }, [foundWords]);
 
   const handleMouseDown = useCallback((cell: BoardCell) => {
-    // If it's an endpoint, start a path
-    if (isEndpoint(cell)) {
-      // Check if this letter is already connected
-      const existingConnection = foundWords.find(path => path.word === cell.letter);
+    // only start on an endpoint
+    if (!isEndpoint(cell)) return;
 
-      if (existingConnection) {
-        // Remove existing connection
-        setFoundWords(prev => prev.filter(path => path.word !== cell.letter));
-
-        // Mark the cells as unused
-        setBoard(prev => prev.map(c => {
-          const wasUsed = existingConnection.cells.some(cell => cell.x === c.x && cell.y === c.y);
-          return wasUsed ? { ...c, isUsed: false } : c;
-        }));
-
-        setNotification(`Removed connection for ${cell.letter}`);
-        setTimeout(() => setNotification(null), 1500);
-      }
-
-      // Start a new path
-      setActiveLetter(cell.letter);
-      setSelectedPath([cell]);
+    // If clicked on an existing connection's letter endpoint -> remove that connection (toggle)
+    const existingConnection = foundWords.find(path => path.word === cell.letter);
+    if (existingConnection) {
+      // remove connection and free its cells
+      setFoundWords(prev => prev.filter(path => path.word !== cell.letter));
+      setBoard(prev => prev.map(c => {
+        const used = existingConnection.cells.some(cc => cc.x === c.x && cc.y === c.y);
+        return used ? { ...c, isUsed: false } : c;
+      }));
+      setNotification(`Removed connection for ${cell.letter}`);
+      setTimeout(() => setNotification(null), 1200);
+      // allow starting a new path immediately after removal
     }
-  }, [isEndpoint, foundWords]);
+
+    setActiveLetter(cell.letter);
+    setSelectedPath([cell]);
+  }, [foundWords, isEndpoint]);
 
   const handleMouseEnter = useCallback((cell: BoardCell) => {
     if (!activeLetter) return;
+    if (selectedPath.length === 0) return;
 
-    // Don't allow going through cells that are already used
-    if (isCellUsed(cell)) {
+    const startCell = selectedPath[0] || null;
+
+    // Block letter blocks and used cells (unless special-case allowed inside isBlockedForActive)
+    if (isBlockedForActive(cell, startCell, activeLetter)) return;
+
+    // Only allow same-letter endpoints or empty cells while dragging
+    if (!(cell.letter === activeLetter || cell.letter === '')) return;
+
+    // Avoid duplicate stepping onto same cell
+    const last = selectedPath[selectedPath.length - 1];
+    if (last && last.x === cell.x && last.y === cell.y) return;
+
+    // Prevent diagonal movement (only allow adjacent XY)
+    const dx = Math.abs(cell.x - last.x);
+    const dy = Math.abs(cell.y - last.y);
+    if ((dx === 1 && dy === 1) || dx > 1 || dy > 1) return;
+
+    // Backtracking: if the user moves to any previous cell in the selectedPath,
+    // trim the path to that index (allow full backtracking)
+    const earlierIndex = selectedPath.findIndex(c => c.x === cell.x && c.y === cell.y);
+    if (earlierIndex !== -1) {
+      // trim path to this index (inclusive)
+      setSelectedPath(prev => prev.slice(0, earlierIndex + 1));
       return;
     }
 
-    // Only allow connecting to cells with the same letter
-    if (cell.letter === activeLetter || cell.letter === '') {
-      // Check if we're trying to connect to another endpoint of the same letter
-      const isTargetEndpoint = isEndpoint(cell) &&
-        !(selectedPath.length > 0 && selectedPath[0].x === cell.x && selectedPath[0].y === cell.y);
+    // If the cell is already part of the selected path (should be handled above) or is used by another connection, block
+    if (cell.isUsed) return;
 
-      // If we're connecting to an endpoint, finalize the path
-      if (isTargetEndpoint) {
-        // Create a new path that includes all cells
-        const newPath = [...selectedPath, cell];
+    // Build new path
+    const newPath = [...selectedPath, cell];
 
-        // Check if the path is valid (only horizontal or vertical moves)
-        if (!isValidPath(newPath)) {
-          setNotification("Connections must be horizontal or vertical!");
-          setTimeout(() => setNotification(null), 1500);
-          return;
-        }
+    // Validate adjacency for whole path (safety)
+    if (!isValidPath(newPath)) return;
 
-        // Check if the path crosses any existing paths
-        if (doesPathCrossExisting(newPath)) {
-          setNotification("Connections cannot cross each other!");
-          setTimeout(() => setNotification(null), 1500);
-          return;
-        }
+    // check if this is a target endpoint (matching letter, endpoint, and not the starting one)
+    const isTargetEndpoint = isEndpoint(cell) &&
+      !(selectedPath.length > 0 && selectedPath[0].x === cell.x && selectedPath[0].y === cell.y) &&
+      cell.letter === activeLetter;
 
-        // Check if this letter is already connected
-        const existingConnection = foundWords.find(path => path.word === activeLetter);
+    if (isTargetEndpoint) {
+      // finalizing connection
+      // find overlapping connections (they will be removed to make room)
+      const overlapping = findOverlappingConnections(newPath);
 
-        if (existingConnection) {
-          // Remove existing connection
-          setFoundWords(prev => prev.filter(path => path.word !== activeLetter));
-
-          // Mark the cells as unused
-          setBoard(prev => prev.map(c => {
-            const wasUsed = existingConnection.cells.some(cell => cell.x === c.x && cell.y === c.y);
-            return wasUsed ? { ...c, isUsed: false } : c;
-          }));
-
-          setNotification(`Removed connection for ${activeLetter}`);
-          setTimeout(() => setNotification(null), 1500);
-        }
-
-        // Add the new connection
-        setSelectedPath(newPath);
-
-        // Add to found words
-        const newFoundWord: WordPath = {
-          word: activeLetter,
-          cells: newPath,
-          startIndex: 0,
-        };
-
-        setFoundWords(prev => [...prev, newFoundWord]);
-        setNotification(`Great! Connected ${activeLetter} to ${activeLetter}`);
-
-        // Mark the cells as used
-        setBoard(prev => prev.map(c =>
-          newPath.some(selected => selected.x === c.x && selected.y === c.y)
-            ? { ...c, isUsed: true }
-            : c
-        ));
-
-        // Check if all letter pairs have been connected
-        const allLetters = [...new Set(currentLevel?.endpoints.map((e: { letter: string }) => e.letter) || [])];
-        const isComplete = allLetters.every(letter =>
-          foundWords.some(path => path.word === letter) || activeLetter === letter
-        );
-
-        if (isComplete) {
-          setTimeout(() => {
-            setNotification(t.congrats);
-            setTimeout(() => nextLevel(), 2000);
-          }, 1500);
-        }
-
-        setActiveLetter(null);
-        setSelectedPath([]);
-      } else {
-        // Create a new path with the added cell
-        const newPath = [...selectedPath, cell];
-
-        // Check if the path is valid (only horizontal or vertical moves)
-        if (!isValidPath(newPath)) {
-          setNotification("Connections must be horizontal or vertical!");
-          setTimeout(() => setNotification(null), 1500);
-          return;
-        }
-
-        // Check if the path crosses any existing paths
-        if (doesPathCrossExisting(newPath)) {
-          setNotification("Connections cannot cross each other!");
-          setTimeout(() => setNotification(null), 1500);
-          return;
-        }
-
-        // Add the cell to the current path
-        setSelectedPath(newPath);
+      if (overlapping.length > 0) {
+        setFoundWords(prev => prev.filter(p => !overlapping.includes(p)));
+        setBoard(prev => prev.map(c => {
+          const overlapped = overlapping.some(op => op.cells.some(cc => cc.x === c.x && cc.y === c.y));
+          return overlapped ? { ...c, isUsed: false } : c;
+        }));
+        setNotification('Existing connection(s) removed by new connection');
+        setTimeout(() => setNotification(null), 1200);
       }
+
+      // assign color: prefer endpoint color on board, fallback to deterministic letter color
+      const endpointColor = board.find(b => b.x === newPath[0].x && b.y === newPath[0].y)?.color
+        || colorForLetter(newPath[0].letter);
+
+      // mark used cells on board (and attach color)
+      setBoard(prev => prev.map(c => {
+        const used = newPath.some(nc => nc.x === c.x && nc.y === c.y);
+        return used ? { ...c, isUsed: true, color: endpointColor } : c;
+      }));
+
+      // add found word with color included on each cell
+      const newFound: WordPath = {
+        word: activeLetter,
+        cells: newPath.map(p => {
+          const b = board.find(bc => bc.x === p.x && bc.y === p.y);
+          return { ...p, color: (b && b.color) || endpointColor };
+        }),
+        startIndex: 0
+      };
+
+      setFoundWords(prev => {
+        // replace any existing connection for same letter
+        const filtered = prev.filter(p => p.word !== activeLetter);
+        return [...filtered, newFound];
+      });
+
+      setNotification(`Connected ${activeLetter}`);
+      setTimeout(() => setNotification(null), 900);
+
+      setActiveLetter(null);
+      setSelectedPath([]);
+
+      // check completion
+      const allLetters = [...new Set(currentLevel?.endpoints.map(e => e.letter) || [])];
+      const connected = [...foundWords.map(f => f.word), activeLetter].filter(Boolean) as string[];
+      const uniqueConnected = Array.from(new Set(connected));
+      const isComplete = allLetters.every(letter => uniqueConnected.includes(letter));
+
+      if (isComplete) {
+        setTimeout(() => {
+          setNotification(t.congrats);
+          setTimeout(() => nextLevel(), 2000);
+        }, 800);
+      }
+    } else {
+      // keep drawing
+      setSelectedPath(newPath);
     }
-  }, [activeLetter, selectedPath, isEndpoint, isCellUsed, foundWords, t, nextLevel, currentLevel, isValidPath, doesPathCrossExisting]);
+  }, [
+    activeLetter,
+    selectedPath,
+    isBlockedForActive,
+    isEndpoint,
+    isValidPath,
+    findOverlappingConnections,
+    board,
+    colorForLetter,
+    foundWords,
+    currentLevel,
+    nextLevel,
+    t
+  ]);
 
   const handleMouseUp = useCallback(() => {
-    if (selectedPath.length > 1) {
-      // Check if we connected to an endpoint
+    if (selectedPath.length > 0) {
       const lastCell = selectedPath[selectedPath.length - 1];
       const isConnectedToEndpoint = isEndpoint(lastCell) &&
-        !(selectedPath.length > 1 && selectedPath[0].x === lastCell.x && selectedPath[0].y === lastCell.y);
+        !(selectedPath.length > 1 && selectedPath[0].x === lastCell.x && selectedPath[0].y === lastCell.y) &&
+        lastCell.letter === activeLetter;
 
       if (!isConnectedToEndpoint) {
-        // If we're not connecting to an endpoint, cancel the path
         setActiveLetter(null);
         setSelectedPath([]);
-        setNotification("Path must connect two endpoints!");
-        setTimeout(() => setNotification(null), 1500);
+        setNotification('Path must connect two endpoints!');
+        setTimeout(() => setNotification(null), 1200);
       }
     }
-  }, [selectedPath, isEndpoint]);
-
+  }, [selectedPath, isEndpoint, activeLetter]);
 
   const onHint = useCallback(() => {
     if (!currentLevel || foundWords.length >= currentLevel.endpoints.length / 2) return;
-
-    // Handle hint consumption for competitive mode
     if (gameMode === 'competitive') {
       if (!consumeHint(teams[currentTeam].id)) {
         setNotification(t.noHintsLeft);
         setTimeout(() => setNotification(null), 2000);
-        return; // Stop if no hints are available
+        return;
       }
     }
-
-    // Find the first unconnected letter pair
     const allLetters = [...new Set(currentLevel.endpoints.map((e: { letter: string }) => e.letter))];
-    const unconnectedLetters = allLetters.filter(letter =>
-      !foundWords.some(path => path.word === letter)
-    );
-
+    const unconnectedLetters = allLetters.filter(letter => !foundWords.some(path => path.word === letter));
     if (unconnectedLetters.length === 0) return;
-
     const hintLetter = unconnectedLetters[0] as string;
-    const endpoints = getEndpointsForLetter(hintLetter);
+    setNotification(`Hint: Connect the two "${hintLetter}" letters`);
+    setTimeout(() => setNotification(null), 3000);
+  }, [currentLevel, foundWords, gameMode, teams, currentTeam, consumeHint, t]);
 
-    if (endpoints.length >= 2) {
-      setNotification(`Hint: Connect the two "${hintLetter}" letters`);
-      setTimeout(() => setNotification(null), 3000);
-    }
-  }, [currentLevel, foundWords, gameMode, teams, currentTeam, consumeHint, t, getEndpointsForLetter]);
-
-  // Undo the last connection
   const onUndo = useCallback(() => {
     if (foundWords.length === 0) return;
-    
-    // Get the last connection
     const lastConnection = foundWords[foundWords.length - 1];
-    
-    // Remove it from found words
     setFoundWords(prev => prev.slice(0, -1));
-    
-    // Mark the cells as unused
     setBoard(prev => prev.map(c => {
       const wasUsed = lastConnection.cells.some(cell => cell.x === c.x && cell.y === c.y);
       return wasUsed ? { ...c, isUsed: false } : c;
     }));
-    
     setNotification(`Undo: Removed connection for ${lastConnection.word}`);
-    setTimeout(() => setNotification(null), 1500);
+    setTimeout(() => setNotification(null), 1200);
   }, [foundWords]);
 
-  // Reset the game
   const onReset = useCallback(() => {
-    // Reset all connections
     setFoundWords([]);
-    
-    // Reset all cells to unused
-    setBoard(prev => prev.map(c => ({
-      ...c,
-      isUsed: false
-    })));
-    
-    setNotification("Game reset");
-    setTimeout(() => setNotification(null), 1500);
+    setBoard(prev => prev.map(c => ({ ...c, isUsed: false })));
+    setSelectedPath([]);
+    setActiveLetter(null);
+    setNotification('Game reset');
+    setTimeout(() => setNotification(null), 1200);
   }, []);
 
   const handleBack = useCallback(() => navigate(`/game-mode/${params.gameType}`), [navigate, params.gameType]);
@@ -334,14 +326,14 @@ export function useLetterFlowGame() {
     selectedPath,
     foundWords,
     notification,
-    isChecking: false, // This was removed but UI might still expect it
+    isChecking: false,
     activeLetter,
-    isDrawing: false, // This was removed but UI might still expect it
+    isDrawing: Boolean(activeLetter),
     handleBack,
     handleMouseDown,
     handleMouseEnter,
     handleMouseUp,
-    clearSelection: () => {}, // This was removed but UI might still expect it
+    clearSelection: () => { setSelectedPath([]); setActiveLetter(null); },
     onHint,
     onUndo,
     onReset,

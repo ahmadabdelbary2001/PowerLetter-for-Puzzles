@@ -1,167 +1,144 @@
 // src/features/letter-flow-game/engine.ts
 /**
  * @description Game engine for the Letter Flow game.
- * This engine handles loading levels and generating game boards for connecting letters to form words.
+ * Assigns per-letter pair colors that are maximally distinct (evenly spaced hues).
  */
 import type { Language, Difficulty, GameCategory } from '@/types/game';
 import { shuffleArray } from '@/lib/gameUtils';
 import type { IGameEngine } from '@/games/engine/types';
 
-/**
- * Represents a single cell in the game board.
- */
 export interface BoardCell {
-  x: number;             // X coordinate in the grid
-  y: number;             // Y coordinate in the grid
-  letter: string;        // The letter displayed in this cell
-  isUsed: boolean;       // Whether this cell has been used in a word
+  x: number;
+  y: number;
+  letter: string;
+  isUsed: boolean;
+  color?: string; // CSS color (e.g. 'hsl(120, 65%, 50%)')
 }
 
-/**
- * Represents a path of cells that form a word.
- */
 export interface WordPath {
-  word: string;          // The word formed
-  cells: BoardCell[];    // The cells that make up the word
-  startIndex: number;    // Starting index of the word in the words array
+  word: string;
+  cells: BoardCell[];
+  startIndex: number;
 }
 
-/**
- * Represents a complete level in the Letter Flow game.
- */
 export interface letterFlowLevel {
-  id: string;           // Unique identifier for the level
-  difficulty: Difficulty; // Difficulty level (easy, medium, hard)
-  words: string[];      // Array of words that can be formed in this level
-  board: BoardCell[];   // Array of board cells
-  solution: string;     // First word in the words array (to satisfy useGame constraint)
-  endpoints: {          // Endpoint positions for letters
-    x: number;
-    y: number;
-    letter: string;
-  }[];
+  id: string;
+  difficulty: Difficulty;
+  words: string[];
+  board: BoardCell[];
+  solution: string;
+  endpoints: { x: number; y: number; letter: string; color?: string }[];
 }
 
-/**
- * Type definition for the structure of imported level modules.
- */
 interface LevelModule {
-  default?: { levels?: unknown[] }; // Optional default export containing levels array
+  default?: { levels?: unknown[] };
 }
 
 /**
- * Implements the game engine for the Letter Flow game.
- * Handles loading levels from JSON files and generating game boards.
+ * Produce an HSL color string for a given index out of N, distributed evenly around the hue wheel.
+ * Using high-ish saturation and medium lightness yields vivid, distinct colors suitable for paths.
  */
+function hslForIndex(index: number, total: number, saturation = 70, lightness = 50) {
+  if (total <= 0) return `hsl(0, ${saturation}%, ${lightness}%)`;
+  const hue = Math.round((index * 360) / total) % 360;
+  // use the comma-separated form to be broadly compatible
+  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+}
+
 class letterFlowGameEngine implements IGameEngine<letterFlowLevel> {
-  /**
-   * Loads game levels based on the specified language, categories, and difficulty.
-   * @param options - Configuration options for loading levels
-   * @param options.language - The language to load levels for
-   * @param options.categories - Array of game categories to filter by
-   * @param options.difficulty - The difficulty level to load levels for
-   * @returns Promise<letterFlowLevel[]> - Array of loaded levels
-   */
   public async loadLevels(options: {
     language: Language;
     categories: GameCategory[];
     difficulty?: Difficulty;
   }): Promise<letterFlowLevel[]> {
     const { language, difficulty } = options;
-    if (!difficulty) return []; // Return empty array if no difficulty specified
+    if (!difficulty) return [];
 
     try {
-      // Construct the path to the JSON file containing levels for the specified language and difficulty
       const path = `/src/data/${language}/letter-flow/${language}-flow-${difficulty}.json`;
-
-      // Get all JSON module importers
       const modules = import.meta.glob('/src/data/**/*.json');
       const moduleLoader = modules[path];
-
-      // Return empty array if the specific file doesn't exist
       if (!moduleLoader) return [];
 
-      // Load the module and extract levels
       const module = (await moduleLoader()) as LevelModule;
       const levels = module.default?.levels || [];
 
-      // Transform and validate each level
       return levels.map((lvl: unknown): letterFlowLevel | null => {
-        // Check if the level has the required properties
         if (
           typeof lvl === 'object' && lvl !== null &&
           'id' in lvl && 'solutionWord' in lvl && 'gridSize' in lvl && 'endpoints' in lvl
         ) {
-          // Convert endpoints to board cells
           const { width, height } = (lvl as { gridSize: { width: number; height: number } }).gridSize;
           const board: BoardCell[] = [];
-          
-          // Create a grid with empty cells
+
           for (let y = 0; y < height; y++) {
             for (let x = 0; x < width; x++) {
               board.push({ x, y, letter: '', isUsed: false });
             }
           }
-          
-          // Place letters at endpoints
+
           const endpoints = (lvl as { endpoints: { x: number; y: number; letter: string }[] }).endpoints;
-          endpoints.forEach((endpoint: { x: number; y: number; letter: string }) => {
+
+          // Build unique-letter list (one entry per distinct letter) in stable order
+          const uniqueLetters = Array.from(new Set(endpoints.map(e => e.letter)));
+
+          // Map each unique letter to a distinct HSL color spread evenly around the hue wheel
+          const letterToColor = new Map<string, string>();
+          uniqueLetters.forEach((letter, idx) => {
+            letterToColor.set(letter, hslForIndex(idx, uniqueLetters.length, 72, 48));
+          });
+
+          // Place endpoints on board and assign per-letter color
+          endpoints.forEach((endpoint) => {
             const index = endpoint.y * width + endpoint.x;
+            const assignedColor = letterToColor.get(endpoint.letter);
             if (index < board.length) {
-              board[index] = { 
-                x: endpoint.x, 
-                y: endpoint.y, 
-                letter: endpoint.letter, 
-                isUsed: false 
+              board[index] = {
+                x: endpoint.x,
+                y: endpoint.y,
+                letter: endpoint.letter,
+                isUsed: false,
+                color: assignedColor
               };
             }
           });
-          
+
+          // typed view of lvl to safely read id/solutionWord
+          const typedLvl = lvl as { id: string | number; solutionWord: string; endpoints: { x:number; y:number; letter:string }[] };
+
           return {
-            id: String(lvl.id),
+            id: String(typedLvl.id),
             difficulty,
-            words: [(lvl as { solutionWord: string }).solutionWord], // Use solutionWord as the only word
+            words: [typedLvl.solutionWord],
             board,
-            solution: (lvl as { solutionWord: string }).solutionWord, // Use solutionWord as solution
-            endpoints: (lvl as { endpoints: { x: number; y: number; letter: string }[] }).endpoints,
+            solution: typedLvl.solutionWord,
+            endpoints: typedLvl.endpoints.map(e => ({ ...e, color: letterToColor.get(e.letter) }))
           };
         }
-        return null; // Skip invalid levels
-      }).filter((l): l is letterFlowLevel => l !== null); // Filter out null values
+        return null;
+      }).filter((l): l is letterFlowLevel => l !== null);
     } catch (err) {
-      // Log error and return error level if loading fails
       console.error(`LetterFlowGameEngine: Failed to load levels for ${language}/${difficulty}.`, err);
       const errorBoard: BoardCell[] = [];
-      // Ensure errorBoard has the correct type
-      const typedErrorBoard: BoardCell[] = errorBoard;
       const errorLevel: letterFlowLevel = {
-        id: 'error' as string,
+        id: 'error',
         difficulty: 'easy' as Difficulty,
-        words: [] as string[],
-        board: typedErrorBoard,
+        words: [],
+        board: errorBoard,
         solution: '',
-        endpoints: [] as { x: number; y: number; letter: string }[]
+        endpoints: []
       };
       return [errorLevel];
     }
   }
 
-  /**
-   * Generates a shuffled game board with the specified letters.
-   * @param _s - Unused parameter (solution string)
-   * @param _d - Unused parameter (difficulty)
-   * @param _l - Unused parameter (language)
-   * @param baseLetters - The base set of letters to place on the board
-   * @returns BoardCell[] - Array of board cells with letters
-   */
   public generateBoard(_s: string, _d: Difficulty, _l: Language, baseLetters?: string): BoardCell[] {
-    if (!baseLetters) return []; // Return empty array if no base letters provided
+    if (!baseLetters) return [];
 
-    const letters = shuffleArray(baseLetters.split('')); // Split base letters into array and shuffle
-    const size = Math.ceil(Math.sqrt(letters.length)); // Calculate grid size based on number of letters
+    const letters = shuffleArray(baseLetters.split(''));
+    const size = Math.ceil(Math.sqrt(letters.length));
     const board: BoardCell[] = [];
 
-    // Create a grid of cells with the shuffled letters
     for (let y = 0; y < size; y++) {
       for (let x = 0; x < size; x++) {
         const index = y * size + x;
@@ -180,5 +157,4 @@ class letterFlowGameEngine implements IGameEngine<letterFlowLevel> {
   }
 }
 
-// Export a singleton instance of the game engine
 export const letterFlowGameEngineInstance = new letterFlowGameEngine();

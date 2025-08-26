@@ -21,7 +21,7 @@ const LetterFlowGameScreen: React.FC = () => {
     // Fix for passive event listener issue
     const originalAddEventListener = EventTarget.prototype.addEventListener;
     EventTarget.prototype.addEventListener = function (type, listener, options) {
-      if (type === "touchmove" && typeof options === "object" && !options.passive) {
+      if ((type === "touchmove" || type === "touchstart" || type === "touchend") && typeof options === "object" && !options.passive) {
         options = { ...options, passive: false };
       }
       return originalAddEventListener.call(this, type, listener, options);
@@ -133,7 +133,7 @@ const LetterFlowGameScreen: React.FC = () => {
         </div>
 
         {/* Game Board */}
-        <div className="mb-6">
+        <div className="mb-6 touch-none">
           {renderBoard()}
         </div>
 
