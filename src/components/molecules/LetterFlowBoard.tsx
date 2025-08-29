@@ -1,26 +1,23 @@
 // src/components/molecules/LetterFlowBoard.tsx
 /**
  * LetterFlowBoard component - Renders the game board for the Letter Flow game
- * 
- * This component is responsible for:
- * 1. Creating a grid layout for the game cells
- * 2. Managing the visual state of each cell (selected, found, active)
- * 3. Determining connection directions between cells
- * 4. Applying appropriate colors and styling based on game state
- * 
- * The board receives cells as props and maps them to LetterFlowCell components,
- * handling all the game logic for displaying connections and interactions.
+ *
+ * Responsibilities:
+ * - Grid layout for cells
+ * - Visual state (selected / found / active)
+ * - Connection directions & colors (use endpoint/path colors first)
  */
 import { LetterFlowCell } from "@/components/atoms/LetterFlowCell";
 import { cn } from "@/lib/utils";
 import type { BoardCell } from "@/features/letter-flow-game/engine";
+import { colorForString } from "@/features/letter-flow-game/utils/colors";
 
 interface LetterFlowBoardProps {
   cells: BoardCell[];
-  selectedPath: Array<{x: number, y: number, letter: string, color?: string}>;
+  selectedPath: BoardCell[]; // use BoardCell so color?: string is available
   foundWords: Array<{
     word: string;
-    cells: Array<{x: number, y: number, letter: string, color?: string}>;
+    cells: BoardCell[]; // use BoardCell so color?: string is available
   }>;
   activeLetter: string | null;
   onMouseDown: (cell: {x: number, y: number, letter: string}) => void;
@@ -30,16 +27,11 @@ interface LetterFlowBoardProps {
   dir?: 'ltr' | 'rtl';
 }
 
-const COLORS = [
-  '#FF5733', '#33FF57', '#3357FF', '#F333FF', '#FF33A1',
-  '#A133FF', '#33FFF0', '#FFD733', '#33FF96', '#FF9633'
-];
-
-function colorForLetter(letter: string | undefined | null) {
-  if (!letter) return undefined;
-  const code = letter.toUpperCase().charCodeAt(0) || 0;
-  const idx = (code - 65) % COLORS.length;
-  return COLORS[(idx + COLORS.length) % COLORS.length];
+/**
+ * Stable fallback color for letters (used only if no endpoint/path color exists).
+ */
+function fallbackColorForLetter(letter: string | undefined | null) {
+  return colorForString(letter);
 }
 
 export function LetterFlowBoard({
@@ -58,20 +50,21 @@ export function LetterFlowBoard({
 
   const cellKey = (c: {x:number,y:number}) => `${c.x}-${c.y}`;
 
-  const selectedMap = new Map<string, {x:number,y:number,letter:string,color?:string}>();
+  const selectedMap = new Map<string, BoardCell>();
   selectedPath.forEach(c => selectedMap.set(cellKey(c), c));
 
-  const foundMap = new Map<string, { word: string; cells: Array<{x:number,y:number,letter:string,color?:string}> }>();
+  const foundMap = new Map<string, { word: string; cells: BoardCell[] }>();
   foundWords.forEach(path => path.cells.forEach(c => foundMap.set(cellKey(c), { word: path.word, cells: path.cells })));
 
   // calculate connection directions for a cell (top/right/bottom/left)
-  const getConnectionDirections = (cell: {x:number,y:number}) => {
+  const getConnectionDirections = (cell: BoardCell) => {
     const directions: string[] = [];
-    const allPaths = [...foundWords.map(w => w.cells), selectedPath];
+    const allPaths: BoardCell[][] = [...foundWords.map(w => w.cells), selectedPath];
 
     for (const path of allPaths) {
       const index = path.findIndex(c => c.x === cell.x && c.y === cell.y);
       if (index !== -1) {
+        // previous
         if (index > 0) {
           const prev = path[index - 1];
           if (prev.x === cell.x - 1 && prev.y === cell.y) directions.push('left');
@@ -79,6 +72,7 @@ export function LetterFlowBoard({
           if (prev.x === cell.x && prev.y === cell.y - 1) directions.push('top');
           if (prev.x === cell.x && prev.y === cell.y + 1) directions.push('bottom');
         }
+        // next
         if (index < path.length - 1) {
           const next = path[index + 1];
           if (next.x === cell.x - 1 && next.y === cell.y) directions.push('left');
@@ -92,22 +86,41 @@ export function LetterFlowBoard({
     return [...new Set(directions)];
   };
 
-  const getConnectionColor = (cell: {x:number,y:number}) => {
+  const getConnectionColor = (cell: BoardCell) => {
+    // 1) If this cell belongs to a completed found word, prefer that path's color
     for (const wordPath of foundWords) {
       if (wordPath.cells.some(c => c.x === cell.x && c.y === cell.y)) {
-        // color stored on first cell of the path (endpoint) or on that cell
-        return wordPath.cells[0].color || wordPath.cells.find(c => c.color)?.color || colorForLetter(wordPath.word);
+        // prefer explicit color on the path
+        const explicit = wordPath.cells[0]?.color ?? wordPath.cells.find(c => c.color)?.color;
+        if (explicit) return explicit;
+        // fallback: try to find this endpoint's color in board cells (cells prop)
+        const endpointCell = cells.find(b => b.x === wordPath.cells[0].x && b.y === wordPath.cells[0].y);
+        if (endpointCell?.color) return endpointCell.color;
+        // last resort: letter-based fallback
+        return fallbackColorForLetter(wordPath.word);
       }
     }
-    if (selectedPath.some(c => c.x === cell.x && c.y === cell.y)) {
-      // use color from the selected path endpoints if available
-      return selectedPath[0].color || colorForLetter(selectedPath[0].letter);
+
+    // 2) If this cell is part of the currently selected path, use the selected path's endpoint color
+    if (selectedPath && selectedPath.length > 0 && selectedPath.some(c => c.x === cell.x && c.y === cell.y)) {
+      // prefer start cell's color
+      const start = selectedPath[0];
+      if (start?.color) return start.color;
+      // look up color from the board endpoints
+      const ep = cells.find(b => b.x === start.x && b.y === start.y);
+      if (ep?.color) return ep.color;
+      // fallback to stable letter-derived color
+      return fallbackColorForLetter(start?.letter);
     }
+
+    // 3) Use the cell's own color (for endpoints) if present
+    if (cell.color) return cell.color;
+
     return undefined;
   };
 
-  const isSelected = (cell: {x:number,y:number}) => selectedMap.has(cellKey(cell));
-  const isFound = (cell: {x:number,y:number}) => foundMap.has(cellKey(cell));
+  const isSelected = (cell: BoardCell) => selectedMap.has(cellKey(cell));
+  const isFound = (cell: BoardCell) => foundMap.has(cellKey(cell));
 
   return (
     <div
@@ -121,6 +134,7 @@ export function LetterFlowBoard({
       {cells.map((cell) => {
         const connectionDirections = getConnectionDirections(cell);
         const connectionColor = getConnectionColor(cell);
+        // If cell is an endpoint different than activeLetter and already used, block it
         const disabled = isFound(cell) || (cell.letter !== '' && cell.letter !== activeLetter && cell.isUsed);
 
         return (
