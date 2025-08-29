@@ -13,6 +13,7 @@ import GameControls from "@/components/organisms/GameControls";
 import { useTranslation } from "@/hooks/useTranslation";
 import { GameLayout } from "@/components/templates/GameLayout";
 import { useClueGame } from "../hooks/useClueGame";
+import { Notification } from "@/components/atoms/Notification";
 
 /**
  * Main component for the Clue Game interface
@@ -67,6 +68,10 @@ const ClueGameScreen: React.FC = () => {
     );
   }
 
+  // Notification mapping: transform to Notification props if present
+  const notifMessage = notification?.message ?? null;
+  const notifType = (notification?.type ?? "info") as "success" | "error" | "warning" | "info";
+
   // Main game UI
   return (
     <GameLayout
@@ -75,6 +80,9 @@ const ClueGameScreen: React.FC = () => {
       onBack={handleBack}
       difficulty={currentLevel.difficulty}
     >
+      {/* Shared Notification (top-centered) */}
+      {notifMessage && <Notification message={notifMessage} type={notifType} />}
+
       {/* Solution boxes showing current progress */}
       <SolutionBoxes solution={solution} currentWord={answerSlots.join('')} />
       {/* Letter grid for selecting letters */}
@@ -87,13 +95,6 @@ const ClueGameScreen: React.FC = () => {
           <div className="flex flex-wrap gap-1 sm:gap-2 justify-center">
             {wrongAnswers.map((answer, index) => <Badge key={index} variant="destructive" className="text-xs py-1">{answer}</Badge>)}
           </div>
-        </div>
-      )}
-
-      {/* Notification area for game status messages */}
-      {notification && (
-        <div role="status" className={`text-center p-3 rounded-lg font-semibold ${notification.type === 'error' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
-          {notification.message}
         </div>
       )}
 

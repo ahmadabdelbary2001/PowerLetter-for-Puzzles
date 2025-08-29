@@ -14,6 +14,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { GameLayout } from "@/components/templates/GameLayout";
 import { useImageClueGame } from "../hooks/useImageClueGame";
 import type { ImageLevel } from "../engine";
+import { Notification } from "@/components/atoms/Notification";
 
 /**
  * Main component for the Image Clue Game interface
@@ -64,6 +65,10 @@ const ImgClueGameScreen: React.FC = () => {
   // Find the index of the current level
   const levelIndex = levels.findIndex((l: ImageLevel) => l.id === currentLevel.id);
 
+  // Notification mapping
+  const notifMessage = notification?.message ?? null;
+  const notifType = (notification?.type ?? "info") as "success" | "error" | "warning" | "info";
+
   // Main game UI
   return (
     <GameLayout
@@ -72,6 +77,9 @@ const ImgClueGameScreen: React.FC = () => {
       onBack={handleBack}
       layoutType="image"
     >
+      {/* Shared Notification (top-centered) */}
+      {notifMessage && <Notification message={notifMessage} type={notifType} />}
+
       {/* Image clue display with audio playback button */}
       <div className="relative aspect-video bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center">
         <img src={getAssetPath(currentLevel.image)} alt={solution} className="max-h-full max-w-full object-contain" />
@@ -87,13 +95,6 @@ const ImgClueGameScreen: React.FC = () => {
       <SolutionBoxes solution={solution} currentWord={answerSlots.join('')} />
       {/* Letter grid for selecting letters */}
       <LetterGrid letters={letters} selectedIndices={slotIndices.filter(i => i !== null) as number[]} onLetterClick={onLetterClick} disabled={gameState !== 'playing'} hintIndices={hintIndices} />
-
-      {/* Notification area for game status messages */}
-      {notification && (
-        <div role="status" className={`text-center p-3 rounded-lg text-lg font-bold ${notification.type === 'error' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
-          {notification.message}
-        </div>
-      )}
 
       {/* Conditional rendering based on game state */}
       {gameState === 'won' ? (

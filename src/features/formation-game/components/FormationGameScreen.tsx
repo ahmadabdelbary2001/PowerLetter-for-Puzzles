@@ -11,6 +11,7 @@ import { RotateCcw, Check, Lightbulb } from 'lucide-react';
 import { CrosswordGrid } from '@/components/molecules/CrosswordGrid';
 import { LetterCircle } from '@/components/molecules/LetterCircle';
 import { GameButton } from '@/components/atoms/GameButton';
+import { Notification } from '@/components/atoms/Notification';
 
 const FormationGameScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -51,6 +52,9 @@ const FormationGameScreen: React.FC = () => {
       onBack={handleBack}
       difficulty={currentLevel.difficulty}
     >
+      {/* Shared Notification (top-centered) */}
+      {notification && <Notification message={notification} type="info" />}
+
       {/* FIX: Reduced vertical gaps for a more compact layout. */}
       <div className="flex flex-col items-center gap-2 sm:gap-3">
         {/* The crossword grid. */}
@@ -61,11 +65,6 @@ const FormationGameScreen: React.FC = () => {
           <div className="text-2xl sm:text-3xl font-bold text-primary tracking-wider">
             {currentInput || "..."}
           </div>
-        </div>
-
-        {/* Notification area for feedback. */}
-        <div className="h-5 sm:h-6 text-center font-semibold text-primary text-sm">
-          {notification}
         </div>
 
         {/* The circular letter selection wheel. */}

@@ -54,8 +54,9 @@ export function useWordChoiceGame() {
 
   // Handle option selection
   const handleOptionClick = useCallback((option: string) => {
-    // Prevent interaction if already answered or no level loaded
-    if (answerStatus !== 'idle' || !currentLevel) return;
+    // Prevent interaction if already processing a correct answer or no level loaded
+    if (!currentLevel) return;
+    if (answerStatus === 'correct') return;
 
     // Set the selected option
     setSelectedOption(option);
@@ -63,11 +64,14 @@ export function useWordChoiceGame() {
     // Check if the selected option is correct
     if (option === currentLevel.solution) {
       setAnswerStatus('correct');
-      // Automatically move to next level after a delay
-      setTimeout(nextLevel, 1200);
+      // Automatically move to next level after a short delay
+      setTimeout(() => {
+        nextLevel();
+      }, 1200);
     } else {
+      // Mark incorrect, show feedback, then revert to idle so player can try again
       setAnswerStatus('incorrect');
-      // Player can try again after incorrect answer
+      setTimeout(() => setAnswerStatus('idle'), 1200);
     }
   }, [answerStatus, currentLevel, nextLevel]);
 

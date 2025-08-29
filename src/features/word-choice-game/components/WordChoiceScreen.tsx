@@ -8,6 +8,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { GameLayout } from "@/components/templates/GameLayout";
 import { useWordChoiceGame } from "@/features/word-choice-game/hooks/useWordChoice";
 import { cn } from "@/lib/utils";
+import { Notification } from "@/components/atoms/Notification";
 
 const WordChoiceScreen: React.FC = () => {
   // Get translation functions and text direction (for RTL languages)
@@ -44,6 +45,14 @@ const WordChoiceScreen: React.FC = () => {
     );
   }
 
+  // Build notification for success/incorrect attempts
+  const showNotif = answerStatus !== 'idle';
+  const notifMessage =
+    answerStatus === 'correct' ? (t.congrats ?? "Correct!") :
+    answerStatus === 'incorrect' ? (t.wrongAnswer ?? "Wrong! Try again") :
+    "";
+  const notifType = answerStatus === 'correct' ? 'success' : 'error';
+
   return (
     <GameLayout
       title={t.wordChoiceTitle}
@@ -51,6 +60,15 @@ const WordChoiceScreen: React.FC = () => {
       onBack={handleBack}
       layoutType="image"
     >
+      {/* Show notification when correct/incorrect */}
+      {showNotif && (
+        <Notification
+          message={notifMessage}
+          type={notifType}
+          duration={1000}
+        />
+      )}
+
       {/* Image and Sound Button Section */}
       <div className="relative aspect-video bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center">
         {/* Display the image for the current level */}
@@ -63,48 +81,33 @@ const WordChoiceScreen: React.FC = () => {
         <audio ref={audioRef} src={getAssetPath(currentLevel.sound)} preload="auto" />
       </div>
 
-      {/*
-        * FIX: The grid is now responsive.
-        * - It defaults to 2 columns for mobile/tablet.
-        * - It switches to 4 columns (a single row) on large screens (lg).
-        * - It still falls back to 1 column on extremely narrow screens (<200px).
-        */}
       <div className="grid grid-cols-2 lg:grid-cols-4 max-[200px]:grid-cols-1 gap-3 pt-4">
         {shuffledOptions.map((option) => {
-          // Check if this option is currently selected by the user
           const isSelected = selectedOption === option;
-          // Check if this option is the correct solution
           const isCorrectSolution = option === currentLevel.solution;
-          
+
           return (
             <Button
               key={option}
               onClick={() => handleOptionClick(option)}
-              // Disable buttons after an answer has been selected
-              disabled={answerStatus !== 'idle'}
+              // disable only while a correct answer is being processed
+              disabled={answerStatus === 'correct'}
               className={cn(
                 "text-base h-16 flex items-center justify-center gap-2 transition-all duration-300",
-                // Style when this option is selected and correct
                 isSelected && answerStatus === 'correct' && "bg-green-500 hover:bg-green-600 border-2 border-green-700",
-                // Style when this option is selected and incorrect
                 isSelected && answerStatus === 'incorrect' && "bg-red-500 hover:bg-red-500 border-2 border-red-700",
-                // Style for the correct answer when an incorrect one was chosen
                 !isSelected && answerStatus === 'incorrect' && isCorrectSolution && "bg-green-200 text-green-800 border-2 border-green-400",
-                // Default button style when no answer has been selected yet
                 answerStatus === 'idle' && "bg-card text-card-foreground hover:bg-muted"
               )}
             >
-              {/* Display the option text */}
               {option}
-              {/* Show checkmark icon if this option is correct and selected */}
               {isSelected && answerStatus === 'correct' && <CheckCircle />}
-              {/* Show X icon if this option is incorrect and selected */}
               {isSelected && answerStatus === 'incorrect' && <XCircle />}
             </Button>
           );
         })}
       </div>
-      
+
       {/* Next Level Button - only appears after correct answer */}
       {answerStatus === 'correct' && (
         <div className="pt-4">
