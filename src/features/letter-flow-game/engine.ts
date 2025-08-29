@@ -73,7 +73,11 @@ function hslForIndex(index: number, total: number, saturation = 70, lightness = 
   if (total <= 0) return `hsl(0, ${saturation}%, ${lightness}%)`;
   // Calculate hue by evenly spacing colors around the color wheel
   const hue = Math.round((index * 360) / total) % 360;
-  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+  
+  // Adjust colors for dark mode - increase lightness for better visibility
+  const adjustedLightness = lightness > 50 ? lightness * 0.9 : lightness * 1.1;
+  
+  return `hsl(${hue}, ${saturation}%, ${adjustedLightness}%)`;
 }
 
 /**

@@ -1,4 +1,16 @@
 // src/components/molecules/LetterFlowBoard.tsx
+/**
+ * LetterFlowBoard component - Renders the game board for the Letter Flow game
+ * 
+ * This component is responsible for:
+ * 1. Creating a grid layout for the game cells
+ * 2. Managing the visual state of each cell (selected, found, active)
+ * 3. Determining connection directions between cells
+ * 4. Applying appropriate colors and styling based on game state
+ * 
+ * The board receives cells as props and maps them to LetterFlowCell components,
+ * handling all the game logic for displaying connections and interactions.
+ */
 import { LetterFlowCell } from "@/components/atoms/LetterFlowCell";
 import { cn } from "@/lib/utils";
 import type { BoardCell } from "@/features/letter-flow-game/engine";
@@ -15,6 +27,7 @@ interface LetterFlowBoardProps {
   onMouseEnter: (cell: {x: number, y: number, letter: string}) => void;
   onMouseUp: () => void;
   className?: string;
+  dir?: 'ltr' | 'rtl';
 }
 
 const COLORS = [
@@ -37,9 +50,11 @@ export function LetterFlowBoard({
   onMouseDown,
   onMouseEnter,
   onMouseUp,
-  className
+  className,
+  dir = 'ltr',
 }: LetterFlowBoardProps) {
   const cols = cells.length === 0 ? 0 : Math.max(...cells.map(c => c.x)) + 1;
+  const isRTL = dir === 'rtl';
 
   const cellKey = (c: {x:number,y:number}) => `${c.x}-${c.y}`;
 
@@ -96,9 +111,11 @@ export function LetterFlowBoard({
 
   return (
     <div
-      className={cn("grid gap-1 mx-auto max-w-md", className)}
+      className={cn("grid gap-1 mx-auto max-w-md", className, { 'rtl-direction': isRTL })}
       style={{
         gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
+        direction: isRTL ? 'rtl' : 'ltr',
+        touchAction: "none"
       }}
     >
       {cells.map((cell) => {

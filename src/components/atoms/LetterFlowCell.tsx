@@ -137,8 +137,9 @@ export function LetterFlowCell({
       className={cn(
         "aspect-square flex items-center justify-center rounded-md text-xl font-bold select-none relative transition-all duration-150",
         {
-          "bg-gray-50": !isSelected && !isFound && !isActive,
+          "bg-gray-50 dark:bg-gray-800": !isSelected && !isFound && !isActive,
           "cursor-not-allowed opacity-70": disabled,
+          "text-gray-900 dark:text-gray-100": !isSelected && !isFound && !isActive && !dotColor,
         },
         className
       )}
@@ -211,7 +212,7 @@ export function LetterFlowCell({
         {letter ? (
           <span
             className="text-sm font-bold"
-            style={{ color: dotColor ? '#fff' : '#111' }}
+            style={{ color: dotColor ? '#fff' : (isSelected || isFound || isActive ? '#fff' : '#111') }}
           >
             {letter}
           </span>

@@ -47,15 +47,15 @@ export function LetterFlowGameControls({
 }: LetterFlowGameControlsProps) {
   return (
     <div className={cn("flex justify-center gap-4 mt-6", className)}>
-      <Button onClick={onHint} variant="outline">
+      <Button onClick={onHint} variant="outline" className="transition-colors duration-300">
         <Lightbulb className="w-4 h-4 mr-1" />
         {t.hint}
       </Button>
-      <Button onClick={onUndo} variant="outline">
+      <Button onClick={onUndo} variant="outline" className="transition-colors duration-300">
         <ArrowLeft className={`w-4 h-4 ${dir === 'rtl' ? 'ml-1 rotate-0' : 'mr-1 rotate-180'}`} />
         {t.undo}
       </Button>
-      <Button onClick={onReset} variant="outline">
+      <Button onClick={onReset} variant="outline" className="transition-colors duration-300">
         <Shuffle className={`w-4 h-4 ${dir === 'rtl' ? 'ml-1' : 'mr-1'}`} />
         {t.reset}
       </Button>

@@ -497,10 +497,14 @@ export function useLetterFlowGame() {
 
   const onReset = useCallback(() => {
     setFoundWords([]);
-    setBoard(prev => prev.map(c => ({ ...c, isUsed: false, color: endpointColorMap.get(`${c.x}-${c.y}`) ?? c.color })));
+    setBoard(prev => prev.map(c => {
+      // Only keep the original endpoint colors, remove all other colors
+      const epColor = endpointColorMap.get(`${c.x}-${c.y}`);
+      return { ...c, isUsed: false, color: epColor };
+    }));
     setSelectedPath([]);
     setActiveLetter(null);
-    startNotification('Game reset');
+    startNotification('Game reset - all connections removed');
   }, [startNotification, endpointColorMap]);
 
   const handleBack = useCallback(() => navigate(`/game-mode/${params.gameType}`), [navigate, params.gameType]);

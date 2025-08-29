@@ -17,6 +17,7 @@ import { GameLayout } from '@/components/templates/GameLayout';
 import { usePassiveTouchFix } from '../hooks/usePassiveTouchFix';
 
 const LetterFlowGameScreen: React.FC = () => {
+  // get translation + direction (same pattern used in other games)
   const { t, dir } = useTranslation();
 
   // apply passive touch fix
@@ -97,8 +98,8 @@ const LetterFlowGameScreen: React.FC = () => {
       {/* Notification */}
       {renderNotification()}
 
-      {/* Board */}
-      <div className="mb-6 touch-none">
+      {/* Board - use dir to apply RTL-specific styling if needed */}
+      <div className={`mb-6 touch-none ${dir === 'rtl' ? 'arabic-layout' : ''} transition-colors duration-300`} dir={dir}>
         {renderBoard()}
       </div>
 
