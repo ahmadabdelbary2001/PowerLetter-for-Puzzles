@@ -9,7 +9,7 @@ import { useLetterFlowGame } from '../hooks/useLetterFlowGame';
 import type { letterFlowLevel } from '../engine';
 import { LetterFlowBoard } from '@/components/molecules/LetterFlowBoard';
 import { FoundWords } from '@/components/molecules/FoundWords';
-import { LetterFlowGameControls } from '@/components/molecules/LetterFlowGameControls';
+import GameControls from '@/components/organisms/GameControls';
 import { GameProgress } from '@/components/molecules/GameProgress';
 import { Notification } from '@/components/atoms/Notification';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -17,10 +17,8 @@ import { GameLayout } from '@/components/templates/GameLayout';
 import { usePassiveTouchFix } from '../hooks/usePassiveTouchFix';
 
 const LetterFlowGameScreen: React.FC = () => {
-  // get translation + direction (same pattern used in other games)
   const { t, dir } = useTranslation();
 
-  // apply passive touch fix
   usePassiveTouchFix();
 
   const {
@@ -30,6 +28,7 @@ const LetterFlowGameScreen: React.FC = () => {
     selectedPath,
     foundWords,
     notification,
+    gameState,
     activeLetter,
     handleBack,
     handleMouseDown,
@@ -38,6 +37,7 @@ const LetterFlowGameScreen: React.FC = () => {
     onHint,
     onUndo,
     onReset,
+    clearSelection,
     currentLevelIndex,
   } = useLetterFlowGame();
 
@@ -95,27 +95,46 @@ const LetterFlowGameScreen: React.FC = () => {
       difficulty={currentLevel.difficulty}
       layoutType="text"
     >
-      {/* Notification */}
       {renderNotification()}
 
-      {/* Board - use dir to apply RTL-specific styling if needed */}
       <div className={`mb-6 touch-none ${dir === 'rtl' ? 'arabic-layout' : ''} transition-colors duration-300`} dir={dir}>
         {renderBoard()}
       </div>
 
-      {/* Found Words */}
       {renderFoundWords()}
 
-      {/* Controls */}
-      <LetterFlowGameControls
-        onHint={onHint}
-        onUndo={onUndo}
+      {/* Only show reset, undo (remove) and hint during play. Also allow Next to appear on `won`. */}
+      <GameControls
         onReset={onReset}
-        t={{ hint: t.hint, undo: t.undo, reset: t.reset }}
-        dir={dir as 'ltr' | 'rtl'}
+        onRemoveLetter={onUndo}
+        onClearAnswer={clearSelection}
+        onHint={onHint}
+        onNextLevel={undefined}
+        onPrevLevel={undefined}
+        onCheckAnswer={() => {}}
+        onShowSolution={undefined}
+        canRemove={foundWords.length > 0}
+        canClear={selectedPath.length > 0}
+        canCheck={false}
+        canPrev={Boolean(currentLevelIndex && currentLevelIndex > 0)}
+        canNext={gameState === 'won'}
+        canHint={foundWords.length < totalWords}
+        hintsRemaining={undefined}
+        gameState={gameState === 'won' ? 'won' : 'playing'}
+        isKidsMode={false}
+        labels={{
+          remove: t.undo,
+          clear: t.clear,
+          check: t.check,
+          hint: t.hint,
+          showSolution: t.showSolution,
+          reset: t.reset,
+          prev: t.prev,
+          next: t.next,
+        }}
+        showOnly={['remove', 'hint', 'reset', 'next']}
       />
 
-      {/* Progress */}
       <GameProgress
         foundWords={foundWords}
         totalWords={totalWords}

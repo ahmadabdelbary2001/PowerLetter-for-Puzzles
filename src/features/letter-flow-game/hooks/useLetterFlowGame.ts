@@ -38,6 +38,9 @@ export function useLetterFlowGame() {
   const [notification, setNotification] = useState<string | null>(null);
   const [activeLetter, setActiveLetter] = useState<string | null>(null);
 
+  // new: gameState for UI (playing | won | failed)
+  const [gameState, setGameState] = useState<'playing' | 'won' | 'failed'>('playing');
+
   // Initialize board when level changes
   useEffect(() => {
     if (!currentLevel) return;
@@ -57,6 +60,7 @@ export function useLetterFlowGame() {
     setFoundWords([]);
     setSelectedPath([]);
     setActiveLetter(null);
+    setGameState('playing'); // reset UI state on level change
   }, [currentLevel, language]);
 
   // All distinct letters in the level
@@ -244,7 +248,7 @@ export function useLetterFlowGame() {
         return [...filtered, newFound];
       });
 
-      // Show notification
+      // Show notification and finalize outcome
       startNotification(`Connected ${activeLetter}`, 900);
 
       // Reset active state
@@ -257,16 +261,19 @@ export function useLetterFlowGame() {
       const isComplete = allLetters.every(letter => uniqueConnected.includes(letter));
 
       if (isComplete) {
-        setTimeout(() => {
-          startNotification(t.congrats, 2000);
+        // In competitive mode keep auto-advance; in single-player switch to 'won' so UI shows Next button
+        startNotification(t.congrats, 2000);
+        if (gameMode === 'competitive') {
           setTimeout(() => nextLevel(), 2000);
-        }, 800);
+        } else {
+          setGameState('won');
+        }
       }
     } else {
       // Continue building the path
       setSelectedPath(newPath);
     }
-  }, [activeLetter, selectedPath, isBlockedForActive, isEndpoint, isValidPath, findOverlappingConnections, board, colorForLetter, foundWords, allLetters, nextLevel, t, startNotification, endpointColorMap]);
+  }, [activeLetter, selectedPath, isBlockedForActive, isEndpoint, isValidPath, findOverlappingConnections, board, colorForLetter, foundWords, allLetters, nextLevel, t, startNotification, endpointColorMap, gameMode]);
 
   /**
    * handleMouseUp - if the path was not properly connected to a target endpoint, cancel it and notify the player.
@@ -458,10 +465,12 @@ export function useLetterFlowGame() {
     const uniqueConnected = Array.from(new Set(connected));
     const isComplete = allLetters.every(letter => uniqueConnected.includes(letter));
     if (isComplete) {
-      setTimeout(() => {
-        startNotification(t.congrats, 2000);
+      startNotification(t.congrats, 2000);
+      if (gameMode === 'competitive') {
         setTimeout(() => nextLevel(), 2000);
-      }, 800);
+      } else {
+        setGameState('won');
+      }
     }
   }, [
     currentLevel,
@@ -493,7 +502,9 @@ export function useLetterFlowGame() {
     setSelectedPath([]);
     setActiveLetter(null);
     startNotification(`Undo: Removed connection for ${lastConnection.word}`);
-  }, [foundWords, startNotification, endpointColorMap]);
+    // if we were in won state and undone a connection, revert to playing
+    if (gameState === 'won') setGameState('playing');
+  }, [foundWords, startNotification, endpointColorMap, gameState]);
 
   const onReset = useCallback(() => {
     setFoundWords([]);
@@ -504,6 +515,7 @@ export function useLetterFlowGame() {
     }));
     setSelectedPath([]);
     setActiveLetter(null);
+    setGameState('playing');
     startNotification('Game reset - all connections removed');
   }, [startNotification, endpointColorMap]);
 
@@ -517,6 +529,7 @@ export function useLetterFlowGame() {
     selectedPath,
     foundWords,
     notification,
+    gameState,
     isChecking: false,
     activeLetter,
     isDrawing: Boolean(activeLetter),

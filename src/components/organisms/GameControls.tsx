@@ -1,48 +1,42 @@
 // src/components/organisms/GameControls.tsx
 import React from 'react';
 import { GameButton } from '@/components/atoms/GameButton';
-import { Lightbulb, RotateCcw, RefreshCw, Delete, CheckCircle, Eye, ArrowLeft, ArrowRight } from 'lucide-react';
+import {
+  Lightbulb,
+  RotateCcw,
+  RefreshCw,
+  Delete,
+  CheckCircle,
+  Eye,
+  ArrowLeft,
+  ArrowRight
+} from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useGameMode } from '@/hooks/useGameMode';
 
 /**
  * Props interface for the GameControls component
- * Defines all callbacks and state needed for game control buttons
  */
+type ButtonKey = 'remove' | 'clear' | 'hint' | 'check' | 'showSolution' | 'reset' | 'prev' | 'next';
+
 interface Props {
-  /** Callback to reset the current game */
   onReset?: () => void;
-  /** Callback to remove the last entered letter */
-  onRemoveLetter: () => void;
-  /** Callback to clear the entire answer */
-  onClearAnswer: () => void;
-  /** Callback to request a hint */
+  onRemoveLetter?: () => void;
+  onClearAnswer?: () => void;
   onHint?: () => void;
-  /** Callback to check if the current answer is correct */
-  onCheckAnswer: () => void;
-  /** Callback to show the solution */
+  onCheckAnswer?: () => void;
   onShowSolution?: () => void;
-  /** Callback to navigate to the previous level */
   onPrevLevel?: () => void;
-  /** Callback to navigate to the next level */
   onNextLevel?: () => void;
-  /** Flag indicating if remove letter action is available */
   canRemove?: boolean;
-  /** Flag indicating if clear answer action is available */
   canClear?: boolean;
-  /** Flag indicating if check answer action is available */
   canCheck?: boolean;
-  /** Flag indicating if previous level navigation is available */
   canPrev?: boolean;
-  /** Flag indicating if next level navigation is available */
   canNext?: boolean;
-  /** Flag indicating if hint action is available */
   canHint?: boolean;
-  /** Number of hints remaining for the current team */
   hintsRemaining?: number;
-  /** Current state of the game */
   gameState: 'playing' | 'won' | 'failed';
-  /** Localized labels for all buttons */
   labels: {
     remove: string;
     clear: string;
@@ -54,6 +48,16 @@ interface Props {
     next: string;
   };
   isKidsMode?: boolean;
+  /**
+   * Optional: if provided, only the named buttons will be rendered.
+   * Example: showOnly={['remove','hint','reset','next']}
+   */
+  showOnly?: ButtonKey[];
+  /**
+   * Optional icon overrides for specific button keys.
+   * Example: icons={{ remove: Shuffle }}
+   */
+  icons?: Partial<Record<ButtonKey, LucideIcon>>;
 }
 
 /**
@@ -62,9 +66,8 @@ interface Props {
  * This component conditionally renders different sets of buttons based on:
  * - Current game state (playing, won, failed)
  * - Game mode (single player vs competitive)
- * - Available actions (canRemove, canCheck, etc.)
- *
- * In competitive mode, it hides Reset and Previous buttons to maintain game flow
+ * - Allowed buttons passed via `showOnly` (to restrict which buttons are visible)
+ * - Optional icon overrides via `icons`
  */
 export const GameControls: React.FC<Props> = ({
   onReset,
@@ -85,79 +88,82 @@ export const GameControls: React.FC<Props> = ({
   gameState,
   labels,
   isKidsMode = false,
+  showOnly,
+  icons,
 }) => {
-  // Get text direction based on current language
   const { dir } = useTranslation();
-
-  // Get current game mode to determine which buttons to show
   const { gameMode } = useGameMode();
 
-  // Determine if we should show reset and previous buttons
-  // In competitive mode, we hide these buttons
+  // In competitive mode we hide reset/prev to encourage flow
   const showResetAndPrev = gameMode !== 'competitive';
+
+  const shouldShow = (key: ButtonKey) => {
+    if (!showOnly) return true;
+    return showOnly.includes(key);
+  };
+
+  // Helper to pick icon (override if provided)
+  const pickIcon = (key: ButtonKey, defaultIcon: LucideIcon) => icons?.[key] ?? defaultIcon;
 
   if (isKidsMode) {
     return (
       <div className="flex flex-wrap gap-2 sm:gap-3 justify-center mt-4">
-        <GameButton
-          onClick={onRemoveLetter}
-          disabled={!canRemove}
-          icon={Delete}
-          className="text-lg py-6 flex-1"
-        >
-          {labels.remove}
-        </GameButton>
-        <GameButton
-          onClick={onClearAnswer}
-          disabled={!canClear}
-          icon={RotateCcw}
-          className="text-lg py-6 flex-1"
-        >
-          {labels.clear}
-        </GameButton>
-        <GameButton
-          onClick={onCheckAnswer}
-          disabled={!canCheck}
-          icon={CheckCircle}
-          isPrimary={true}
-          className="text-lg py-6 flex-1"
-        >
-          {labels.check}
-        </GameButton>
+        {shouldShow('remove') && (
+          <GameButton
+            onClick={onRemoveLetter}
+            disabled={!canRemove}
+            icon={pickIcon('remove', Delete)}
+            className="text-lg py-6 flex-1"
+          >
+            {labels.remove}
+          </GameButton>
+        )}
+        {shouldShow('clear') && (
+          <GameButton
+            onClick={onClearAnswer}
+            disabled={!canClear}
+            icon={pickIcon('clear', RotateCcw)}
+            className="text-lg py-6 flex-1"
+          >
+            {labels.clear}
+          </GameButton>
+        )}
+        {shouldShow('check') && (
+          <GameButton
+            onClick={onCheckAnswer}
+            disabled={!canCheck}
+            icon={pickIcon('check', CheckCircle)}
+            isPrimary={true}
+            className="text-lg py-6 flex-1"
+          >
+            {labels.check}
+          </GameButton>
+        )}
       </div>
     );
   }
 
-  // Render different controls when game is won
+  // Render when game is won
   if (gameState === 'won') {
     return (
       <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
-        {/* Only show reset button in single player mode
-         * In competitive mode, we don't allow resetting to maintain game flow
-         */}
-        {showResetAndPrev && (
-          <GameButton onClick={onReset} icon={RefreshCw}>
+        {showResetAndPrev && shouldShow('reset') && (
+          <GameButton onClick={onReset} icon={pickIcon('reset', RefreshCw)}>
             {labels.reset}
           </GameButton>
         )}
-        {/* Only show previous button in single player mode
-         * In competitive mode, players must progress forward only
-         */}
-        {showResetAndPrev && canPrev && (
+        {showResetAndPrev && canPrev && shouldShow('prev') && (
           <GameButton
             onClick={onPrevLevel}
-            icon={dir === 'rtl' ? ArrowRight : ArrowLeft}
+            icon={pickIcon('prev', dir === 'rtl' ? ArrowRight : ArrowLeft)}
           >
             {labels.prev}
           </GameButton>
         )}
-        {/* Only show next button in single player mode
-         * In competitive mode, we automatically move to the next level
-         */}
-        {showResetAndPrev && canNext && (
+        {showResetAndPrev && canNext && shouldShow('next') && (
           <GameButton
             onClick={onNextLevel}
-            icon={dir === 'rtl' ? ArrowLeft : ArrowRight}
+            icon={pickIcon('next', dir === 'rtl' ? ArrowLeft : ArrowRight)}
             isPrimary={true}
           >
             {labels.next}
@@ -167,56 +173,59 @@ export const GameControls: React.FC<Props> = ({
     );
   }
 
-  // Render controls for active gameplay
+  // Default (playing / failed) controls
   return (
     <div className="flex flex-wrap gap-1 sm:gap-2 justify-center mt-4">
-      {/* Remove last letter button */}
-      <GameButton
-        onClick={onRemoveLetter}
-        disabled={!canRemove}
-        icon={Delete}
-        className="text-xs sm:text-sm"
-      >
-        {labels.remove}
-      </GameButton>
+      {shouldShow('remove') && (
+        <GameButton
+          onClick={onRemoveLetter}
+          disabled={!canRemove}
+          icon={pickIcon('remove', Delete)}
+          className="text-xs sm:text-sm"
+        >
+          {labels.remove}
+        </GameButton>
+      )}
 
-      {/* Clear entire answer button */}
-      <GameButton
-        onClick={onClearAnswer}
-        disabled={!canClear}
-        icon={RotateCcw}
-        className="text-xs sm:text-sm"
-      >
-        {labels.clear}
-      </GameButton>
+      {shouldShow('clear') && (
+        <GameButton
+          onClick={onClearAnswer}
+          disabled={!canClear}
+          icon={pickIcon('clear', RotateCcw)}
+          className="text-xs sm:text-sm"
+        >
+          {labels.clear}
+        </GameButton>
+      )}
 
-      {/* Hint button - shows remaining hints if available */}
-      <GameButton
-        onClick={onHint}
-        disabled={!canHint}
-        icon={Lightbulb}
-        className="text-xs sm:text-sm"
-      >
-        {labels.hint}
-        {hintsRemaining !== undefined && <span className="text-xs sm:text-sm"> ({hintsRemaining})</span>}
-      </GameButton>
+      {shouldShow('hint') && (
+        <GameButton
+          onClick={onHint}
+          disabled={!canHint}
+          icon={pickIcon('hint', Lightbulb)}
+          className="text-xs sm:text-sm"
+        >
+          {labels.hint}
+          {hintsRemaining !== undefined && <span className="text-xs sm:text-sm"> ({hintsRemaining})</span>}
+        </GameButton>
+      )}
 
-      {/* Check answer button - primary action */}
-      <GameButton
-        onClick={onCheckAnswer}
-        disabled={!canCheck}
-        icon={CheckCircle}
-        isPrimary={true}
-        className="text-xs sm:text-sm"
-      >
-        {labels.check}
-      </GameButton>
+      {shouldShow('check') && (
+        <GameButton
+          onClick={onCheckAnswer}
+          disabled={!canCheck}
+          icon={pickIcon('check', CheckCircle)}
+          isPrimary={true}
+          className="text-xs sm:text-sm"
+        >
+          {labels.check}
+        </GameButton>
+      )}
 
-      {/* Show solution button - hidden in competitive mode */}
-      {showResetAndPrev && (
+      {showResetAndPrev && shouldShow('showSolution') && (
         <GameButton
           onClick={onShowSolution}
-          icon={Eye}
+          icon={pickIcon('showSolution', Eye)}
           className="text-xs sm:text-sm"
         >
           {labels.showSolution}
