@@ -6,6 +6,41 @@
             "sound": "/assets/sounds/ar/animals/قطة.mp3",
             "solution": "قطة",
             "options": ["كلب", "سمكة", "أسد"]
+        },
+        {
+            "id": "wc-ar-animal-2",
+            "image": "/assets/images/animals/dog.jpg",
+            "sound": "/assets/sounds/ar/animals/كلب.mp3",
+            "solution": "كلب",
+            "options": ["أسد", "ثعلب", "ذئب"]
+        },
+        {
+            "id": "wc-ar-animal-3",
+            "image": "/assets/images/animals/fox.png",
+            "sound": "/assets/sounds/ar/animals/ثعلب.mp3",
+            "solution": "ثعلب",
+            "options": ["كلب", "سمكة", "أسد"]
+        },
+        {
+            "id": "wc-ar-animal-4",
+            "image": "/assets/images/animals/wolf.jpg",
+            "sound": "/assets/sounds/ar/animals/ذئب.mp3",
+            "solution": "ذئب",
+            "options": ["كلب", "سمكة", "أسد"]
+        },
+        {
+            "id": "wc-ar-animal-5",
+            "image": "/assets/images/animals/fish.png",
+            "sound": "/assets/sounds/ar/animals/سمكة.mp3",
+            "solution": "سمكة",
+            "options": ["كلب", "ثعلب", "أسد"]
+        },
+        {
+            "id": "wc-ar-animal-6",
+            "image": "/assets/images/animals/lion.jpg",
+            "sound": "/assets/sounds/ar/animals/أسد.mp3",
+            "solution": "أسد",
+            "options": ["كلب", "ذئب", "قطة"]
         }
     ]
 }

@@ -5,7 +5,42 @@
             "image": "/assets/images/animals/cat.webp",
             "sound": "/assets/sounds/en/animals/cat.mp3",
             "solution": "Cat",
-            "options": ["Dog", "Fish", "Bird"]
+            "options": ["Dog", "Fish", "Lion"]
+        },
+        {
+            "id": "wc-en-animal-2",
+            "image": "/assets/images/animals/dog.jpg",
+            "sound": "/assets/sounds/en/animals/dog.mp3",
+            "solution": "Dog",
+            "options": ["Wolf", "Fox", "Lion"]
+        },
+        {
+            "id": "wc-en-animal-3",
+            "image": "/assets/images/animals/fox.png",
+            "sound": "/assets/sounds/en/animals/fox.mp3",
+            "solution": "Fox",
+            "options": ["Dog", "Fish", "Lion"]
+        },
+        {
+            "id": "wc-en-animal-4",
+            "image": "/assets/images/animals/wolf.jpg",
+            "sound": "/assets/sounds/en/animals/wolf.mp3",
+            "solution": "Wolf",
+            "options": ["Dog", "Fish", "Lion"]
+        },
+        {
+            "id": "wc-en-animal-5",
+            "image": "/assets/images/animals/fish.png",
+            "sound": "/assets/sounds/en/animals/fish.mp3",
+            "solution": "Fish",
+            "options": ["Dog", "Fox", "Lion"]
+        },
+        {
+            "id": "wc-en-animal-6",
+            "image": "/assets/images/animals/lion.jpg",
+            "sound": "/assets/sounds/en/animals/lion.mp3",
+            "solution": "Lion",
+            "options": ["Dog", "Wolf", "Cat"]
         }
     ]
 }

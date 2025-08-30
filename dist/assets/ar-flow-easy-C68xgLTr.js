@@ -1,0 +1,1 @@
+const e=[{id:"ar-easy-001",gridSize:{width:3,height:3},endpoints:[{letter:"د",x:2,y:0},{letter:"د",x:1,y:1},{letter:"ب",x:1,y:0},{letter:"ب",x:2,y:2}],solutionWord:"دب"}],t={levels:e};export{t as default,e as levels};
