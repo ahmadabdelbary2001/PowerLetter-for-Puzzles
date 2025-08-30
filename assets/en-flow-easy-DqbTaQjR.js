@@ -1,0 +1,1 @@
+const e=[{id:"en-easy-001",gridSize:{width:3,height:3},endpoints:[{letter:"D",x:2,y:0},{letter:"D",x:1,y:1},{letter:"O",x:1,y:0},{letter:"O",x:2,y:2}],solutionWord:"DO"}],t={levels:e};export{t as default,e as levels};

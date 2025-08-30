@@ -1,0 +1,1 @@
+const e=[{id:"en-easy-1",baseLetters:"ACT",words:["ACT","CAT"],solution:"ACT",grid:[{x:0,y:1,letter:"A",words:[0,1]},{x:1,y:1,letter:"C",words:[0]},{x:2,y:1,letter:"T",words:[0]},{x:0,y:0,letter:"C",words:[1]},{x:0,y:2,letter:"T",words:[1]}]}],t={levels:e};export{t as default,e as levels};
