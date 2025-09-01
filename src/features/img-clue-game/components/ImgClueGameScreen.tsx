@@ -6,6 +6,7 @@
  */
 import React from "react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { SolutionBoxes } from "@/components/molecules/SolutionBoxes";
 import { LetterGrid } from "@/components/molecules/LetterGrid";
 import GameControls from "@/components/organisms/GameControls";
@@ -13,6 +14,7 @@ import { ArrowLeft, ArrowRight, Volume2 } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { GameLayout } from "@/components/templates/GameLayout";
 import { useImageClueGame } from "../hooks/useImageClueGame";
+import { useGameMode } from "@/hooks/useGameMode";
 import type { ImageLevel } from "../engine";
 import { Notification } from "@/components/atoms/Notification";
 
@@ -23,28 +25,31 @@ import { Notification } from "@/components/atoms/Notification";
 const ImgClueGameScreen: React.FC = () => {
   // Get translation function and text direction for localization
   const { t, dir } = useTranslation();
+  const { gameMode } = useGameMode();
 
   // Destructure game state and handler functions from the useImageClueGame hook
   const {
-    loading,              // Loading state for level data
-    levels,               // Array of all loaded levels
-    currentLevel,         // Current level data including image and solution
-    solution,             // Solution word for the current level
-    letters,              // Available letter options
-    notification,         // Game status notifications
-    audioRef,             // Reference to the audio element
-    gameState,            // Current game state (playing, won, failed)
-    answerSlots,          // Current letters selected by the player
-    slotIndices,          // Indices of selected letters
-    hintIndices,          // Indices of letters revealed as hints
-    getAssetPath,         // Function to get full asset path
-    playSound,            // Function to play the audio clue
-    onCheck,              // Function to check if current answer is correct
-    onLetterClick,        // Function to handle letter selection
-    onRemove,             // Function to remove last letter
-    onClear,              // Function to clear all letters
-    nextLevel,            // Function to navigate to next level
-    handleBack,           // Function to navigate back to game selection
+    loading,
+    levels,
+    currentLevel,
+    solution,
+    letters,
+    notification,
+    wrongAnswers,
+    audioRef,
+    gameState,
+    answerSlots,
+    slotIndices,
+    hintIndices,
+    getAssetPath,
+    playSound,
+    onCheck,
+    onLetterClick,
+    onRemove,
+    onClear,
+    nextLevel,
+    handleBack,
+    currentLevelIndex,
   } = useImageClueGame();
 
   // Show loading state while levels are being loaded
@@ -62,8 +67,8 @@ const ImgClueGameScreen: React.FC = () => {
     );
   }
 
-  // Find the index of the current level
-  const levelIndex = levels.findIndex((l: ImageLevel) => l.id === currentLevel.id);
+  // Use currentLevelIndex provided by the hook (safer and avoids findIndex)
+  const levelIndex = typeof currentLevelIndex === 'number' ? currentLevelIndex : levels.findIndex((l: ImageLevel) => l.id === currentLevel?.id);
 
   // Notification mapping
   const notifMessage = notification?.message ?? null;
@@ -94,22 +99,38 @@ const ImgClueGameScreen: React.FC = () => {
       {/* Solution boxes showing current progress */}
       <SolutionBoxes solution={solution} currentWord={answerSlots.join('')} />
       {/* Letter grid for selecting letters */}
-      <LetterGrid letters={letters} selectedIndices={slotIndices.filter(i => i !== null) as number[]} onLetterClick={onLetterClick} disabled={gameState !== 'playing'} hintIndices={hintIndices} />
+      <LetterGrid letters={letters} selectedIndices={slotIndices.filter(i => i !== null && i !== undefined) as number[]} onLetterClick={onLetterClick} disabled={gameState !== 'playing'} hintIndices={hintIndices} />
+
+      {/* Display wrong answers if any (same style as Clue game) */}
+      {wrongAnswers && wrongAnswers.length > 0 && (
+        <div className="mt-2">
+          <p className="text-sm text-muted-foreground mb-1">{t.wrongAttempts}:</p>
+          <div className="flex flex-wrap gap-1 sm:gap-2 justify-center">
+            {wrongAnswers.map((answer, index) => (
+              <Badge key={index} variant="destructive" className="text-xs py-1">
+                {answer}
+              </Badge>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Conditional rendering based on game state */}
       {gameState === 'won' ? (
-        // Show next level button when the player wins
-        <Button onClick={nextLevel} className="w-full bg-green-600 hover:bg-green-700 text-lg py-6">
-          {t.next} {dir === 'rtl' ? <ArrowLeft className="ml-2" /> : <ArrowRight className="ml-2" />}
-        </Button>
+        // Show Next button in Solo mode only (competitive mode auto-advances and should NOT show Next)
+        gameMode !== 'competitive' ? (
+          <Button onClick={nextLevel} className="w-full bg-green-600 hover:bg-green-700 text-lg py-6">
+            {t.next} {dir === 'rtl' ? <ArrowLeft className="ml-2" /> : <ArrowRight className="ml-2" />}
+          </Button>
+        ) : null
       ) : (
-        // Show game controls when still playing
+        // Show game controls when still playing / failed
         <GameControls
           onRemoveLetter={onRemove}
           onClearAnswer={onClear}
           onCheckAnswer={onCheck}
-          canRemove={slotIndices.some(i => i !== null)}
-          canClear={slotIndices.some(i => i !== null)}
+          canRemove={slotIndices.some(i => i !== null && i !== undefined)}
+          canClear={slotIndices.some(i => i !== null && i !== undefined)}
           canCheck={answerSlots.every(ch => ch !== '')}
           gameState={gameState as 'playing' | 'failed'}
           labels={{ remove: t.remove, clear: t.clear, check: t.check, hint: '', showSolution: '', reset: '', prev: '', next: '' }}
