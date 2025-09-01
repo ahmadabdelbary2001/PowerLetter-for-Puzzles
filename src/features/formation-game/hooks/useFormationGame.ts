@@ -81,7 +81,7 @@ export function useFormationGame() {
         setTimeout(() => nextLevel(), 2000);
       }
     } else {
-      setNotification(currentFoundWords.has(currentInput) ? "Already found!" : t.wrongAnswer);
+      setNotification(currentFoundWords.has(currentInput) ? t.alreadyFound : t.wrongAnswer);
     }
 
     setCurrentInput("");
@@ -131,19 +131,25 @@ export function useFormationGame() {
     if (newlyFoundWords.length > 0) {
       const updatedFoundWords = new Set([...foundWords, ...newlyFoundWords]);
       setFoundWords(updatedFoundWords);
-      setNotification(`${t.congrats} Found: ${newlyFoundWords.join(', ')}`);
+      setNotification(`${t.congrats} ${t.found} ${newlyFoundWords.join(', ')}`);
 
       if (updatedFoundWords.size === currentLevel.words.length) {
         setTimeout(() => nextLevel(), 2000);
       }
     } else {
-      setNotification(t.hintUsed || "Hint used!");
+      setNotification(t.hintUsed);
     }
 
     setTimeout(() => setNotification(null), 1500);
   }, [currentLevel, revealedCells, foundWords, gameMode, teams, currentTeam, consumeHint, t, nextLevel]);
 
-  const handleBack = useCallback(() => navigate(`/game-mode/${params.gameType}`), [navigate, params.gameType]);
+  const handleBack = useCallback(() => {
+    if (gameMode === 'competitive') {
+      navigate(`/team-config/${params.gameType}`);
+    } else {
+      navigate(`/game-mode/${params.gameType}`);
+    }
+  }, [navigate, params.gameType, gameMode]);
 
   return {
     loading,

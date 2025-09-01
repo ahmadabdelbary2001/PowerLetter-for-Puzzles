@@ -519,7 +519,13 @@ export function useLetterFlowGame() {
     startNotification('Game reset - all connections removed');
   }, [startNotification, endpointColorMap]);
 
-  const handleBack = useCallback(() => navigate(`/game-mode/${params.gameType}`), [navigate, params.gameType]);
+  const handleBack = useCallback(() => {
+    if (gameMode === 'competitive') {
+      navigate(`/team-config/${params.gameType}`);
+    } else {
+      navigate(`/game-mode/${params.gameType}`);
+    }
+  }, [navigate, params.gameType, gameMode]);
 
   return {
     loading,

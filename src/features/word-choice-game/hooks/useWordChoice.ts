@@ -21,7 +21,7 @@ export function useWordChoiceGame() {
   const navigate = useNavigate();
 
   // Game mode and settings
-  const { language, categories } = useGameMode();
+  const { language, categories, gameMode, gameType } = useGameMode();
 
   // --- Generic Game State ---
   // Use the generic game hook for common game functionality
@@ -75,8 +75,14 @@ export function useWordChoiceGame() {
     }
   }, [answerStatus, currentLevel, nextLevel]);
 
-  // Handle navigation back to kids games selection
-  const handleBack = useCallback(() => navigate('/kids-games'), [navigate]);
+  // Handle navigation back based on game mode
+  const handleBack = useCallback(() => {
+    if (gameMode === 'competitive') {
+      navigate(`/team-config/${gameType}`);
+    } else {
+      navigate('/kids-games');
+    }
+  }, [navigate, gameMode, gameType]);
 
   // --- Effects ---
   // Effect to shuffle options when a new level is loaded

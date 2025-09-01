@@ -130,7 +130,13 @@ export function useClueGame() {
   }, [gameMode, teams, currentTeam, consumeHint, t.noHintsLeft, solution, letters, dispatch, setNotification]);
 
   const handleRevealOrListSolutions = useCallback(async () => { /* ... unchanged ... */ }, [/* ... */]);
-  const handleBack = useCallback(() => navigate(`/game-mode/${params.gameType}`), [navigate, params.gameType]);
+  const handleBack = useCallback(() => {
+    if (gameMode === 'competitive') {
+      navigate(`/team-config/${params.gameType}`);
+    } else {
+      navigate(`/game-mode/${params.gameType}`);
+    }
+  }, [navigate, params.gameType, gameMode]);
   const prevLevel = useCallback(() => {
     if (currentLevelIndex > 0) {
       // Fix: There's no setCurrentLevelIndex function, need to use resetLevel with the previous index
