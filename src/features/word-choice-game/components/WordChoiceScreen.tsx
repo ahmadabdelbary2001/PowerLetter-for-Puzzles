@@ -9,10 +9,13 @@ import { GameLayout } from "@/components/templates/GameLayout";
 import { useWordChoiceGame } from "@/features/word-choice-game/hooks/useWordChoice";
 import { cn } from "@/lib/utils";
 import { Notification } from "@/components/atoms/Notification";
+import { getWordChoiceInstructions } from "../instructions";
+import { useGameMode } from "@/hooks/useGameMode";
 
 const WordChoiceScreen: React.FC = () => {
   // Get translation functions and text direction (for RTL languages)
   const { t, dir } = useTranslation();
+  const { language } = useGameMode();
 
   // Extract all necessary state and functions from the custom hook
   const {
@@ -59,6 +62,7 @@ const WordChoiceScreen: React.FC = () => {
       levelIndex={0}
       onBack={handleBack}
       layoutType="image"
+      instructions={getWordChoiceInstructions(language)}
     >
       {/* Show notification when correct/incorrect */}
       {showNotif && (

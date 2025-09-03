@@ -15,9 +15,12 @@ import { Notification } from '@/components/atoms/Notification';
 import { useTranslation } from '@/hooks/useTranslation';
 import { GameLayout } from '@/components/templates/GameLayout';
 import { usePassiveTouchFix } from '../hooks/usePassiveTouchFix';
+import { getLetterFlowInstructions } from '../instructions';
+import { useGameMode } from '@/hooks/useGameMode';
 
 const LetterFlowGameScreen: React.FC = () => {
   const { t, dir } = useTranslation();
+  const { language } = useGameMode();
 
   usePassiveTouchFix();
 
@@ -94,6 +97,7 @@ const LetterFlowGameScreen: React.FC = () => {
       onBack={handleBack}
       difficulty={currentLevel.difficulty}
       layoutType="text"
+      instructions={getLetterFlowInstructions(language)}
     >
       {renderNotification()}
 

@@ -14,6 +14,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { Header } from '@/components/organisms/Header';
 import { Scoreboard } from '@/components/molecules/Scoreboard';
 import { TeamDisplay } from '@/components/molecules/TeamDisplay';
+import GameInstructions from '@/components/molecules/GameInstructions';
 import type { Difficulty } from '@/types/game';
 import { cn } from '@/lib/utils';
 
@@ -34,6 +35,11 @@ interface GameLayoutProps {
   onBack: () => void;
   difficulty?: Difficulty;
   layoutType?: 'text' | 'image';
+  instructions?: {
+    title: string;
+    description: string;
+    steps: string[];
+  };
 }
 
 /**
@@ -48,6 +54,7 @@ export const GameLayout: React.FC<GameLayoutProps> = ({
   onBack,
   difficulty,
   layoutType = 'text',
+  instructions,
 }) => {
   const { gameMode, teams, currentTeam } = useGameMode();
   const { t, dir } = useTranslation();
@@ -63,9 +70,14 @@ export const GameLayout: React.FC<GameLayoutProps> = ({
           )}
         >
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-            <Button variant="ghost" onClick={onBack} className="flex items-center gap-2">
-              {dir === "rtl" ? <ArrowRight /> : <ArrowLeft />} {t.back}
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" onClick={onBack} className="flex items-center gap-2">
+                {dir === "rtl" ? <ArrowRight /> : <ArrowLeft />} {t.back}
+              </Button>
+              {instructions && (
+                <GameInstructions instructions={instructions} />
+              )}
+            </div>
             {gameMode === "competitive" && teams.length > 0 && (
               <TeamDisplay teams={teams} currentTeam={currentTeam} showScore={true} />
             )}
