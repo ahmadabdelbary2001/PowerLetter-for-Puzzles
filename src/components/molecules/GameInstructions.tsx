@@ -1,5 +1,7 @@
+// src/components/molecules/GameInstructions.tsx
+
 import React, { useState } from 'react';
-import { useTranslation } from '@/hooks/useTranslation';
+import { useTranslation } from "@/hooks/useTranslation";
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
@@ -17,7 +19,8 @@ interface GameInstructionsProps {
  * Used across all games to provide consistent how-to-play experience
  */
 const GameInstructions: React.FC<GameInstructionsProps> = ({ instructions, trigger }) => {
-  const { t, dir } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const dir = i18n.dir(); // 'ltr' or 'rtl' for the active language;
   const [open, setOpen] = useState(false);
   const isArabic = dir === 'rtl';
 

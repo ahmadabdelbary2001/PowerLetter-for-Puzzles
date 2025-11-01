@@ -12,14 +12,15 @@ import { FoundWords } from '@/components/molecules/FoundWords';
 import GameControls from '@/components/organisms/GameControls';
 import { GameProgress } from '@/components/molecules/GameProgress';
 import { Notification } from '@/components/atoms/Notification';
-import { useTranslation } from '@/hooks/useTranslation';
+import { useTranslation } from "@/hooks/useTranslation";
 import { GameLayout } from '@/components/templates/GameLayout';
 import { usePassiveTouchFix } from '../hooks/usePassiveTouchFix';
 import { getLetterFlowInstructions } from '../instructions';
 import { useGameMode } from '@/hooks/useGameMode';
 
 const LetterFlowGameScreen: React.FC = () => {
-  const { t, dir } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const dir = i18n.dir(); // 'ltr' or 'rtl' for the active language;
   const { language } = useGameMode();
 
   usePassiveTouchFix();

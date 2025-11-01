@@ -11,7 +11,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useGameMode } from '@/hooks/useGameMode';
-import { useTranslation } from '@/hooks/useTranslation';
+import { useTranslation } from "@/hooks/useTranslation";
 import { useGame } from '@/hooks/useGame';
 import { imgClueGameEngine, type ImageLevel } from '../engine';
 import { useGameControls } from '../../clue-game/hooks/useGameControls';

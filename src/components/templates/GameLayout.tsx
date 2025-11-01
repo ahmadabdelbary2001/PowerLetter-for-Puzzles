@@ -10,7 +10,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useGameMode } from '@/hooks/useGameMode';
-import { useTranslation } from '@/hooks/useTranslation';
+import { useTranslation } from "@/hooks/useTranslation";
 import { Header } from '@/components/organisms/Header';
 import { Scoreboard } from '@/components/molecules/Scoreboard';
 import { TeamDisplay } from '@/components/molecules/TeamDisplay';
@@ -57,7 +57,8 @@ export const GameLayout: React.FC<GameLayoutProps> = ({
   instructions,
 }) => {
   const { gameMode, teams, currentTeam } = useGameMode();
-  const { t, dir } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const dir = i18n.dir(); // 'ltr' or 'rtl' for the active language;
 
   return (
     <>

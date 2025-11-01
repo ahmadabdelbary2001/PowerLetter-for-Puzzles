@@ -6,7 +6,7 @@
 import React from 'react';
 import { GameLayout } from '@/components/templates/GameLayout';
 import { useFormationGame } from '../hooks/useFormationGame';
-import { useTranslation } from '@/hooks/useTranslation';
+import { useTranslation } from "@/hooks/useTranslation";
 import { RotateCcw, Check, Lightbulb } from 'lucide-react';
 import { CrosswordGrid } from '@/components/molecules/CrosswordGrid';
 import { LetterCircle } from '@/components/molecules/LetterCircle';

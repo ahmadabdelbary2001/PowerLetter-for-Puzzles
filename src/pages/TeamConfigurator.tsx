@@ -17,7 +17,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Users, Plus, Minus, ArrowRight, ArrowLeft } from 'lucide-react';
 import { useGameMode } from '@/hooks/useGameMode';
-import { useTranslation } from '@/hooks/useTranslation';
+import { useTranslation } from "@/hooks/useTranslation";
 import { Header } from '@/components/organisms/Header';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -30,7 +30,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 const TeamConfigurator: React.FC = () => {
   // Hooks for global state, translation, navigation, and URL parameters
   const { initializeTeams, setGameMode } = useGameMode();
-  const { t, dir } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const dir = i18n.dir(); // 'ltr' or 'rtl' for the active language;
   const navigate = useNavigate();
   const { gameType } = useParams<{ gameType: string }>();
 

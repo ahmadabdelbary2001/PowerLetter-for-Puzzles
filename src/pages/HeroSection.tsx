@@ -9,6 +9,7 @@ import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 import { useTranslation } from "../hooks/useTranslation";
 import { useNavigate } from "react-router-dom";
+import { normalizeToStringArray } from '@/lib/i18nUtils';
 
 /**
  * The HeroSection component serves as the "above the fold" content for the homepage.
@@ -16,11 +17,17 @@ import { useNavigate } from "react-router-dom";
  *
  * @returns {JSX.Element} The rendered hero section.
  */
-export default function HeroSection() {
+export default function HeroSection(): JSX.Element {
   // Hooks for translation and navigation
-  const { t, dir } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const dir = i18n.dir(); // 'ltr' or 'rtl' for the active language
   const navigate = useNavigate();
-  
+
+  // Request i18next to return objects/arrays for this key (safe if the resource is an array/object)
+  // then normalize into readonly string[]
+  const rawHeroFeatures = i18n.t('herofeatures', { returnObjects: true });
+  const heroFeatures = normalizeToStringArray(rawHeroFeatures);
+
   /**
    * Handles the click event for the "Start Playing" button.
    * Navigates the user to the game selection page.
@@ -47,8 +54,7 @@ export default function HeroSection() {
 
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
                 <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">PowerLetter</span>
-                  
-
+                <br />
                 <span className="text-foreground">{t.wordPuzzles}</span>
               </h1>
 
@@ -59,7 +65,7 @@ export default function HeroSection() {
 
             {/* Key Features List */}
             <div className="space-y-2">
-              {t.herofeatures.map((feature: string, index: number) => (
+              {heroFeatures.map((feature: string, index: number) => (
                 <div key={index} className="flex flex-wrap items-baseline gap-3 text-foreground">
                   <span className="text-lg font-semibold">{feature.split(" ")[0]}</span>
                   <span className="text-sm text-muted-foreground">{feature.substring(feature.indexOf(" ") + 1)}</span>

@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ArrowRight, ArrowLeft, PawPrint, Apple, Shapes, BrainCircuit } from 'lucide-react';
 import { useGameMode } from '@/hooks/useGameMode';
-import { useTranslation } from '@/hooks/useTranslation';
+import { useTranslation } from "@/hooks/useTranslation";
 import { Header } from '@/components/organisms/Header';
 import { StepIndicator } from '@/components/atoms/StepIndicator';
 import { ModeSelector } from '@/components/molecules/ModeSelector';
@@ -29,7 +29,8 @@ const categoriesData = [
 const KidsGameModeSelector: React.FC = () => {
   // Custom hooks for game state and translation
   const { setGameMode, setCategories } = useGameMode();
-  const { t, dir } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const dir = i18n.dir(); // 'ltr' or 'rtl' for the active language;
   const navigate = useNavigate();
   const { gameType } = useParams<{ gameType: string }>();
 

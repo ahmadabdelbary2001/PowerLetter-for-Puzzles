@@ -8,7 +8,7 @@
  */
 import { Card, CardTitle } from '@/components/ui/card';
 import { User, Users } from 'lucide-react';
-import { useTranslation } from '@/hooks/useTranslation';
+import { useTranslation } from "@/hooks/useTranslation";
 
 /**
  * Props for the ModeSelector component

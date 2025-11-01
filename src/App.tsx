@@ -14,6 +14,7 @@ import KidsGameModeSelector from "./components/organisms/KidsGameModeSelector";
 import TeamConfigurator from "./pages/TeamConfigurator";
 import KidsGameSelector from "./pages/KidsGameSelector";
 import { getGameConfig } from './games/GameRegistry';
+import '@/i18n';
 
 const queryClient = new QueryClient();
 

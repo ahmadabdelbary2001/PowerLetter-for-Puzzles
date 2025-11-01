@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ArrowRight, ArrowLeft, PawPrint, FlaskConical, Globe, BrainCircuit } from 'lucide-react';
 import { useGameMode } from '@/hooks/useGameMode';
-import { useTranslation } from '@/hooks/useTranslation';
+import { useTranslation } from "@/hooks/useTranslation";
 import { Header } from '@/components/organisms/Header';
 import { StepIndicator } from '@/components/atoms/StepIndicator';
 import { ModeSelector } from '@/components/molecules/ModeSelector';
@@ -34,7 +34,8 @@ const difficulties = [
 
 const GameModeSelector: React.FC = () => {
   const { setGameMode, categories: selectedCategories, setCategories, setDifficulty } = useGameMode();
-  const { t, dir } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const dir = i18n.dir(); // 'ltr' or 'rtl' for the active language;
   const navigate = useNavigate();
   const { gameType } = useParams<{ gameType: string }>();
 

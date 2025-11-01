@@ -5,7 +5,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useGameMode } from '@/hooks/useGameMode';
-import { useTranslation } from '@/hooks/useTranslation';
+import { useTranslation } from "@/hooks/useTranslation";
 import { useGame } from '@/hooks/useGame';
 import { formationGameEngine, type FormationLevel } from '../engine';
 

@@ -12,7 +12,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { useTranslation } from '@/hooks/useTranslation';
+import { useTranslation } from "@/hooks/useTranslation";
 import { useGameMode } from '@/hooks/useGameMode';
 
 /**

@@ -25,7 +25,8 @@ import { getImageClueInstructions } from "../instructions";
  */
 const ImgClueGameScreen: React.FC = () => {
   // Get translation function and text direction for localization
-  const { t, dir } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const dir = i18n.dir(); // 'ltr' or 'rtl' for the active language;
   const { language } = useGameMode();
   const { gameMode } = useGameMode();
 

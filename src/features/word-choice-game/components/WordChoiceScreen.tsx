@@ -14,7 +14,8 @@ import { useGameMode } from "@/hooks/useGameMode";
 
 const WordChoiceScreen: React.FC = () => {
   // Get translation functions and text direction (for RTL languages)
-  const { t, dir } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const dir = i18n.dir(); // 'ltr' or 'rtl' for the active language;
   const { language } = useGameMode();
 
   // Extract all necessary state and functions from the custom hook
