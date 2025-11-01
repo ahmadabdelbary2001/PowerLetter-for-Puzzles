@@ -1,0 +1,76 @@
+{
+  "formation": {
+    "title": "Formation Game",
+    "description": "Form words by connecting letters on the grid. Create as many words as possible using the given letters!",
+    "steps": [
+      "Look at the grid of letters and try to form words",
+      "Click on letters to select them and form a word",
+      "Words must be at least 2 letters long",
+      "You can use each letter only once per word",
+      "Click 'Remove' to undo your last letter selection",
+      "Click 'Clear' to start over with a new word",
+      "Click 'Check' to submit your word",
+      "Click 'Hint' if you need help finding a word (limited in competitive mode)",
+      "Try to find all the words on the grid!"
+    ]
+  },
+  "clue": {
+    "title": "Clue-Driven Word Find",
+    "description": "Find the hidden word by selecting letters that match the clue. Use your vocabulary skills to solve the puzzle!",
+    "steps": [
+      "Read the clue at the top of the screen to understand what word you're looking for.",
+      "Click on letters from the grid to form your answer.",
+      "Use the 'Remove' button to undo your last letter selection.",
+      "Use the 'Clear' button to remove all letters and start over.",
+      "Use the 'Check' button to submit your answer and see if it's correct.",
+      "Use the 'Hint' button if you need help (limited in competitive mode).",
+      "Find the correct word before running out of attempts!"
+    ]
+  },
+  "imageClue": {
+    "title": "Image Clue Game",
+    "description": "Guess the word based on the image clue. Type your answer using the keyboard and submit to check if you're right!",
+    "steps": [
+      "Look at the image displayed on the screen carefully",
+      "Think about what the image represents",
+      "Type your answer using the keyboard",
+      "Use 'Remove' to delete the last letter",
+      "Use 'Clear' to delete all letters and start over",
+      "Use 'Check' to submit your answer",
+      "Use 'Hint' to reveal a letter (limited in competitive mode)",
+      "If you're correct, you'll see a success message",
+      "If you're wrong, try again with a different answer",
+      "Complete as many levels as you can!"
+    ]
+  },
+  "wordChoice": {
+    "title": "Word Choice Game",
+    "description": "Select the correct word that matches the image and sound prompt. Test your vocabulary and observation skills!",
+    "steps": [
+      "Look at the image displayed on the screen",
+      "Press the sound button to hear the word pronounced",
+      "Read the word options provided",
+      "Click on the word that matches both the image and sound",
+      "If you choose correctly, you'll see a success message and move to the next level",
+      "If you choose incorrectly, you'll get feedback and can try again",
+      "Complete as many levels as you can!"
+    ]
+  },
+  "letterFlow": {
+    "title": "Letter Flow Game",
+    "description": "Connect matching letters on the grid to form words. Trace paths between letter pairs without crossing paths!",
+    "steps": [
+      "Identify matching letters on the grid (they will have the same letter)",
+      "Click and drag from one letter to its matching pair to create a path",
+      "Paths must be horizontal or vertical (no diagonals)",
+      "Paths cannot cross over each other or other letters",
+      "Release your mouse/touch when you reach the matching letter",
+      "If your path is valid, it will be colored and locked in place",
+      "Continue connecting all letter pairs to complete the level",
+      "Use 'Undo' to remove your last connection",
+      "Use 'Clear' to remove all connections and start over",
+      "Use 'Hint' to reveal a valid path (limited in competitive mode)",
+      "Complete all connections to win the level!"
+    ]
+  }
+}

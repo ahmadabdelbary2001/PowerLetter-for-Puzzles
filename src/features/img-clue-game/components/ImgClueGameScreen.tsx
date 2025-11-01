@@ -17,7 +17,7 @@ import { useImageClueGame } from "../hooks/useImageClueGame";
 import { useGameMode } from "@/hooks/useGameMode";
 import type { ImageLevel } from "../engine";
 import { Notification } from "@/components/atoms/Notification";
-import { getImageClueInstructions } from "../instructions";
+import { useImageClueInstructions } from "../instructions";
 
 /**
  * Main component for the Image Clue Game interface
@@ -27,7 +27,7 @@ const ImgClueGameScreen: React.FC = () => {
   // Get translation function and text direction for localization
   const { t, i18n } = useTranslation();
   const dir = i18n.dir(); // 'ltr' or 'rtl' for the active language;
-  const { language } = useGameMode();
+  const instructions = useImageClueInstructions();
   const { gameMode } = useGameMode();
 
   // Destructure game state and handler functions from the useImageClueGame hook
@@ -84,7 +84,7 @@ const ImgClueGameScreen: React.FC = () => {
       levelIndex={levelIndex}
       onBack={handleBack}
       layoutType="image"
-      instructions={getImageClueInstructions(language)}
+      instructions={instructions}
     >
       {/* Shared Notification (top-centered) */}
       {notifMessage && <Notification message={notifMessage} type={notifType} />}

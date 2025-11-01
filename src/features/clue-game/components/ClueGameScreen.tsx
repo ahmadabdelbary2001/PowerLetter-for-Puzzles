@@ -9,8 +9,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { GameLayout } from "@/components/templates/GameLayout";
 import { useClueGame } from "../hooks/useClueGame";
 import { Notification } from "@/components/atoms/Notification";
-import { useGameMode } from "@/hooks/useGameMode";
-import { getClueInstructions } from "../instructions";
+import { useClueInstructions } from "../instructions";
 
 /**
  * Main component for the Clue Game interface
@@ -18,7 +17,7 @@ import { getClueInstructions } from "../instructions";
  */
 const ClueGameScreen: React.FC = () => {
   const { t } = useTranslation();
-  const { language } = useGameMode();
+  const instructions = useClueInstructions();
 
   const {
     loading,
@@ -71,7 +70,7 @@ const ClueGameScreen: React.FC = () => {
       levelIndex={currentLevelIndex}
       onBack={handleBack}
       difficulty={currentLevel.difficulty}
-      instructions={getClueInstructions(language)}
+      instructions={instructions}
     >
       {notifMessage && <Notification message={notifMessage} type={notifType} />}
 

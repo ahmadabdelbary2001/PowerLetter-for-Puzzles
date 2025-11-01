@@ -12,12 +12,11 @@ import { CrosswordGrid } from '@/components/molecules/CrosswordGrid';
 import { LetterCircle } from '@/components/molecules/LetterCircle';
 import { GameButton } from '@/components/atoms/GameButton';
 import { Notification } from '@/components/atoms/Notification';
-import { getFormationInstructions } from '../instructions';
-import { useGameMode } from '@/hooks/useGameMode';
+import { useFormationInstructions } from '../instructions';
 
 const FormationGameScreen: React.FC = () => {
   const { t } = useTranslation();
-  const { language } = useGameMode();
+  const instructions = useFormationInstructions();
   const {
     loading,
     currentLevel,
@@ -54,7 +53,7 @@ const FormationGameScreen: React.FC = () => {
       levelIndex={currentLevelIndex}
       onBack={handleBack}
       difficulty={currentLevel.difficulty}
-      instructions={getFormationInstructions(language)}
+      instructions={instructions}
     >
       {/* Shared Notification (top-centered) */}
       {notification && <Notification message={notification} type="info" />}
