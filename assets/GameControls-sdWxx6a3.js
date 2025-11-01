@@ -1,4 +1,4 @@
-import{h as N,c as E,b as I,j as e,e as u,A as k}from"./index-C8DcKDQr.js";import{G as i,a as j,R as D}from"./GameButton-Cs4CiY-4.js";import{C as y}from"./circle-check-big-jPMUiWo2.js";import{L as T}from"./Notification-CW2JU0dg.js";/**
+import{i as N,c as E,b as I,j as e,f as u,A as k}from"./index-DEbMSiNp.js";import{G as i,a as j,R as D}from"./GameButton-BXB-vHJh.js";import{C as y}from"./circle-check-big-9Nc9Vcqt.js";import{L as T}from"./instructions-DjHNv5WI.js";/**
  * @license lucide-react v0.536.0 - ISC
  *
  * This source code is licensed under the ISC license.
