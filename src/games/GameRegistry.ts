@@ -13,6 +13,7 @@ const ImgClueGameScreen = React.lazy(() => import('@/features/img-clue-game/comp
 const WordChoiceScreen = React.lazy(() => import('@/features/word-choice-game/components/WordChoiceScreen'));
 const FormationGameScreen = React.lazy(() => import('@/features/formation-game/components/FormationGameScreen'));
 const LetterFlowGameScreen = React.lazy(() => import('@/features/letter-flow-game/components/LetterFlowGameScreen'));
+const PictureChoiceScreen = React.lazy(() => import('@/features/picture-choice-game/components/PictureChoiceScreen'));
 
 // This type ensures that any key from the translation file is considered valid.
 type TranslationKeys = string;
@@ -89,9 +90,9 @@ export const GAME_REGISTRY: GameConfig[] = [
     titleKey: 'findThePictureTitle',
     descriptionKey: 'findThePictureDesc',
     featuresKey: 'findThePictureFeatures',
-    component: WordChoiceScreen, // Placeholder component
+    component: PictureChoiceScreen,
     icon: React.createElement(ImageIcon, { className: "w-8 h-8" }),
-    status: 'coming-soon',
+    status: 'available',
   },
 ];
 

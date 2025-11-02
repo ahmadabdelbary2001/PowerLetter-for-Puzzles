@@ -20,6 +20,8 @@ Experience the game live at: [PowerLetter for Puzzles](https://ahmadabdelbary200
 - **TypeScript**: A typed superset of JavaScript that compiles to plain JavaScript.
 - **Vite**: A fast build tool that provides a lightning-fast development experience.
 - **Tailwind CSS**: A utility-first CSS framework for rapidly building custom designs.
+- **i18next**: Internationalization framework for multi-language support.
+- **Zustand**: State management for game modes and settings.
 - **gh-pages**: A tool to publish content to GitHub Pages.
 
 ## Getting Started
@@ -86,6 +88,8 @@ PowerLetter-for-Puzzles/
 │   │   ├── images/
 │   │   └── sounds/
 │   └── vite.svg
+├── scripts/
+│   └── copy-404.cjs
 ├── src/
 │   ├── assets/
 │   ├── components/
@@ -102,7 +106,10 @@ PowerLetter-for-Puzzles/
 │   │   └── en/
 │   ├── features/
 │   │   ├── clue-game/
+│   │   ├── formation-game/
 │   │   ├── img-clue-game/
+│   │   ├── letter-flow-game/
+│   │   ├── picture-choice-game/
 │   │   └── word-choice-game/
 │   ├── games/
 │   │   ├── GameRegistry.ts
@@ -112,9 +119,16 @@ PowerLetter-for-Puzzles/
 │   │   ├── use-toast.ts
 │   │   ├── useGame.ts
 │   │   ├── useGameMode.ts
-│   │   ├── useSolverWorker.ts
 │   │   ├── useTheme.ts
 │   │   └── useTranslation.ts
+│   ├── lib/
+│   │   ├── gameReducer.ts
+│   │   ├── gameUtils.ts
+│   │   ├── i18nUtils.ts
+│   │   └── utils.ts
+│   ├── locales/
+│   │   ├── ar/
+│   │   └── en/
 │   ├── pages/
 │   │   ├── GameTypeSelector.tsx
 │   │   ├── HeroSection.tsx
@@ -124,19 +138,16 @@ PowerLetter-for-Puzzles/
 │   │   └── TeamConfigurator.tsx
 │   ├── types/
 │   │   └── game.ts
-│   ├── workers/
-│   │   └── solver.worker.ts
 │   ├── App.css
 │   ├── App.tsx
+│   ├── i18n.ts
 │   ├── main.tsx
 │   └── vite-env.d.ts
-├── scripts/
-│   └── copy-404.cjs
 ├── .gitignore
 ├── eslint.config.js
 ├── index.html
-├── package.json
 ├── package-lock.json
+├── package.json
 ├── postcss.config.cjs
 ├── README.md
 ├── tailwind.config.cjs

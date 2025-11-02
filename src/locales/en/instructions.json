@@ -72,5 +72,15 @@
       "Use 'Hint' to reveal a valid path (limited in competitive mode)",
       "Complete all connections to win the level!"
     ]
+  },
+  "pictureChoice": {
+    "title": "How to Play: Find the Picture",
+    "description": "This game tests your reading comprehension and visual recognition skills.",
+    "steps": [
+      "Read the word displayed at the top of the screen.",
+      "Look at the four pictures below.",
+      "Click on the picture that matches the word.",
+      "If correct, you will automatically move to the next level. If incorrect, try again!"
+    ]
   }
 }

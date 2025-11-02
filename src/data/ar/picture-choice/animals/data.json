@@ -1,0 +1,76 @@
+{
+  "levels": [
+    {
+      "id": "pc-ar-animal-1",
+      "word": "قطة",
+      "sound": "/assets/sounds/ar/animals/قطة.mp3",
+      "solution": "/assets/images/animals/cat.webp",
+      "options": [
+        "/assets/images/animals/cat.webp",
+        "/assets/images/animals/dog.jpg",
+        "/assets/images/animals/fish.png",
+        "/assets/images/animals/lion.jpg"
+      ]
+    },
+    {
+      "id": "pc-ar-animal-2",
+      "word": "كلب",
+      "sound": "/assets/sounds/ar/animals/كلب.mp3",
+      "solution": "/assets/images/animals/dog.jpg",
+      "options": [
+        "/assets/images/animals/dog.jpg",
+        "/assets/images/animals/wolf.jpg",
+        "/assets/images/animals/fox.png",
+        "/assets/images/animals/lion.jpg"
+      ]
+    },
+    {
+      "id": "pc-ar-animal-3",
+      "word": "ثعلب",
+      "sound": "/assets/sounds/ar/animals/ثعلب.mp3",
+      "solution": "/assets/images/animals/fox.png",
+      "options": [
+        "/assets/images/animals/fox.png",
+        "/assets/images/animals/dog.jpg",
+        "/assets/images/animals/fish.png",
+        "/assets/images/animals/lion.jpg"
+      ]
+    },
+    {
+      "id": "pc-ar-animal-4",
+      "word": "ذئب",
+      "sound": "/assets/sounds/ar/animals/ذئب.mp3",
+      "solution": "/assets/images/animals/wolf.jpg",
+      "options": [
+        "/assets/images/animals/wolf.jpg",
+        "/assets/images/animals/dog.jpg",
+        "/assets/images/animals/fish.png",
+        "/assets/images/animals/lion.jpg"
+      ]
+    },
+    {
+      "id": "pc-ar-animal-5",
+      "word": "سمكة",
+      "sound": "/assets/sounds/ar/animals/سمكة.mp3",
+      "solution": "/assets/images/animals/fish.png",
+      "options": [
+        "/assets/images/animals/fish.png",
+        "/assets/images/animals/dog.jpg",
+        "/assets/images/animals/fox.png",
+        "/assets/images/animals/lion.jpg"
+      ]
+    },
+    {
+      "id": "pc-ar-animal-6",
+      "word": "أسد",
+      "sound": "/assets/sounds/ar/animals/أسد.mp3",
+      "solution": "/assets/images/animals/lion.jpg",
+      "options": [
+        "/assets/images/animals/lion.jpg",
+        "/assets/images/animals/dog.jpg",
+        "/assets/images/animals/wolf.jpg",
+        "/assets/images/animals/cat.webp"
+      ]
+    }
+  ]
+}
