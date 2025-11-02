@@ -3,6 +3,8 @@
  * @description This page provides a user interface for setting up a competitive multiplayer game.
  * Users can configure the number of teams, assign custom names to each team, and set the
  * number of hints available per team for the entire game session.
+ *
+ * NOTE: For outside-the-story we enforce a minimum of 3 teams and hide the hints section.
  */
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
@@ -24,75 +26,70 @@ import { useNavigate, useParams } from 'react-router-dom';
 /**
  * The TeamConfigurator component is a form-like wizard for multiplayer setup.
  * It captures team settings and initializes the game state before navigating to the game screen.
- *
- * @returns {JSX.Element} The rendered team configuration page.
  */
 const TeamConfigurator: React.FC = () => {
-  // Hooks for global state, translation, navigation, and URL parameters
   const { initializeTeams, setGameMode } = useGameMode();
   const { t, i18n } = useTranslation();
   const dir = i18n.dir(); // 'ltr' or 'rtl' for the active language;
   const navigate = useNavigate();
   const { gameType } = useParams<{ gameType: string }>();
 
-  // Local state for managing the form inputs
-  const [teamCount, setTeamCount] = useState(2);
-  const [teamNames, setTeamNames] = useState<string[]>([]);
-  const [hintsPerTeam, setHintsPerTeam] = useState<number>(3);
-
-  // Determine if the current game is a kids' game to adjust UI context (e.g., Header)
   const isKidsGame = gameType === 'image-clue' || gameType === 'word-choice' || gameType === 'picture-choice';
+  const isOutsideStory = gameType === 'outside-the-story';
 
-  /**
-   * Effect to initialize or update team names whenever the team count changes.
-   * It preserves existing names and generates default names for new teams.
-   */
+  // Default team count: at least 3 for outside-the-story, otherwise 2
+  const defaultTeamCount = isOutsideStory ? 3 : 2;
+  const [teamCount, setTeamCount] = useState<number>(defaultTeamCount);
+  const [teamNames, setTeamNames] = useState<string[]>([]);
+  // For outside-the-story we hide hints and set to 0
+  const [hintsPerTeam, setHintsPerTeam] = useState<number>(isOutsideStory ? 0 : 3);
+
   useEffect(() => {
-    setTeamNames(prev => 
-      Array.from({ length: teamCount }, (_, i) => prev[i] || `${t.team} ${i + 1}`)
+    // Initialize team names whenever teamCount changes
+    setTeamNames(prev =>
+      Array.from({ length: teamCount }, (_, i) => prev[i] ?? `${t.team} ${i + 1}`)
     );
   }, [teamCount, t.team]);
 
-  /**
-   * Handles changes to the number of teams, constrained between 2 and 8.
-   * @param {number} newCount - The desired new number of teams.
-   */
+  useEffect(() => {
+    // Ensure minimum teams for outside-the-story
+    if (isOutsideStory && teamCount < 3) {
+      setTeamCount(3);
+    }
+    // ensure hints are 0 for outside-the-story
+    if (isOutsideStory && hintsPerTeam !== 0) {
+      setHintsPerTeam(0);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOutsideStory]);
+
   const handleTeamCountChange = (newCount: number) => {
-    if (newCount >= 2 && newCount <= 8) {
+    // enforce bounds and minimums
+    const min = isOutsideStory ? 3 : 2;
+    if (newCount >= min && newCount <= 8) {
       setTeamCount(newCount);
     }
   };
 
-  /**
-   * Updates the name for a specific team.
-   * @param {number} index - The index of the team to update.
-   * @param {string} name - The new name for the team.
-   */
   const handleTeamNameChange = (index: number, name: string) => {
     const newNames = [...teamNames];
     newNames[index] = name;
     setTeamNames(newNames);
   };
 
-  /**
-   * Finalizes the configuration, updates the global state, and navigates to the game screen.
-   */
   const handleContinue = () => {
     setGameMode('competitive');
+    // For outside-the-story, hintsPerTeam is 0
     initializeTeams(teamCount, teamNames, hintsPerTeam);
     navigate(`/game/${gameType}`);
   };
 
-  /**
-   * Navigates the user back to the previous screen (game mode selection).
-   */
   const handleBack = () => {
     navigate(`/game-mode/${gameType}`);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-      {/* Pass the correct 'currentView' to the Header based on the game type */}
       <Header currentView={isKidsGame ? "kids" : "selection"} />
       <main className="min-h-[calc(100vh-8rem)] flex items-center justify-center">
         <div className="container mx-auto px-4 py-8 max-w-2xl" dir={dir}>
@@ -109,7 +106,7 @@ const TeamConfigurator: React.FC = () => {
               <div className="space-y-4">
                 <Label htmlFor="team-count-display" className="text-lg font-semibold">{t.numTeams}</Label>
                 <div className="flex items-center justify-center gap-4">
-                  <Button size="icon" variant="outline" onClick={() => handleTeamCountChange(teamCount - 1)} disabled={teamCount <= 2}>
+                  <Button size="icon" variant="outline" onClick={() => handleTeamCountChange(teamCount - 1)} disabled={teamCount <= (isOutsideStory ? 3 : 2)}>
                     <Minus className="w-4 h-4" />
                   </Button>
                   <div id="team-count-display" className="text-2xl font-bold min-w-[3rem] text-center text-primary">
@@ -142,20 +139,22 @@ const TeamConfigurator: React.FC = () => {
                 </div>
               </div>
 
-              {/* Hints per Team Input */}
-              <div className="space-y-4">
-                <Label htmlFor="hints-display" className="text-lg font-semibold">{t.hintsPerTeam}</Label>
-                <div className="flex items-center justify-center gap-4">
-                  <Button size="icon" variant="outline" onClick={() => setHintsPerTeam(h => Math.max(0, h - 1))} disabled={hintsPerTeam <= 0}>
-                    <Minus className="w-4 h-4" />
-                  </Button>
-                  <div id="hints-display" className="text-2xl font-bold min-w-[3rem] text-center text-primary">{hintsPerTeam}</div>
-                  <Button size="icon" variant="outline" onClick={() => setHintsPerTeam(h => Math.min(10, h + 1))} disabled={hintsPerTeam >= 10}>
-                    <Plus className="w-4 h-4" />
-                  </Button>
+              {/* Hints per Team Input (hidden for outside-the-story) */}
+              {!isOutsideStory && (
+                <div className="space-y-4">
+                  <Label htmlFor="hints-display" className="text-lg font-semibold">{t.hintsPerTeam}</Label>
+                  <div className="flex items-center justify-center gap-4">
+                    <Button size="icon" variant="outline" onClick={() => setHintsPerTeam(h => Math.max(0, h - 1))} disabled={hintsPerTeam <= 0}>
+                      <Minus className="w-4 h-4" />
+                    </Button>
+                    <div id="hints-display" className="text-2xl font-bold min-w-[3rem] text-center text-primary">{hintsPerTeam}</div>
+                    <Button size="icon" variant="outline" onClick={() => setHintsPerTeam(h => Math.min(10, h + 1))} disabled={hintsPerTeam >= 10}>
+                      <Plus className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <p className="text-sm text-muted-foreground text-center">{t.hintsPerTeamDesc}</p>
                 </div>
-                <p className="text-sm text-muted-foreground text-center">{t.hintsPerTeamDesc}</p>
-              </div>
+              )}
 
               {/* Navigation Buttons */}
               <div className="flex justify-between pt-4">

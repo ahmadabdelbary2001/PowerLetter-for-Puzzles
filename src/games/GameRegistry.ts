@@ -5,7 +5,7 @@
  * description, icon, and associated React component.
  */
 import React from 'react';
-import { Puzzle, Search, Image as ImageIcon, CheckSquare, SpellCheck, Share2 } from 'lucide-react';
+import { Puzzle, Search, Image as ImageIcon, CheckSquare, SpellCheck, Share2, Users } from 'lucide-react';
 
 // Lazy load components for better performance
 const ClueGameScreen = React.lazy(() => import('@/features/clue-game/components/ClueGameScreen'));
@@ -14,12 +14,13 @@ const WordChoiceScreen = React.lazy(() => import('@/features/word-choice-game/co
 const FormationGameScreen = React.lazy(() => import('@/features/formation-game/components/FormationGameScreen'));
 const LetterFlowGameScreen = React.lazy(() => import('@/features/letter-flow-game/components/LetterFlowGameScreen'));
 const PictureChoiceScreen = React.lazy(() => import('@/features/picture-choice-game/components/PictureChoiceScreen'));
+const OutsideStoryScreen = React.lazy(() => import('@/features/outside-story-game/components/OutsideStoryScreen'));
 
 // This type ensures that any key from the translation file is considered valid.
 type TranslationKeys = string;
 
 export interface GameConfig {
-  id: 'clue' | 'formation' | 'category' | 'image-clue' | 'word-choice' | 'picture-choice' | 'letter-flow'; // Add new game ID
+  id: 'category' | 'clue' | 'formation' | 'image-clue' | 'letter-flow' | 'outside-the-story' | 'picture-choice' | 'word-choice'; // Add new game ID
   type: 'adult' | 'kids';
   titleKey: TranslationKeys;
   descriptionKey: TranslationKeys;
@@ -51,7 +52,6 @@ export const GAME_REGISTRY: GameConfig[] = [
     icon: React.createElement(Puzzle, { className: "w-8 h-8" }),
     status: 'available',
   },
-  // Add the new "Letter Flow" game to the registry
   {
     id: 'letter-flow',
     type: 'adult',
@@ -60,6 +60,16 @@ export const GAME_REGISTRY: GameConfig[] = [
     featuresKey: 'letterFlowFeatures',
     component: LetterFlowGameScreen,
     icon: React.createElement(Share2, { className: "w-8 h-8" }), // Using 'Share2' icon for flow/connection
+    status: 'available',
+  },
+  {
+    id: 'outside-the-story',
+    type: 'adult',
+    titleKey: 'outsideTheStoryTitle',
+    descriptionKey: 'outsideTheStoryDesc',
+    featuresKey: 'outsideTheStoryFeatures',
+    component: OutsideStoryScreen,
+    icon: React.createElement(Users, { className: "w-8 h-8" }),
     status: 'available',
   },
   
@@ -75,16 +85,6 @@ export const GAME_REGISTRY: GameConfig[] = [
     status: 'available',
   },
   {
-    id: 'word-choice',
-    type: 'kids',
-    titleKey: 'findTheWordTitle',
-    descriptionKey: 'findTheWordDesc',
-    featuresKey: 'findTheWordFeatures',
-    component: WordChoiceScreen,
-    icon: React.createElement(CheckSquare, { className: "w-8 h-8" }),
-    status: 'available',
-  },
-  {
     id: 'picture-choice',
     type: 'kids',
     titleKey: 'findThePictureTitle',
@@ -92,6 +92,16 @@ export const GAME_REGISTRY: GameConfig[] = [
     featuresKey: 'findThePictureFeatures',
     component: PictureChoiceScreen,
     icon: React.createElement(ImageIcon, { className: "w-8 h-8" }),
+    status: 'available',
+  },
+  {
+    id: 'word-choice',
+    type: 'kids',
+    titleKey: 'findTheWordTitle',
+    descriptionKey: 'findTheWordDesc',
+    featuresKey: 'findTheWordFeatures',
+    component: WordChoiceScreen,
+    icon: React.createElement(CheckSquare, { className: "w-8 h-8" }),
     status: 'available',
   },
 ];

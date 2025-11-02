@@ -2,13 +2,14 @@
 export type Language = 'en' | 'ar';
 export type GameMode = 'single' | 'competitive';
 export type GameType =
+  | 'category'
   | 'clue'
   | 'formation'
-  | 'category'
   | 'image-clue'
-  | 'word-choice'
+  | 'letter-flow'
+  | 'outside-the-story'
   | 'picture-choice'
-  | 'letter-flow';
+  | 'word-choice';
 export type Difficulty = 'easy' | 'medium' | 'hard';
 export type GameCategory = 'animals' | 'science' | 'geography' | 'fruits' | 'shapes' | 'general';
 
@@ -16,10 +17,10 @@ export type GameId = string;
 
 export interface GameLevel {
   id: string;
-  name: string;
-  difficulty: Difficulty;
-  category: GameCategory;
-  data: unknown; // was any — now unknown to avoid eslint no-explicit-any
+  name?: string;
+  difficulty?: Difficulty;
+  category?: GameCategory;
+  data?: unknown;
 }
 
 export interface Team {
@@ -37,7 +38,7 @@ export interface GameState {
   language: Language;
   gameMode: GameMode;
   gameType: GameType | null;
-  category: GameCategory;
+  categories: GameCategory[];
   difficulty: Difficulty;
   teams: Team[];
   currentTeam: number;

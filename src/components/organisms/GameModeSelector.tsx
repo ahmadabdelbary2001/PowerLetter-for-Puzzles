@@ -3,6 +3,11 @@
  * @description A multi-step wizard for configuring game settings.
  * Allows users to select game mode, categories, and difficulty level.
  * Features a step-by-step UI with navigation controls.
+ *
+ * NOTE: Special behaviour for 'outside-the-story':
+ *  - Mode selection is skipped and automatically set to 'competitive'
+ *  - After selecting category, we skip difficulty and go straight to team-config
+ *  - Category list for each game can be customized here
  */
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
@@ -18,12 +23,31 @@ import { DifficultySelector } from '@/components/molecules/DifficultySelector';
 import { useNavigate, useParams } from 'react-router-dom';
 import type { GameCategory, Difficulty } from '@/types/game';
 
-const categoriesData = [
+// Per-game category sets (customize as needed)
+const CATEGORIES_BY_GAME: Record<string, readonly { id: GameCategory; icon: React.ReactNode; labelKey: string }[]> = {
+  // Clue (adult) - includes "general"
+  clue: [
     { id: 'general', icon: <BrainCircuit size={48} />, labelKey: 'generalKnowledge' },
     { id: 'animals', icon: <PawPrint size={48} />, labelKey: 'animals' },
     { id: 'science', icon: <FlaskConical size={48} />, labelKey: 'science' },
     { id: 'geography', icon: <Globe size={48} />, labelKey: 'geography' },
-] as const;
+  ],
+
+  // Outside the story (adult) - NO 'general' option
+  'outside-the-story': [
+    { id: 'animals', icon: <PawPrint size={48} />, labelKey: 'animals' },
+    { id: 'science', icon: <FlaskConical size={48} />, labelKey: 'science' },
+    { id: 'geography', icon: <Globe size={48} />, labelKey: 'geography' },
+  ],
+
+  // Default (fallback)
+  default: [
+    { id: 'general', icon: <BrainCircuit size={48} />, labelKey: 'generalKnowledge' },
+    { id: 'animals', icon: <PawPrint size={48} />, labelKey: 'animals' },
+    { id: 'science', icon: <FlaskConical size={48} />, labelKey: 'science' },
+    { id: 'geography', icon: <Globe size={48} />, labelKey: 'geography' },
+  ],
+};
 
 const difficulties = [
     { id: 'easy', labelKey: 'easy', color: 'bg-green-500' },
@@ -34,24 +58,44 @@ const difficulties = [
 
 const GameModeSelector: React.FC = () => {
   const { setGameMode, categories: selectedCategories, setCategories, setDifficulty } = useGameMode();
-  const { t, i18n } = useTranslation();
+  const { translate, i18n } = useTranslation();
   const dir = i18n.dir(); // 'ltr' or 'rtl' for the active language;
   const navigate = useNavigate();
   const { gameType } = useParams<{ gameType: string }>();
 
-  // FIX: Determine if the category step should be skipped for the current game type.
+  // Determine category list for this gameType (fallback to 'default')
+
+  // If this game should auto-be competitive (skip explicit selection)
+  const autoCompetitive = gameType === 'outside-the-story';
+  // If we should skip difficulty step for this game (outside-the-story -> go to team-config)
+  const skipDifficultyForOutside = gameType === 'outside-the-story';
+
+  // Determine whether to skip category step for certain game types (existing behaviour)
   const skipCategoryStep = gameType === 'formation' || gameType === 'letter-flow';
+  
+  // Check if this is the outside-the-story game
+  const isOutsideStory = gameType === 'outside-the-story';
+  
+  // Skip mode selection for outside-the-story game
+  const skipModeStep = gameType === 'outside-the-story';
 
+  const totalSteps = skipModeStep ? (skipCategoryStep ? 1 : 2) : (skipCategoryStep ? 2 : 3);
   const [step, setStep] = useState(1);
-  const totalSteps = skipCategoryStep ? 2 : 3;
 
-  // FIX: If skipping category step, set a default category automatically.
+  // On mount: if autoCompetitive, set mode and immediately show category selection
+  useEffect(() => {
+    if (autoCompetitive) {
+      setGameMode('competitive');
+      setStep(2); // skip the explicit mode selection UI
+    }
+  }, [autoCompetitive, setGameMode]);
+
+  // If skipping category step, set a default category automatically.
   useEffect(() => {
     if (skipCategoryStep) {
       setCategories(['general']);
     }
   }, [skipCategoryStep, setCategories]);
-
 
   const handleBack = () => {
     if (step > 1) {
@@ -67,10 +111,30 @@ const GameModeSelector: React.FC = () => {
   };
 
   const handleCategoryToggle = (category: GameCategory) => {
+    // For outside-the-story game, don't include general category
+    if (isOutsideStory && category === 'general') {
+      return;
+    }
+    
+    // maintain the special behavior for 'general' when it's present
     if (category === 'general') {
       setCategories(['general']);
       return;
     }
+    
+    // For outside-the-story game, only allow one category selection
+    if (isOutsideStory) {
+      if (selectedCategories.includes(category)) {
+        // If clicking the same category, deselect it
+        setCategories([]);
+      } else {
+        // If clicking a different category, select only that one
+        setCategories([category]);
+      }
+      return;
+    }
+    
+    // For other games, allow multiple selections
     const newSelection = selectedCategories.includes(category)
       ? selectedCategories.filter(c => c !== category && c !== 'general')
       : [...selectedCategories.filter(c => c !== 'general'), category];
@@ -82,9 +146,17 @@ const GameModeSelector: React.FC = () => {
   };
 
   const handleContinueFromCategories = () => {
-    if (selectedCategories.length > 0) {
-      setStep(3);
+    if (selectedCategories.length === 0) return;
+
+    // If this game skips difficulty, go directly to Team Config (competitive flow).
+    if (skipDifficultyForOutside) {
+      setGameMode('competitive'); // ensure competitive
+      navigate(`/team-config/${gameType}`);
+      return;
     }
+
+    // otherwise go to difficulty step
+    setStep(3);
   };
 
   const handleDifficultySelect = (difficulty: Difficulty) => {
@@ -98,7 +170,7 @@ const GameModeSelector: React.FC = () => {
   };
 
   const renderStepContent = () => {
-    // FIX: Adjust step logic based on whether the category step is skipped.
+    // Adjust step mapping based on whether the category step is skipped.
     let currentStepLogic = step;
     if (skipCategoryStep && step === 2) {
       currentStepLogic = 3; // If skipping, step 2 is actually the difficulty selection.
@@ -106,34 +178,51 @@ const GameModeSelector: React.FC = () => {
 
     switch (currentStepLogic) {
       case 1: // Step 1: Select Mode
-        return <ModeSelector onSelect={handleModeSelect} />;
+        return autoCompetitive ? (
+          <div className="text-center py-6">
+            <h3 className="text-lg font-medium">{translate("selectMode")}</h3>
+            <p className="text-sm text-muted-foreground">{translate("selectModeDesc")}</p>
+            <div className="mt-4">
+              <Button onClick={() => setStep(2)}>{translate("continue")}</Button>
+            </div>
+          </div>
+        ) : (
+          <ModeSelector onSelect={handleModeSelect} />
+        );
+
       case 2: // Step 2: Select Category (only if not skipped)
         return (
           <>
-            <h2 className="text-2xl sm:text-3xl font-bold text-center mb-2">{t.selectCategory}</h2>
-            <p className="text-center text-muted-foreground mb-6">{t.selectCategoryDesc}</p>
+            <h2 className="text-2xl sm:text-3xl font-bold text-center mb-2">{translate("selectCategory")}</h2>
+            <p className="text-sm text-muted-foreground mb-2">
+              {isOutsideStory 
+                ? translate("selectSingleCategoryHint") 
+                : translate("selectCategoryHint")}
+            </p>
             <CategorySelector
-              categories={[...categoriesData]}
+              categories={[...(gameType && CATEGORIES_BY_GAME[gameType] ? CATEGORIES_BY_GAME[gameType] : CATEGORIES_BY_GAME.default)]}
               selectedCategories={selectedCategories}
               onCategoryToggle={handleCategoryToggle}
             />
             <div className="flex justify-center mt-8">
               <Button onClick={handleContinueFromCategories} disabled={selectedCategories.length === 0}>
-                {t.continue} {dir === 'rtl' ? <ArrowLeft className="w-4 h-4 mr-2" /> : <ArrowRight className="w-4 h-4 ml-2" />}
+                {translate("continue")} {dir === 'rtl' ? <ArrowLeft className="w-4 h-4 mr-2" /> : <ArrowRight className="w-4 h-4 ml-2" />}
               </Button>
             </div>
           </>
         );
+
       case 3: // Step 3 (or 2 if skipping): Select Difficulty
         return (
           <>
-            <h2 className="text-2xl sm:text-3xl font-bold text-center mb-6">{t.selectDifficulty}</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold text-center mb-6">{translate("selectDifficulty")}</h2>
             <DifficultySelector
               difficulties={[...difficulties]}
               onDifficultySelect={handleDifficultySelect}
             />
           </>
         );
+
       default:
         return null;
     }
@@ -150,7 +239,7 @@ const GameModeSelector: React.FC = () => {
         <div className="mt-8 flex justify-start">
           <Button variant="outline" onClick={handleBack} className="flex items-center gap-2">
             {dir === 'rtl' ? <ArrowRight className="w-4 h-4" /> : <ArrowLeft className="w-4 h-4" />}
-            {t.back}
+            {translate("back")}
           </Button>
         </div>
       </main>

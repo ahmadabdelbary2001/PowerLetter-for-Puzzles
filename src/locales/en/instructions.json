@@ -1,4 +1,17 @@
 {
+  "clue": {
+    "title": "Clue-Driven Word Find",
+    "description": "Find the hidden word by selecting letters that match the clue. Use your vocabulary skills to solve the puzzle!",
+    "steps": [
+      "Read the clue at the top of the screen to understand what word you're looking for.",
+      "Click on letters from the grid to form your answer.",
+      "Use the 'Remove' button to undo your last letter selection.",
+      "Use the 'Clear' button to remove all letters and start over.",
+      "Use the 'Check' button to submit your answer and see if it's correct.",
+      "Use the 'Hint' button if you need help (limited in competitive mode).",
+      "Find the correct word before running out of attempts!"
+    ]
+  },
   "formation": {
     "title": "Formation Game",
     "description": "Form words by connecting letters on the grid. Create as many words as possible using the given letters!",
@@ -14,19 +27,6 @@
       "Try to find all the words on the grid!"
     ]
   },
-  "clue": {
-    "title": "Clue-Driven Word Find",
-    "description": "Find the hidden word by selecting letters that match the clue. Use your vocabulary skills to solve the puzzle!",
-    "steps": [
-      "Read the clue at the top of the screen to understand what word you're looking for.",
-      "Click on letters from the grid to form your answer.",
-      "Use the 'Remove' button to undo your last letter selection.",
-      "Use the 'Clear' button to remove all letters and start over.",
-      "Use the 'Check' button to submit your answer and see if it's correct.",
-      "Use the 'Hint' button if you need help (limited in competitive mode).",
-      "Find the correct word before running out of attempts!"
-    ]
-  },
   "imageClue": {
     "title": "Image Clue Game",
     "description": "Guess the word based on the image clue. Type your answer using the keyboard and submit to check if you're right!",
@@ -40,19 +40,6 @@
       "Use 'Hint' to reveal a letter (limited in competitive mode)",
       "If you're correct, you'll see a success message",
       "If you're wrong, try again with a different answer",
-      "Complete as many levels as you can!"
-    ]
-  },
-  "wordChoice": {
-    "title": "Word Choice Game",
-    "description": "Select the correct word that matches the image and sound prompt. Test your vocabulary and observation skills!",
-    "steps": [
-      "Look at the image displayed on the screen",
-      "Press the sound button to hear the word pronounced",
-      "Read the word options provided",
-      "Click on the word that matches both the image and sound",
-      "If you choose correctly, you'll see a success message and move to the next level",
-      "If you choose incorrectly, you'll get feedback and can try again",
       "Complete as many levels as you can!"
     ]
   },
@@ -73,6 +60,18 @@
       "Complete all connections to win the level!"
     ]
   },
+  "outsideStory": {
+    "title": "How to play Outside the Story",
+    "description": "One player doesn't know the secret word. The other players try to discover who is outside by asking clever but non-revealing questions.",
+    "steps": [
+      "At the start of the round the secret word is chosen from a category (e.g., animals).",
+      "All players except one see the secret word. The player who doesn't see it is the Outsider.",
+      "Insiders ask clever, subtle questions to identify the Outsider without saying the secret word.",
+      "The Outsider tries to bluff their way and convince others they know the secret.",
+      "After a round of questions, players vote on who they think the Outsider is.",
+      "If the Outsider is identified, insiders score points. If not, the Outsider scores points."
+    ]
+  },
   "pictureChoice": {
     "title": "How to Play: Find the Picture",
     "description": "This game tests your reading comprehension and visual recognition skills.",
@@ -81,6 +80,19 @@
       "Look at the four pictures below.",
       "Click on the picture that matches the word.",
       "If correct, you will automatically move to the next level. If incorrect, try again!"
+    ]
+  },
+  "wordChoice": {
+    "title": "Word Choice Game",
+    "description": "Select the correct word that matches the image and sound prompt. Test your vocabulary and observation skills!",
+    "steps": [
+      "Look at the image displayed on the screen",
+      "Press the sound button to hear the word pronounced",
+      "Read the word options provided",
+      "Click on the word that matches both the image and sound",
+      "If you choose correctly, you'll see a success message and move to the next level",
+      "If you choose incorrectly, you'll get feedback and can try again",
+      "Complete as many levels as you can!"
     ]
   }
 }

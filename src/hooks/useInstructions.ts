@@ -16,8 +16,9 @@ export type InstructionKey =
   | "formation"
   | "imageClue"
   | "letterFlow"
-  | "wordChoice"
-  | "pictureChoice";
+  | "outsideStory"
+  | "pictureChoice"
+  | "wordChoice";
 
 /**
  * Generic hook to get instructions for a specific instruction key.
@@ -59,12 +60,16 @@ export function useLetterFlowInstructions(): InstructionSet | null {
   return useInstructions("letterFlow");
 }
 
-export function useWordChoiceInstructions(): InstructionSet | null {
-  return useInstructions("wordChoice");
+export function useOutsideStoryInstructions(): InstructionSet | null {
+  return useInstructions("outsideStory");
 }
 
 export function usePictureChoiceInstructions(): InstructionSet | null {
   return useInstructions("pictureChoice");
+}
+
+export function useWordChoiceInstructions(): InstructionSet | null {
+  return useInstructions("wordChoice");
 }
 
 export default useInstructions;
