@@ -12,11 +12,24 @@ import { CrosswordGrid } from '@/components/molecules/CrosswordGrid';
 import { LetterCircle } from '@/components/molecules/LetterCircle';
 import { GameButton } from '@/components/atoms/GameButton';
 import { Notification } from '@/components/atoms/Notification';
-import { useFormationInstructions } from '../instructions';
+import { useInstructions } from '@/hooks/useInstructions';
 
 const FormationGameScreen: React.FC = () => {
   const { t } = useTranslation();
-  const instructions = useFormationInstructions();
+
+  // raw possibly-null instruction set
+  const rawInstructions = useInstructions('formation');
+
+  // normalize into the exact shape GameLayout expects, or undefined
+  const instructions = rawInstructions
+    ? {
+        title: rawInstructions.title ?? t.formationTitle,
+        // GameLayout expects description: string and steps: string[]
+        description: rawInstructions.description ?? '',
+        steps: rawInstructions.steps ?? [],
+      }
+    : undefined;
+
   const {
     loading,
     currentLevel,

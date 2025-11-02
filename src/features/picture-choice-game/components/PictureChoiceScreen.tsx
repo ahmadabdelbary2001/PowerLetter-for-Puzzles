@@ -1,4 +1,5 @@
 // src/features/picture-choice-game/components/PictureChoiceScreen.tsx
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, Volume2, CheckCircle, XCircle } from "lucide-react";
@@ -7,12 +8,25 @@ import { GameLayout } from "@/components/templates/GameLayout";
 import { usePictureChoiceGame } from "@/features/picture-choice-game/hooks/usePictureChoiceGame";
 import { cn } from "@/lib/utils";
 import { Notification } from "@/components/atoms/Notification";
-import { usePictureChoiceInstructions } from "@/features/picture-choice-game/instructions";
+import { useInstructions } from "@/hooks/useInstructions";
 
+/**
+ * PictureChoiceScreen – Main screen for the picture choice game (kids mode)
+ * Displays a word and multiple image options, allowing the child to select the correct one.
+ */
 const PictureChoiceScreen: React.FC = () => {
   const { t, i18n } = useTranslation();
   const dir = i18n.dir();
-  const instructions = usePictureChoiceInstructions();
+
+  // ✅ Fixed: provide required argument key and normalize structure
+  const rawInstructions = useInstructions("pictureChoice");
+  const instructions = rawInstructions
+    ? {
+        title: rawInstructions.title ?? "",
+        description: rawInstructions.description ?? "",
+        steps: rawInstructions.steps ?? [],
+      }
+    : undefined;
 
   const {
     loading,
@@ -28,6 +42,7 @@ const PictureChoiceScreen: React.FC = () => {
     handleBack,
   } = usePictureChoiceGame();
 
+  // Show loading spinner
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -36,7 +51,8 @@ const PictureChoiceScreen: React.FC = () => {
     );
   }
 
-  if (!currentLevel || currentLevel.solution === 'ERROR') {
+  // Handle no levels or error state
+  if (!currentLevel || currentLevel.solution === "ERROR") {
     return (
       <div className="flex flex-col justify-center items-center h-screen gap-4 p-4 text-center">
         <p className="text-xl font-semibold">{t.noLevelsFound}</p>
@@ -45,10 +61,14 @@ const PictureChoiceScreen: React.FC = () => {
     );
   }
 
-  const showNotif = answerStatus !== 'idle';
-  const notifMessage = answerStatus === 'correct' ? (t.congrats ?? "Correct!") :
-                       answerStatus === 'incorrect' ? (t.wrongAnswer ?? "Wrong! Try again") : "";
-  const notifType = answerStatus === 'correct' ? 'success' : 'error';
+  const showNotif = answerStatus !== "idle";
+  const notifMessage =
+    answerStatus === "correct"
+      ? t.congrats ?? "Correct!"
+      : answerStatus === "incorrect"
+      ? t.wrongAnswer ?? "Wrong! Try again"
+      : "";
+  const notifType = answerStatus === "correct" ? "success" : "error";
 
   return (
     <GameLayout
@@ -58,11 +78,12 @@ const PictureChoiceScreen: React.FC = () => {
       layoutType="image"
       instructions={instructions}
     >
+      {/* ✅ Notification */}
       {showNotif && (
         <Notification message={notifMessage} type={notifType} duration={1000} />
       )}
 
-      {/* Word (text) and optional sound */}
+      {/* Word (text) with optional sound */}
       <div className="relative bg-card rounded-lg p-6 flex items-center justify-center">
         <div className="text-3xl font-bold">{currentLevel.word}</div>
 
@@ -72,7 +93,7 @@ const PictureChoiceScreen: React.FC = () => {
               size="icon"
               onClick={playSound}
               className="absolute top-3 right-3 rounded-full bg-black/50 hover:bg-black/70"
-              aria-label={t.playSound ?? 'Play sound'} // accessible name for icon-only button
+              aria-label={t.playSound ?? "Play sound"}
             >
               <Volume2 className="h-6 w-6 text-white" aria-hidden />
             </Button>
@@ -91,31 +112,50 @@ const PictureChoiceScreen: React.FC = () => {
             <Button
               key={imgPath}
               onClick={() => handleOptionClick(imgPath)}
-              disabled={answerStatus === 'correct'}
+              disabled={answerStatus === "correct"}
               className={cn(
                 "text-base h-36 flex items-center justify-center gap-2 transition-all duration-300 overflow-hidden p-0",
-                isSelected && answerStatus === 'correct' && "ring-4 ring-green-500",
-                isSelected && answerStatus === 'incorrect' && "ring-4 ring-red-500",
-                !isSelected && answerStatus === 'incorrect' && isCorrect && "bg-green-200 text-green-800 ring-2 ring-green-400",
-                answerStatus === 'idle' && "bg-card text-card-foreground hover:bg-muted"
+                isSelected && answerStatus === "correct" && "ring-4 ring-green-500",
+                isSelected && answerStatus === "incorrect" && "ring-4 ring-red-500",
+                !isSelected &&
+                  answerStatus === "incorrect" &&
+                  isCorrect &&
+                  "bg-green-200 text-green-800 ring-2 ring-green-400",
+                answerStatus === "idle" && "bg-card text-card-foreground hover:bg-muted"
               )}
             >
               <div className="w-full h-full flex items-center justify-center p-2">
-                <img src={getAssetPath(imgPath)} alt="" className="max-h-full max-w-full object-contain" />
+                <img
+                  src={getAssetPath(imgPath)}
+                  alt=""
+                  className="max-h-full max-w-full object-contain"
+                />
               </div>
 
-              {isSelected && answerStatus === 'correct' && <CheckCircle className="absolute top-2 right-2" />}
-              {isSelected && answerStatus === 'incorrect' && <XCircle className="absolute top-2 right-2" />}
+              {isSelected && answerStatus === "correct" && (
+                <CheckCircle className="absolute top-2 right-2 text-green-600" />
+              )}
+              {isSelected && answerStatus === "incorrect" && (
+                <XCircle className="absolute top-2 right-2 text-red-600" />
+              )}
             </Button>
           );
         })}
       </div>
 
-      {/* Next button */}
-      {answerStatus === 'correct' && (
+      {/* Next button when correct */}
+      {answerStatus === "correct" && (
         <div className="pt-4">
-          <Button onClick={nextLevel} className="w-full bg-green-600 hover:bg-green-700 text-lg py-6">
-            {t.next} {dir === 'rtl' ? <ArrowLeft className="ml-2" /> : <ArrowRight className="ml-2" />}
+          <Button
+            onClick={nextLevel}
+            className="w-full bg-green-600 hover:bg-green-700 text-lg py-6"
+          >
+            {t.next}{" "}
+            {dir === "rtl" ? (
+              <ArrowLeft className="ml-2" />
+            ) : (
+              <ArrowRight className="ml-2" />
+            )}
           </Button>
         </div>
       )}

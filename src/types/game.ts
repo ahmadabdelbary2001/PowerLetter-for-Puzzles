@@ -5,12 +5,22 @@ export type GameType =
   | 'clue'
   | 'formation'
   | 'category'
-  | 'image-clue'      // Picture -> Word
-  | 'word-choice'     // Picture -> Choose Word
-  | 'picture-choice'  // Word -> Choose Picture
-  | 'letter-flow';      // Connect letters to form words
+  | 'image-clue'
+  | 'word-choice'
+  | 'picture-choice'
+  | 'letter-flow';
 export type Difficulty = 'easy' | 'medium' | 'hard';
 export type GameCategory = 'animals' | 'science' | 'geography' | 'fruits' | 'shapes' | 'general';
+
+export type GameId = string;
+
+export interface GameLevel {
+  id: string;
+  name: string;
+  difficulty: Difficulty;
+  category: GameCategory;
+  data: unknown; // was any — now unknown to avoid eslint no-explicit-any
+}
 
 export interface Team {
   id: number;
@@ -23,7 +33,6 @@ export interface Scores {
   [teamId: number]: number;
 }
 
-// This interface defines the shape of our Zustand store
 export interface GameState {
   language: Language;
   gameMode: GameMode;
@@ -35,7 +44,6 @@ export interface GameState {
   scores: Scores;
   isRTL: boolean;
 
-  // Actions
   setLanguage: (language: Language) => void;
   setGameMode: (mode: GameMode) => void;
   setGameType: (type: GameType) => void;

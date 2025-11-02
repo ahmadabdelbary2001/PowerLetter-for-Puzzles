@@ -9,7 +9,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { GameLayout } from "@/components/templates/GameLayout";
 import { useClueGame } from "../hooks/useClueGame";
 import { Notification } from "@/components/atoms/Notification";
-import { useClueInstructions } from "../instructions";
+import { useInstructions } from "@/hooks/useInstructions";
 
 /**
  * Main component for the Clue Game interface
@@ -17,7 +17,19 @@ import { useClueInstructions } from "../instructions";
  */
 const ClueGameScreen: React.FC = () => {
   const { t } = useTranslation();
-  const instructions = useClueInstructions();
+
+  // ✅ Provide the required argument key ("clue")
+  const instructionsData = useInstructions("clue");
+
+  // ✅ Normalize null to undefined to match GameLayout prop type
+  const instructions =
+    instructionsData != null
+      ? {
+          title: instructionsData.title,
+          description: instructionsData.description ?? "",
+          steps: instructionsData.steps ?? [],
+        }
+      : undefined;
 
   const {
     loading,
@@ -49,10 +61,14 @@ const ClueGameScreen: React.FC = () => {
   } = useClueGame();
 
   if (loading) {
-    return <div className="flex justify-center items-center h-screen"><p>{t.loading}...</p></div>;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p>{t.loading}...</p>
+      </div>
+    );
   }
 
-  if (!currentLevel || currentLevel.solution === 'ERROR') {
+  if (!currentLevel || currentLevel.solution === "ERROR") {
     return (
       <div className="flex flex-col justify-center items-center h-screen gap-4 p-4 text-center">
         <p className="text-xl font-semibold">{t.noLevelsFound}</p>
@@ -62,7 +78,11 @@ const ClueGameScreen: React.FC = () => {
   }
 
   const notifMessage = notification?.message ?? null;
-  const notifType = (notification?.type ?? "info") as "success" | "error" | "warning" | "info";
+  const notifType = (notification?.type ?? "info") as
+    | "success"
+    | "error"
+    | "warning"
+    | "info";
 
   return (
     <GameLayout
@@ -74,14 +94,34 @@ const ClueGameScreen: React.FC = () => {
     >
       {notifMessage && <Notification message={notifMessage} type={notifType} />}
 
-      <SolutionBoxes solution={solution} currentWord={answerSlots.join('')} />
-      <LetterGrid letters={letters} selectedIndices={slotIndices.filter(i => i !== null) as number[]} onLetterClick={onLetterClick} disabled={gameState !== 'playing'} hintIndices={hintIndices} />
+      <SolutionBoxes
+        solution={solution}
+        currentWord={answerSlots.join("")}
+      />
+
+      <LetterGrid
+        letters={letters}
+        selectedIndices={slotIndices.filter((i) => i !== null) as number[]}
+        onLetterClick={onLetterClick}
+        disabled={gameState !== "playing"}
+        hintIndices={hintIndices}
+      />
 
       {wrongAnswers.length > 0 && (
         <div className="mt-2">
-          <p className="text-sm text-muted-foreground mb-1">{t.wrongAttempts}:</p>
+          <p className="text-sm text-muted-foreground mb-1">
+            {t.wrongAttempts}:
+          </p>
           <div className="flex flex-wrap gap-1 sm:gap-2 justify-center">
-            {wrongAnswers.map((answer, index) => <Badge key={index} variant="destructive" className="text-xs py-1">{answer}</Badge>)}
+            {wrongAnswers.map((answer, index) => (
+              <Badge
+                key={index}
+                variant="destructive"
+                className="text-xs py-1"
+              >
+                {answer}
+              </Badge>
+            ))}
           </div>
         </div>
       )}
@@ -103,7 +143,16 @@ const ClueGameScreen: React.FC = () => {
         canNext={currentLevelIndex < levels.length - 1}
         gameState={gameState}
         isKidsMode={false}
-        labels={{ remove: t.remove, clear: t.clear, check: t.check, hint: t.hint, showSolution: t.showSolution, reset: t.reset, prev: t.prev, next: t.next }}
+        labels={{
+          remove: t.remove,
+          clear: t.clear,
+          check: t.check,
+          hint: t.hint,
+          showSolution: t.showSolution,
+          reset: t.reset,
+          prev: t.prev,
+          next: t.next,
+        }}
       />
     </GameLayout>
   );

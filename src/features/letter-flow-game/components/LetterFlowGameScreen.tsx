@@ -1,9 +1,3 @@
-// src/features/letter-flow-game/components/LetterFlowGameScreen.tsx
-/**
- * LetterFlowGameScreen - Main screen for the Letter Flow game.
- * Uses the shared GameLayout so the header, back button and level badge
- * match other games (Clue, etc.).
- */
 import React from 'react';
 import { useLetterFlowGame } from '../hooks/useLetterFlowGame';
 import type { letterFlowLevel } from '../engine';
@@ -15,12 +9,22 @@ import { Notification } from '@/components/atoms/Notification';
 import { useTranslation } from "@/hooks/useTranslation";
 import { GameLayout } from '@/components/templates/GameLayout';
 import { usePassiveTouchFix } from '../hooks/usePassiveTouchFix';
-import { useLetterFlowInstructions } from '../instructions';
+import { useInstructions } from '@/hooks/useInstructions';
 
 const LetterFlowGameScreen: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const dir = i18n.dir(); // 'ltr' or 'rtl' for the active language;
-  const instructions = useLetterFlowInstructions();
+  const dir = i18n.dir(); // 'ltr' or 'rtl' for the active language
+  // ✅ Fix: provide the correct instruction key and normalize null to undefined
+  const rawInstructions = useInstructions('letterFlow');
+
+  // ✅ Normalize to satisfy GameLayoutProps type
+  const instructions = rawInstructions
+    ? {
+        title: rawInstructions.title ?? '',
+        description: rawInstructions.description ?? '',
+        steps: rawInstructions.steps ?? [],
+      }
+    : undefined;
 
   usePassiveTouchFix();
 
@@ -97,6 +101,7 @@ const LetterFlowGameScreen: React.FC = () => {
       onBack={handleBack}
       difficulty={currentLevel.difficulty}
       layoutType="text"
+      // ✅ Fix type mismatch
       instructions={instructions}
     >
       {renderNotification()}
@@ -107,7 +112,6 @@ const LetterFlowGameScreen: React.FC = () => {
 
       {renderFoundWords()}
 
-      {/* Only show reset, undo (remove) and hint during play. Also allow Next to appear on `won`. */}
       <GameControls
         onReset={onReset}
         onRemoveLetter={onUndo}
