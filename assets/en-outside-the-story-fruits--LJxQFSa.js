@@ -1,0 +1,1 @@
+const e="fruits",a=["apple","banana","orange","grape","strawberry","watermelon","pineapple","mango","peach","pear","cherry","lemon","lime","kiwi","blueberry","raspberry","coconut","avocado","papaya"],r={id:e,words:a};export{r as default,e as id,a as words};

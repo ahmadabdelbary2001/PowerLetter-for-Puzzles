@@ -1,0 +1,1 @@
+const e="science",t=["atom","molecule","gravity","electricity","magnetism","photosynthesis","evolution","DNA","cell","neutron","proton","electron","telescope","microscope","laser","robot","computer","internet","satellite","rocket"],o={id:e,words:t};export{o as default,e as id,t as words};

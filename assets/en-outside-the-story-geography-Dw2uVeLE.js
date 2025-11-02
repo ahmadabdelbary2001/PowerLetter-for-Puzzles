@@ -1,0 +1,1 @@
+const a="geography",e=["mountain","river","ocean","continent","country","desert","forest","volcano","island","peninsula","canyon","waterfall","glacier","plateau","plain","valley","lake","archipelago","cape","isthmus"],n={id:a,words:e};export{n as default,a as id,e as words};
