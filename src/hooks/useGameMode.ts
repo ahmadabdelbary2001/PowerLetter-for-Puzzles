@@ -1,12 +1,11 @@
 // src/hooks/useGameMode.ts
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { GameState, Team, GameCategory, Difficulty, GameMode, GameType, Language } from '@/types/game';
+import type { GameState, Team, GameCategory } from '@/types/game';
 
 export const useGameMode = create<GameState>()(
   persist(
     (set, get) => ({
-      // Initial state values
       language: 'en',
       gameMode: 'single',
       gameType: null,
@@ -17,26 +16,35 @@ export const useGameMode = create<GameState>()(
       scores: {},
       isRTL: false,
 
-      // Actions
-      setLanguage: (language: Language) => set({ language, isRTL: language === 'ar' }),
-      setGameMode: (mode: GameMode) => set({ gameMode: mode }),
-      setGameType: (type: GameType) => set({ gameType: type }),
+      setLanguage: (language) => set({ language, isRTL: language === 'ar' }),
+      setGameMode: (mode) => set({ gameMode: mode }),
+      setGameType: (type) => set({ gameType: type }),
       
-      // FIX: Implemented both setCategory and setCategories to satisfy the interface
-      // `setCategory` will replace the array with a single new category
-      setCategory: (category: GameCategory) => set({ categories: [category] }),
-      // `setCategories` will set the array to a new array (for multi-select)
-      setCategories: (categories: GameCategory[]) => set({ categories }),
+      setCategories: (categories) => {
+        get().resetScores();
+        set({ categories });
+      },
+      
+      setCategory: (category: GameCategory) => {
+        get().resetScores();
+        set({ categories: [category] });
+      },
 
-      setDifficulty: (difficulty: Difficulty) => set({ difficulty }),
-      setTeams: (teams: Team[]) => set({ teams }),
-      setCurrentTeam: (teamId: number) => set({ currentTeam: teamId }),
+      setDifficulty: (difficulty) => {
+        get().resetScores();
+        set({ difficulty });
+      },
 
+      setTeams: (teams) => set({ teams }),
+      setCurrentTeam: (teamId) => set({ currentTeam: teamId }),
+
+      // This function is the key. It completely re-initializes the teams
+      // and inherently resets their scores to 0, fulfilling both requirements.
       initializeTeams: (teamCount, names = [], hintsPerTeam = 3) => {
         const newTeams: Team[] = Array.from({ length: teamCount }, (_, i) => ({
           id: i,
-          name: names?.[i] ?? `Team ${i + 1}`,
-          score: 0,
+          name: names[i] || `${'Team'} ${i + 1}`, // Fallback name
+          score: 0, // Score is always reset to 0 here
           hintsRemaining: hintsPerTeam,
         }));
         const newScores = newTeams.reduce((acc, team) => ({ ...acc, [team.id]: 0 }), {});
@@ -51,7 +59,8 @@ export const useGameMode = create<GameState>()(
 
       updateScore: (teamId, points) => {
         set((state) => {
-          const newScore = (state.scores[teamId] || 0) + points;
+          const currentScore = Number(state.scores[teamId] || 0);
+          const newScore = currentScore + points;
           return {
             scores: { ...state.scores, [teamId]: newScore },
             teams: state.teams.map((team) =>
@@ -70,21 +79,33 @@ export const useGameMode = create<GameState>()(
         return true;
       },
 
-      // FIX: Removed unused 'outcome' variable
       nextTurn: () => {
         set((state) => {
-          const { teams, currentTeam } = state;
-          if (teams.length < 2) return {};
-          const next = (currentTeam + 1) % teams.length;
-          return { currentTeam: next };
+          if (state.gameMode !== 'competitive' || state.teams.length < 2) return {};
+          return { currentTeam: (state.currentTeam + 1) % state.teams.length };
+        });
+      },
+
+      resetScores: () => {
+        set(state => {
+          const resetScores = Object.keys(state.scores).reduce((acc, key) => {
+            acc[Number(key)] = 0;
+            return acc;
+          }, {} as Record<number, number>);
+          
+          const resetTeams = state.teams.map(team => ({ ...team, score: 0 }));
+
+          return { scores: resetScores, teams: resetTeams };
         });
       },
 
       resetGame: () => {
         set({
-            teams: [],
-            scores: {},
-            currentTeam: 0
+          teams: [],
+          scores: {},
+          currentTeam: 0,
+          categories: ['general'],
+          difficulty: 'easy',
         });
       },
     }),

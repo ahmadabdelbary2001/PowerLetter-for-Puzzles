@@ -1,13 +1,8 @@
 // src/games/GameRegistry.ts
-/**
- * @description A central registry for all available games in the application.
- * This file defines the configuration for each game, including its ID, title,
- * description, icon, and associated React component.
- */
 import React from 'react';
 import { Puzzle, Search, Image as ImageIcon, CheckSquare, SpellCheck, Share2, Users } from 'lucide-react';
+import type { GameCategory } from '@/types/game'; // Import the GameCategory type
 
-// Lazy load components for better performance
 const ClueGameScreen = React.lazy(() => import('@/features/clue-game/components/ClueGameScreen'));
 const ImgClueGameScreen = React.lazy(() => import('@/features/img-clue-game/components/ImgClueGameScreen'));
 const WordChoiceScreen = React.lazy(() => import('@/features/word-choice-game/components/WordChoiceScreen'));
@@ -16,11 +11,11 @@ const LetterFlowGameScreen = React.lazy(() => import('@/features/letter-flow-gam
 const PictureChoiceScreen = React.lazy(() => import('@/features/picture-choice-game/components/PictureChoiceScreen'));
 const OutsideStoryScreen = React.lazy(() => import('@/features/outside-story-game/components/OutsideStoryScreen'));
 
-// This type ensures that any key from the translation file is considered valid.
 type TranslationKeys = string;
+type SupportedSetting = 'teams' | 'difficulty' | 'category';
 
 export interface GameConfig {
-  id: 'category' | 'clue' | 'formation' | 'image-clue' | 'letter-flow' | 'outside-the-story' | 'picture-choice' | 'word-choice'; // Add new game ID
+  id: 'category' | 'clue' | 'formation' | 'image-clue' | 'letter-flow' | 'outside-the-story' | 'picture-choice' | 'word-choice';
   type: 'adult' | 'kids';
   titleKey: TranslationKeys;
   descriptionKey: TranslationKeys;
@@ -28,6 +23,9 @@ export interface GameConfig {
   component: React.FC;
   icon: React.ReactNode;
   status: 'available' | 'coming-soon';
+  supportedSettings: SupportedSetting[];
+  // A list of available categories for this specific game
+  availableCategories?: GameCategory[];
 }
 
 export const GAME_REGISTRY: GameConfig[] = [
@@ -41,6 +39,8 @@ export const GAME_REGISTRY: GameConfig[] = [
     component: ClueGameScreen,
     icon: React.createElement(Search, { className: "w-8 h-8" }),
     status: 'available',
+    supportedSettings: ['teams', 'difficulty', 'category'],
+    availableCategories: ['animals', 'science', 'geography', 'general'], // Specific categories for this game
   },
   {
     id: 'formation',
@@ -51,6 +51,8 @@ export const GAME_REGISTRY: GameConfig[] = [
     component: FormationGameScreen,
     icon: React.createElement(Puzzle, { className: "w-8 h-8" }),
     status: 'available',
+    supportedSettings: ['teams', 'difficulty'],
+    // No categories for this game
   },
   {
     id: 'letter-flow',
@@ -59,8 +61,10 @@ export const GAME_REGISTRY: GameConfig[] = [
     descriptionKey: 'letterFlowDesc',
     featuresKey: 'letterFlowFeatures',
     component: LetterFlowGameScreen,
-    icon: React.createElement(Share2, { className: "w-8 h-8" }), // Using 'Share2' icon for flow/connection
+    icon: React.createElement(Share2, { className: "w-8 h-8" }),
     status: 'available',
+    supportedSettings: ['teams', 'difficulty'],
+    // No categories for this game
   },
   {
     id: 'outside-the-story',
@@ -71,6 +75,8 @@ export const GAME_REGISTRY: GameConfig[] = [
     component: OutsideStoryScreen,
     icon: React.createElement(Users, { className: "w-8 h-8" }),
     status: 'available',
+    supportedSettings: ['teams', 'category'],
+    availableCategories: ['animals', 'science', 'geography'], // Different set of categories
   },
   
   // --- Kids Games ---
@@ -83,6 +89,8 @@ export const GAME_REGISTRY: GameConfig[] = [
     component: ImgClueGameScreen,
     icon: React.createElement(SpellCheck, { className: "w-8 h-8" }),
     status: 'available',
+    supportedSettings: ['teams', 'category'],
+    availableCategories: ['animals', 'fruits', 'shapes', 'general'], // Different set of categories
   },
   {
     id: 'picture-choice',
@@ -93,6 +101,8 @@ export const GAME_REGISTRY: GameConfig[] = [
     component: PictureChoiceScreen,
     icon: React.createElement(ImageIcon, { className: "w-8 h-8" }),
     status: 'available',
+    supportedSettings: ['teams', 'category'],
+    availableCategories: ['animals', 'fruits', 'shapes', 'general'], // Different set of categories
   },
   {
     id: 'word-choice',
@@ -103,11 +113,12 @@ export const GAME_REGISTRY: GameConfig[] = [
     component: WordChoiceScreen,
     icon: React.createElement(CheckSquare, { className: "w-8 h-8" }),
     status: 'available',
+    supportedSettings: ['teams', 'category'],
+    availableCategories: ['animals', 'fruits', 'shapes', 'general'], // Different set of categories
   },
 ];
 
-// Helper function to find a game config by its ID
-export const getGameConfig = (id: string | undefined) => {
+export const getGameConfig = (id: string | undefined): GameConfig | null => {
   if (!id) return null;
   return GAME_REGISTRY.find(game => game.id === id) || null;
 };

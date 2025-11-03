@@ -1,5 +1,5 @@
 // src/App.tsx
-import { Suspense, lazy } from 'react';
+import { Suspense } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import Sonner from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -11,13 +11,11 @@ import GameTypeSelector from "./pages/GameTypeSelector";
 import { ThemeProvider } from "./contexts/ThemeProvider";
 import GameModeSelector from "./components/organisms/GameModeSelector";
 import KidsGameModeSelector from "./components/organisms/KidsGameModeSelector";
-import TeamConfigurator from "./pages/TeamConfigurator";
+import { TeamConfigurator } from "./pages/TeamConfigurator";
+import GameSettingsPage from "./pages/GameSettingsPage";
 import KidsGameSelector from "./pages/KidsGameSelector";
 import { getGameConfig } from './games/GameRegistry';
 import '@/i18n';
-
-// Lazily import the new settings page
-const GameSettingsPage = lazy(() => import('./pages/GameSettingsPage'));
 
 const queryClient = new QueryClient();
 
@@ -54,18 +52,23 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter basename="/PowerLetter-for-Puzzles">
-          <Suspense fallback={<div className="flex justify-center items-center h-screen">Loading...</div>}>
+          <Suspense fallback={<div className="flex justify-center items-center h-screen w-full">Loading...</div>}>
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/games" element={<GameTypeSelector />} />
               <Route path="/kids-games" element={<KidsGameSelector />} />
               <Route path="/game-mode/:gameType" element={<GameModeSelectorWrapper />} />
-              <Route path="/team-config/:gameType" element={<TeamConfigurator />} />
-              <Route path="/game/:gameType" element={<GameScreenWrapper />} />
               
-              {/* UPDATED: New, unified route for in-game settings changes */}
-              <Route path="/change-:settingType/:gameType" element={<GameSettingsPage />} />
+              {/* This route now renders TeamConfigurator as a standalone page */}
+              <Route path="/team-config/:gameType" element={<TeamConfigurator />} />
+              
+              {/* This is the new, dedicated route for changing teams mid-game */}
+              <Route path="/settings/teams/:gameType" element={<TeamConfigurator />} />
 
+              {/* This route remains for difficulty and category changes */}
+              <Route path="/settings/:settingType/:gameType" element={<GameSettingsPage />} />
+
+              <Route path="/game/:gameType" element={<GameScreenWrapper />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>

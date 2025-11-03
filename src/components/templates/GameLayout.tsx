@@ -62,8 +62,9 @@ export const GameLayout: React.FC<GameLayoutProps> = ({
               {gameMode === "competitive" && teams.length > 0 && (
                 <TeamDisplay teams={teams} currentTeam={currentTeam} showScore={true} />
               )}
-              {/* ADDED: In-game settings button for competitive mode */}
-              {gameMode === "competitive" && <InGameSettings />}
+              {/* The InGameSettings component is now rendered for ALL modes.
+                  It is smart enough to decide what to show internally. */}
+              <InGameSettings />
             </div>
           </div>
 

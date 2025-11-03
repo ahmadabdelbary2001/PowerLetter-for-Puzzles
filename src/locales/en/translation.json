@@ -177,5 +177,10 @@
     "🌍 Full Arabic and English support with RTL",
     "🧠 Educational focus with word meanings",
     "💡 Smart hint system to guide learning"
-  ]
+  ],
+  "gameSettings": "Game Settings",
+  "changeTeams": "Change Teams",
+  "changeLevel": "Change Level",
+  "changeCategory": "Change Category",
+  "confirm": "Confirm"
 }
