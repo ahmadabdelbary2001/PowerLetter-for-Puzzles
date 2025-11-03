@@ -1,5 +1,5 @@
 // src/App.tsx
-import { Suspense } from 'react';
+import { Suspense, lazy } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import Sonner from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -16,9 +16,11 @@ import KidsGameSelector from "./pages/KidsGameSelector";
 import { getGameConfig } from './games/GameRegistry';
 import '@/i18n';
 
+// Lazily import the new settings page
+const GameSettingsPage = lazy(() => import('./pages/GameSettingsPage'));
+
 const queryClient = new QueryClient();
 
-// Wrapper to select the correct Game Mode Selector (Adult vs Kids)
 const GameModeSelectorWrapper = () => {
   const { gameType } = useParams<{ gameType: string }>();
   const config = getGameConfig(gameType);
@@ -29,7 +31,6 @@ const GameModeSelectorWrapper = () => {
   return <GameModeSelector />;
 };
 
-// Wrapper to select the correct Game Screen Component
 const GameScreenWrapper = () => {
   const { gameType } = useParams<{ gameType: string }>();
   const config = getGameConfig(gameType);
@@ -53,15 +54,21 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter basename="/PowerLetter-for-Puzzles">
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/games" element={<GameTypeSelector />} />
-            <Route path="/kids-games" element={<KidsGameSelector />} />
-            <Route path="/game-mode/:gameType" element={<GameModeSelectorWrapper />} />
-            <Route path="/team-config/:gameType" element={<TeamConfigurator />} />
-            <Route path="/game/:gameType" element={<GameScreenWrapper />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <Suspense fallback={<div className="flex justify-center items-center h-screen">Loading...</div>}>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/games" element={<GameTypeSelector />} />
+              <Route path="/kids-games" element={<KidsGameSelector />} />
+              <Route path="/game-mode/:gameType" element={<GameModeSelectorWrapper />} />
+              <Route path="/team-config/:gameType" element={<TeamConfigurator />} />
+              <Route path="/game/:gameType" element={<GameScreenWrapper />} />
+              
+              {/* UPDATED: New, unified route for in-game settings changes */}
+              <Route path="/change-:settingType/:gameType" element={<GameSettingsPage />} />
+
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
         </BrowserRouter>
       </ThemeProvider>
     </TooltipProvider>

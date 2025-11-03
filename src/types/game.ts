@@ -49,6 +49,7 @@ export interface GameState {
   setGameMode: (mode: GameMode) => void;
   setGameType: (type: GameType) => void;
   setCategory: (category: GameCategory) => void;
+  setCategories: (categories: GameCategory[]) => void;
   setDifficulty: (difficulty: Difficulty) => void;
   setTeams: (teams: Team[]) => void;
   setCurrentTeam: (teamId: number) => void;

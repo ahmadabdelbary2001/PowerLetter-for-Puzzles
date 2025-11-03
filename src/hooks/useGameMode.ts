@@ -1,36 +1,36 @@
 // src/hooks/useGameMode.ts
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { GameState, Team, GameCategory } from '@/types/game';
+import type { GameState, Team, GameCategory, Difficulty, GameMode, GameType, Language } from '@/types/game';
 
-// واجهة الحالة الجديدة مع تعديل نوع الفئة
-export interface GameStateWithMultiCategory extends Omit<GameState, 'category' | 'setCategory'> {
-  categories: GameCategory[]; // FIX: Changed from 'category' to 'categories' (plural array)
-  setCategories: (categories: GameCategory[]) => void; // FIX: New setter for the array
-}
-
-export const useGameMode = create<GameStateWithMultiCategory>()(
+export const useGameMode = create<GameState>()(
   persist(
     (set, get) => ({
       // Initial state values
       language: 'en',
       gameMode: 'single',
-      gameType: 'clue',
-      categories: ['animals'], // FIX: Default to an array with one category
+      gameType: null,
+      categories: ['general'],
       difficulty: 'easy',
       teams: [],
       currentTeam: 0,
       scores: {},
       isRTL: false,
 
-      // Implementations of all actions
-      setLanguage: (language) => set({ language, isRTL: language === 'ar' }),
-      setGameMode: (gameMode) => set({ gameMode }),
-      setGameType: (gameType) => set({ gameType }),
-      setCategories: (categories) => set({ categories }), // FIX: Implement the new setter
-      setDifficulty: (difficulty) => set({ difficulty }),
-      setTeams: (teams) => set({ teams }),
-      setCurrentTeam: (currentTeam) => set({ currentTeam }),
+      // Actions
+      setLanguage: (language: Language) => set({ language, isRTL: language === 'ar' }),
+      setGameMode: (mode: GameMode) => set({ gameMode: mode }),
+      setGameType: (type: GameType) => set({ gameType: type }),
+      
+      // FIX: Implemented both setCategory and setCategories to satisfy the interface
+      // `setCategory` will replace the array with a single new category
+      setCategory: (category: GameCategory) => set({ categories: [category] }),
+      // `setCategories` will set the array to a new array (for multi-select)
+      setCategories: (categories: GameCategory[]) => set({ categories }),
+
+      setDifficulty: (difficulty: Difficulty) => set({ difficulty }),
+      setTeams: (teams: Team[]) => set({ teams }),
+      setCurrentTeam: (teamId: number) => set({ currentTeam: teamId }),
 
       initializeTeams: (teamCount, names = [], hintsPerTeam = 3) => {
         const newTeams: Team[] = Array.from({ length: teamCount }, (_, i) => ({
@@ -51,15 +51,13 @@ export const useGameMode = create<GameStateWithMultiCategory>()(
 
       updateScore: (teamId, points) => {
         set((state) => {
-          const currentScore = Number(state.scores[teamId] || 0);
-          const pointsToAdd = Number(points);
-          const newScore = currentScore + pointsToAdd;
-
-          const newScores = { ...state.scores, [teamId]: newScore };
-          const newTeams = state.teams.map((team) =>
-            team.id === teamId ? { ...team, score: newScore } : team
-          );
-          return { scores: newScores, teams: newTeams };
+          const newScore = (state.scores[teamId] || 0) + points;
+          return {
+            scores: { ...state.scores, [teamId]: newScore },
+            teams: state.teams.map((team) =>
+              team.id === teamId ? { ...team, score: newScore } : team
+            ),
+          };
         });
       },
 
@@ -72,23 +70,12 @@ export const useGameMode = create<GameStateWithMultiCategory>()(
         return true;
       },
 
-      nextTurn: (outcome: 'win' | 'lose') => {
+      // FIX: Removed unused 'outcome' variable
+      nextTurn: () => {
         set((state) => {
-          const { teams, currentTeam, gameMode } = state;
-          const n = teams.length;
-          if (gameMode !== 'competitive' || n < 2) return {};
-
-          let next: number;
-          if (outcome === 'win') {
-            next = (currentTeam + 1) % n;
-          } else {
-            if (n % 2 === 0) {
-              next = (currentTeam - 1 + n) % n;
-            } else {
-              const half = Math.floor(n / 2);
-              next = (currentTeam - half + n) % n;
-            }
-          }
+          const { teams, currentTeam } = state;
+          if (teams.length < 2) return {};
+          const next = (currentTeam + 1) % teams.length;
           return { currentTeam: next };
         });
       },

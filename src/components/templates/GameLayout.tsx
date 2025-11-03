@@ -1,9 +1,4 @@
 // src/components/templates/GameLayout.tsx
-/**
- * @description A template component that provides the main layout structure for game screens.
- * It includes the header, navigation controls, team information, and a card container for game content.
- * The layout adapts based on game mode, content type, and supports RTL/LTR languages.
- */
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
@@ -15,19 +10,10 @@ import { Header } from '@/components/organisms/Header';
 import { Scoreboard } from '@/components/molecules/Scoreboard';
 import { TeamDisplay } from '@/components/molecules/TeamDisplay';
 import GameInstructions from '@/components/molecules/GameInstructions';
+import { InGameSettings } from '@/components/molecules/InGameSettings';
 import type { Difficulty } from '@/types/game';
 import { cn } from '@/lib/utils';
 
-/**
- * Props for the GameLayout component
- * @interface GameLayoutProps
- * @property {React.ReactNode} children - The game content to be rendered inside the main card.
- * @property {string} title - The title of the current game/level.
- * @property {number} levelIndex - The index of the current level (0-based).
- * @property {() => void} onBack - Callback function triggered when the back button is clicked.
- * @property {Difficulty} [difficulty] - Optional: The difficulty of the current level to display a badge.
- * @property {'text' | 'image'} [layoutType='text'] - Optional: The type of layout to use. 'image' uses a narrower container and less spacing.
- */
 interface GameLayoutProps {
   children: React.ReactNode;
   title: string;
@@ -42,11 +28,6 @@ interface GameLayoutProps {
   };
 }
 
-/**
- * GameLayout component that provides a consistent layout for all game screens.
- * @param {GameLayoutProps} props - Component props.
- * @returns {JSX.Element} The rendered GameLayout component.
- */
 export const GameLayout: React.FC<GameLayoutProps> = ({
   children,
   title,
@@ -58,7 +39,7 @@ export const GameLayout: React.FC<GameLayoutProps> = ({
 }) => {
   const { gameMode, teams, currentTeam } = useGameMode();
   const { t, i18n } = useTranslation();
-  const dir = i18n.dir(); // 'ltr' or 'rtl' for the active language;
+  const dir = i18n.dir();
 
   return (
     <>
@@ -75,13 +56,15 @@ export const GameLayout: React.FC<GameLayoutProps> = ({
               <Button variant="ghost" onClick={onBack} className="flex items-center gap-2">
                 {dir === "rtl" ? <ArrowRight /> : <ArrowLeft />} {t.back}
               </Button>
-              {instructions && (
-                <GameInstructions instructions={instructions} />
-              )}
+              {instructions && <GameInstructions instructions={instructions} />}
             </div>
-            {gameMode === "competitive" && teams.length > 0 && (
-              <TeamDisplay teams={teams} currentTeam={currentTeam} showScore={true} />
-            )}
+            <div className="flex items-center gap-3">
+              {gameMode === "competitive" && teams.length > 0 && (
+                <TeamDisplay teams={teams} currentTeam={currentTeam} showScore={true} />
+              )}
+              {/* ADDED: In-game settings button for competitive mode */}
+              {gameMode === "competitive" && <InGameSettings />}
+            </div>
           </div>
 
           <Card>
@@ -96,13 +79,7 @@ export const GameLayout: React.FC<GameLayoutProps> = ({
                 <Badge variant="secondary">{t.level} {levelIndex + 1}</Badge>
               </div>
             </CardHeader>
-            {/*
-              * FIX: The CardContent now uses conditional spacing.
-              * It applies 'space-y-4' for image layouts and 'space-y-6' for text layouts.
-              */}
-            <CardContent className={cn(
-              layoutType === 'image' ? 'space-y-4' : 'space-y-6'
-            )}>
+            <CardContent className={cn(layoutType === 'image' ? 'space-y-4' : 'space-y-6')}>
               {children}
             </CardContent>
           </Card>
