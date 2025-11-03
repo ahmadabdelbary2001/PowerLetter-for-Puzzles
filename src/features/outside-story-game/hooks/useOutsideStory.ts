@@ -1,195 +1,240 @@
 // src/features/outside-story-game/hooks/useOutsideStory.ts
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { outsideStoryGameEngine, type OutsideStoryLevel } from '@/features/outside-story-game/engine';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useTranslation } from '@/hooks/useTranslation';
-import type { GameCategory } from '@/types/game';
+import type { Team } from '@/types/game';
 
-export type Player = {
-  id: number;
-  name: string;
-  score: number;
+export type GameState =
+  | 'role_reveal_handoff'
+  | 'role_reveal_player'
+  | 'question_intro'
+  | 'question_turn'
+  | 'voting'
+  | 'outsider_guess'
+  | 'results'
+  | 'round_end';
+
+export type QuestionPair = {
+  asker: Team;
+  askee: Team;
 };
 
 export type RoundInfo = {
   id: string;
-  category: GameCategory;
+  category: string;
   secret: string;
+  words: string[];
   outsiderId: number;
   insiders: number[];
   votes: Record<number, number>;
   revealed: boolean;
   roundResult?: {
-    outsiderIdentified: boolean;
     votedPlayerId?: number;
+    outsiderGuessedCorrectly?: boolean;
     pointsAwarded: Record<number, number>;
   };
 };
 
-export function useOutsideStory(initialPlayers?: string[]) {
-  const gm = useGameMode();
-  const { language: appLanguage } = gm;
+export function useOutsideStory() {
+  const { teams, language: appLanguage, categories, resetScores, setGameMode } = useGameMode();
   const { t } = useTranslation();
 
-  const seededPlayers = useMemo(() => {
-    const teams = gm.teams;
-    if (teams && teams.length > 0) {
-      return teams.map((tm, i) => ({ id: i, name: tm.name ?? `Team ${i + 1}` }));
-    }
-    if (initialPlayers && initialPlayers.length > 0) {
-      return initialPlayers.map((n, i) => ({ id: i, name: n }));
-    }
-    return ['Alice', 'Bob', 'Carol'].map((n, i) => ({ id: i, name: n }));
-  }, [gm.teams, initialPlayers]);
-
-  const [players, setPlayers] = useState<Player[]>(seededPlayers.map(p => ({ ...p, score: 0 })));
+  const [gameState, setGameState] = useState<GameState>('role_reveal_handoff');
   const [levels, setLevels] = useState<OutsideStoryLevel[]>([]);
-  const [loadingLevels, setLoadingLevels] = useState(false);
+  const [loadingLevels, setLoadingLevels] = useState(true);
   const [currentRound, setCurrentRound] = useState<RoundInfo | null>(null);
   const [history, setHistory] = useState<RoundInfo[]>([]);
-  const [availableCategories, setAvailableCategories] = useState<GameCategory[]>(['animals']);
+  const [currentPlayerTurn, setCurrentPlayerTurn] = useState<number>(0);
+  const [questionPairs, setQuestionPairs] = useState<QuestionPair[]>([]);
+  // Add state to track the current voter
+  const [votingPlayerIndex, setVotingPlayerIndex] = useState<number>(0);
 
-  useEffect(() => {
-    let mounted = true;
-    setLoadingLevels(true);
-    (async () => {
-      try {
-        const loaded = await outsideStoryGameEngine.loadLevels({
-          language: (appLanguage ?? 'en'),
-          categories: availableCategories,
-        });
-        if (!mounted) return;
-        setLevels(loaded);
-      } finally {
-        if (mounted) setLoadingLevels(false);
-      }
-    })();
-    return () => { mounted = false; };
-  }, [appLanguage, availableCategories]);
-
-  const setPlayerNames = useCallback((names: string[]) => {
-    setPlayers(prev => names.map((n, i) => ({ id: i, name: n, score: prev[i]?.score ?? 0 })));
-  }, []);
-
-  const addPlayer = useCallback((name: string) => {
-    setPlayers(prev => [...prev, { id: prev.length, name, score: 0 }]);
-  }, []);
-
-  const removePlayer = useCallback((id: number) => {
-    setPlayers(prev => prev.filter(p => p.id !== id).map((p, i) => ({ ...p, id: i })));
-  }, []);
-
-  const startRound = useCallback((category: GameCategory) => {
+  const startRound = useCallback((category: string) => {
     const level = levels.find(l => l.category === category);
-    if (!level || level.words.length === 0) {
-      throw new Error(t.noLevelsFound || 'No words found for category');
+    if (!level || level.words.length < 8) {
+      console.error(t.notEnoughWords ?? 'Not enough words for this category.');
+      return;
     }
-    if (players.length < 3) {
-      throw new Error('Need at least 3 players to start Outside the Story');
+    if (teams.length < 3) {
+      console.error(t.min3Players ?? 'Add at least 3 players.');
+      return;
     }
 
-    const secret = level.words[Math.floor(Math.random() * level.words.length)];
-    const outsiderIndex = Math.floor(Math.random() * players.length);
-    const insiders = players.map(p => p.id).filter(id => id !== outsiderIndex);
+    const shuffled = [...level.words].sort(() => 0.5 - Math.random());
+    const roundWords = shuffled.slice(0, 8);
+    const secret = roundWords[0];
+
+    const outsiderIndex = Math.floor(Math.random() * teams.length);
+    const outsiderId = teams[outsiderIndex].id;
+    const insiders = teams.map(p => p.id).filter(id => id !== outsiderId);
 
     const round: RoundInfo = {
-      id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+      id: `${Date.now()}`,
       category,
       secret,
-      outsiderId: outsiderIndex,
+      words: roundWords.sort(),
+      outsiderId,
       insiders,
       votes: {},
       revealed: false,
     };
 
     setCurrentRound(round);
-    return round;
-  }, [levels, players, t.noLevelsFound]);
+    setCurrentPlayerTurn(0);
+    setGameState('role_reveal_handoff');
+  }, [levels, teams, t]);
 
-  const revealSecretToPlayer = useCallback((playerId: number) => {
-    if (!currentRound) return null;
-    if (playerId === currentRound.outsiderId) return null;
-    return currentRound.secret;
-  }, [currentRound]);
+  useEffect(() => {
+    let mounted = true;
+    setLoadingLevels(true);
+    (async () => {
+      try {
+        const loadedLevels = await outsideStoryGameEngine.loadLevels({
+          language: (appLanguage ?? 'ar'),
+          categories: categories,
+        });
+        if (mounted) {
+          setLevels(loadedLevels);
+        }
+      } finally {
+        if (mounted) {
+          setLoadingLevels(false);
+        }
+      }
+    })();
+    return () => { mounted = false; };
+  }, [appLanguage, categories]);
 
-  const submitVote = useCallback((voterId: number, votedPlayerId: number) => {
-    setCurrentRound(prev => {
-      if (!prev) return prev;
-      return { ...prev, votes: { ...prev.votes, [voterId]: votedPlayerId } };
-    });
-  }, []);
+  useEffect(() => {
+    if (loadingLevels || levels.length === 0 || currentRound) {
+      return;
+    }
+    startRound(levels[0].category);
+  }, [loadingLevels, levels, currentRound, startRound]);
 
-  const finishVotingAndReveal = useCallback(() => {
-    if (!currentRound) return null;
+  // Implemented a fair pairing algorithm
+  const setupQuestionTurns = useCallback(() => {
+    if (teams.length < 2) return;
 
-    const votes = currentRound.votes;
-    const tally = new Map<number, number>();
-    for (const voterIdStr in votes) {
-      const voted = votes[Number(voterIdStr)];
-      tally.set(voted, (tally.get(voted) || 0) + 1);
+    const shuffledPlayers = [...teams].sort(() => Math.random() - 0.5);
+    const pairs: QuestionPair[] = [];
+
+    for (let i = 0; i < shuffledPlayers.length; i++) {
+      const asker = shuffledPlayers[i];
+      // The askee is the next person in the shuffled list, wrapping around at the end
+      const askee = shuffledPlayers[(i + 1) % shuffledPlayers.length];
+      pairs.push({ asker, askee });
     }
 
-    let maxVotes = -1;
-    let topCandidate: number | undefined;
-    for (const [playerId, count] of tally.entries()) {
-      if (count > maxVotes || (count === maxVotes && (topCandidate === undefined || playerId < topCandidate))) {
-        maxVotes = count;
-        topCandidate = playerId;
+    setQuestionPairs(pairs);
+    setCurrentPlayerTurn(0);
+    setGameState('question_turn');
+  }, [teams]);
+
+
+  const finishVoting = useCallback(() => {
+    if (!currentRound) return;
+
+    const tally: Record<number, number> = {};
+    for (const voterId in currentRound.votes) {
+      const voter = parseInt(voterId, 10);
+      if (voter !== currentRound.outsiderId) {
+        const votedForId = currentRound.votes[voterId];
+        tally[votedForId] = (tally[votedForId] || 0) + 1;
       }
     }
 
-    const outsiderIdentified = topCandidate === currentRound.outsiderId;
-
-    const pointsAwarded: Record<number, number> = {};
-    players.forEach(p => (pointsAwarded[p.id] = 0));
-
-    if (outsiderIdentified) {
-      currentRound.insiders.forEach(id => (pointsAwarded[id] += 1));
-      pointsAwarded[currentRound.outsiderId] += 0;
-    } else {
-      pointsAwarded[currentRound.outsiderId] += 2;
+    let maxVotes = 0;
+    let votedPlayerId = -1;
+    for (const playerId in tally) {
+      if (tally[playerId] > maxVotes) {
+        maxVotes = tally[playerId];
+        votedPlayerId = parseInt(playerId, 10);
+      }
     }
 
-    setPlayers(prev => prev.map(p => ({ ...p, score: p.score + (pointsAwarded[p.id] || 0) })));
+    const completedRound = { ...currentRound, revealed: true, roundResult: { votedPlayerId, pointsAwarded: {} } };
+    setCurrentRound(completedRound);
 
-    const completed: RoundInfo = {
-      ...currentRound,
-      votes: { ...currentRound.votes },
-      revealed: true,
-      roundResult: {
-        outsiderIdentified,
-        votedPlayerId: topCandidate,
-        pointsAwarded,
-      },
-    };
+    if (votedPlayerId === currentRound.outsiderId) {
+      setGameState('outsider_guess');
+    } else {
+      const pointsAwarded: Record<number, number> = {};
+      teams.forEach(p => pointsAwarded[p.id] = 0);
+      pointsAwarded[currentRound.outsiderId] = 100;
 
-    setHistory(prev => [completed, ...prev]);
-    setCurrentRound(completed);
+      resetScores(pointsAwarded);
+      const finalRound = { ...completedRound, roundResult: { ...completedRound.roundResult, outsiderGuessedCorrectly: false, pointsAwarded } };
+      setCurrentRound(finalRound);
+      setHistory(prev => [finalRound, ...prev]);
+      setGameState('results');
+    }
+  }, [currentRound, teams, resetScores]);
 
-    return completed;
-  }, [currentRound, players]);
+  const handleOutsiderGuess = useCallback((guess: string) => {
+    if (!currentRound || !currentRound.roundResult) return;
 
-  const resetGame = useCallback(() => {
-    setPlayers(prev => prev.map(p => ({ ...p, score: 0 })));
+    const correctGuess = guess === currentRound.secret;
+    const pointsAwarded: Record<number, number> = {};
+    teams.forEach(p => pointsAwarded[p.id] = 0);
+
+    if (correctGuess) {
+      pointsAwarded[currentRound.outsiderId] = 100;
+    } else {
+      currentRound.insiders.forEach(id => { pointsAwarded[id] = 100; });
+    }
+
+    resetScores(pointsAwarded);
+    const finalRound = { ...currentRound, roundResult: { ...currentRound.roundResult, outsiderGuessedCorrectly: correctGuess, pointsAwarded } };
+    setCurrentRound(finalRound);
+    setHistory(prev => [finalRound, ...prev]);
+    setGameState('results');
+  }, [currentRound, teams, resetScores]);
+
+  const nextTurn = () => {
+    setCurrentPlayerTurn(prev => (prev + 1));
+  };
+
+  // Add a function to advance to the next voter
+  const nextVoter = () => {
+    setVotingPlayerIndex(prev => prev + 1);
+  };
+
+  const playAgain = useCallback(() => {
+    setCurrentPlayerTurn(0);
+    setVotingPlayerIndex(0); // Reset voter index for the new round
     setCurrentRound(null);
-    setHistory([]);
   }, []);
 
+  const changePlayersAndReset = useCallback(() => {
+    setGameMode('competitive');
+    resetScores({});
+  }, [setGameMode, resetScores]);
+
   return {
-    players,
-    setPlayerNames,
-    addPlayer,
-    removePlayer,
+    players: teams,
     levels,
     loadingLevels,
-    availableCategories,
-    setAvailableCategories,
     currentRound,
     history,
     startRound,
-    revealSecretToPlayer,
-    submitVote,
-    finishVotingAndReveal,
-    resetGame,
+    playAgain,
+    changePlayersAndReset,
+    gameState,
+    setGameState,
+    currentPlayerTurn,
+    nextTurn,
+    finishVoting,
+    handleOutsiderGuess,
+    setupQuestionTurns,
+    questionPairs,
+    submitVote: (voterId: number, votedPlayerId: number) => {
+      setCurrentRound(prev => prev ? { ...prev, votes: { ...prev.votes, [voterId]: votedPlayerId } } : null);
+    },
+    // Expose voter state and functions
+    votingPlayerIndex,
+    nextVoter,
+    t,
   } as const;
 }

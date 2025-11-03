@@ -49,14 +49,15 @@ export interface GameState {
   setGameMode: (mode: GameMode) => void;
   setGameType: (type: GameType) => void;
   setCategories: (categories: GameCategory[]) => void;
+  setCategory: (category: GameCategory) => void;
   setDifficulty: (difficulty: Difficulty) => void;
   setTeams: (teams: Team[]) => void;
   setCurrentTeam: (teamId: number) => void;
   initializeTeams: (teamCount: number, names?: string[], hintsPerTeam?: number) => void;
   renameTeam: (teamId: number, newName: string) => void;
   updateScore: (teamId: number, points: number) => void;
+  resetScores: (pointsAwarded: Record<number, number>) => void;
   consumeHint: (teamId: number) => boolean;
-  nextTurn: (outcome?: 'win' | 'lose') => void;
-  resetScores: () => void;
+  nextTurn: () => void;
   resetGame: () => void;
 }

@@ -6,6 +6,7 @@ import type { GameState, Team, GameCategory } from '@/types/game';
 export const useGameMode = create<GameState>()(
   persist(
     (set, get) => ({
+      // Initial state values
       language: 'en',
       gameMode: 'single',
       gameType: null,
@@ -16,35 +17,34 @@ export const useGameMode = create<GameState>()(
       scores: {},
       isRTL: false,
 
+      // --- Actions ---
       setLanguage: (language) => set({ language, isRTL: language === 'ar' }),
-      setGameMode: (mode) => set({ gameMode: mode }),
-      setGameType: (type) => set({ gameType: type }),
-      
-      setCategories: (categories) => {
-        get().resetScores();
-        set({ categories });
-      },
-      
-      setCategory: (category: GameCategory) => {
-        get().resetScores();
-        set({ categories: [category] });
-      },
-
-      setDifficulty: (difficulty) => {
-        get().resetScores();
-        set({ difficulty });
-      },
-
+      setGameMode: (gameMode) => set({ gameMode }),
+      setGameType: (gameType) => set({ gameType }),
+      setCategories: (categories) => set({ categories }),
+      setCategory: (category: GameCategory) => set({ categories: [category] }),
+      setDifficulty: (difficulty) => set({ difficulty }),
       setTeams: (teams) => set({ teams }),
-      setCurrentTeam: (teamId) => set({ currentTeam: teamId }),
+      setCurrentTeam: (currentTeam) => set({ currentTeam }),
 
-      // This function is the key. It completely re-initializes the teams
-      // and inherently resets their scores to 0, fulfilling both requirements.
+      resetScores: (pointsAwarded: Record<number, number>) => {
+        set((state) => {
+          const newScores = { ...state.scores };
+          const newTeams = state.teams.map(team => {
+            const points = pointsAwarded[team.id] || 0;
+            const newScore = (newScores[team.id] || 0) + points;
+            newScores[team.id] = newScore;
+            return { ...team, score: newScore };
+          });
+          return { scores: newScores, teams: newTeams };
+        });
+      },
+
       initializeTeams: (teamCount, names = [], hintsPerTeam = 3) => {
         const newTeams: Team[] = Array.from({ length: teamCount }, (_, i) => ({
           id: i,
-          name: names[i] || `${'Team'} ${i + 1}`, // Fallback name
-          score: 0, // Score is always reset to 0 here
+          name: names?.[i] ?? `Team ${i + 1}`,
+          score: 0,
           hintsRemaining: hintsPerTeam,
         }));
         const newScores = newTeams.reduce((acc, team) => ({ ...acc, [team.id]: 0 }), {});
@@ -60,13 +60,14 @@ export const useGameMode = create<GameState>()(
       updateScore: (teamId, points) => {
         set((state) => {
           const currentScore = Number(state.scores[teamId] || 0);
-          const newScore = currentScore + points;
-          return {
-            scores: { ...state.scores, [teamId]: newScore },
-            teams: state.teams.map((team) =>
-              team.id === teamId ? { ...team, score: newScore } : team
-            ),
-          };
+          const pointsToAdd = Number(points);
+          const newScore = currentScore + pointsToAdd;
+
+          const newScores = { ...state.scores, [teamId]: newScore };
+          const newTeams = state.teams.map((team) =>
+            team.id === teamId ? { ...team, score: newScore } : team
+          );
+          return { scores: newScores, teams: newTeams };
         });
       },
 
@@ -81,21 +82,10 @@ export const useGameMode = create<GameState>()(
 
       nextTurn: () => {
         set((state) => {
-          if (state.gameMode !== 'competitive' || state.teams.length < 2) return {};
-          return { currentTeam: (state.currentTeam + 1) % state.teams.length };
-        });
-      },
-
-      resetScores: () => {
-        set(state => {
-          const resetScores = Object.keys(state.scores).reduce((acc, key) => {
-            acc[Number(key)] = 0;
-            return acc;
-          }, {} as Record<number, number>);
-          
-          const resetTeams = state.teams.map(team => ({ ...team, score: 0 }));
-
-          return { scores: resetScores, teams: resetTeams };
+          const { teams, currentTeam, gameMode } = state;
+          const n = teams.length;
+          if (gameMode !== 'competitive' || n < 2) return {};
+          return { currentTeam: (currentTeam + 1) % n };
         });
       },
 
