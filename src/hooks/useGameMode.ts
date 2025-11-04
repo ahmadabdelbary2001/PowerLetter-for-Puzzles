@@ -80,12 +80,30 @@ export const useGameMode = create<GameState>()(
         return true;
       },
 
-      nextTurn: () => {
+      // --- CRITICAL FIX ---
+      // This is the robust implementation from the 'old' file, now in the main file.
+      nextTurn: (outcome: 'win' | 'lose') => {
         set((state) => {
           const { teams, currentTeam, gameMode } = state;
           const n = teams.length;
           if (gameMode !== 'competitive' || n < 2) return {};
-          return { currentTeam: (currentTeam + 1) % n };
+
+          let next: number;
+          if (outcome === 'win') {
+            // On a win, simply go to the next player in order.
+            next = (currentTeam + 1) % n;
+          } else {
+            // On a loss, use the more complex rotation logic.
+            if (n % 2 === 0) {
+              // Even number of teams: go back one player.
+              next = (currentTeam - 1 + n) % n;
+            } else {
+              // Odd number of teams: jump back by half the team count.
+              const half = Math.floor(n / 2);
+              next = (currentTeam - half + n) % n;
+            }
+          }
+          return { currentTeam: next };
         });
       },
 

@@ -32,7 +32,7 @@ export type RoundInfo = {
   roundResult?: {
     votedPlayerId?: number;
     outsiderGuessedCorrectly?: boolean;
-    pointsAwarded: Record<number, number>;
+    pointsAwarded: Record<number, number>; // This must always be a Record, not undefined
   };
 };
 
@@ -47,7 +47,6 @@ export function useOutsideStory() {
   const [history, setHistory] = useState<RoundInfo[]>([]);
   const [currentPlayerTurn, setCurrentPlayerTurn] = useState<number>(0);
   const [questionPairs, setQuestionPairs] = useState<QuestionPair[]>([]);
-  // Add state to track the current voter
   const [votingPlayerIndex, setVotingPlayerIndex] = useState<number>(0);
 
   const startRound = useCallback((category: string) => {
@@ -113,7 +112,6 @@ export function useOutsideStory() {
     startRound(levels[0].category);
   }, [loadingLevels, levels, currentRound, startRound]);
 
-  // Implemented a fair pairing algorithm
   const setupQuestionTurns = useCallback(() => {
     if (teams.length < 2) return;
 
@@ -122,7 +120,6 @@ export function useOutsideStory() {
 
     for (let i = 0; i < shuffledPlayers.length; i++) {
       const asker = shuffledPlayers[i];
-      // The askee is the next person in the shuffled list, wrapping around at the end
       const askee = shuffledPlayers[(i + 1) % shuffledPlayers.length];
       pairs.push({ asker, askee });
     }
@@ -131,7 +128,6 @@ export function useOutsideStory() {
     setCurrentPlayerTurn(0);
     setGameState('question_turn');
   }, [teams]);
-
 
   const finishVoting = useCallback(() => {
     if (!currentRound) return;
@@ -154,39 +150,50 @@ export function useOutsideStory() {
       }
     }
 
-    const completedRound = { ...currentRound, revealed: true, roundResult: { votedPlayerId, pointsAwarded: {} } };
-    setCurrentRound(completedRound);
+    // --- CRITICAL FIX ---
+    // Initialize `pointsAwarded` to an empty object `{}` to satisfy the RoundInfo type.
+    const updatedRound = {
+      ...currentRound,
+      roundResult: {
+        votedPlayerId,
+        pointsAwarded: {} // This ensures pointsAwarded is never undefined
+      }
+    };
+    setCurrentRound(updatedRound);
 
-    if (votedPlayerId === currentRound.outsiderId) {
-      setGameState('outsider_guess');
-    } else {
-      const pointsAwarded: Record<number, number> = {};
-      teams.forEach(p => pointsAwarded[p.id] = 0);
-      pointsAwarded[currentRound.outsiderId] = 100;
-
-      resetScores(pointsAwarded);
-      const finalRound = { ...completedRound, roundResult: { ...completedRound.roundResult, outsiderGuessedCorrectly: false, pointsAwarded } };
-      setCurrentRound(finalRound);
-      setHistory(prev => [finalRound, ...prev]);
-      setGameState('results');
-    }
-  }, [currentRound, teams, resetScores]);
+    setGameState('outsider_guess');
+  }, [currentRound]);
 
   const handleOutsiderGuess = useCallback((guess: string) => {
-    if (!currentRound || !currentRound.roundResult) return;
+    if (!currentRound) return;
 
-    const correctGuess = guess === currentRound.secret;
+    const outsiderGuessedCorrectly = guess === currentRound.secret;
     const pointsAwarded: Record<number, number> = {};
     teams.forEach(p => pointsAwarded[p.id] = 0);
 
-    if (correctGuess) {
-      pointsAwarded[currentRound.outsiderId] = 100;
-    } else {
-      currentRound.insiders.forEach(id => { pointsAwarded[id] = 100; });
+    if (outsiderGuessedCorrectly) {
+      pointsAwarded[currentRound.outsiderId] = 10;
+    }
+
+    for (const voterId in currentRound.votes) {
+      const voter = parseInt(voterId, 10);
+      const votedForId = currentRound.votes[voterId];
+      if (voter !== currentRound.outsiderId && votedForId === currentRound.outsiderId) {
+        pointsAwarded[voter] = (pointsAwarded[voter] || 0) + 10;
+      }
     }
 
     resetScores(pointsAwarded);
-    const finalRound = { ...currentRound, roundResult: { ...currentRound.roundResult, outsiderGuessedCorrectly: correctGuess, pointsAwarded } };
+
+    const finalRound = {
+      ...currentRound,
+      revealed: true,
+      roundResult: {
+        ...currentRound.roundResult,
+        outsiderGuessedCorrectly,
+        pointsAwarded
+      }
+    };
     setCurrentRound(finalRound);
     setHistory(prev => [finalRound, ...prev]);
     setGameState('results');
@@ -196,14 +203,13 @@ export function useOutsideStory() {
     setCurrentPlayerTurn(prev => (prev + 1));
   };
 
-  // Add a function to advance to the next voter
   const nextVoter = () => {
     setVotingPlayerIndex(prev => prev + 1);
   };
 
   const playAgain = useCallback(() => {
     setCurrentPlayerTurn(0);
-    setVotingPlayerIndex(0); // Reset voter index for the new round
+    setVotingPlayerIndex(0);
     setCurrentRound(null);
   }, []);
 
@@ -232,7 +238,6 @@ export function useOutsideStory() {
     submitVote: (voterId: number, votedPlayerId: number) => {
       setCurrentRound(prev => prev ? { ...prev, votes: { ...prev.votes, [voterId]: votedPlayerId } } : null);
     },
-    // Expose voter state and functions
     votingPlayerIndex,
     nextVoter,
     t,

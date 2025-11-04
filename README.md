@@ -109,6 +109,7 @@ PowerLetter-for-Puzzles/
 │   │   ├── formation-game/
 │   │   ├── img-clue-game/
 │   │   ├── letter-flow-game/
+│   │   ├── outside-story-game/
 │   │   ├── picture-choice-game/
 │   │   └── word-choice-game/
 │   ├── games/
@@ -119,6 +120,7 @@ PowerLetter-for-Puzzles/
 │   │   ├── use-toast.ts
 │   │   ├── useGame.ts
 │   │   ├── useGameMode.ts
+│   │   ├── useInstructions.ts
 │   │   ├── useTheme.ts
 │   │   └── useTranslation.ts
 │   ├── lib/
@@ -130,6 +132,7 @@ PowerLetter-for-Puzzles/
 │   │   ├── ar/
 │   │   └── en/
 │   ├── pages/
+│   │   ├── GameSettingsPage.tsx
 │   │   ├── GameTypeSelector.tsx
 │   │   ├── HeroSection.tsx
 │   │   ├── Index.tsx

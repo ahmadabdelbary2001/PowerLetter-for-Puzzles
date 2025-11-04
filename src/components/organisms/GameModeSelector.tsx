@@ -38,6 +38,7 @@ const CATEGORIES_BY_GAME: Record<string, readonly { id: GameCategory; icon: Reac
     { id: 'animals', icon: <PawPrint size={48} />, labelKey: 'animals' },
     { id: 'science', icon: <FlaskConical size={48} />, labelKey: 'science' },
     { id: 'geography', icon: <Globe size={48} />, labelKey: 'geography' },
+    { id: 'fruits', icon: <Globe size={48} />, labelKey: 'fruits' },
   ],
 
   // Default (fallback)

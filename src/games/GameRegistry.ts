@@ -76,7 +76,7 @@ export const GAME_REGISTRY: GameConfig[] = [
     icon: React.createElement(Users, { className: "w-8 h-8" }),
     status: 'available',
     supportedSettings: ['teams', 'category'],
-    availableCategories: ['animals', 'science', 'geography'], // Different set of categories
+    availableCategories: ['animals', 'science', 'geography', 'fruits'], // Different set of categories
   },
   
   // --- Kids Games ---

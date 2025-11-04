@@ -58,6 +58,8 @@ export interface GameState {
   updateScore: (teamId: number, points: number) => void;
   resetScores: (pointsAwarded: Record<number, number>) => void;
   consumeHint: (teamId: number) => boolean;
-  nextTurn: () => void;
+  // --- CRITICAL FIX ---
+  // The signature is updated to accept the 'outcome' argument.
+  nextTurn: (outcome: 'win' | 'lose') => void;
   resetGame: () => void;
 }
