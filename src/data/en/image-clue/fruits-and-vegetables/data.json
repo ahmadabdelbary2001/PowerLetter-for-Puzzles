@@ -1,0 +1,10 @@
+{
+    "levels": [
+        {
+            "id": "img-en-fruits-and-vegetables-1",
+            "image": "/assets/images/fruits-and-vegetables/banana.jpg",
+            "sound": "/assets/sounds/en/fruits-and-vegetables/banana.mp3",
+            "solution": "BANANA"
+        }
+    ]
+}

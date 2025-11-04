@@ -46,7 +46,7 @@ class ImgClueGameEngine implements IGameEngine<ImageLevel> {
   }): Promise<ImageLevel[]> {
     const { language, categories } = options;
     // All kid-friendly categories available for this game type
-    const ALL_KIDS_CATEGORIES: GameCategory[] = ['animals', 'fruits', 'shapes'];
+    const ALL_KIDS_CATEGORIES: GameCategory[] = ['animals', 'fruits-and-vegetables', 'shapes'];
     // If 'general' is selected, load all categories; otherwise load only selected ones
     const categoriesToLoad = categories.includes('general') ? ALL_KIDS_CATEGORIES : categories;
 

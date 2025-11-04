@@ -1,0 +1,1 @@
+const a="clothes",s=["Ring","Belt","Shemagh","Jacket","Boots","Earring","Shorts","Watch","Heels","Bisht","Abaya","Agal","Ghutra","Skirt","Necklace","Jeans","Slippers","Pants","Thobe","Hat","Dress","Shirt","Socks","Gloves","Glasses","Pajamas","Tie","Wallet","Burqa","Sandal","keffiyeh","hijab","scarf"],e={id:a,words:s};export{e as default,a as id,s as words};

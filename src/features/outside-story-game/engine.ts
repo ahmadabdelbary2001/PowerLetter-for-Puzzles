@@ -10,9 +10,10 @@ export interface OutsideStoryLevel {
   meta?: Record<string, unknown>;
 }
 
+// Defines the expected structure of the dynamically imported JSON modules.
 interface LevelModule {
   default?: {
-    id?: string;
+    category?: GameCategory; // The category name inside the JSON
     words?: unknown[];
     meta?: Record<string, unknown>;
   };
@@ -28,43 +29,40 @@ class OutsideStoryGameEngine implements IGameEngine<OutsideStoryLevel> {
   }): Promise<OutsideStoryLevel[]> {
     const { language, categories } = options;
 
-    // Explicit typing for import.meta.glob map
+    // The glob pattern remains the same, as it matches all JSON files in the directory.
     const modules = import.meta.glob('/src/data/**/outside-the-story/*.json') as Record<string, () => Promise<LevelModule>>;
     const results: OutsideStoryLevel[] = [];
 
     for (const cat of categories) {
-      const path = `/src/data/${language}/outside-the-story/${language}-outside-the-story-${cat}.json`;
+      // --- CRITICAL FIX ---
+      // The path is updated to match the new, simpler file naming convention.
+      // e.g., from "/src/data/ar/outside-the-story/ar-outside-the-story-animals.json"
+      // to "/src/data/ar/outside-the-story/animals.json"
+      const path = `/src/data/${language}/outside-the-story/${cat}.json`;
+      
       const loader = modules[path];
 
       if (!loader) {
-        // fallback: try to find any file that matches category+language
-        const fallbackKey = Object.keys(modules).find(k => k.includes(`/${language}/outside-the-story/`) && k.includes(`outside-the-story-${cat}`));
-        if (!fallbackKey) continue;
-        const module = await modules[fallbackKey]();
-        const words = Array.isArray(module.default?.words) ? module.default!.words.map(String) : [];
-        results.push({
-          id: module.default?.id ?? `${language}-${cat}`,
-          language,
-          category: cat,
-          words,
-          meta: module.default?.meta ?? {},
-        });
+        // If the expected file doesn't exist, log a warning and skip it.
+        console.warn(`OutsideStoryGameEngine: Could not find data file at path: ${path}`);
         continue;
       }
 
       try {
         const module = await loader();
-        const words = Array.isArray(module.default?.words) ? module.default!.words.map(String) : [];
+        // Ensure the loaded module and its 'words' property are valid.
+        const words = Array.isArray(module.default?.words) ? module.default.words.map(String) : [];
+        
         results.push({
-          id: module.default?.id ?? `${language}-${cat}`,
+          id: `${language}-${cat}`, // Generate a consistent ID.
           language,
           category: cat,
           words,
           meta: module.default?.meta ?? {},
         });
       } catch (err) {
-        // If a file fails to load, log and continue
-        console.error(`OutsideStoryGameEngine: Failed to load ${path}`, err);
+        // If a file fails to load for any reason, log the error and continue.
+        console.error(`OutsideStoryGameEngine: Failed to load or parse ${path}`, err);
       }
     }
 

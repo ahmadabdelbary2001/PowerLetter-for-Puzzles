@@ -35,7 +35,7 @@ class WordChoiceGameEngine implements IGameEngine<WordChoiceLevel> {
   }): Promise<WordChoiceLevel[]> {
     const { language, categories } = options;
     // Define all available kids categories
-    const ALL_KIDS_CATEGORIES: GameCategory[] = ['animals', 'fruits', 'shapes'];
+    const ALL_KIDS_CATEGORIES: GameCategory[] = ['animals', 'fruits-and-vegetables', 'shapes'];
     // If 'general' category is selected, load all kids categories; otherwise load the specified ones
     const categoriesToLoad = categories.includes('general') ? ALL_KIDS_CATEGORIES : categories;
 

@@ -12,7 +12,10 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { ArrowRight, ArrowLeft, PawPrint, FlaskConical, Globe, BrainCircuit } from 'lucide-react';
+import { 
+  ArrowRight, ArrowLeft, PawPrint, FlaskConical, Globe, BrainCircuit, Apple, Music, Car, 
+  Clapperboard, Utensils, GlassWater, Heart, Swords, Cake, Shirt, Tv, Gamepad, User 
+} from 'lucide-react';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useTranslation } from "@/hooks/useTranslation";
 import { Header } from '@/components/organisms/Header';
@@ -36,9 +39,22 @@ const CATEGORIES_BY_GAME: Record<string, readonly { id: GameCategory; icon: Reac
   // Outside the story (adult) - NO 'general' option
   'outside-the-story': [
     { id: 'animals', icon: <PawPrint size={48} />, labelKey: 'animals' },
-    { id: 'science', icon: <FlaskConical size={48} />, labelKey: 'science' },
+    { id: 'anime', icon: <Heart size={48} />, labelKey: 'anime' },
+    { id: 'cars', icon: <Car size={48} />, labelKey: 'cars' },
+    { id: 'cartoons', icon: <Clapperboard size={48} />, labelKey: 'cartoons' },
+    { id: 'characters', icon: <User size={48} />, labelKey: 'characters' },
+    { id: 'clothes', icon: <Shirt size={48} />, labelKey: 'clothes' },
+    { id: 'drinks', icon: <GlassWater size={48} />, labelKey: 'drinks' },
+    { id: 'foods', icon: <Utensils size={48} />, labelKey: 'foods' },
+    { id: 'football', icon: <Globe size={48} />, labelKey: 'football' },
+    { id: 'fruits-and-vegetables', icon: <Apple size={48} />, labelKey: 'fruits-and-vegetables' },
+    { id: 'gamers', icon: <Gamepad size={48} />, labelKey: 'gamers' },
     { id: 'geography', icon: <Globe size={48} />, labelKey: 'geography' },
-    { id: 'fruits', icon: <Globe size={48} />, labelKey: 'fruits' },
+    { id: 'k-pop', icon: <Music size={48} />, labelKey: 'k-pop' },
+    { id: 'science', icon: <FlaskConical size={48} />, labelKey: 'science' },
+    { id: 'series', icon: <Tv size={48} />, labelKey: 'series' },
+    { id: 'spy', icon: <Swords size={48} />, labelKey: 'spy' },
+    { id: 'sweets', icon: <Cake size={48} />, labelKey: 'sweets' },
   ],
 
   // Default (fallback)

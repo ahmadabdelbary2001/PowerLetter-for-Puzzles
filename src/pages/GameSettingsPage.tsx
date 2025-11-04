@@ -9,7 +9,10 @@ import { Header } from '@/components/organisms/Header';
 import { DifficultySelector } from '@/components/molecules/DifficultySelector';
 import { CategorySelector } from '@/components/molecules/CategorySelector';
 import { getGameConfig } from '@/games/GameRegistry';
-import { ArrowLeft, ArrowRight, BrainCircuit, FlaskConical, Globe, Shapes, Apple, Palette } from 'lucide-react';
+import { 
+  ArrowLeft, ArrowRight, BrainCircuit, FlaskConical, Globe, Shapes, Apple, Palette, 
+  Music, Car, Clapperboard, Utensils, GlassWater, Heart, Swords, Cake, Shirt, Tv, Gamepad, User
+} from 'lucide-react';
 import type { GameCategory } from '@/types/game';
 
 const difficultyOptions = [
@@ -22,13 +25,29 @@ const categoryIconMap: Record<GameCategory, React.ReactNode> = {
   animals: <BrainCircuit size={48} />,
   science: <FlaskConical size={48} />,
   geography: <Globe size={48} />,
-  fruits: <Apple size={48} />,
+  'fruits-and-vegetables': <Apple size={48} />,
   shapes: <Shapes size={48} />,
   general: <Palette size={48} />,
+  anime: <Heart size={48} />,
+  cars: <Car size={48} />,
+  cartoons: <Clapperboard size={48} />,
+  characters: <User size={48} />,
+  clothes: <Shirt size={48} />,
+  drinks: <GlassWater size={48} />,
+  foods: <Utensils size={48} />,
+  football: <Globe size={48} />,
+  gamers: <Gamepad size={48} />,
+  'k-pop': <Music size={48} />,
+  series: <Tv size={48} />,
+  spy: <Swords size={48} />,
+  sweets: <Cake size={48} />,
 };
 
+// --- CRITICAL FIX ---
+// The redundant toCamelCase helper function has been removed from this file.
+// The logic is now centralized in CategorySelector.tsx.
+
 const GameSettingsPage: React.FC = () => {
-  // CORRECTED: The 'settingType' can no longer be 'teams' here.
   const { settingType, gameType } = useParams<{ settingType: 'difficulty' | 'category', gameType: string }>();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
@@ -61,6 +80,9 @@ const GameSettingsPage: React.FC = () => {
     return t.gameSettings;
   };
 
+  // --- CRITICAL FIX ---
+  // The call to toCamelCase is removed. Pass the raw catId as the labelKey.
+  // CategorySelector will handle the conversion internally.
   const displayCategories = (gameConfig?.availableCategories || []).map(catId => ({
     id: catId,
     labelKey: catId,
@@ -77,7 +99,6 @@ const GameSettingsPage: React.FC = () => {
               <CardTitle className="text-2xl sm:text-3xl">{getTitle()}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-8">
-              {/* CORRECTED: Removed the logic for rendering TeamConfigurator */}
               {settingType === 'difficulty' && (
                 <>
                   <DifficultySelector difficulties={difficultyOptions} onDifficultySelect={setDifficulty} />

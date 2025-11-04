@@ -21,7 +21,7 @@ import type { GameCategory } from '@/types/game';
 const categoriesData = [
   { id: 'general', icon: <BrainCircuit size={48} />, labelKey: 'generalKnowledge' },
   { id: 'animals', icon: <PawPrint size={48} />, labelKey: 'animals' },
-  { id: 'fruits', icon: <Apple size={48} />, labelKey: 'fruits' },
+  { id: 'fruits-and-vegetables', icon: <Apple size={48} />, labelKey: 'fruits-and-vegetables' },
   { id: 'shapes', icon: <Shapes size={48} />, labelKey: 'shapes' },
 ] as const;
 
@@ -90,7 +90,7 @@ const KidsGameModeSelector: React.FC = () => {
         return (
           <>
             <h2 className="text-2xl sm:text-3xl font-bold text-center mb-2">{t.selectCategory}</h2>
-            <p className="text-center text-muted-foreground mb-6">{t.selectCategoryDesc}</p>
+            <p className="text-center text-muted-foreground mb-6">{t.selectCategoryHint}</p>
             <CategorySelector
               categories={[...categoriesData]}
               selectedCategories={selectedCategories}

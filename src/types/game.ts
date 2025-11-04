@@ -11,7 +11,29 @@ export type GameType =
   | 'picture-choice'
   | 'word-choice';
 export type Difficulty = 'easy' | 'medium' | 'hard';
-export type GameCategory = 'animals' | 'science' | 'geography' | 'fruits' | 'shapes' | 'general';
+
+// --- CRITICAL FIX ---
+// Added all the new categories from the directory structure.
+export type GameCategory = 
+  | 'animals' 
+  | 'science' 
+  | 'geography' 
+  | 'fruits-and-vegetables' 
+  | 'shapes' 
+  | 'general'
+  | 'anime'
+  | 'cars'
+  | 'cartoons'
+  | 'characters'
+  | 'clothes'
+  | 'drinks'
+  | 'foods'
+  | 'football'
+  | 'gamers'
+  | 'k-pop'
+  | 'series'
+  | 'spy'
+  | 'sweets';
 
 export type GameId = string;
 
@@ -58,8 +80,6 @@ export interface GameState {
   updateScore: (teamId: number, points: number) => void;
   resetScores: (pointsAwarded: Record<number, number>) => void;
   consumeHint: (teamId: number) => boolean;
-  // --- CRITICAL FIX ---
-  // The signature is updated to accept the 'outcome' argument.
   nextTurn: (outcome: 'win' | 'lose') => void;
   resetGame: () => void;
 }

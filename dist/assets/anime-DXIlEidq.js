@@ -1,0 +1,1 @@
+const a="anime",e=["One Piece","Naruto","Attack on Titan","Dragon Ball","Death Note","Hunter x Hunter","Demon Slayer","Bleach","Jujutsu Kaisen","Pokémon","Detective Conan","Slam Dunk","One-Punch Man","My Hero Academia","Tokyo Ghoul","Fairy Tail","Spy x Family","Captain Tsubasa","Grendizer","Haikyuu!!"],n={id:a,words:e};export{n as default,a as id,e as words};

@@ -1,7 +1,7 @@
 // src/games/GameRegistry.ts
 import React from 'react';
 import { Puzzle, Search, Image as ImageIcon, CheckSquare, SpellCheck, Share2, Users } from 'lucide-react';
-import type { GameCategory } from '@/types/game'; // Import the GameCategory type
+import type { GameCategory } from '@/types/game';
 
 const ClueGameScreen = React.lazy(() => import('@/features/clue-game/components/ClueGameScreen'));
 const ImgClueGameScreen = React.lazy(() => import('@/features/img-clue-game/components/ImgClueGameScreen'));
@@ -24,7 +24,6 @@ export interface GameConfig {
   icon: React.ReactNode;
   status: 'available' | 'coming-soon';
   supportedSettings: SupportedSetting[];
-  // A list of available categories for this specific game
   availableCategories?: GameCategory[];
 }
 
@@ -40,7 +39,7 @@ export const GAME_REGISTRY: GameConfig[] = [
     icon: React.createElement(Search, { className: "w-8 h-8" }),
     status: 'available',
     supportedSettings: ['teams', 'difficulty', 'category'],
-    availableCategories: ['animals', 'science', 'geography', 'general'], // Specific categories for this game
+    availableCategories: ['animals', 'science', 'geography', 'general'],
   },
   {
     id: 'formation',
@@ -52,7 +51,6 @@ export const GAME_REGISTRY: GameConfig[] = [
     icon: React.createElement(Puzzle, { className: "w-8 h-8" }),
     status: 'available',
     supportedSettings: ['teams', 'difficulty'],
-    // No categories for this game
   },
   {
     id: 'letter-flow',
@@ -64,7 +62,6 @@ export const GAME_REGISTRY: GameConfig[] = [
     icon: React.createElement(Share2, { className: "w-8 h-8" }),
     status: 'available',
     supportedSettings: ['teams', 'difficulty'],
-    // No categories for this game
   },
   {
     id: 'outside-the-story',
@@ -76,7 +73,27 @@ export const GAME_REGISTRY: GameConfig[] = [
     icon: React.createElement(Users, { className: "w-8 h-8" }),
     status: 'available',
     supportedSettings: ['teams', 'category'],
-    availableCategories: ['animals', 'science', 'geography', 'fruits'], // Different set of categories
+    // --- CRITICAL FIX ---
+    // Added all the new categories to this game's configuration.
+    availableCategories: [
+      'animals', 
+      'anime',
+      'cars',
+      'cartoons',
+      'characters',
+      'clothes',
+      'drinks',
+      'foods',
+      'football',
+      'fruits-and-vegetables',
+      'gamers',
+      'geography',
+      'k-pop',
+      'science',
+      'series',
+      'spy',
+      'sweets'
+    ],
   },
   
   // --- Kids Games ---
@@ -90,7 +107,7 @@ export const GAME_REGISTRY: GameConfig[] = [
     icon: React.createElement(SpellCheck, { className: "w-8 h-8" }),
     status: 'available',
     supportedSettings: ['teams', 'category'],
-    availableCategories: ['animals', 'fruits', 'shapes', 'general'], // Different set of categories
+    availableCategories: ['animals', 'fruits-and-vegetables', 'shapes', 'general'],
   },
   {
     id: 'picture-choice',
@@ -102,7 +119,7 @@ export const GAME_REGISTRY: GameConfig[] = [
     icon: React.createElement(ImageIcon, { className: "w-8 h-8" }),
     status: 'available',
     supportedSettings: ['teams', 'category'],
-    availableCategories: ['animals', 'fruits', 'shapes', 'general'], // Different set of categories
+    availableCategories: ['animals', 'fruits-and-vegetables', 'shapes', 'general'],
   },
   {
     id: 'word-choice',
@@ -114,7 +131,7 @@ export const GAME_REGISTRY: GameConfig[] = [
     icon: React.createElement(CheckSquare, { className: "w-8 h-8" }),
     status: 'available',
     supportedSettings: ['teams', 'category'],
-    availableCategories: ['animals', 'fruits', 'shapes', 'general'], // Different set of categories
+    availableCategories: ['animals', 'fruits-and-vegetables', 'shapes', 'general'],
   },
 ];
 

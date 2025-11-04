@@ -1,0 +1,1 @@
+const a="cars",e=["Toyota","Hyundai","Ford","Mercedes","BMW","Lexus","Nissan","Honda","Chevrolet","Kia","Audi","Jeep","Land Rover","Porsche","Ferrari","Lamborghini","Mazda","Volkswagen","Tesla","Maserati"],s={id:a,words:e};export{s as default,a as id,e as words};

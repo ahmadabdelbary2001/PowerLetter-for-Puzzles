@@ -22,7 +22,7 @@ class PictureChoiceGameEngine implements IGameEngine<PictureChoiceLevel> {
     difficulty?: Difficulty;
   }): Promise<PictureChoiceLevel[]> {
     const { language, categories } = options;
-    const ALL_KIDS_CATEGORIES: GameCategory[] = ['animals', 'fruits', 'shapes'];
+    const ALL_KIDS_CATEGORIES: GameCategory[] = ['animals', 'fruits-and-vegetables', 'shapes'];
     const categoriesToLoad = categories.includes('general') ? ALL_KIDS_CATEGORIES : categories;
 
     // loader map: keys -> async loader function

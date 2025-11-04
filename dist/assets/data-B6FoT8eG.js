@@ -1,0 +1,1 @@
+const s=[{id:"img-en-fruits-and-vegetables-1",image:"/assets/images/fruits-and-vegetables/banana.jpg",sound:"/assets/sounds/en/fruits-and-vegetables/banana.mp3",solution:"BANANA"}],a={levels:s};export{a as default,s as levels};
