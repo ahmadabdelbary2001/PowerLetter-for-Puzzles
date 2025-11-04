@@ -1,0 +1,1 @@
+const a="animals",o=["lion","tiger","elephant","giraffe","zebra","monkey","bear","kangaroo","panda","dolphin","whale","shark","eagle","owl","penguin","rhinoceros","hippopotamus","fox","wolf","camel"],e={id:a,words:o};export{e as default,a as id,o as words};

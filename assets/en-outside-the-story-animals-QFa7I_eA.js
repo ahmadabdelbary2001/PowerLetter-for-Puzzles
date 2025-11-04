@@ -1,1 +1,0 @@
-const a="animals",e=["lion","tiger","elephant","giraffe","zebra","monkey","bear","kangaroo","panda","dolphin","whale","shark","eagle","owl","penguin","rhinoceros","hippopotamus","fox","wolf","camel"],o={id:a,words:e};export{o as default,a as id,e as words};
