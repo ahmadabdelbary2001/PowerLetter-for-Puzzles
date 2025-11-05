@@ -1,24 +1,25 @@
 // src/features/word-choice-game/components/WordChoiceScreen.tsx
-// This component implements the UI for the Word Choice game where users select the correct word
-// that matches an image and sound prompt.
-
+/**
+ * This component implements the UI for the Word Choice game.
+ * It now uses the shared MultipleChoiceLayout to structure the page, passing
+ * its game-specific elements (image prompt, word options) as content slots.
+ */
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, Volume2, CheckCircle, XCircle } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
-import { GameLayout } from "@/components/templates/GameLayout";
 import { useWordChoiceGame } from "@/features/word-choice-game/hooks/useWordChoice";
 import { cn } from "@/lib/utils";
-import { Notification } from "@/components/atoms/Notification";
 import { useInstructions } from "@/hooks/useInstructions";
+// --- Import the reusable layout template ---
+import { MultipleChoiceLayout } from "@/components/templates/MultipleChoiceLayout";
 
 const WordChoiceScreen: React.FC = () => {
-  // Get translation functions and text direction (for RTL languages)
+  // Get translation functions and text direction
   const { t, i18n } = useTranslation();
-  const dir = i18n.dir(); // 'ltr' or 'rtl'
+  const dir = i18n.dir();
 
-  // ✅ FIXED: Call useInstructions() with key argument
-  // ✅ Also normalize to ensure it's compatible with GameLayout prop type
+  // Get instructions
   const rawInstructions = useInstructions("wordChoice");
   const instructions = rawInstructions
     ? {
@@ -30,21 +31,20 @@ const WordChoiceScreen: React.FC = () => {
 
   // Extract all necessary state and functions from the custom hook
   const {
-    loading,           // Loading state for data fetching
-    currentLevel,      // Current game level data
-    shuffledOptions,   // Word options shuffled randomly
-    answerStatus,      // Status of user's answer (idle, correct, incorrect)
-    selectedOption,    // Currently selected option by user
-    audioRef,          // Reference to the audio element
-    getAssetPath,      // Function to get the correct asset path
-    playSound,         // Function to play the sound
-    handleOptionClick, // Function to handle option selection
-    nextLevel,         // Function to advance to the next level
-    handleBack,        // Function to navigate back
+    loading,
+    currentLevel,
+    shuffledOptions,
+    answerStatus,
+    selectedOption,
+    audioRef,
+    getAssetPath,
+    playSound,
+    handleOptionClick,
+    nextLevel,
+    handleBack,
   } = useWordChoiceGame();
 
-  // --- Render Logic ---
-  // Show loading state while data is being fetched
+  // Render loading state
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -53,7 +53,7 @@ const WordChoiceScreen: React.FC = () => {
     );
   }
 
-  // Show error state if no levels are available or there's an error
+  // Render error state
   if (!currentLevel || currentLevel.solution === "ERROR") {
     return (
       <div className="flex flex-col justify-center items-center h-screen gap-4 p-4 text-center">
@@ -64,61 +64,38 @@ const WordChoiceScreen: React.FC = () => {
   }
 
   // Build notification for success/incorrect attempts
-  const showNotif = answerStatus !== "idle";
   const notifMessage =
     answerStatus === "correct"
       ? t.congrats ?? "Correct!"
       : answerStatus === "incorrect"
       ? t.wrongAnswer ?? "Wrong! Try again"
-      : "";
+      : null;
   const notifType = answerStatus === "correct" ? "success" : "error";
 
+  // --- Use the new MultipleChoiceLayout ---
   return (
-    <GameLayout
+    <MultipleChoiceLayout
+      // Pass standard layout props
       title={t.wordChoiceTitle ?? "Word Choice"}
-      levelIndex={0}
+      levelIndex={0} // This game doesn't show a level index
       onBack={handleBack}
-      layoutType="image"
-      instructions={instructions} // ✅ Correct type: undefined or valid object
-    >
-      {/* Show notification when correct/incorrect */}
-      {showNotif && (
-        <Notification
-          message={notifMessage}
-          type={notifType}
-          duration={1000}
-        />
-      )}
-
-      {/* Image and Sound Button Section */}
-      <div className="relative aspect-video bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center">
-        {/* Display the image for the current level */}
-        <img
-          src={getAssetPath(currentLevel.image)}
-          alt="Guess the word"
-          className="max-h-full max-w-full object-contain"
-        />
-
-        {/* Sound button to play the audio clue */}
-        <Button
-          size="icon"
-          onClick={playSound}
-          className="absolute top-3 right-3 rounded-full bg-black/50 hover:bg-black/70"
-          aria-label={t.playSound ?? "Play sound"}
-        >
-          <Volume2 className="h-6 w-6 text-white" aria-hidden />
-        </Button>
-
-        {/* Hidden audio element that will be played when sound button is clicked */}
-        <audio ref={audioRef} src={getAssetPath(currentLevel.sound)} preload="auto" />
-      </div>
-
-      {/* Word Options */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 max-[200px]:grid-cols-1 gap-3 pt-4">
-        {shuffledOptions.map((option) => {
+      instructions={instructions}
+      notificationMessage={notifMessage}
+      notificationType={notifType}
+      // Pass game-specific content into the layout's slots
+      promptContent={
+        <div className="relative aspect-video bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center">
+          <img src={getAssetPath(currentLevel.image)} alt="Guess the word" className="max-h-full max-w-full object-contain" />
+          <Button size="icon" onClick={playSound} className="absolute top-3 right-3 rounded-full bg-black/50 hover:bg-black/70" aria-label={t.playSound ?? "Play sound"}>
+            <Volume2 className="h-6 w-6 text-white" aria-hidden />
+          </Button>
+          <audio ref={audioRef} src={getAssetPath(currentLevel.sound)} preload="auto" />
+        </div>
+      }
+      optionsContent={
+        shuffledOptions.map((option) => {
           const isSelected = selectedOption === option;
           const isCorrectSolution = option === currentLevel.solution;
-
           return (
             <Button
               key={option}
@@ -126,18 +103,10 @@ const WordChoiceScreen: React.FC = () => {
               disabled={answerStatus === "correct"}
               className={cn(
                 "text-base h-16 flex items-center justify-center gap-2 transition-all duration-300",
-                isSelected &&
-                  answerStatus === "correct" &&
-                  "bg-green-500 hover:bg-green-600 border-2 border-green-700",
-                isSelected &&
-                  answerStatus === "incorrect" &&
-                  "bg-red-500 hover:bg-red-500 border-2 border-red-700",
-                !isSelected &&
-                  answerStatus === "incorrect" &&
-                  isCorrectSolution &&
-                  "bg-green-200 text-green-800 border-2 border-green-400",
-                answerStatus === "idle" &&
-                  "bg-card text-card-foreground hover:bg-muted"
+                isSelected && answerStatus === "correct" && "bg-green-500 hover:bg-green-600 border-2 border-green-700",
+                isSelected && answerStatus === "incorrect" && "bg-red-500 hover:bg-red-500 border-2 border-red-700",
+                !isSelected && answerStatus === "incorrect" && isCorrectSolution && "bg-green-200 text-green-800 border-2 border-green-400",
+                answerStatus === "idle" && "bg-card text-card-foreground hover:bg-muted"
               )}
             >
               {option}
@@ -145,26 +114,17 @@ const WordChoiceScreen: React.FC = () => {
               {isSelected && answerStatus === "incorrect" && <XCircle />}
             </Button>
           );
-        })}
-      </div>
-
-      {/* Next Level Button - only appears after correct answer */}
-      {answerStatus === "correct" && (
-        <div className="pt-4">
-          <Button
-            onClick={nextLevel}
-            className="w-full bg-green-600 hover:bg-green-700 text-lg py-6"
-          >
+        })
+      }
+      nextButtonContent={
+        answerStatus === "correct" && (
+          <Button onClick={nextLevel} className="w-full bg-green-600 hover:bg-green-700 text-lg py-6">
             {t.next}{" "}
-            {dir === "rtl" ? (
-              <ArrowLeft className="ml-2" />
-            ) : (
-              <ArrowRight className="ml-2" />
-            )}
+            {dir === "rtl" ? <ArrowLeft className="ml-2" /> : <ArrowRight className="ml-2" />}
           </Button>
-        </div>
-      )}
-    </GameLayout>
+        )
+      }
+    />
   );
 };
 
