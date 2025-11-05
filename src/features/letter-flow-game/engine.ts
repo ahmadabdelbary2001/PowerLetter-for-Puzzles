@@ -113,7 +113,7 @@ class letterFlowGameEngine implements IGameEngine<letterFlowLevel> {
 
     try {
       // Construct path to the level JSON file
-      const path = `/src/data/${language}/letter-flow/${language}-flow-${difficulty}.json`;
+      const path = `/src/data/${language}/letter-flow/${difficulty}.json`;
       // Get all JSON modules using dynamic import
       const modules = import.meta.glob('/src/data/**/*.json');
       const moduleLoader = modules[path];

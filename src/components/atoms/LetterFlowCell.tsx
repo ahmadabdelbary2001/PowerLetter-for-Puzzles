@@ -1,5 +1,5 @@
-// src/components/atoms/LetterFlowCell.tsx
-import React, { useRef } from "react";
+// src/components/atoms/LetterFlowCell.tsx (Radical and Corrected Version)
+import React from "react";
 import { cn } from "@/lib/utils";
 
 interface LetterFlowCellProps {
@@ -9,12 +9,11 @@ interface LetterFlowCellProps {
   isSelected?: boolean;
   isFound?: boolean;
   isActive?: boolean;
-  onMouseDown?: (cell: {x: number, y: number, letter: string}) => void;
-  onMouseEnter?: (cell: {x: number, y: number, letter: string}) => void;
+  onMouseDown?: (cell: { x: number; y: number; letter: string }) => void;
+  onMouseEnter?: (cell: { x: number; y: number; letter: string }) => void;
   onMouseUp?: () => void;
   disabled?: boolean;
   className?: string;
-  // visual props
   connectionDirections?: string[];
   connectionColor?: string | undefined;
   cellColor?: string | undefined;
@@ -34,127 +33,94 @@ export function LetterFlowCell({
   className,
   connectionDirections = [],
   connectionColor,
-  cellColor
+  cellColor,
 }: LetterFlowCellProps) {
-  const ref = useRef<HTMLDivElement | null>(null);
+  const cellData = { x, y, letter };
+
+  // --- POINTER EVENT HANDLERS (for both mouse and touch) ---
 
   const handlePointerDown: React.PointerEventHandler = (e) => {
-    if (disabled) return;
-    (e.target as Element)?.setPointerCapture?.(e.pointerId);
-    onMouseDown?.({ x, y, letter });
-    e.preventDefault();
+    if (disabled || !onMouseDown) return;
+    // Capture the pointer to prevent scrolling and other default actions.
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    onMouseDown(cellData);
   };
 
   const handlePointerMove: React.PointerEventHandler = (e) => {
-    if (disabled) return;
-    const el = document.elementFromPoint(e.clientX, e.clientY) as Element | null;
-    const cellEl = el?.closest?.("[data-cell-x]") as Element | null;
+    // Only trigger if a pointer is being dragged.
+    if (e.buttons !== 1 || disabled || !onMouseEnter) return;
+    
+    // Find the cell element under the current pointer position.
+    const element = document.elementFromPoint(e.clientX, e.clientY);
+    const cellEl = element?.closest<HTMLElement>("[data-cell-x]");
+
     if (cellEl) {
-      const cx = parseInt(cellEl.getAttribute("data-cell-x") || "0", 10);
-      const cy = parseInt(cellEl.getAttribute("data-cell-y") || "0", 10);
-      onMouseEnter?.({ x: cx, y: cy, letter: cellEl.textContent?.trim() || "" });
+      const cx = parseInt(cellEl.dataset.cellX || "0", 10);
+      const cy = parseInt(cellEl.dataset.cellY || "0", 10);
+      // Find the letter from the inner span to avoid grabbing pipe elements.
+      const letterSpan = cellEl.querySelector<HTMLSpanElement>('.cell-letter');
+      onMouseEnter({ x: cx, y: cy, letter: letterSpan?.textContent?.trim() || "" });
     }
   };
 
   const handlePointerUp: React.PointerEventHandler = (e) => {
-    try {
-      (e.target as Element)?.releasePointerCapture?.(e.pointerId);
-    } catch (err) {
-      console.debug('releasePointerCapture failed', err);
-    }
-    onMouseUp?.();
+    if (disabled || !onMouseUp) return;
+    // Release the pointer capture.
+    (e.target as HTMLElement).releasePointerCapture(e.pointerId);
+    onMouseUp();
   };
 
-  // Touch event handlers for mobile devices
-  const handleTouchStart: React.TouchEventHandler = (e) => {
-    if (disabled) return;
-    e.preventDefault();
-
-    // Get the first touch
-    const touch = e.touches[0];
-    const element = document.elementFromPoint(touch.clientX, touch.clientY);
-
-    if (element && element.getAttribute('data-cell-x') && element.getAttribute('data-cell-y')) {
-      const x = parseInt(element.getAttribute('data-cell-x') || '0');
-      const y = parseInt(element.getAttribute('data-cell-y') || '0');
-      const letter = element.textContent?.trim() || '';
-      onMouseDown?.({ x, y, letter });
-    }
-  };
-
-  const handleTouchMove: React.TouchEventHandler = (e) => {
-    if (disabled) return;
-    e.preventDefault();
-
-    // Get the first touch
-    const touch = e.touches[0];
-    const element = document.elementFromPoint(touch.clientX, touch.clientY);
-
-    if (element && element.getAttribute('data-cell-x') && element.getAttribute('data-cell-y')) {
-      const x = parseInt(element.getAttribute('data-cell-x') || '0');
-      const y = parseInt(element.getAttribute('data-cell-y') || '0');
-      const letter = element.textContent?.trim() || '';
-      onMouseEnter?.({ x, y, letter });
-    }
-  };
-
-  const handleTouchEnd: React.TouchEventHandler = (e) => {
-    if (disabled) return;
-    e.preventDefault();
-    onMouseUp?.();
-  };
-
+  // Unchanged: Keyboard handler for accessibility
   const onKeyDown: React.KeyboardEventHandler = (e) => {
-    if (disabled) return;
+    if (disabled || !onMouseDown) return;
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
-      onMouseDown?.({ x, y, letter });
+      onMouseDown(cellData);
     }
   };
 
-  // render the center circle (letter) and connection pipes behind it
+  // --- STYLE AND COLOR LOGIC (from the old file) ---
   const circleSizePercent = 56;
-
-  // Use connectionColor first, then fallback to cellColor, then neutral
   const dotColor = connectionColor ?? cellColor ?? undefined;
 
   return (
     <div
-      ref={ref}
       role="button"
       tabIndex={disabled ? -1 : 0}
       aria-disabled={disabled}
       aria-pressed={isSelected || undefined}
       data-cell-x={x}
       data-cell-y={y}
+      // Attach the unified Pointer Event handlers.
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
+      onPointerCancel={handlePointerUp} // Handle cancelled gestures
       onKeyDown={onKeyDown}
+      // --- CRITICAL FIX: Add `touch-none` to disable default browser touch actions ---
       className={cn(
-        "aspect-square flex items-center justify-center rounded-md text-xl font-bold select-none relative transition-all duration-150",
+        "aspect-square flex items-center justify-center rounded-md text-xl font-bold select-none relative transition-all duration-150 touch-none",
         {
           "bg-gray-50 dark:bg-gray-800": !isSelected && !isFound && !isActive,
+          "cursor-pointer": !disabled,
           "cursor-not-allowed opacity-70": disabled,
           "text-gray-900 dark:text-gray-100": !isSelected && !isFound && !isActive && !dotColor,
         },
         className
       )}
     >
-      {/* connection pipes (drawn behind the center dot) */}
+      {/* --- JSX STRUCTURE (from the old file to preserve style) --- */}
+
+      {/* Connection pipes (drawn behind the center dot) */}
       {connectionDirections.includes('top') && (
         <div
           aria-hidden
           className="absolute top-0 left-1/2 transform -translate-x-1/2"
           style={{
-            width: `${Math.max(6, circleSizePercent * 0.08)}%`,
-            height: `40%`,
+            width: `${Math.max(6, circleSizePercent * 0.1)}%`,
+            height: `50%`,
             background: connectionColor,
-            borderRadius: 4,
-            zIndex: 0
+            zIndex: 0,
           }}
         />
       )}
@@ -163,11 +129,10 @@ export function LetterFlowCell({
           aria-hidden
           className="absolute bottom-0 left-1/2 transform -translate-x-1/2"
           style={{
-            width: `${Math.max(6, circleSizePercent * 0.08)}%`,
-            height: `40%`,
+            width: `${Math.max(6, circleSizePercent * 0.1)}%`,
+            height: `50%`,
             background: connectionColor,
-            borderRadius: 4,
-            zIndex: 0
+            zIndex: 0,
           }}
         />
       )}
@@ -176,11 +141,10 @@ export function LetterFlowCell({
           aria-hidden
           className="absolute left-0 top-1/2 transform -translate-y-1/2"
           style={{
-            height: `${Math.max(6, circleSizePercent * 0.08)}%`,
-            width: `40%`,
+            height: `${Math.max(6, circleSizePercent * 0.1)}%`,
+            width: `50%`,
             background: connectionColor,
-            borderRadius: 4,
-            zIndex: 0
+            zIndex: 0,
           }}
         />
       )}
@@ -189,30 +153,29 @@ export function LetterFlowCell({
           aria-hidden
           className="absolute right-0 top-1/2 transform -translate-y-1/2"
           style={{
-            height: `${Math.max(6, circleSizePercent * 0.08)}%`,
-            width: `40%`,
+            height: `${Math.max(6, circleSizePercent * 0.1)}%`,
+            width: `50%`,
             background: connectionColor,
-            borderRadius: 4,
-            zIndex: 0
+            zIndex: 0,
           }}
         />
       )}
 
-      {/* center dot (letter) on top of pipes */}
+      {/* Center dot (letter) on top of pipes */}
       <div
-        className="flex items-center justify-center rounded-full z-10"
+        className="flex items-center justify-center rounded-full z-10 pointer-events-none"
         style={{
           width: `${circleSizePercent}%`,
           height: `${circleSizePercent}%`,
           background: dotColor ?? '#ffffff',
           boxShadow: dotColor ? '0 2px 8px rgba(0,0,0,0.12)' : undefined,
-          border: dotColor ? 'none' : '1px solid rgba(0,0,0,0.06)'
+          border: dotColor ? 'none' : '1px solid rgba(0,0,0,0.06)',
         }}
       >
         {letter ? (
           <span
-            className="text-sm font-bold"
-            style={{ color: dotColor ? '#fff' : (isSelected || isFound || isActive ? '#fff' : '#111') }}
+            className="text-sm font-bold cell-letter"
+            style={{ color: dotColor ? '#fff' : '#111' }}
           >
             {letter}
           </span>

@@ -1,37 +1,32 @@
 // src/features/letter-flow-game/components/LetterFlowGameScreen.tsx
+/**
+ * @description The main UI component for the Letter Flow game.
+ * This component now uses the shared FlowGameLayout to structure the page,
+ * passing its game-specific elements as content slots.
+ */
 import React from 'react';
 import { useLetterFlowGame } from '../hooks/useLetterFlowGame';
-import type { letterFlowLevel } from '../engine';
 import { LetterFlowBoard } from '@/components/molecules/LetterFlowBoard';
 import { FoundWords } from '@/components/molecules/FoundWords';
 import GameControls from '@/components/organisms/GameControls';
 import { GameProgress } from '@/components/molecules/GameProgress';
-import { Notification } from '@/components/atoms/Notification';
 import { useTranslation } from "@/hooks/useTranslation";
-import { GameLayout } from '@/components/templates/GameLayout';
-import { usePassiveTouchFix } from '../hooks/usePassiveTouchFix';
 import { useInstructions } from '@/hooks/useInstructions';
-import { useGameMode } from '@/hooks/useGameMode'; // Import useGameMode
+import { useGameMode } from '@/hooks/useGameMode';
+import { usePassiveTouchFix } from '../hooks/usePassiveTouchFix';
+import { Button } from '@/components/ui/button';
+import { FlowGameLayout } from '@/components/templates/FlowGameLayout';
+import type { letterFlowLevel } from '../engine';
 
 const LetterFlowGameScreen: React.FC = () => {
-  const { t, i18n } = useTranslation();
-  const dir = i18n.dir();
-  const rawInstructions = useInstructions('letterFlow');
-
-  // Normalize instructions
-  const instructions = rawInstructions
-    ? {
-        title: rawInstructions.title ?? '',
-        description: rawInstructions.description ?? '',
-        steps: rawInstructions.steps ?? [],
-      }
-    : undefined;
-
-  usePassiveTouchFix();
-
-  // --- Get gameMode from the global state ---
+  const { t } = useTranslation();
   const { gameMode } = useGameMode();
 
+  const rawInstructions = useInstructions('letterFlow');
+  const instructions = rawInstructions ? { title: rawInstructions.title ?? '', description: rawInstructions.description ?? '', steps: rawInstructions.steps ?? [] } : undefined;
+  usePassiveTouchFix();
+
+  // --- Destructure `nextLevel` from the hook ---
   const {
     loading,
     currentLevel,
@@ -50,46 +45,17 @@ const LetterFlowGameScreen: React.FC = () => {
     onReset,
     clearSelection,
     currentLevelIndex,
+    nextLevel, // Now available to be passed down
   } = useLetterFlowGame();
 
-  // Render functions (unchanged)
-  const renderBoard = () => (
-    <LetterFlowBoard
-      cells={board}
-      selectedPath={selectedPath}
-      foundWords={foundWords}
-      activeLetter={activeLetter}
-      onMouseDown={(cell) => handleMouseDown({ ...cell, isUsed: false })}
-      onMouseEnter={(cell) => handleMouseEnter({ ...cell, isUsed: false })}
-      onMouseUp={handleMouseUp}
-    />
-  );
-  const renderFoundWords = () =>
-    foundWords.length === 0 ? null : <FoundWords foundWords={foundWords} t={{ selected: t.selected }} />;
-  const renderNotification = () => {
-    if (!notification) return null;
-    let type: 'success' | 'error' | 'warning' | 'info' = 'info';
-    if (notification.includes('congrats') || notification === t.congrats) type = 'success';
-    else if (notification.includes('Already found') || notification.includes('cannot cross')) type = 'warning';
-    else if (notification.includes('must connect') || notification.includes('horizontal or vertical')) type = 'error';
-    return <Notification message={notification} type={type} />;
-  };
-
-  // Loading and error states (unchanged)
   if (loading) {
-    return (
-      <div className={`flex flex-col items-center justify-center min-h-screen ${dir === 'rtl' ? 'text-right' : ''}`} dir={dir}>
-        <div className="text-xl">{t.loading}...</div>
-      </div>
-    );
+    return <div className="flex justify-center items-center h-screen"><p>{t.loading}...</p></div>;
   }
   if (!currentLevel) {
     return (
-      <div className={`flex flex-col items-center justify-center min-h-screen ${dir === 'rtl' ? 'text-right' : ''}`} dir={dir}>
-        <div className="text-xl">{t.noLevelsFound}</div>
-        <button onClick={handleBack} className="mt-4 btn">
-          {t.back}
-        </button>
+      <div className="flex flex-col items-center justify-center h-screen gap-4 p-4 text-center">
+        <p className="text-xl font-semibold">{t.noLevelsFound}</p>
+        <Button onClick={handleBack}>{t.back}</Button>
       </div>
     );
   }
@@ -97,61 +63,64 @@ const LetterFlowGameScreen: React.FC = () => {
   const totalWords = Math.floor(((currentLevel as letterFlowLevel)?.endpoints.length ?? 0) / 2);
 
   return (
-    <GameLayout
+    <FlowGameLayout
       title={t.letterFlowTitle ?? currentLevel.id}
       levelIndex={currentLevelIndex ?? 0}
       onBack={handleBack}
       difficulty={currentLevel.difficulty}
-      layoutType="text"
       instructions={instructions}
-    >
-      {renderNotification()}
-
-      <div className={`mb-6 touch-none ${dir === 'rtl' ? 'arabic-layout' : ''} transition-colors duration-300`} dir={dir}>
-        {renderBoard()}
-      </div>
-
-      {renderFoundWords()}
-
-      <GameControls
-        onReset={onReset}
-        onRemoveLetter={onUndo}
-        onClearAnswer={clearSelection}
-        onHint={onHint}
-        onNextLevel={undefined}
-        onPrevLevel={undefined}
-        onCheckAnswer={() => {}}
-        onShowSolution={undefined}
-        canRemove={foundWords.length > 0}
-        canClear={selectedPath.length > 0}
-        canCheck={false}
-        canPrev={Boolean(currentLevelIndex && currentLevelIndex > 0)}
-        canNext={gameState === 'won'}
-        canHint={foundWords.length < totalWords}
-        hintsRemaining={undefined}
-        gameState={gameState === 'won' ? 'won' : 'playing'}
-        // --- Pass the 'gameMode' prop ---
-        gameMode={gameMode}
-        isKidsMode={false}
-        labels={{
-          remove: t.undo,
-          clear: t.clear,
-          check: t.check,
-          hint: t.hint,
-          showSolution: t.showSolution,
-          reset: t.reset,
-          prev: t.prev,
-          next: t.next,
-        }}
-        showOnly={['remove', 'hint', 'reset', 'next']}
-      />
-
-      <GameProgress
-        foundWords={foundWords}
-        totalWords={totalWords}
-        t={{ selected: t.selected, of: t.of }}
-      />
-    </GameLayout>
+      notification={notification}
+      boardContent={
+        <LetterFlowBoard
+          cells={board}
+          selectedPath={selectedPath}
+          foundWords={foundWords}
+          activeLetter={activeLetter}
+          onMouseDown={(cell) => handleMouseDown({ ...cell, isUsed: false })}
+          onMouseEnter={(cell) => handleMouseEnter({ ...cell, isUsed: false })}
+          onMouseUp={handleMouseUp}
+        />
+      }
+      foundWordsContent={
+        foundWords.length > 0 ? <FoundWords foundWords={foundWords} t={{ selected: t.selected }} /> : null
+      }
+      gameControlsContent={
+        <GameControls
+          onReset={onReset}
+          onRemoveLetter={onUndo}
+          onClearAnswer={clearSelection}
+          onHint={onHint}
+          // --- Pass the `nextLevel` function to the `onNextLevel` prop ---
+          onNextLevel={nextLevel}
+          canRemove={foundWords.length > 0}
+          canClear={selectedPath.length > 0}
+          canCheck={false}
+          canNext={gameState === 'won'}
+          canHint={foundWords.length < totalWords}
+          gameState={gameState}
+          gameMode={gameMode}
+          isKidsMode={false}
+          labels={{
+            remove: t.undo,
+            clear: t.clear,
+            check: t.check,
+            hint: t.hint,
+            showSolution: t.showSolution,
+            reset: t.reset,
+            prev: t.prev,
+            next: t.next,
+          }}
+          showOnly={['remove', 'hint', 'reset', 'next']}
+        />
+      }
+      progressContent={
+        <GameProgress
+          foundWords={foundWords}
+          totalWords={totalWords}
+          t={{ selected: t.selected, of: t.of }}
+        />
+      }
+    />
   );
 };
 
