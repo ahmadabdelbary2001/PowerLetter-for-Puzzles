@@ -18,6 +18,8 @@ import type { GameMode } from '@/types/game';
 /**
  * Props interface for the GameControls component
  */
+type ButtonKey = 'remove' | 'clear' | 'hint' | 'check' | 'showSolution' | 'reset' | 'prev' | 'next';
+
 interface Props {
   onReset?: () => void;
   onRemoveLetter?: () => void;
@@ -47,8 +49,8 @@ interface Props {
     next: string;
   };
   isKidsMode?: boolean;
-  showOnly?: Array<'remove' | 'clear' | 'hint' | 'check' | 'showSolution' | 'reset' | 'prev' | 'next'>;
-  icons?: Partial<Record<'remove' | 'clear' | 'hint' | 'check' | 'showSolution' | 'reset' | 'prev' | 'next', LucideIcon>>;
+  showOnly?: ButtonKey[];
+  icons?: Partial<Record<ButtonKey, LucideIcon>>;
 }
 
 /**
@@ -78,79 +80,42 @@ export const GameControls: React.FC<Props> = ({
   icons,
 }) => {
   const { dir } = useTranslation();
-  const showResetAndPrev = gameMode !== 'competitive';
 
-  const shouldShow = (key: 'remove' | 'clear' | 'hint' | 'check' | 'showSolution' | 'reset' | 'prev' | 'next') => {
+  // Helper functions
+  const shouldShow = (key: ButtonKey) => {
     if (!showOnly) return true;
     return showOnly.includes(key);
   };
+  const pickIcon = (key: ButtonKey, defaultIcon: LucideIcon) => icons?.[key] ?? defaultIcon;
 
-  const pickIcon = (key: 'remove' | 'clear' | 'hint' | 'check' | 'showSolution' | 'reset' | 'prev' | 'next', defaultIcon: LucideIcon) => icons?.[key] ?? defaultIcon;
-
-  // --- Prioritize isKidsMode rendering ---
-  // If it's a kids' game, always show the simple controls, regardless of the 'failed' state.
-  // This prevents the navigation buttons from incorrectly appearing.
+  // Kids mode has its own simple layout
   if (isKidsMode) {
     return (
       <div className="flex flex-wrap gap-2 sm:gap-3 justify-center mt-4">
-        {shouldShow('remove') && (
-          <GameButton
-            onClick={onRemoveLetter}
-            disabled={!canRemove}
-            icon={pickIcon('remove', Delete)}
-            className="text-lg py-6 flex-1"
-          >
-            {labels.remove}
-          </GameButton>
-        )}
-        {shouldShow('clear') && (
-          <GameButton
-            onClick={onClearAnswer}
-            disabled={!canClear}
-            icon={pickIcon('clear', RotateCcw)}
-            className="text-lg py-6 flex-1"
-          >
-            {labels.clear}
-          </GameButton>
-        )}
-        {shouldShow('check') && (
-          <GameButton
-            onClick={onCheckAnswer}
-            disabled={!canCheck}
-            icon={pickIcon('check', CheckCircle)}
-            isPrimary={true}
-            className="text-lg py-6 flex-1"
-          >
-            {labels.check}
-          </GameButton>
-        )}
+        {shouldShow('remove') && <GameButton onClick={onRemoveLetter} disabled={!canRemove} icon={pickIcon('remove', Delete)} className="text-lg py-6 flex-1">{labels.remove}</GameButton>}
+        {shouldShow('clear') && <GameButton onClick={onClearAnswer} disabled={!canClear} icon={pickIcon('clear', RotateCcw)} className="text-lg py-6 flex-1">{labels.clear}</GameButton>}
+        {shouldShow('check') && <GameButton onClick={onCheckAnswer} disabled={!canCheck} icon={pickIcon('check', CheckCircle)} isPrimary={true} className="text-lg py-6 flex-1">{labels.check}</GameButton>}
       </div>
     );
   }
 
-  // Render navigation controls for 'won' or 'failed' states in adult games
-  if (gameState === 'won' || gameState === 'failed') {
+  // --- This block now ONLY handles the 'won' state in single-player mode ---
+  // It renders the navigational controls.
+  if (gameState === 'won' && gameMode !== 'competitive') {
     return (
-      <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mt-4">
-        {showResetAndPrev && shouldShow('reset') && (
+      <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
+        {shouldShow('reset') && (
           <GameButton onClick={onReset} icon={pickIcon('reset', RefreshCw)}>
             {labels.reset}
           </GameButton>
         )}
-        {showResetAndPrev && canPrev && shouldShow('prev') && (
-          <GameButton
-            onClick={onPrevLevel}
-            icon={pickIcon('prev', dir === 'rtl' ? ArrowRight : ArrowLeft)}
-          >
+        {canPrev && shouldShow('prev') && (
+          <GameButton onClick={onPrevLevel} icon={pickIcon('prev', dir === 'rtl' ? ArrowRight : ArrowLeft)}>
             {labels.prev}
           </GameButton>
         )}
         {canNext && shouldShow('next') && (
-          <GameButton
-            onClick={onNextLevel}
-            icon={pickIcon('next', dir === 'rtl' ? ArrowLeft : ArrowRight)}
-            isPrimary={true}
-          >
+          <GameButton onClick={onNextLevel} icon={pickIcon('next', dir === 'rtl' ? ArrowLeft : ArrowRight)} isPrimary={true}>
             {labels.next}
           </GameButton>
         )}
@@ -158,7 +123,10 @@ export const GameControls: React.FC<Props> = ({
     );
   }
 
-  // Default ('playing') controls for adult games
+  // --- This is now the default block for BOTH 'playing' AND 'failed' states ---
+  // It renders the primary action controls. The `can...` props (e.g., `canCheck`)
+  // will correctly disable the buttons during the 'failed' state, but the buttons
+  // themselves will remain visible.
   return (
     <div className="flex flex-wrap gap-1 sm:gap-2 justify-center mt-4">
       {shouldShow('remove') && (
@@ -182,7 +150,7 @@ export const GameControls: React.FC<Props> = ({
           {labels.check}
         </GameButton>
       )}
-      {showResetAndPrev && shouldShow('showSolution') && (
+      {gameMode !== 'competitive' && shouldShow('showSolution') && (
         <GameButton onClick={onShowSolution} icon={pickIcon('showSolution', Eye)} className="text-xs sm:text-sm">
           {labels.showSolution}
         </GameButton>

@@ -14,8 +14,6 @@ type Notification = {
   type: 'success' | 'error' | 'warning' | 'info';
 };
 
-// --- Defined a specific type for the instructions object ---
-// This ensures type safety and matches what the GameLayout component expects.
 type Instructions = {
   title: string;
   description: string;
@@ -31,8 +29,11 @@ interface WordPuzzleLayoutProps {
   levelIndex: number;
   onBack: () => void;
   difficulty?: 'easy' | 'medium' | 'hard';
-  instructions?: Instructions; // Use the specific Instructions type
+  instructions?: Instructions;
   notification: Notification | null;
+  // --- Added layoutType to the props ---
+  // This allows child components to specify the container size.
+  layoutType?: 'text' | 'image';
   promptContent: React.ReactNode;
   solutionContent: React.ReactNode;
   letterOptionsContent: React.ReactNode;
@@ -47,13 +48,15 @@ export const WordPuzzleLayout: React.FC<WordPuzzleLayoutProps> = ({
   difficulty,
   instructions,
   notification,
+  // --- Destructure layoutType ---
+  layoutType,
   promptContent,
   solutionContent,
   letterOptionsContent,
   gameControlsContent,
   wrongAnswersContent,
 }) => {
-  // Determine notification message and type from the notification object
+  // Determine notification message and type
   const notifMessage = notification?.message ?? null;
   const notifType = notification?.type ?? "info";
 
@@ -64,6 +67,9 @@ export const WordPuzzleLayout: React.FC<WordPuzzleLayoutProps> = ({
       onBack={onBack}
       difficulty={difficulty}
       instructions={instructions}
+      // --- Pass the layoutType prop down to GameLayout ---
+      // This will apply the correct max-width to the container.
+      layoutType={layoutType}
     >
       {/* Display notification if there is one */}
       {notifMessage && <NotificationComponent message={notifMessage} type={notifType} />}
