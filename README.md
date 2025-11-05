@@ -111,7 +111,8 @@ PowerLetter-for-Puzzles/
 │   │   ├── letter-flow-game/
 │   │   ├── outside-story-game/
 │   │   ├── picture-choice-game/
-│   │   └── word-choice-game/
+│   │   ├── word-choice-game/
+│   │   └── word-puzzle/
 │   ├── games/
 │   │   ├── GameRegistry.ts
 │   │   └── engine/

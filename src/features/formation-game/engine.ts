@@ -61,7 +61,7 @@ class FormationGameEngine implements IGameEngine<FormationLevel> {
 
     try {
       // Construct the path to the JSON file containing levels for the specified language and difficulty
-      const path = `/src/data/${language}/formation/${language}-formation-${difficulty}.json`;
+      const path = `/src/data/${language}/formation/${difficulty}.json`;
 
       // Get all JSON module importers
       const modules = import.meta.glob('/src/data/**/*.json');
