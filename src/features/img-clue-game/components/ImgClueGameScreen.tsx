@@ -15,7 +15,6 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { GameLayout } from "@/components/templates/GameLayout";
 import { useImageClueGame } from "../hooks/useImageClueGame";
 import { useGameMode } from "@/hooks/useGameMode";
-import type { ImageLevel } from "../engine";
 import { Notification } from "@/components/atoms/Notification";
 import { useInstructions } from "@/hooks/useInstructions";
 
@@ -26,27 +25,22 @@ import { useInstructions } from "@/hooks/useInstructions";
 const ImgClueGameScreen: React.FC = () => {
   // Get translation function and text direction for localization
   const { t, i18n } = useTranslation();
-  const dir = i18n.dir(); // 'ltr' or 'rtl' for the active language;
+  const dir = i18n.dir();
 
-  // ✅ FIX 1: Pass required argument "imgClue"
+  // Get instructions data
   const instructionsData = useInstructions("imageClue");
+  const instructions = instructionsData ? {
+    title: instructionsData.title,
+    description: instructionsData.description ?? "",
+    steps: instructionsData.steps ?? [],
+  } : undefined;
 
-  // ✅ FIX 2: Normalize null to undefined for GameLayout compatibility
-  const instructions =
-    instructionsData != null
-      ? {
-          title: instructionsData.title,
-          description: instructionsData.description ?? "",
-          steps: instructionsData.steps ?? [],
-        }
-      : undefined;
-
+  // Get gameMode from the global state. This is what we need to pass down.
   const { gameMode } = useGameMode();
 
-  // Destructure game state and handler functions from the useImageClueGame hook
+  // Destructure game state and handlers from the custom hook
   const {
     loading,
-    levels,
     currentLevel,
     solution,
     letters,
@@ -66,9 +60,12 @@ const ImgClueGameScreen: React.FC = () => {
     nextLevel,
     handleBack,
     currentLevelIndex,
+    canRemove,
+    canClear,
+    canCheck,
   } = useImageClueGame();
 
-  // Show loading state while levels are being loaded
+  // Loading and error states
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -76,8 +73,6 @@ const ImgClueGameScreen: React.FC = () => {
       </div>
     );
   }
-
-  // Show error state if no levels could be loaded
   if (!currentLevel || currentLevel.solution === "ERROR") {
     return (
       <div className="flex flex-col justify-center items-center h-screen gap-4 p-4 text-center">
@@ -87,40 +82,27 @@ const ImgClueGameScreen: React.FC = () => {
     );
   }
 
-  // Use currentLevelIndex provided by the hook (safer and avoids findIndex)
-  const levelIndex =
-    typeof currentLevelIndex === "number"
-      ? currentLevelIndex
-      : levels.findIndex((l: ImageLevel) => l.id === currentLevel?.id);
-
   // Notification mapping
   const notifMessage = notification?.message ?? null;
-  const notifType = (notification?.type ?? "info") as
-    | "success"
-    | "error"
-    | "warning"
-    | "info";
+  const notifType = (notification?.type ?? "info") as "success" | "error" | "warning" | "info";
 
   // Main game UI
   return (
     <GameLayout
       title={t.imageClueTitle}
-      levelIndex={levelIndex}
+      levelIndex={currentLevelIndex}
       onBack={handleBack}
       layoutType="image"
       instructions={instructions}
     >
-      {/* Shared Notification (top-centered) */}
       {notifMessage && <Notification message={notifMessage} type={notifType} />}
 
-      {/* Image clue display with audio playback button */}
       <div className="relative aspect-video bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center">
         <img
           src={getAssetPath(currentLevel.image)}
           alt={solution}
           className="max-h-full max-w-full object-contain"
         />
-        {/* Audio playback button */}
         <Button
           size="icon"
           onClick={playSound}
@@ -128,7 +110,6 @@ const ImgClueGameScreen: React.FC = () => {
         >
           <Volume2 className="h-6 w-6 text-white" />
         </Button>
-        {/* Hidden audio element for playing the clue sound */}
         <audio
           ref={audioRef}
           src={getAssetPath(currentLevel.sound)}
@@ -136,10 +117,8 @@ const ImgClueGameScreen: React.FC = () => {
         />
       </div>
 
-      {/* Solution boxes showing current progress */}
       <SolutionBoxes solution={solution} currentWord={answerSlots.join("")} />
 
-      {/* Letter grid for selecting letters */}
       <LetterGrid
         letters={letters}
         selectedIndices={
@@ -150,7 +129,6 @@ const ImgClueGameScreen: React.FC = () => {
         hintIndices={hintIndices}
       />
 
-      {/* Display wrong answers if any (same style as Clue game) */}
       {wrongAnswers && wrongAnswers.length > 0 && (
         <div className="mt-2">
           <p className="text-sm text-muted-foreground mb-1">
@@ -172,7 +150,7 @@ const ImgClueGameScreen: React.FC = () => {
 
       {/* Conditional rendering based on game state */}
       {gameState === "won" ? (
-        // Show Next button in Solo mode only (competitive mode auto-advances and should NOT show Next)
+        // Show Next button in Solo mode only
         gameMode !== "competitive" ? (
           <Button
             onClick={nextLevel}
@@ -192,14 +170,12 @@ const ImgClueGameScreen: React.FC = () => {
           onRemoveLetter={onRemove}
           onClearAnswer={onClear}
           onCheckAnswer={onCheck}
-          canRemove={slotIndices.some(
-            (i) => i !== null && i !== undefined
-          )}
-          canClear={slotIndices.some(
-            (i) => i !== null && i !== undefined
-          )}
-          canCheck={answerSlots.every((ch) => ch !== "")}
+          canRemove={canRemove}
+          canClear={canClear}
+          canCheck={canCheck}
           gameState={gameState as "playing" | "failed"}
+          // --- FIX: Pass the 'gameMode' prop ---
+          gameMode={gameMode}
           labels={{
             remove: t.remove,
             clear: t.clear,

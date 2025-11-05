@@ -1,4 +1,4 @@
-// src/features/clue-game/hooks/useGameControls.ts
+// src/features/word-puzzle/hooks/useGameControls.ts
 /**
  * useGameControls hook - Manages the enabled/disabled state of game control buttons
  * Determines whether actions like remove, clear, check, and hint should be available based on game state

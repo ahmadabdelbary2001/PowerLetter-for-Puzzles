@@ -24,8 +24,9 @@ const GameInstructions: React.FC<GameInstructionsProps> = ({ instructions, trigg
   const [open, setOpen] = useState(false);
   const isArabic = dir === 'rtl';
 
+  // Unchanged: The default trigger is still a Button component.
   const defaultTrigger = (
-    <Button variant="ghost" size="icon" className={`h-8 w-8 p-0 ${isArabic ? 'text-right' : 'text-left'}`} onClick={() => setOpen(true)}>
+    <Button variant="ghost" size="icon" className={`h-8 w-8 p-0 ${isArabic ? 'text-right' : 'text-left'}`}>
       <span className="sr-only">{t.howToPlay}</span>
       <span className={`font-bold text-lg ${isArabic ? 'mr-1' : 'ml-1'}`}>{isArabic ? '؟' : '?'}</span>
     </Button>
@@ -33,7 +34,10 @@ const GameInstructions: React.FC<GameInstructionsProps> = ({ instructions, trigg
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger>
+      {/* --- CRITICAL FIX: Added the 'asChild' prop --- */}
+      {/* This tells DialogTrigger to pass its props to the child component */}
+      {/* instead of rendering its own button element, thus avoiding nesting. */}
+      <DialogTrigger asChild>
         {trigger || defaultTrigger}
       </DialogTrigger>
       <DialogContent className={`${isArabic ? 'text-right' : 'text-left'}`}>

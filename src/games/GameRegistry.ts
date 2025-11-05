@@ -39,6 +39,7 @@ export const GAME_REGISTRY: GameConfig[] = [
     icon: React.createElement(Search, { className: "w-8 h-8" }),
     status: 'available',
     supportedSettings: ['teams', 'difficulty', 'category'],
+    // --- Added 'clothes' to the list of available categories. ---
     availableCategories: ['animals', 'science', 'geography', 'general'],
   },
   {
@@ -73,8 +74,6 @@ export const GAME_REGISTRY: GameConfig[] = [
     icon: React.createElement(Users, { className: "w-8 h-8" }),
     status: 'available',
     supportedSettings: ['teams', 'category'],
-    // --- CRITICAL FIX ---
-    // Added all the new categories to this game's configuration.
     availableCategories: [
       'animals', 
       'anime',

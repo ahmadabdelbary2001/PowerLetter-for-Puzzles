@@ -13,13 +13,11 @@ import {
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useTranslation } from "@/hooks/useTranslation";
-import { useGameMode } from '@/hooks/useGameMode';
+import type { GameMode } from '@/types/game';
 
 /**
  * Props interface for the GameControls component
  */
-type ButtonKey = 'remove' | 'clear' | 'hint' | 'check' | 'showSolution' | 'reset' | 'prev' | 'next';
-
 interface Props {
   onReset?: () => void;
   onRemoveLetter?: () => void;
@@ -37,6 +35,7 @@ interface Props {
   canHint?: boolean;
   hintsRemaining?: number;
   gameState: 'playing' | 'won' | 'failed';
+  gameMode: GameMode;
   labels: {
     remove: string;
     clear: string;
@@ -48,26 +47,12 @@ interface Props {
     next: string;
   };
   isKidsMode?: boolean;
-  /**
-   * Optional: if provided, only the named buttons will be rendered.
-   * Example: showOnly={['remove','hint','reset','next']}
-   */
-  showOnly?: ButtonKey[];
-  /**
-   * Optional icon overrides for specific button keys.
-   * Example: icons={{ remove: Shuffle }}
-   */
-  icons?: Partial<Record<ButtonKey, LucideIcon>>;
+  showOnly?: Array<'remove' | 'clear' | 'hint' | 'check' | 'showSolution' | 'reset' | 'prev' | 'next'>;
+  icons?: Partial<Record<'remove' | 'clear' | 'hint' | 'check' | 'showSolution' | 'reset' | 'prev' | 'next', LucideIcon>>;
 }
 
 /**
  * GameControls component - Renders game control buttons based on game state
- *
- * This component conditionally renders different sets of buttons based on:
- * - Current game state (playing, won, failed)
- * - Game mode (single player vs competitive)
- * - Allowed buttons passed via `showOnly` (to restrict which buttons are visible)
- * - Optional icon overrides via `icons`
  */
 export const GameControls: React.FC<Props> = ({
   onReset,
@@ -86,25 +71,25 @@ export const GameControls: React.FC<Props> = ({
   canHint,
   hintsRemaining,
   gameState,
+  gameMode,
   labels,
   isKidsMode = false,
   showOnly,
   icons,
 }) => {
   const { dir } = useTranslation();
-  const { gameMode } = useGameMode();
-
-  // In competitive mode we hide reset/prev to encourage flow
   const showResetAndPrev = gameMode !== 'competitive';
 
-  const shouldShow = (key: ButtonKey) => {
+  const shouldShow = (key: 'remove' | 'clear' | 'hint' | 'check' | 'showSolution' | 'reset' | 'prev' | 'next') => {
     if (!showOnly) return true;
     return showOnly.includes(key);
   };
 
-  // Helper to pick icon (override if provided)
-  const pickIcon = (key: ButtonKey, defaultIcon: LucideIcon) => icons?.[key] ?? defaultIcon;
+  const pickIcon = (key: 'remove' | 'clear' | 'hint' | 'check' | 'showSolution' | 'reset' | 'prev' | 'next', defaultIcon: LucideIcon) => icons?.[key] ?? defaultIcon;
 
+  // --- Prioritize isKidsMode rendering ---
+  // If it's a kids' game, always show the simple controls, regardless of the 'failed' state.
+  // This prevents the navigation buttons from incorrectly appearing.
   if (isKidsMode) {
     return (
       <div className="flex flex-wrap gap-2 sm:gap-3 justify-center mt-4">
@@ -143,10 +128,10 @@ export const GameControls: React.FC<Props> = ({
     );
   }
 
-  // Render when game is won
-  if (gameState === 'won') {
+  // Render navigation controls for 'won' or 'failed' states in adult games
+  if (gameState === 'won' || gameState === 'failed') {
     return (
-      <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
+      <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mt-4">
         {showResetAndPrev && shouldShow('reset') && (
           <GameButton onClick={onReset} icon={pickIcon('reset', RefreshCw)}>
             {labels.reset}
@@ -160,7 +145,7 @@ export const GameControls: React.FC<Props> = ({
             {labels.prev}
           </GameButton>
         )}
-        {showResetAndPrev && canNext && shouldShow('next') && (
+        {canNext && shouldShow('next') && (
           <GameButton
             onClick={onNextLevel}
             icon={pickIcon('next', dir === 'rtl' ? ArrowLeft : ArrowRight)}
@@ -173,61 +158,32 @@ export const GameControls: React.FC<Props> = ({
     );
   }
 
-  // Default (playing / failed) controls
+  // Default ('playing') controls for adult games
   return (
     <div className="flex flex-wrap gap-1 sm:gap-2 justify-center mt-4">
       {shouldShow('remove') && (
-        <GameButton
-          onClick={onRemoveLetter}
-          disabled={!canRemove}
-          icon={pickIcon('remove', Delete)}
-          className="text-xs sm:text-sm"
-        >
+        <GameButton onClick={onRemoveLetter} disabled={!canRemove} icon={pickIcon('remove', Delete)} className="text-xs sm:text-sm">
           {labels.remove}
         </GameButton>
       )}
-
       {shouldShow('clear') && (
-        <GameButton
-          onClick={onClearAnswer}
-          disabled={!canClear}
-          icon={pickIcon('clear', RotateCcw)}
-          className="text-xs sm:text-sm"
-        >
+        <GameButton onClick={onClearAnswer} disabled={!canClear} icon={pickIcon('clear', RotateCcw)} className="text-xs sm:text-sm">
           {labels.clear}
         </GameButton>
       )}
-
       {shouldShow('hint') && (
-        <GameButton
-          onClick={onHint}
-          disabled={!canHint}
-          icon={pickIcon('hint', Lightbulb)}
-          className="text-xs sm:text-sm"
-        >
+        <GameButton onClick={onHint} disabled={!canHint} icon={pickIcon('hint', Lightbulb)} className="text-xs sm:text-sm">
           {labels.hint}
           {hintsRemaining !== undefined && <span className="text-xs sm:text-sm"> ({hintsRemaining})</span>}
         </GameButton>
       )}
-
       {shouldShow('check') && (
-        <GameButton
-          onClick={onCheckAnswer}
-          disabled={!canCheck}
-          icon={pickIcon('check', CheckCircle)}
-          isPrimary={true}
-          className="text-xs sm:text-sm"
-        >
+        <GameButton onClick={onCheckAnswer} disabled={!canCheck} icon={pickIcon('check', CheckCircle)} isPrimary={true} className="text-xs sm:text-sm">
           {labels.check}
         </GameButton>
       )}
-
       {showResetAndPrev && shouldShow('showSolution') && (
-        <GameButton
-          onClick={onShowSolution}
-          icon={pickIcon('showSolution', Eye)}
-          className="text-xs sm:text-sm"
-        >
+        <GameButton onClick={onShowSolution} icon={pickIcon('showSolution', Eye)} className="text-xs sm:text-sm">
           {labels.showSolution}
         </GameButton>
       )}

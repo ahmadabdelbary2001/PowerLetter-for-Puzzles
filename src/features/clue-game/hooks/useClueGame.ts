@@ -1,135 +1,113 @@
 // src/features/clue-game/hooks/useClueGame.ts
+/**
+ * @description Custom hook for the Clue Game.
+ * This hook builds upon the shared `useWordPuzzleGame` hook by adding
+ * game-specific logic for checking answers, handling competitive mode
+ * (scoring, turn-passing), and managing wrong attempts.
+ */
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useTranslation } from "@/hooks/useTranslation";
-import { useGame } from '@/hooks/useGame';
+import { useWordPuzzleGame } from '@/features/word-puzzle/hooks/useWordPuzzleGame';
+import { useGameControls } from '@/features/word-puzzle/hooks/useGameControls';
 import { clueGameEngine, type Level } from '../engine';
-import { useGameControls } from './useGameControls';
 
 export function useClueGame() {
   const navigate = useNavigate();
   const params = useParams<{ gameType?: string }>();
-  const gameModeState = useGameMode();
-  const { language, categories, difficulty, gameMode, updateScore, currentTeam, setCurrentTeam, teams, nextTurn, consumeHint } = gameModeState;
+  const { language, categories, difficulty, gameMode, updateScore, teams, currentTeam, nextTurn, consumeHint } = useGameMode();
   const { t } = useTranslation();
 
-  // --- Generic Game State ---
-  const { loading, levels, currentLevel, currentLevelIndex, solution, notification, setNotification, gameState, dispatch, nextLevel, resetLevel } = useGame<Level>(
-    clueGameEngine,
-    { language, categories, difficulty }
-  );
+  // Use the shared word puzzle hook. It now handles notification timeouts internally.
+  const puzzle = useWordPuzzleGame<Level>({
+    engine: clueGameEngine,
+    language,
+    categories,
+    difficulty,
+  });
 
-  // --- Clue-Game Specific State ---
-  const [letters, setLetters] = useState<string[]>([]);
   const [wrongAnswers, setWrongAnswers] = useState<string[]>([]);
-  const [attemptedTeams, setAttemptedTeams] = useState<Set<number>>(new Set()); // Track which teams have attempted the current question
-  const { canRemove, canClear, canCheck, canHint } = useGameControls(gameState);
-
-  // --- Clue-Game Specific Callbacks ---
-  const onLetterClick = useCallback((i: number) => {
-    if (gameState.gameState === 'playing') dispatch({ type: "PLACE", gridIndex: i, letter: letters[i] });
-  }, [gameState.gameState, letters, dispatch]);
-
-  const onRemove = useCallback(() => dispatch({ type: "REMOVE_LAST" }), [dispatch]);
-  const onClear = useCallback(() => dispatch({ type: "CLEAR" }), [dispatch]);
+  const [attemptedTeams, setAttemptedTeams] = useState<Set<number>>(new Set());
+  const { canRemove, canClear, canCheck, canHint } = useGameControls(puzzle.gameState);
 
   const onCheck = useCallback(() => {
-    if (gameState.gameState !== 'playing') return;
-    const isCorrect = gameState.answerSlots.join('') === solution;
+    if (puzzle.gameState.gameState !== 'playing') return;
+    const isCorrect = puzzle.gameState.answerSlots.join('') === puzzle.solution;
 
     if (isCorrect) {
-      dispatch({ type: "SET_GAME_STATE", payload: "won" });
-      const points = currentLevel?.difficulty === 'medium' ? 20 : currentLevel?.difficulty === 'hard' ? 30 : 10;
+      puzzle.dispatch({ type: "SET_GAME_STATE", payload: "won" });
+      const points = puzzle.currentLevel?.difficulty === 'medium' ? 20 : puzzle.currentLevel?.difficulty === 'hard' ? 30 : 10;
       if (gameMode === "competitive") {
         updateScore(teams[currentTeam].id, points);
-        setNotification({ message: `${t.congrats} +${points}`, type: "success" });
-        // In competitive mode, automatically move to next level after a correct answer
+        // Use the auto-clearing notification setter
+        puzzle.setNotification({ message: `${t.congrats} +${points}`, type: "success" });
         setTimeout(() => {
-          nextLevel();
-          // Reset the game state to playing for the next level
-          dispatch({ type: "SET_GAME_STATE", payload: "playing" });
-          setNotification(null);
+          puzzle.nextLevel();
+          setAttemptedTeams(new Set());
         }, 2000);
       } else {
-        setNotification({ message: t.congrats, type: "success" });
+        // Use the auto-clearing notification setter
+        puzzle.setNotification({ message: t.congrats, type: "success" });
       }
     } else {
-      dispatch({ type: "SET_GAME_STATE", payload: "failed" });
-      const currentAnswer = gameState.answerSlots.join('');
+      puzzle.dispatch({ type: "SET_GAME_STATE", payload: "failed" });
+      const currentAnswer = puzzle.gameState.answerSlots.join('');
       if (currentAnswer && !wrongAnswers.includes(currentAnswer)) {
         setWrongAnswers(prev => [...prev, currentAnswer]);
       }
-      setNotification({ message: t.wrongAnswer, type: "error" });
+      // Use the auto-clearing notification setter
+      puzzle.setNotification({ message: t.wrongAnswer, type: "error" });
 
-      // Track which teams have attempted the question in competitive mode
       if (gameMode === 'competitive') {
-        // Add current team to attempted teams
-        const newAttemptedTeams = new Set(attemptedTeams);
-        newAttemptedTeams.add(currentTeam);
+        const newAttemptedTeams = new Set(attemptedTeams).add(currentTeam);
         setAttemptedTeams(newAttemptedTeams);
 
-        // Check if all teams have attempted the question
         if (newAttemptedTeams.size === teams.length) {
-          // All teams have attempted and failed, show solution and move to next level
           setTimeout(() => {
-            dispatch({ type: "SHOW", solution, letters });
-            setNotification({ message: `${t.solutionWas}: ${solution}`, type: "error" });
-            // Reset attempted teams for the next question
-            setAttemptedTeams(new Set());
-            // Move to next level after showing solution
+            puzzle.dispatch({ type: "SHOW", solution: puzzle.solution, letters: puzzle.letters });
+            // Use the auto-clearing notification setter
+            puzzle.setNotification({ message: `${t.solutionWas}: ${puzzle.solution}`, type: "error" });
             setTimeout(() => {
-              nextLevel();
-              dispatch({ type: "SET_GAME_STATE", payload: "playing" });
-              setNotification(null);
+              puzzle.nextLevel();
+              setAttemptedTeams(new Set());
             }, 2500);
           }, 2000);
         } else {
-          // Not all teams have attempted yet, just pass to next team
           setTimeout(() => {
-            dispatch({ type: "CLEAR" });
-            dispatch({ type: "SET_GAME_STATE", payload: "playing" });
-            setNotification(null);
+            puzzle.dispatch({ type: "CLEAR" });
+            puzzle.dispatch({ type: "SET_GAME_STATE", payload: "playing" });
             nextTurn("lose");
           }, 2000);
         }
-      } else {
-        // Non-competitive mode behavior
-        setTimeout(() => {
-          dispatch({ type: "CLEAR" });
-          dispatch({ type: "SET_GAME_STATE", payload: "playing" });
-          setNotification(null);
-        }, 2000);
       }
     }
-  }, [gameState, solution, currentLevel, gameMode, teams, currentTeam, updateScore, nextTurn, nextLevel, t, wrongAnswers, dispatch, setNotification, attemptedTeams, letters]);
+  }, [puzzle, gameMode, teams, currentTeam, updateScore, nextTurn, t, wrongAnswers, attemptedTeams]);
 
   const onShow = useCallback(() => {
-    if (gameState.gameState !== 'playing') return;
-    dispatch({ type: "SHOW", solution, letters });
-    setNotification({ message: `${t.solutionWas}: ${solution}`, type: "error" });
+    if (puzzle.gameState.gameState !== 'playing') return;
+    
+    puzzle.dispatch({ type: "SHOW", solution: puzzle.solution, letters: puzzle.letters });
+    // Use the auto-clearing notification setter
+    puzzle.setNotification({ message: `${t.solutionWas}: ${puzzle.solution}`, type: "error" });
+
     if (gameMode === 'competitive') {
       setTimeout(() => {
-        nextTurn('lose');
-        // Automatically move to next level without showing the "Next" button
-        nextLevel();
-        // Reset the game state to playing for the next level
-        dispatch({ type: "SET_GAME_STATE", payload: "playing" });
-        setNotification(null);
+        puzzle.nextLevel();
+        setAttemptedTeams(new Set());
       }, 2500);
     }
-  }, [gameState.gameState, solution, letters, gameMode, nextTurn, nextLevel, t.solutionWas, dispatch, setNotification]);
+  }, [puzzle, gameMode, t.solutionWas]);
 
   const onHint = useCallback(() => {
     if (gameMode === "competitive" && !consumeHint(teams[currentTeam].id)) {
-      setNotification({ message: t.noHintsLeft, type: "error" });
-      setTimeout(() => setNotification(null), 2000);
+      // Use the auto-clearing notification setter
+      puzzle.setNotification({ message: t.noHintsLeft, type: "error" });
       return;
     }
-    dispatch({ type: "HINT", solution, letters });
-  }, [gameMode, teams, currentTeam, consumeHint, t.noHintsLeft, solution, letters, dispatch, setNotification]);
+    puzzle.dispatch({ type: "HINT", solution: puzzle.solution, letters: puzzle.letters });
+  }, [puzzle, gameMode, teams, currentTeam, consumeHint, t.noHintsLeft]);
 
-  const handleRevealOrListSolutions = useCallback(async () => { /* ... unchanged ... */ }, [/* ... */]);
   const handleBack = useCallback(() => {
     if (gameMode === 'competitive') {
       navigate(`/team-config/${params.gameType}`);
@@ -137,49 +115,18 @@ export function useClueGame() {
       navigate(`/game-mode/${params.gameType}`);
     }
   }, [navigate, params.gameType, gameMode]);
-  const prevLevel = useCallback(() => {
-    if (currentLevelIndex > 0) {
-      // Fix: There's no setCurrentLevelIndex function, need to use resetLevel with the previous index
-      resetLevel();
-    }
-  }, [currentLevelIndex, resetLevel]);
 
-  // --- Effects ---
   useEffect(() => {
-    if (currentLevel && clueGameEngine.generateLetters) {
-      setLetters(clueGameEngine.generateLetters(currentLevel.solution, currentLevel.difficulty, language));
-    }
-    if (teams.length > 0) {
-      setCurrentTeam(currentLevelIndex % teams.length);
-    }
-    // Clear wrong answers when moving to a new level
     setWrongAnswers([]);
-  }, [currentLevel, language, teams.length, currentLevelIndex, setCurrentTeam]);
+  }, [puzzle.currentLevelIndex]);
 
   return {
-    loading,
-    levels,
-    currentLevel,
-    solution,
-    letters,
-    notification,
+    ...puzzle,
     wrongAnswers,
-    gameState: gameState.gameState,
-    answerSlots: gameState.answerSlots,
-    slotIndices: gameState.slotIndices,
-    hintIndices: gameState.hintIndices,
-    currentLevelIndex,
     onCheck,
     onShow,
-    onLetterClick,
-    onRemove,
-    onClear,
     onHint,
-    nextLevel,
-    prevLevel,
     handleBack,
-    handleRevealOrListSolutions,
-    resetLevel,
     canRemove,
     canClear,
     canCheck,

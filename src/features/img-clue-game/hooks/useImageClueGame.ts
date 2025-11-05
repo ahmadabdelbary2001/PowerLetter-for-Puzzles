@@ -14,7 +14,7 @@ import { useGameMode } from '@/hooks/useGameMode';
 import { useTranslation } from "@/hooks/useTranslation";
 import { useGame } from '@/hooks/useGame';
 import { imgClueGameEngine, type ImageLevel } from '../engine';
-import { useGameControls } from '../../clue-game/hooks/useGameControls';
+import { useGameControls } from '../../word-puzzle/hooks/useGameControls';
 
 export function useImageClueGame() {
   const navigate = useNavigate();

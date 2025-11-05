@@ -1,4 +1,10 @@
 // src/features/clue-game/components/ClueGameScreen.tsx
+/**
+ * Main component for the Clue Game interface.
+ * This component is now a "presentational" component that assembles the UI
+ * using the shared WordPuzzleLayout and passes down the state and logic
+ * from the useClueGame hook.
+ */
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -6,31 +12,17 @@ import { SolutionBoxes } from "@/components/molecules/SolutionBoxes";
 import { LetterGrid } from "@/components/molecules/LetterGrid";
 import GameControls from "@/components/organisms/GameControls";
 import { useTranslation } from "@/hooks/useTranslation";
-import { GameLayout } from "@/components/templates/GameLayout";
 import { useClueGame } from "../hooks/useClueGame";
-import { Notification } from "@/components/atoms/Notification";
 import { useInstructions } from "@/hooks/useInstructions";
+import { useGameMode } from "@/hooks/useGameMode";
+import { WordPuzzleLayout } from "@/components/templates/WordPuzzleLayout";
 
-/**
- * Main component for the Clue Game interface
- * Manages game state rendering and user interactions
- */
 const ClueGameScreen: React.FC = () => {
   const { t } = useTranslation();
-
-  // ✅ Provide the required argument key ("clue")
   const instructionsData = useInstructions("clue");
+  const { gameMode } = useGameMode();
 
-  // ✅ Normalize null to undefined to match GameLayout prop type
-  const instructions =
-    instructionsData != null
-      ? {
-          title: instructionsData.title,
-          description: instructionsData.description ?? "",
-          steps: instructionsData.steps ?? [],
-        }
-      : undefined;
-
+  // All game logic is now neatly contained in this hook.
   const {
     loading,
     currentLevel,
@@ -38,10 +30,7 @@ const ClueGameScreen: React.FC = () => {
     letters,
     notification,
     wrongAnswers,
-    gameState,
-    answerSlots,
-    slotIndices,
-    hintIndices,
+    gameState, // This now correctly contains the full reducer state
     currentLevelIndex,
     levels,
     onCheck,
@@ -60,6 +49,7 @@ const ClueGameScreen: React.FC = () => {
     canHint,
   } = useClueGame();
 
+  // Handle loading state
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -68,6 +58,7 @@ const ClueGameScreen: React.FC = () => {
     );
   }
 
+  // Handle error state
   if (!currentLevel || currentLevel.solution === "ERROR") {
     return (
       <div className="flex flex-col justify-center items-center h-screen gap-4 p-4 text-center">
@@ -77,84 +68,77 @@ const ClueGameScreen: React.FC = () => {
     );
   }
 
-  const notifMessage = notification?.message ?? null;
-  const notifType = (notification?.type ?? "info") as
-    | "success"
-    | "error"
-    | "warning"
-    | "info";
+  const instructions = instructionsData ? {
+    title: instructionsData.title,
+    description: instructionsData.description ?? "",
+    steps: instructionsData.steps ?? [],
+  } : undefined;
 
+  // Destructure properties from the correctly typed gameState.
+  const { answerSlots, slotIndices, hintIndices } = gameState;
+
+  // Use the WordPuzzleLayout to render the UI.
   return (
-    <GameLayout
+    <WordPuzzleLayout
       title={currentLevel.clue}
       levelIndex={currentLevelIndex}
       onBack={handleBack}
       difficulty={currentLevel.difficulty}
-      instructions={instructions}
-    >
-      {notifMessage && <Notification message={notifMessage} type={notifType} />}
-
-      <SolutionBoxes
-        solution={solution}
-        currentWord={answerSlots.join("")}
-      />
-
-      <LetterGrid
-        letters={letters}
-        selectedIndices={slotIndices.filter((i) => i !== null) as number[]}
-        onLetterClick={onLetterClick}
-        disabled={gameState !== "playing"}
-        hintIndices={hintIndices}
-      />
-
-      {wrongAnswers.length > 0 && (
-        <div className="mt-2">
-          <p className="text-sm text-muted-foreground mb-1">
-            {t.wrongAttempts}:
-          </p>
-          <div className="flex flex-wrap gap-1 sm:gap-2 justify-center">
-            {wrongAnswers.map((answer, index) => (
-              <Badge
-                key={index}
-                variant="destructive"
-                className="text-xs py-1"
-              >
-                {answer}
-              </Badge>
-            ))}
+      instructions={instructions} // This now matches the expected type
+      notification={notification}
+      promptContent={null}
+      solutionContent={<SolutionBoxes solution={solution} currentWord={answerSlots.join("")} />}
+      letterOptionsContent={
+        <LetterGrid
+          letters={letters}
+          selectedIndices={slotIndices.filter((i: number | null): i is number => i !== null)}
+          onLetterClick={onLetterClick}
+          disabled={gameState.gameState !== "playing"}
+          hintIndices={hintIndices}
+        />
+      }
+      wrongAnswersContent={
+        wrongAnswers.length > 0 && (
+          <div className="mt-2">
+            <p className="text-sm text-muted-foreground mb-1">{t.wrongAttempts}:</p>
+            <div className="flex flex-wrap gap-1 justify-center">
+              {wrongAnswers.map((answer, index) => <Badge key={index} variant="destructive">{answer}</Badge>)}
+            </div>
           </div>
-        </div>
-      )}
-
-      <GameControls
-        onRemoveLetter={onRemove}
-        onClearAnswer={onClear}
-        onCheckAnswer={onCheck}
-        onHint={onHint}
-        onShowSolution={onShow}
-        onReset={resetLevel}
-        onPrevLevel={prevLevel}
-        onNextLevel={nextLevel}
-        canRemove={canRemove}
-        canClear={canClear}
-        canCheck={canCheck}
-        canHint={canHint}
-        canPrev={currentLevelIndex > 0}
-        canNext={currentLevelIndex < levels.length - 1}
-        gameState={gameState}
-        isKidsMode={false}
-        labels={{
-          remove: t.remove,
-          clear: t.clear,
-          check: t.check,
-          hint: t.hint,
-          showSolution: t.showSolution,
-          reset: t.reset,
-          prev: t.prev,
-          next: t.next,
-        }}
-      />
-    </GameLayout>
+        )
+      }
+      gameControlsContent={
+        <GameControls
+          onRemoveLetter={onRemove}
+          onClearAnswer={onClear}
+          onCheckAnswer={onCheck}
+          onHint={onHint}
+          onShowSolution={onShow}
+          onReset={resetLevel}
+          onPrevLevel={prevLevel}
+          onNextLevel={nextLevel}
+          canRemove={canRemove}
+          canClear={canClear}
+          canCheck={canCheck}
+          canHint={canHint}
+          canPrev={currentLevelIndex > 0}
+          canNext={currentLevelIndex < levels.length - 1}
+          gameState={gameState.gameState}
+          gameMode={gameMode} // This prop is now correctly passed and typed
+          isKidsMode={false}
+          labels={{
+            remove: t.remove,
+            clear: t.clear,
+            check: t.check,
+            hint: t.hint,
+            showSolution: t.showSolution,
+            reset: t.reset,
+            prev: t.prev,
+            next: t.next,
+          }}
+        />
+      }
+    />
   );
 };
 

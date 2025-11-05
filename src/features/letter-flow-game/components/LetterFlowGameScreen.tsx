@@ -1,3 +1,4 @@
+// src/features/letter-flow-game/components/LetterFlowGameScreen.tsx
 import React from 'react';
 import { useLetterFlowGame } from '../hooks/useLetterFlowGame';
 import type { letterFlowLevel } from '../engine';
@@ -10,14 +11,14 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { GameLayout } from '@/components/templates/GameLayout';
 import { usePassiveTouchFix } from '../hooks/usePassiveTouchFix';
 import { useInstructions } from '@/hooks/useInstructions';
+import { useGameMode } from '@/hooks/useGameMode'; // Import useGameMode
 
 const LetterFlowGameScreen: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const dir = i18n.dir(); // 'ltr' or 'rtl' for the active language
-  // ✅ Fix: provide the correct instruction key and normalize null to undefined
+  const dir = i18n.dir();
   const rawInstructions = useInstructions('letterFlow');
 
-  // ✅ Normalize to satisfy GameLayoutProps type
+  // Normalize instructions
   const instructions = rawInstructions
     ? {
         title: rawInstructions.title ?? '',
@@ -27,6 +28,9 @@ const LetterFlowGameScreen: React.FC = () => {
     : undefined;
 
   usePassiveTouchFix();
+
+  // --- Get gameMode from the global state ---
+  const { gameMode } = useGameMode();
 
   const {
     loading,
@@ -48,6 +52,7 @@ const LetterFlowGameScreen: React.FC = () => {
     currentLevelIndex,
   } = useLetterFlowGame();
 
+  // Render functions (unchanged)
   const renderBoard = () => (
     <LetterFlowBoard
       cells={board}
@@ -59,20 +64,18 @@ const LetterFlowGameScreen: React.FC = () => {
       onMouseUp={handleMouseUp}
     />
   );
-
   const renderFoundWords = () =>
     foundWords.length === 0 ? null : <FoundWords foundWords={foundWords} t={{ selected: t.selected }} />;
-
   const renderNotification = () => {
     if (!notification) return null;
     let type: 'success' | 'error' | 'warning' | 'info' = 'info';
     if (notification.includes('congrats') || notification === t.congrats) type = 'success';
     else if (notification.includes('Already found') || notification.includes('cannot cross')) type = 'warning';
     else if (notification.includes('must connect') || notification.includes('horizontal or vertical')) type = 'error';
-
     return <Notification message={notification} type={type} />;
   };
 
+  // Loading and error states (unchanged)
   if (loading) {
     return (
       <div className={`flex flex-col items-center justify-center min-h-screen ${dir === 'rtl' ? 'text-right' : ''}`} dir={dir}>
@@ -80,7 +83,6 @@ const LetterFlowGameScreen: React.FC = () => {
       </div>
     );
   }
-
   if (!currentLevel) {
     return (
       <div className={`flex flex-col items-center justify-center min-h-screen ${dir === 'rtl' ? 'text-right' : ''}`} dir={dir}>
@@ -101,7 +103,6 @@ const LetterFlowGameScreen: React.FC = () => {
       onBack={handleBack}
       difficulty={currentLevel.difficulty}
       layoutType="text"
-      // ✅ Fix type mismatch
       instructions={instructions}
     >
       {renderNotification()}
@@ -129,6 +130,8 @@ const LetterFlowGameScreen: React.FC = () => {
         canHint={foundWords.length < totalWords}
         hintsRemaining={undefined}
         gameState={gameState === 'won' ? 'won' : 'playing'}
+        // --- Pass the 'gameMode' prop ---
+        gameMode={gameMode}
         isKidsMode={false}
         labels={{
           remove: t.undo,
