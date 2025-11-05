@@ -1,1 +1,0 @@
-const e=[{id:"ar-medium-001",gridSize:{width:5,height:5},endpoints:[{letter:"ن",x:2,y:1},{letter:"ن",x:2,y:4},{letter:"ع",x:4,y:0},{letter:"ع",x:3,y:3},{letter:"ا",x:0,y:0},{letter:"ا",x:1,y:4},{letter:"م",x:4,y:1},{letter:"م",x:3,y:4},{letter:"ة",x:2,y:0},{letter:"ة",x:1,y:3}],solutionWord:"نعامة"}],t={levels:e};export{t as default,e as levels};
