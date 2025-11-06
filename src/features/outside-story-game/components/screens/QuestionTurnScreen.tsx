@@ -6,18 +6,19 @@ import type { useOutsideStory } from '../../hooks/useOutsideStory';
 type Props = { game: ReturnType<typeof useOutsideStory> };
 
 const QuestionTurnScreen: React.FC<Props> = ({ game }) => {
-  // Get the pre-calculated pairs from the hook
+  // --- Get the pre-calculated pairs from the hook ---
   const { t, currentPlayerTurn, setGameState, nextTurn, questionPairs } = game;
 
-  // Guard clause: If for any reason the pairs aren't ready, show a loading state.
+  // --- Guard clause to prevent rendering before pairs are ready ---
   if (!questionPairs || questionPairs.length === 0 || currentPlayerTurn >= questionPairs.length) {
     return <p>{t.loading ?? 'Loading...'}</p>;
   }
 
-  // Get the current pair from the stable array
+  // --- Get the current pair from the stable array ---
   const currentPair = questionPairs[currentPlayerTurn];
   const { asker, askee } = currentPair;
 
+  // Logic to handle the next turn or move to voting
   const handleNext = () => {
     if (currentPlayerTurn >= questionPairs.length - 1) {
       setGameState('voting');

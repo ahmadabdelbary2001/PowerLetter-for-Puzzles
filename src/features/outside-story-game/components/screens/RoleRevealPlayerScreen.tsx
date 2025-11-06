@@ -15,12 +15,18 @@ const RoleRevealPlayerScreen: React.FC<Props> = ({ game }) => {
     setGameState('role_reveal_handoff'); // Go back to the handoff screen for the next player
   };
 
+  // --- Get the category name from the current round ---
+  // We also get the translated version of the category name.
+  const categoryName = currentRound?.category ?? '';
+  const translatedCategory = t[categoryName as keyof typeof t] ?? categoryName;
+
   return (
     <div className="text-center max-w-md">
       <h2 className="text-3xl font-bold mb-4">{player.name}</h2>
       {isOutsider ? (
         <p className="text-xl">
-          {t.youAreTheOutsider ?? 'You are the Outsider! Try to figure out the story from the others\' conversation or convince them to vote for the wrong person!'}
+          {/* --- Pass the category to the translation function --- */}
+          {t.youAreTheOutsider?.replace('{category}', translatedCategory) ?? 'You are the Outsider! Try to figure out the story.'}
         </p>
       ) : (
         <p className="text-xl">

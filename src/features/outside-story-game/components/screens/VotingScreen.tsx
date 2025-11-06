@@ -9,26 +9,27 @@ const VotingScreen: React.FC<Props> = ({ game }) => {
   const { t, players, submitVote, finishVoting, votingPlayerIndex, nextVoter } = game;
   const [voteCasted, setVoteCasted] = useState(false);
 
-  // Determine the current player who is voting
+  // --- Determine the current voter ---
   const currentVoter = players[votingPlayerIndex];
 
-  // If all players have voted, finish the voting process
+  // --- If all players have voted, finish the voting process ---
+  // This guard clause prevents the out-of-bounds error.
   if (!currentVoter) {
     finishVoting();
     return <p>{t.loading ?? 'Loading...'}</p>; // Show loading while results are calculated
   }
 
-  // Players that can be voted for (everyone except the current voter)
+  // Logic for handling votes and continuing
   const voteOptions = players.filter(p => p.id !== currentVoter.id);
 
   const handleVote = (votedForId: number) => {
     submitVote(currentVoter.id, votedForId);
-    setVoteCasted(true); // Show the "pass device" message
+    setVoteCasted(true);
   };
 
   const handleContinue = () => {
-    nextVoter(); // Move to the next player
-    setVoteCasted(false); // Reset for the next voter
+    nextVoter();
+    setVoteCasted(false);
   };
 
   // This is the screen shown after a player has voted, before the next player's turn
@@ -48,7 +49,7 @@ const VotingScreen: React.FC<Props> = ({ game }) => {
     );
   }
 
-  // This is the main voting screen for the current player
+  // Main voting screen UI
   return (
     <div className="text-center max-w-md">
       <h2 className="text-3xl font-bold mb-4">

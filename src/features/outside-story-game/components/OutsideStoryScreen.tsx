@@ -1,8 +1,8 @@
 // src/features/outside-story-game/components/OutsideStoryScreen.tsx
 import React from 'react';
-import { GameLayout } from '@/components/templates/GameLayout';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useOutsideStory } from '../hooks/useOutsideStory';
+import { OutsideStoryLayout } from '@/components/templates/OutsideStoryLayout';
 
 import RoleRevealHandoffScreen from './screens/RoleRevealHandoffScreen';
 import RoleRevealPlayerScreen from './screens/RoleRevealPlayerScreen';
@@ -17,15 +17,15 @@ const OutsideStoryScreen: React.FC = () => {
   const { t } = useTranslation();
   const game = useOutsideStory();
 
-  // MODIFIED: Use the loadingLevels boolean OR check for a currentRound to show a loading state.
+  // Use the loadingLevels boolean OR check for a currentRound to show a loading state.
   // This is now a reliable way to wait for the game to be ready.
   if (game.loadingLevels || !game.currentRound) {
     return (
-      <GameLayout title={t.outsideTheStoryTitle ?? 'Outside the Story'} onBack={() => window.history.back()} levelIndex={0}>
+      <OutsideStoryLayout onBack={() => window.history.back()}>
         <div className="w-full h-full flex items-center justify-center p-4 min-h-[50vh]">
           <p className="text-xl">{t.loading ?? 'Loading...'}</p>
         </div>
-      </GameLayout>
+      </OutsideStoryLayout>
     );
   }
 
@@ -54,16 +54,9 @@ const OutsideStoryScreen: React.FC = () => {
   };
 
   return (
-    <GameLayout
-      title={t.outsideTheStoryTitle ?? 'Outside the Story'}
-      onBack={() => window.history.back()}
-      layoutType="text"
-      levelIndex={0}
-    >
-      <div className="w-full h-full flex flex-col items-center justify-center p-4 bg-blue-500 text-white rounded-lg min-h-[50vh]">
-        {renderScreen()}
-      </div>
-    </GameLayout>
+    <OutsideStoryLayout onBack={() => window.history.back()}>
+      {renderScreen()}
+    </OutsideStoryLayout>
   );
 };
 

@@ -12,7 +12,7 @@ const ResultsScreen: React.FC<Props> = ({ game }) => {
     return (
       <div className="text-center">
         <p>{t.loadingResults ?? 'Loading results...'}</p>
-        {/* CORRECTED: Go to round_end, not category_select */}
+        {/* --- Go to round_end, not a non-existent state --- */}
         <Button onClick={() => setGameState('round_end')} className="mt-4">{t.continue ?? 'Continue'}</Button>
       </div>
     );
@@ -20,7 +20,6 @@ const ResultsScreen: React.FC<Props> = ({ game }) => {
 
   const { votedPlayerId, outsiderGuessedCorrectly } = currentRound.roundResult;
   const outsider = players.find(p => p.id === currentRound.outsiderId);
-
   let outcomeMessage = '';
   if (votedPlayerId === currentRound.outsiderId) {
     if (outsiderGuessedCorrectly) {
@@ -32,6 +31,7 @@ const ResultsScreen: React.FC<Props> = ({ game }) => {
     outcomeMessage = t.outsiderWins?.replace('{player}', outsider?.name ?? '') ?? `${outsider?.name} fooled you all! They were the Outsider.`;
   }
 
+  // Main results screen UI
   return (
     <div className="text-center max-w-md">
       <h2 className="text-4xl font-bold mb-6">{t.results ?? 'Results'}</h2>
@@ -47,6 +47,7 @@ const ResultsScreen: React.FC<Props> = ({ game }) => {
 
       <p className="text-xl my-6">{outcomeMessage}</p>
 
+      {/* --- Go to round_end on next --- */}
       <Button onClick={() => setGameState('round_end')} className="mt-8 w-full">
         {t.next ?? 'Next'}
       </Button>

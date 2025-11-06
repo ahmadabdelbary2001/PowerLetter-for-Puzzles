@@ -6,6 +6,7 @@ import type { useOutsideStory } from '../../hooks/useOutsideStory';
 type Props = { game: ReturnType<typeof useOutsideStory> };
 
 const QuestionIntroScreen: React.FC<Props> = ({ game }) => {
+  // --- Destructure the new `setupQuestionTurns` function ---
   const { t, setupQuestionTurns } = game;
 
   return (
@@ -14,7 +15,7 @@ const QuestionIntroScreen: React.FC<Props> = ({ game }) => {
       <p className="text-xl">
         {t.questionIntroInstruction ?? 'Each person will ask another person a question related to the topic. Press next to see who asks who.'}
       </p>
-      {/* This button now calls the function to prepare the question turns */}
+      {/* --- This button now calls the function to prepare the question turns --- */}
       <Button onClick={setupQuestionTurns} className="mt-8 w-full">
         {t.next ?? 'Next'}
       </Button>

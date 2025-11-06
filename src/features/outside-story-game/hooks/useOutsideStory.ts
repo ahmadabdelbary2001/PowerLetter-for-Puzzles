@@ -1,10 +1,12 @@
 // src/features/outside-story-game/hooks/useOutsideStory.ts
 import { useCallback, useEffect, useState } from 'react';
+// --- Import the engine to actually load levels ---
 import { outsideStoryGameEngine, type OutsideStoryLevel } from '@/features/outside-story-game/engine';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useTranslation } from '@/hooks/useTranslation';
 import type { Team } from '@/types/game';
 
+// Type definitions
 export type GameState =
   | 'role_reveal_handoff'
   | 'role_reveal_player'
@@ -32,23 +34,26 @@ export type RoundInfo = {
   roundResult?: {
     votedPlayerId?: number;
     outsiderGuessedCorrectly?: boolean;
-    pointsAwarded: Record<number, number>; // This must always be a Record, not undefined
+    pointsAwarded: Record<number, number>;
   };
 };
 
 export function useOutsideStory() {
+  // --- Restore the original state management ---
   const { teams, language: appLanguage, categories, resetScores, setGameMode } = useGameMode();
   const { t } = useTranslation();
-
   const [gameState, setGameState] = useState<GameState>('role_reveal_handoff');
+  // --- Restore state setters for levels and loading ---
   const [levels, setLevels] = useState<OutsideStoryLevel[]>([]);
   const [loadingLevels, setLoadingLevels] = useState(true);
   const [currentRound, setCurrentRound] = useState<RoundInfo | null>(null);
+  // --- Restore state setter for history ---
   const [history, setHistory] = useState<RoundInfo[]>([]);
   const [currentPlayerTurn, setCurrentPlayerTurn] = useState<number>(0);
   const [questionPairs, setQuestionPairs] = useState<QuestionPair[]>([]);
   const [votingPlayerIndex, setVotingPlayerIndex] = useState<number>(0);
 
+  // --- Restore the full implementation of startRound ---
   const startRound = useCallback((category: string) => {
     const level = levels.find(l => l.category === category);
     if (!level || level.words.length < 8) {
@@ -82,8 +87,9 @@ export function useOutsideStory() {
     setCurrentRound(round);
     setCurrentPlayerTurn(0);
     setGameState('role_reveal_handoff');
-  }, [levels, teams, t]);
+  }, [levels, teams, t]); // Dependencies are now necessary and correct.
 
+  // --- Restore the full implementation of the loading effect ---
   useEffect(() => {
     let mounted = true;
     setLoadingLevels(true);
@@ -105,6 +111,7 @@ export function useOutsideStory() {
     return () => { mounted = false; };
   }, [appLanguage, categories]);
 
+  // --- Restore the full implementation of the auto-start effect ---
   useEffect(() => {
     if (loadingLevels || levels.length === 0 || currentRound) {
       return;
@@ -112,26 +119,24 @@ export function useOutsideStory() {
     startRound(levels[0].category);
   }, [loadingLevels, levels, currentRound, startRound]);
 
+  // setupQuestionTurns logic
   const setupQuestionTurns = useCallback(() => {
     if (teams.length < 2) return;
-
     const shuffledPlayers = [...teams].sort(() => Math.random() - 0.5);
     const pairs: QuestionPair[] = [];
-
     for (let i = 0; i < shuffledPlayers.length; i++) {
       const asker = shuffledPlayers[i];
       const askee = shuffledPlayers[(i + 1) % shuffledPlayers.length];
       pairs.push({ asker, askee });
     }
-
     setQuestionPairs(pairs);
     setCurrentPlayerTurn(0);
     setGameState('question_turn');
   }, [teams]);
 
+  // finishVoting logic
   const finishVoting = useCallback(() => {
     if (!currentRound) return;
-
     const tally: Record<number, number> = {};
     for (const voterId in currentRound.votes) {
       const voter = parseInt(voterId, 10);
@@ -140,7 +145,6 @@ export function useOutsideStory() {
         tally[votedForId] = (tally[votedForId] || 0) + 1;
       }
     }
-
     let maxVotes = 0;
     let votedPlayerId = -1;
     for (const playerId in tally) {
@@ -149,21 +153,15 @@ export function useOutsideStory() {
         votedPlayerId = parseInt(playerId, 10);
       }
     }
-
-    // --- CRITICAL FIX ---
-    // Initialize `pointsAwarded` to an empty object `{}` to satisfy the RoundInfo type.
     const updatedRound = {
       ...currentRound,
-      roundResult: {
-        votedPlayerId,
-        pointsAwarded: {} // This ensures pointsAwarded is never undefined
-      }
+      roundResult: { votedPlayerId, pointsAwarded: {} }
     };
     setCurrentRound(updatedRound);
-
     setGameState('outsider_guess');
   }, [currentRound]);
 
+  // --- Restore the full implementation of handleOutsiderGuess ---
   const handleOutsiderGuess = useCallback((guess: string) => {
     if (!currentRound) return;
 
@@ -197,27 +195,22 @@ export function useOutsideStory() {
     setCurrentRound(finalRound);
     setHistory(prev => [finalRound, ...prev]);
     setGameState('results');
-  }, [currentRound, teams, resetScores]);
+  }, [currentRound, teams, resetScores]); // Dependencies are now necessary and correct.
 
-  const nextTurn = () => {
-    setCurrentPlayerTurn(prev => (prev + 1));
-  };
-
-  const nextVoter = () => {
-    setVotingPlayerIndex(prev => prev + 1);
-  };
-
+  // Helper functions
+  const nextTurn = () => { setCurrentPlayerTurn(prev => (prev + 1)); };
+  const nextVoter = () => { setVotingPlayerIndex(prev => prev + 1); };
   const playAgain = useCallback(() => {
     setCurrentPlayerTurn(0);
     setVotingPlayerIndex(0);
     setCurrentRound(null);
   }, []);
-
   const changePlayersAndReset = useCallback(() => {
     setGameMode('competitive');
     resetScores({});
   }, [setGameMode, resetScores]);
 
+  // Return all state and functions
   return {
     players: teams,
     levels,
