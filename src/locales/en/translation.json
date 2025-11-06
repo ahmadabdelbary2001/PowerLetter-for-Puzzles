@@ -83,9 +83,9 @@
   "wordChoiceDesc": "Look at the picture and choose the correct word from a list.",
   "wordChoiceFeatures": ["Improves reading", "Multiple choice", "Immediate feedback"],
 
-  "pictureChoiceTitle": "Find the Picture",
-  "pictureChoiceDesc": "Read the word and choose the picture that matches it.",
-  "pictureChoiceFeatures": ["Tests comprehension", "Visual recognition", "Fun and interactive"],
+  "ImgChoiceTitle": "Find the Picture",
+  "ImgChoiceDesc": "Read the word and choose the picture that matches it.",
+  "ImgChoiceFeatures": ["Tests comprehension", "Visual recognition", "Fun and interactive"],
 
   "pictureToWordTitle": "Picture to Word",
   "pictureToWordDesc": "Form the word that matches the picture from the given letters.",

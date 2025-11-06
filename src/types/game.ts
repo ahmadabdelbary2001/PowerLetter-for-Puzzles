@@ -8,7 +8,7 @@ export type GameType =
   | 'image-clue'
   | 'letter-flow'
   | 'outside-the-story'
-  | 'picture-choice'
+  | 'img-choice'
   | 'word-choice';
 export type Difficulty = 'easy' | 'medium' | 'hard';
 
@@ -43,6 +43,20 @@ export interface GameLevel {
   difficulty?: Difficulty;
   category?: GameCategory;
   data?: unknown;
+}
+
+// --- Define the IGameEngine interface ---
+/**
+ * @interface IGameEngine
+ * @description Defines the contract for a game engine. Every game engine must
+ * provide a `loadLevels` method that returns a promise resolving to an array of levels.
+ */
+export interface IGameEngine<T extends GameLevel> {
+  loadLevels: (options: {
+    language: Language;
+    categories: GameCategory[];
+    difficulty?: Difficulty;
+  }) => Promise<T[]>;
 }
 
 export interface Team {

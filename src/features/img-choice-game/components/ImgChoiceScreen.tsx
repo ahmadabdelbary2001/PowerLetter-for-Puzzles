@@ -1,6 +1,6 @@
-// src/features/picture-choice-game/components/PictureChoiceScreen.tsx
+// src/features/img-choice-game/components/ImgChoiceScreen.tsx
 /**
- * PictureChoiceScreen – Main screen for the picture choice game (kids mode).
+ * ImgChoiceScreen – Main screen for the image choice game (kids mode).
  * This component now uses the shared MultipleChoiceLayout to structure the page,
  * passing its game-specific elements (text prompt, image options) as content slots.
  */
@@ -8,18 +8,18 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, Volume2, CheckCircle, XCircle } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
-import { usePictureChoiceGame } from "@/features/picture-choice-game/hooks/usePictureChoiceGame";
+import { useImgChoiceGame } from "@/features/img-choice-game/hooks/useImgChoiceGame";
 import { cn } from "@/lib/utils";
 import { useInstructions } from "@/hooks/useInstructions";
 // --- Import the reusable layout template ---
 import { MultipleChoiceLayout } from "@/components/templates/MultipleChoiceLayout";
 
-const PictureChoiceScreen: React.FC = () => {
+const ImgChoiceScreen: React.FC = () => {
   const { t, i18n } = useTranslation();
   const dir = i18n.dir();
 
   // Get instructions
-  const rawInstructions = useInstructions("pictureChoice");
+  const rawInstructions = useInstructions("ImgChoice");
   const instructions = rawInstructions
     ? {
         title: rawInstructions.title ?? "",
@@ -41,7 +41,7 @@ const PictureChoiceScreen: React.FC = () => {
     handleOptionClick,
     nextLevel,
     handleBack,
-  } = usePictureChoiceGame();
+  } = useImgChoiceGame();
 
   // Show loading spinner
   if (loading) {
@@ -75,7 +75,7 @@ const PictureChoiceScreen: React.FC = () => {
   return (
     <MultipleChoiceLayout
       // Pass standard layout props
-      title={t.pictureChoiceTitle ?? t.findThePictureTitle ?? "Find the Picture"}
+      title={t.ImgChoiceTitle ?? t.findThePictureTitle ?? "Find the Image"}
       levelIndex={0} // This game doesn't show a level index, so 0 is fine
       onBack={handleBack}
       instructions={instructions}
@@ -138,4 +138,4 @@ const PictureChoiceScreen: React.FC = () => {
   );
 };
 
-export default PictureChoiceScreen;
+export default ImgChoiceScreen;

@@ -110,7 +110,7 @@ PowerLetter-for-Puzzles/
 │   │   ├── letter-flow-game/
 │   │   ├── outside-story-game/
 │   │   ├── phrase-clue-game/
-│   │   ├── picture-choice-game/
+│   │   ├── img-choice-game/
 │   │   ├── word-choice-game/
 │   ├── games/
 │   │   ├── GameRegistry.ts

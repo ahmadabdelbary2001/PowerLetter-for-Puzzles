@@ -1,9 +1,9 @@
-// src/features/picture-choice-game/engine.ts
+// src/features/img-choice-game/engine.ts
 import type { Language, GameCategory, Difficulty } from '@/types/game';
 import { shuffleArray } from '@/lib/gameUtils';
 import type { IGameEngine } from '@/games/engine/types';
 
-export interface PictureChoiceLevel {
+export interface ImgChoiceLevel {
   id: string;
   word: string;
   sound?: string;
@@ -15,12 +15,12 @@ interface LevelModule {
   default?: { levels?: unknown[] };
 }
 
-class PictureChoiceGameEngine implements IGameEngine<PictureChoiceLevel> {
+class ImgChoiceGameEngine implements IGameEngine<ImgChoiceLevel> {
   public async loadLevels(options: {
     language: Language;
     categories: GameCategory[];
     difficulty?: Difficulty;
-  }): Promise<PictureChoiceLevel[]> {
+  }): Promise<ImgChoiceLevel[]> {
     const { language, categories } = options;
     const ALL_KIDS_CATEGORIES: GameCategory[] = ['animals', 'fruits-and-vegetables', 'shapes'];
     const categoriesToLoad = categories.includes('general') ? ALL_KIDS_CATEGORIES : categories;
@@ -34,33 +34,33 @@ class PictureChoiceGameEngine implements IGameEngine<PictureChoiceLevel> {
 
         // 1) Try exact language-specific module (preferred)
         const langKey = entries.find(([key]) =>
-          key.includes(`/${language}/picture-choice/${cat}/data.json`) ||
-          key.includes(`\\${language}\\picture-choice\\${cat}\\data.json`) // windows-safe check, just in case
+          key.includes(`/${language}/img-choice/${cat}/data.json`) ||
+          key.includes(`\\${language}\\img-choice\\${cat}\\data.json`) // windows-safe check, just in case
         )?.[1];
 
         // 2) Fallback to English explicitly if language not found
         const enKey = entries.find(([key]) =>
-          key.includes(`/en/picture-choice/${cat}/data.json`) ||
-          key.includes(`\\en\\picture-choice\\${cat}\\data.json`)
+          key.includes(`/en/img-choice/${cat}/data.json`) ||
+          key.includes(`\\en\\img-choice\\${cat}\\data.json`)
         )?.[1];
 
-        // 3) Last-resort: any picture-choice/<cat>/data.json (should be rare)
+        // 3) Last-resort: any img-choice/<cat>/data.json (should be rare)
         const anyKey = entries.find(([key]) =>
-          key.endsWith(`/picture-choice/${cat}/data.json`) || key.endsWith(`\\picture-choice\\${cat}\\data.json`)
+          key.endsWith(`/img-choice/${cat}/data.json`) || key.endsWith(`\\img-choice\\${cat}\\data.json`)
         )?.[1];
 
         const entry = langKey ?? enKey ?? anyKey;
 
         if (!entry) {
-          console.warn(`PictureChoiceGameEngine: no module found for ${language}/${cat}`);
-          return [] as PictureChoiceLevel[];
+          console.warn(`ImgChoiceGameEngine: no module found for ${language}/${cat}`);
+          return [] as ImgChoiceLevel[];
         }
 
         const module = (await entry()) as LevelModule;
         const rawLevels = module.default?.levels ?? [];
 
         const validated = rawLevels
-          .map((lvl): PictureChoiceLevel | null => {
+          .map((lvl): ImgChoiceLevel | null => {
             if (typeof lvl !== 'object' || lvl === null) return null;
             const obj = lvl as Record<string, unknown>;
 
@@ -90,12 +90,12 @@ class PictureChoiceGameEngine implements IGameEngine<PictureChoiceLevel> {
             }
             return null;
           })
-          .filter((x): x is PictureChoiceLevel => x !== null);
+          .filter((x): x is ImgChoiceLevel => x !== null);
 
         return validated;
       } catch (err) {
-        console.error(`PictureChoiceGameEngine: Failed to load ${language}/${cat}`, err);
-        return [] as PictureChoiceLevel[];
+        console.error(`ImgChoiceGameEngine: Failed to load ${language}/${cat}`, err);
+        return [] as ImgChoiceLevel[];
       }
     });
 
@@ -118,4 +118,4 @@ class PictureChoiceGameEngine implements IGameEngine<PictureChoiceLevel> {
   }
 }
 
-export const pictureChoiceGameEngine = new PictureChoiceGameEngine();
+export const imgChoiceGameEngine = new ImgChoiceGameEngine();

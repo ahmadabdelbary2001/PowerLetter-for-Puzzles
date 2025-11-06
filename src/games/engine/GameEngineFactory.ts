@@ -4,7 +4,7 @@ import { formationGameEngine } from '@/features/formation-game/engine';
 import { imgClueGameEngine } from '@/features/img-clue-game/engine';
 import { letterFlowGameEngineInstance } from '@/features/letter-flow-game/engine';
 import { outsideStoryGameEngine } from '@/features/outside-story-game/engine';
-import { pictureChoiceGameEngine } from '@/features/picture-choice-game/engine';
+import { imgChoiceGameEngine } from '@/features/img-choice-game/engine';
 import { wordChoiceGameEngine } from '@/features/word-choice-game/engine';
 import type { GameConfig } from '../GameRegistry';
 
@@ -18,8 +18,8 @@ export function getGameEngine(gameId: GameConfig['id']) {
       return imgClueGameEngine;
     case 'letter-flow':
       return letterFlowGameEngineInstance;
-    case 'picture-choice':
-      return pictureChoiceGameEngine;
+    case 'img-choice':
+      return imgChoiceGameEngine;
     case 'outside-the-story':
       return outsideStoryGameEngine;
     case 'word-choice':

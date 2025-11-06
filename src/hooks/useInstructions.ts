@@ -17,7 +17,7 @@ export type InstructionKey =
   | "imageClue"
   | "letterFlow"
   | "outsideStory"
-  | "pictureChoice"
+  | "ImgChoice"
   | "wordChoice";
 
 /**
@@ -64,8 +64,8 @@ export function useOutsideStoryInstructions(): InstructionSet | null {
   return useInstructions("outsideStory");
 }
 
-export function usePictureChoiceInstructions(): InstructionSet | null {
-  return useInstructions("pictureChoice");
+export function useImgChoiceInstructions(): InstructionSet | null {
+  return useInstructions("ImgChoice");
 }
 
 export function useWordChoiceInstructions(): InstructionSet | null {

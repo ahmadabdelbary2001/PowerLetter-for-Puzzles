@@ -8,14 +8,14 @@ const ImgClueGameScreen = React.lazy(() => import('@/features/img-clue-game/comp
 const WordChoiceScreen = React.lazy(() => import('@/features/word-choice-game/components/WordChoiceScreen'));
 const FormationGameScreen = React.lazy(() => import('@/features/formation-game/components/FormationGameScreen'));
 const LetterFlowGameScreen = React.lazy(() => import('@/features/letter-flow-game/components/LetterFlowGameScreen'));
-const PictureChoiceScreen = React.lazy(() => import('@/features/picture-choice-game/components/PictureChoiceScreen'));
+const ImgChoiceScreen = React.lazy(() => import('@/features/img-choice-game/components/ImgChoiceScreen'));
 const OutsideStoryScreen = React.lazy(() => import('@/features/outside-story-game/components/OutsideStoryScreen'));
 
 type TranslationKeys = string;
 type SupportedSetting = 'teams' | 'difficulty' | 'category';
 
 export interface GameConfig {
-  id: 'category' | 'phrase-clue' | 'formation' | 'image-clue' | 'letter-flow' | 'outside-the-story' | 'picture-choice' | 'word-choice';
+  id: 'category' | 'phrase-clue' | 'formation' | 'image-clue' | 'letter-flow' | 'outside-the-story' | 'img-choice' | 'word-choice';
   type: 'adult' | 'kids';
   titleKey: TranslationKeys;
   descriptionKey: TranslationKeys;
@@ -109,12 +109,12 @@ export const GAME_REGISTRY: GameConfig[] = [
     availableCategories: ['animals', 'fruits-and-vegetables', 'shapes', 'general'],
   },
   {
-    id: 'picture-choice',
+    id: 'img-choice',
     type: 'kids',
     titleKey: 'findThePictureTitle',
     descriptionKey: 'findThePictureDesc',
     featuresKey: 'findThePictureFeatures',
-    component: PictureChoiceScreen,
+    component: ImgChoiceScreen,
     icon: React.createElement(ImageIcon, { className: "w-8 h-8" }),
     status: 'available',
     supportedSettings: ['teams', 'category'],

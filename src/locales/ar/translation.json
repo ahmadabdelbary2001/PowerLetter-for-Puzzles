@@ -83,9 +83,9 @@
   "wordChoiceDesc": "انظر إلى الصورة واختر الكلمة الصحيحة من القائمة.",
   "wordChoiceFeatures": ["تحسين القراءة", "اختيار من متعدد", "تقييم فوري"],
 
-  "pictureChoiceTitle": "ابحث عن الصورة",
-  "pictureChoiceDesc": "اقرأ الكلمة واختر الصورة التي تطابقها.",
-  "pictureChoiceFeatures": ["اختبار الفهم", "تمييز بصري", "ممتعة وتفاعلية"],
+  "ImgChoiceTitle": "ابحث عن الصورة",
+  "ImgChoiceDesc": "اقرأ الكلمة واختر الصورة التي تطابقها.",
+  "ImgChoiceFeatures": ["اختبار الفهم", "تمييز بصري", "ممتعة وتفاعلية"],
 
   "pictureToWordTitle": "صورة وكلمة",
   "pictureToWordDesc": "كوّن الكلمة التي تطابق الصورة من الحروف المعطاة.",
