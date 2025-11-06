@@ -1,4 +1,4 @@
-// src/components/templates/WordPuzzleLayout.tsx
+// src/components/templates/ClueGameLayout.tsx
 /**
  * @description A reusable layout template for word puzzle games.
  * This component provides a standardized structure for games that involve
@@ -21,10 +21,10 @@ type Instructions = {
 };
 
 /**
- * @interface WordPuzzleLayoutProps
- * @description Props for the WordPuzzleLayout component.
+ * @interface ClueGameLayoutProps
+ * @description Props for the ClueGameLayout component.
  */
-interface WordPuzzleLayoutProps {
+interface ClueGameLayoutProps {
   title: string;
   levelIndex: number;
   onBack: () => void;
@@ -41,7 +41,7 @@ interface WordPuzzleLayoutProps {
   wrongAnswersContent?: React.ReactNode;
 }
 
-export const WordPuzzleLayout: React.FC<WordPuzzleLayoutProps> = ({
+export const ClueGameLayout: React.FC<ClueGameLayoutProps> = ({
   title,
   levelIndex,
   onBack,

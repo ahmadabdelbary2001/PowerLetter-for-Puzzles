@@ -3,7 +3,7 @@ export type Language = 'en' | 'ar';
 export type GameMode = 'single' | 'competitive';
 export type GameType =
   | 'category'
-  | 'clue'
+  | 'phrase-clue'
   | 'formation'
   | 'image-clue'
   | 'letter-flow'

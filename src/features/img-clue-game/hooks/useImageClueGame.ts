@@ -1,7 +1,7 @@
 // src/features/img-clue-game/hooks/useImageClueGame.ts
 /**
  * @description Custom hook for the Image Clue Game.
- * This hook builds upon the shared `useWordPuzzleGame` hook by adding
+ * This hook builds upon the shared `useClueGame` hook by adding
  * game-specific logic for checking answers, handling competitive mode
  * (scoring, turn-passing), and managing audio playback.
  */
@@ -9,8 +9,8 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useTranslation } from "@/hooks/useTranslation";
-import { useWordPuzzleGame } from '@/features/word-puzzle/hooks/useWordPuzzleGame';
-import { useGameControls } from '@/features/word-puzzle/hooks/useGameControls';
+import { useClueGame } from '@/hooks/game/useClueGame';
+import { useClueGameControls } from '@/hooks/game/useClueGameControls';
 import { imgClueGameEngine, type ImageLevel } from '../engine';
 
 export function useImageClueGame() {
@@ -21,7 +21,7 @@ export function useImageClueGame() {
   const { t } = useTranslation();
 
   // Use the shared word puzzle hook
-  const puzzle = useWordPuzzleGame<ImageLevel>({
+  const puzzle = useClueGame<ImageLevel>({
     engine: imgClueGameEngine,
     language,
     categories,
@@ -31,7 +31,7 @@ export function useImageClueGame() {
   // Image-Clue Specific State
   const [wrongAnswers, setWrongAnswers] = useState<string[]>([]);
   const [attemptedTeams, setAttemptedTeams] = useState<Set<number>>(new Set());
-  const { canRemove, canClear, canCheck, canHint } = useGameControls(puzzle.gameState);
+  const { canRemove, canClear, canCheck, canHint } = useClueGameControls(puzzle.gameState);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Helper functions

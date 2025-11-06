@@ -1,9 +1,9 @@
-// src/features/clue-game/components/ClueGameScreen.tsx
+// src/features/phrase-clue-game/components/PhraseClueGameScreen.tsx
 /**
- * Main component for the Clue Game interface.
+ * Main component for the Phrase Clue Game interface.
  * This component is now a "presentational" component that assembles the UI
- * using the shared WordPuzzleLayout and passes down the state and logic
- * from the useClueGame hook.
+ * using the shared ClueGameLayout and passes down the state and logic
+ * from the usePhraseClueGame hook.
  */
 import React from "react";
 import { Button } from "@/components/ui/button";
@@ -12,14 +12,14 @@ import { SolutionBoxes } from "@/components/molecules/SolutionBoxes";
 import { LetterGrid } from "@/components/molecules/LetterGrid";
 import GameControls from "@/components/organisms/GameControls";
 import { useTranslation } from "@/hooks/useTranslation";
-import { useClueGame } from "../hooks/useClueGame";
+import { usePhraseClueGame } from "../hooks/usePhraseClueGame";
 import { useInstructions } from "@/hooks/useInstructions";
 import { useGameMode } from "@/hooks/useGameMode";
-import { WordPuzzleLayout } from "@/components/templates/WordPuzzleLayout";
+import { ClueGameLayout } from "@/components/templates/ClueGameLayout";
 
-const ClueGameScreen: React.FC = () => {
+const PhraseClueGameScreen: React.FC = () => {
   const { t } = useTranslation();
-  const instructionsData = useInstructions("clue");
+  const instructionsData = useInstructions("phraseClue");
   const { gameMode } = useGameMode();
 
   // All game logic is now neatly contained in this hook.
@@ -47,7 +47,7 @@ const ClueGameScreen: React.FC = () => {
     canClear,
     canCheck,
     canHint,
-  } = useClueGame();
+  } = usePhraseClueGame();
 
   // Handle loading state
   if (loading) {
@@ -77,9 +77,9 @@ const ClueGameScreen: React.FC = () => {
   // Destructure properties from the correctly typed gameState.
   const { answerSlots, slotIndices, hintIndices } = gameState;
 
-  // Use the WordPuzzleLayout to render the UI.
+  // Use the ClueGameLayout to render the UI.
   return (
-    <WordPuzzleLayout
+    <ClueGameLayout
       title={currentLevel.clue}
       levelIndex={currentLevelIndex}
       onBack={handleBack}
@@ -142,4 +142,4 @@ const ClueGameScreen: React.FC = () => {
   );
 };
 
-export default ClueGameScreen;
+export default PhraseClueGameScreen;

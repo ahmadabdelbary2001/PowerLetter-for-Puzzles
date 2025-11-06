@@ -42,8 +42,8 @@
   "formationDesc": "Find all possible words that can be formed from a given set of letters",
   "categoryTitle": "Category Word Guess",
   "categoryDesc": "Guess the correct word based on clues from various categories",
-  "clueTitle": "Clue-Driven Word Find",
-  "clueDesc": "Find the hidden word by unscrambling letters using the provided clue",
+  "phraseClueTitle": "Clue-Driven Word Find",
+  "phraseClueDesc": "Find the hidden word by unscrambling letters using the provided clue",
   "available": "Available",
   "comingSoon": "Coming Soon",
   "unknown": "Unknown",
@@ -58,7 +58,7 @@
     "Multiple categories",
     "Educational content"
   ],
-  "clueFeatures": [
+  "phraseClueFeatures": [
     "Scrambled letters",
     "Helpful clues",
     "Hint system"

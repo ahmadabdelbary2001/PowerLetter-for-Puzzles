@@ -1,5 +1,5 @@
 // src/games/engine/GameEngineFactory.ts
-import { clueGameEngine } from '@/features/clue-game/engine';
+import { phraseClueGameEngine } from '@/features/phrase-clue-game/engine';
 import { formationGameEngine } from '@/features/formation-game/engine';
 import { imgClueGameEngine } from '@/features/img-clue-game/engine';
 import { letterFlowGameEngineInstance } from '@/features/letter-flow-game/engine';
@@ -10,8 +10,8 @@ import type { GameConfig } from '../GameRegistry';
 
 export function getGameEngine(gameId: GameConfig['id']) {
   switch (gameId) {
-    case 'clue':
-      return clueGameEngine;
+    case 'phrase-clue':
+      return phraseClueGameEngine;
     case 'formation':
       return formationGameEngine;
     case 'image-clue':

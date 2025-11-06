@@ -1,6 +1,6 @@
-// src/features/clue-game/engine.ts
+// src/features/phrase-clue-game/engine.ts
 /**
- * Clue Game Engine - Implements game logic for the word clue puzzle game
+ * Phrase Clue Game Engine - Implements game logic for the word clue puzzle game
  * Handles loading levels from JSON files and generating letter options for the player
  */
 import type { Language, Difficulty, GameCategory } from '@/types/game';
@@ -9,7 +9,7 @@ import type { IGameEngine } from '@/games/engine/types';
 import { GAME_REGISTRY } from '@/games/GameRegistry'; // NEW: Import the game registry
 
 /**
- * Interface defining the structure of a clue game level
+ * Interface defining the structure of a phrase clue game level
  */
 export interface Level {
   id: string;
@@ -27,9 +27,9 @@ interface LevelModule {
 }
 
 /**
- * Engine class that handles loading and processing clue game levels
+ * Engine class that handles loading and processing phrase clue game levels
  */
-class ClueGameEngine implements IGameEngine<Level> {
+class PhraseClueGameEngine implements IGameEngine<Level> {
   /**
    * Loads game levels based on language, categories, and difficulty
    */
@@ -44,10 +44,10 @@ class ClueGameEngine implements IGameEngine<Level> {
     let categoriesToLoad: GameCategory[];
 
     if (categories.includes('general')) {
-      // If 'general' is selected, get ALL available categories for the 'clue' game from the registry.
-      const clueGameConfig = GAME_REGISTRY.find(game => game.id === 'clue');
+      // If 'general' is selected, get ALL available categories for the 'phrase-clue' game from the registry.
+      const phraseClueGameConfig = GAME_REGISTRY.find(game => game.id === 'phrase-clue');
       // Filter out 'general' itself to avoid trying to load a 'general.json' file.
-      categoriesToLoad = clueGameConfig?.availableCategories?.filter(cat => cat !== 'general') ?? [];
+      categoriesToLoad = phraseClueGameConfig?.availableCategories?.filter(cat => cat !== 'general') ?? [];
     } else {
       // Otherwise, just load the specifically selected categories.
       categoriesToLoad = categories;
@@ -57,11 +57,11 @@ class ClueGameEngine implements IGameEngine<Level> {
 
     const promises = categoriesToLoad.map(async (cat) => {
       try {
-        const path = `/src/data/${language}/clue/${cat}/${difficulty}.json`;
+        const path = `/src/data/${language}/phrase-clue/${cat}/${difficulty}.json`;
         const moduleLoader = modules[path];
 
         if (!moduleLoader) {
-          console.warn(`ClueGameEngine: Module not found for path: ${path}`);
+          console.warn(`PhraseClueGameEngine: Module not found for path: ${path}`);
           return [];
         }
 
@@ -81,7 +81,7 @@ class ClueGameEngine implements IGameEngine<Level> {
           return null;
         }).filter((l): l is Level => l !== null);
       } catch (err) {
-        console.error(`ClueGameEngine: Failed to load levels for ${language}/${cat}/${difficulty}.`, err);
+        console.error(`PhraseClueGameEngine: Failed to load levels for ${language}/${cat}/${difficulty}.`, err);
         return [];
       }
     });
@@ -109,4 +109,4 @@ class ClueGameEngine implements IGameEngine<Level> {
   }
 }
 
-export const clueGameEngine = new ClueGameEngine();
+export const phraseClueGameEngine = new PhraseClueGameEngine();

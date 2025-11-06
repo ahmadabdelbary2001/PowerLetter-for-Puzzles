@@ -1,9 +1,9 @@
 {
-  "clue": {
+  "phraseClue": {
     "title": "Clue-Driven Word Find",
-    "description": "Find the hidden word by selecting letters that match the clue. Use your vocabulary skills to solve the puzzle!",
+    "description": "Find the hidden word by selecting letters that match the phrase. Use your vocabulary skills to solve the puzzle!",
     "steps": [
-      "Read the clue at the top of the screen to understand what word you're looking for.",
+      "Read the phrase at the top of the screen to understand what word you're looking for.",
       "Click on letters from the grid to form your answer.",
       "Use the 'Remove' button to undo your last letter selection.",
       "Use the 'Clear' button to remove all letters and start over.",

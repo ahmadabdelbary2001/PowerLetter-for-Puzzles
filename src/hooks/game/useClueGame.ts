@@ -1,8 +1,8 @@
-// src/features/word-puzzle/hooks/useWordPuzzleGame.ts
+// src/hooks/game/useClueGame.ts
 /**
  * @description A shared hook for managing the state of any word-based puzzle game.
  * It encapsulates the generic logic for handling user input, game state, and notifications,
- * which can be extended by specific game hooks (like useClueGame).
+ * which can be extended by specific game hooks (like usePhraseClueGame).
  */
 import { useCallback } from 'react';
 import { useGame } from '@/hooks/useGame';
@@ -10,22 +10,22 @@ import type { IGameEngine } from '@/games/engine/types';
 import type { Language, Difficulty, GameCategory, GameLevel } from '@/types/game';
 
 /**
- * @interface WordPuzzleGameOptions
+ * @interface ClueGameOptions
  * @description Defines the options required to initialize the word puzzle game hook.
  */
-interface WordPuzzleGameOptions<T extends GameLevel> {
+interface ClueGameOptions<T extends GameLevel> {
   engine: IGameEngine<T>;
   language: Language;
   categories: GameCategory[];
   difficulty?: Difficulty;
 }
 
-export function useWordPuzzleGame<T extends GameLevel & { solution: string; difficulty?: Difficulty }>({
+export function useClueGame<T extends GameLevel & { solution: string; difficulty?: Difficulty }>({
   engine,
   language,
   categories,
   difficulty,
-}: WordPuzzleGameOptions<T>) {
+}: ClueGameOptions<T>) {
   // --- Destructure all properties from useGame directly. ---
   // This allows us to pass stable functions like `dispatch` and `setNotification`
   // into the dependency arrays of our callbacks, satisfying the ESLint rule.

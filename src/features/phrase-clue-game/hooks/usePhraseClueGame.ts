@@ -1,7 +1,7 @@
-// src/features/clue-game/hooks/useClueGame.ts
+// src/features/phrase-clue-game/hooks/usePhraseClueGame.ts
 /**
- * @description Custom hook for the Clue Game.
- * This hook builds upon the shared `useWordPuzzleGame` hook by adding
+ * @description Custom hook for the Phrase Clue Game.
+ * This hook builds upon the shared `useClueGame` hook by adding
  * game-specific logic for checking answers, handling competitive mode
  * (scoring, turn-passing), and managing wrong attempts.
  */
@@ -9,38 +9,37 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useTranslation } from "@/hooks/useTranslation";
-import { useWordPuzzleGame } from '@/features/word-puzzle/hooks/useWordPuzzleGame';
-import { useGameControls } from '@/features/word-puzzle/hooks/useGameControls';
-import { clueGameEngine, type Level } from '../engine';
+import { useClueGame } from '@/hooks/game/useClueGame';
+import { useClueGameControls } from '@/hooks/game/useClueGameControls';
+import { phraseClueGameEngine, type Level } from '../engine';
 
-export function useClueGame() {
-  // Unchanged: Get navigation, params, and global game state
+export function usePhraseClueGame() {
+  // Get navigation, params, and global game state
   const navigate = useNavigate();
   const params = useParams<{ gameType?: string }>();
   const { language, categories, difficulty, gameMode, updateScore, teams, currentTeam, setCurrentTeam, nextTurn, consumeHint } = useGameMode();
   const { t } = useTranslation();
 
   // Unchanged: Use the shared word puzzle hook
-  const puzzle = useWordPuzzleGame<Level>({
-    engine: clueGameEngine,
+  const puzzle = useClueGame<Level>({
+    engine: phraseClueGameEngine,
     language,
     categories,
     difficulty,
   });
 
-  // Unchanged: Clue-Game Specific State
   const [wrongAnswers, setWrongAnswers] = useState<string[]>([]);
   const [attemptedTeams, setAttemptedTeams] = useState<Set<number>>(new Set());
-  const { canRemove, canClear, canCheck, canHint } = useGameControls(puzzle.gameState);
+  const { canRemove, canClear, canCheck, canHint } = useClueGameControls(puzzle.gameState);
 
-  // Unchanged: useEffect for turn-taking
+  // useEffect for turn-taking
   useEffect(() => {
     if (gameMode === 'competitive' && teams.length > 0) {
       setCurrentTeam(puzzle.currentLevelIndex % teams.length);
     }
   }, [puzzle.currentLevelIndex, gameMode, teams.length, setCurrentTeam]);
 
-  // Unchanged: onCheck logic
+  // onCheck logic
   const onCheck = useCallback(() => {
     // ... (onCheck logic remains the same)
     if (puzzle.gameState.gameState !== 'playing') return;
@@ -113,7 +112,7 @@ export function useClueGame() {
       }, 2500);
     } else {
       // --- In single-player mode, set the state to 'won'. ---
-      // This is crucial. By setting the state to 'won', we tell GameControls
+      // This is crucial. By setting the state to 'won', we tell ClueGameControls
       // to display the "Next", "Previous", and "Reset" buttons, allowing the
       // player to proceed to the next level manually.
       puzzle.dispatch({ type: "SET_GAME_STATE", payload: "won" });

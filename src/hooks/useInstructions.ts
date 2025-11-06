@@ -12,7 +12,7 @@ export type InstructionSet = {
 };
 
 export type InstructionKey =
-  | "clue"
+  | "phraseClue"
   | "formation"
   | "imageClue"
   | "letterFlow"
@@ -44,8 +44,8 @@ export function useInstructions(key: InstructionKey): InstructionSet | null {
 
 /* --- Convenience named hooks kept for backwards compatibility --- */
 
-export function useClueInstructions(): InstructionSet | null {
-  return useInstructions("clue");
+export function usePhraseClueInstructions(): InstructionSet | null {
+  return useInstructions("phraseClue");
 }
 
 export function useFormationInstructions(): InstructionSet | null {

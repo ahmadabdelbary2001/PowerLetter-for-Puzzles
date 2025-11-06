@@ -1,6 +1,6 @@
-// src/features/word-puzzle/hooks/useGameControls.ts
+// src/hooks/game/useClueGameControls.ts
 /**
- * useGameControls hook - Manages the enabled/disabled state of game control buttons
+ * useClueGameControls hook - Manages the enabled/disabled state of game control buttons
  * Determines whether actions like remove, clear, check, and hint should be available based on game state
  * Handles both single-player and competitive game modes with different rules for hint usage
  */
@@ -14,7 +14,7 @@ import { useGameMode } from '@/hooks/useGameMode';
  * @param state - Current game state from the game reducer
  * @returns Object containing boolean flags for each control action
  */
-export function useGameControls(state: State) {
+export function useClueGameControls(state: State) {
   // Extract relevant state properties
   const { gameState, slotIndices, answerSlots, hintIndices } = state;
   // Get game mode and team information

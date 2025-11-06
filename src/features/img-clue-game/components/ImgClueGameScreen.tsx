@@ -1,7 +1,7 @@
 // src/features/img-clue-game/components/ImgClueGameScreen.tsx
 /**
  * ImgClueGameScreen component - Main game screen for the image clue puzzle game.
- * This component now uses the shared WordPuzzleLayout to structure the page,
+ * This component now uses the shared ClueGameLayout to structure the page,
  * passing its game-specific elements (image prompt, solution boxes) as content slots.
  */
 import React from "react";
@@ -15,10 +15,10 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { useImageClueGame } from "../hooks/useImageClueGame";
 import { useGameMode } from "@/hooks/useGameMode";
 import { useInstructions } from "@/hooks/useInstructions";
-import { WordPuzzleLayout } from "@/components/templates/WordPuzzleLayout";
+import { ClueGameLayout } from "@/components/templates/ClueGameLayout";
 
 const ImgClueGameScreen: React.FC = () => {
-  // Unchanged: Get translations, instructions, and game mode
+  // Get translations, instructions, and game mode
   const { t, i18n } = useTranslation();
   const dir = i18n.dir();
   const instructionsData = useInstructions("imageClue");
@@ -29,7 +29,7 @@ const ImgClueGameScreen: React.FC = () => {
   } : undefined;
   const { gameMode } = useGameMode();
 
-  // Unchanged: Destructure all state and handlers from the hook
+  // Destructure all state and handlers from the hook
   const {
     loading,
     currentLevel,
@@ -80,14 +80,14 @@ const ImgClueGameScreen: React.FC = () => {
 
   // If we reach this point, we know `currentLevel` is a valid object.
   return (
-    <WordPuzzleLayout
+    <ClueGameLayout
       title={t.imageClueTitle}
       levelIndex={currentLevelIndex}
       onBack={handleBack}
       instructions={instructions}
       notification={notification}
       layoutType="image"
-      // Unchanged: Pass game-specific content into the layout's slots
+      // Pass game-specific content into the layout's slots
       promptContent={
         <div className="relative aspect-video bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center">
           {/* This line is now safe because we've already checked that `currentLevel` exists. */}
@@ -121,7 +121,7 @@ const ImgClueGameScreen: React.FC = () => {
         )
       }
       gameControlsContent={
-        // Unchanged: This logic correctly shows the "Next" button or the game controls.
+        // This logic correctly shows the "Next" button or the game controls.
         gameState.gameState === "won" && gameMode !== "competitive" ? (
           <Button onClick={nextLevel} className="w-full bg-green-600 hover:bg-green-700 text-lg py-6">
             {t.next}{" "}
