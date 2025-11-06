@@ -6,57 +6,77 @@
  * and a next button, along with a notification area.
  */
 import React from 'react';
-// --- Import the GameLayout component itself, not a separate props type ---
 import { GameLayout } from '@/components/templates/GameLayout';
-import { Notification } from '@/components/atoms/Notification';
+import { Notification, type NotificationType } from '@/components/atoms/Notification';
 
 /**
  * @interface MultipleChoiceLayoutProps
  * @description Props for the MultipleChoiceLayout component.
- * It extends the base GameLayoutProps and adds slots for game-specific content.
+ * It defines all required props for the layout template.
  */
-// --- Use React.ComponentProps to correctly infer the props from GameLayout ---
-interface MultipleChoiceLayoutProps extends Omit<React.ComponentProps<typeof GameLayout>, 'children'> {
+interface MultipleChoiceLayoutProps {
+  title: string;
+  levelIndex: number;
+  onBack: () => void;
   notificationMessage: string | null;
-  notificationType?: 'success' | 'error' | 'warning' | 'info';
+  notificationType?: NotificationType;
   promptContent: React.ReactNode;
   optionsContent: React.ReactNode;
   nextButtonContent?: React.ReactNode;
+  instructions?: {
+    title: string;
+    description: string;
+    steps: string[];
+  };
 }
 
 export const MultipleChoiceLayout: React.FC<MultipleChoiceLayoutProps> = ({
+  title,
+  levelIndex,
+  onBack,
   notificationMessage,
-  notificationType = 'info',
+  notificationType, // Default is handled by Notification component
   promptContent,
   optionsContent,
   nextButtonContent,
-  // --- Use the rest operator to gather all other props for GameLayout ---
-  ...gameLayoutProps
+  instructions,
 }) => {
   return (
-    // --- Spread the gathered props onto the GameLayout component ---
-    // This ensures `title`, `levelIndex`, `onBack`, etc., are all passed correctly.
-    // Also, explicitly set layoutType as it's part of this template's design.
-    <GameLayout {...gameLayoutProps} layoutType="image">
-      {/* Slot for the notification */}
-      {notificationMessage && (
-        <Notification message={notificationMessage} type={notificationType} duration={1000} />
-      )}
+    // Pass all required props to GameLayout component.
+    // We explicitly set layoutType to 'image' as it provides the best centering for this game style.
+    <GameLayout 
+      title={title}
+      levelIndex={levelIndex}
+      onBack={onBack}
+      layoutType="image"
+      instructions={instructions}
+    >
+      <div className="flex flex-col items-center justify-center h-full w-full p-4">
+        {/* Slot for the notification */}
+        {notificationMessage && (
+          <div className="absolute top-20 left-1/2 -translate-x-1/2 z-50">
+            <Notification message={notificationMessage} type={notificationType} duration={1200} />
+          </div>
+        )}
 
-      {/* Slot for the main game prompt (e.g., a word or an image) */}
-      {promptContent}
-
-      {/* Slot for the grid of selectable options */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 pt-4">
-        {optionsContent}
-      </div>
-
-      {/* Slot for the "Next" button, which only appears when provided */}
-      {nextButtonContent && (
-        <div className="pt-4">
-          {nextButtonContent}
+        {/* Slot for the main game prompt (e.g., a word or an image) */}
+        <div className="w-full max-w-md mb-8">
+          {promptContent}
         </div>
-      )}
+
+        {/* --- Restore the responsive grid for options --- */}
+        {/* This will display 2 columns on mobile and 4 columns on medium screens and larger. */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-4xl">
+          {optionsContent}
+        </div>
+
+        {/* Slot for the "Next" button, which only appears when provided */}
+        {nextButtonContent && (
+          <div className="mt-8 w-full max-w-md">
+            {nextButtonContent}
+          </div>
+        )}
+      </div>
     </GameLayout>
   );
-};
+}

@@ -1,7 +1,7 @@
 // src/features/word-choice-game/components/WordChoiceScreen.tsx
 /**
  * This component implements the UI for the Word Choice game.
- * It now uses the shared MultipleChoiceLayout to structure the page, passing
+ * It uses the shared MultipleChoiceLayout to structure the page, passing
  * its game-specific elements (image prompt, word options) as content slots.
  */
 import React from "react";
@@ -11,7 +11,6 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { useWordChoiceGame } from "@/features/word-choice-game/hooks/useWordChoiceGame";
 import { cn } from "@/lib/utils";
 import { useInstructions } from "@/hooks/useInstructions";
-// --- Import the reusable layout template ---
 import { MultipleChoiceLayout } from "@/components/templates/MultipleChoiceLayout";
 
 const WordChoiceScreen: React.FC = () => {
@@ -77,7 +76,7 @@ const WordChoiceScreen: React.FC = () => {
     <MultipleChoiceLayout
       // Pass standard layout props
       title={t.wordChoiceTitle ?? "Word Choice"}
-      levelIndex={0} // This game doesn't show a level index
+      levelIndex={0} // Temporary value - should be updated based on actual level index
       onBack={handleBack}
       instructions={instructions}
       notificationMessage={notifMessage}

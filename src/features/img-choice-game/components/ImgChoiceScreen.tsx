@@ -1,7 +1,7 @@
 // src/features/img-choice-game/components/ImgChoiceScreen.tsx
 /**
  * ImgChoiceScreen – Main screen for the image choice game (kids mode).
- * This component now uses the shared MultipleChoiceLayout to structure the page,
+ * This component uses the shared MultipleChoiceLayout to structure the page,
  * passing its game-specific elements (text prompt, image options) as content slots.
  */
 import React from "react";
@@ -11,7 +11,6 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { useImgChoiceGame } from "@/features/img-choice-game/hooks/useImgChoiceGame";
 import { cn } from "@/lib/utils";
 import { useInstructions } from "@/hooks/useInstructions";
-// --- Import the reusable layout template ---
 import { MultipleChoiceLayout } from "@/components/templates/MultipleChoiceLayout";
 
 const ImgChoiceScreen: React.FC = () => {
