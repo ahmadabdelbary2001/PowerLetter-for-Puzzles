@@ -106,11 +106,11 @@ PowerLetter-for-Puzzles/
 │   │   └── en/
 │   ├── features/
 │   │   ├── formation-game/
+│   │   ├── img-choice-game/
 │   │   ├── img-clue-game/
 │   │   ├── letter-flow-game/
 │   │   ├── outside-story-game/
 │   │   ├── phrase-clue-game/
-│   │   ├── img-choice-game/
 │   │   ├── word-choice-game/
 │   ├── games/
 │   │   ├── GameRegistry.ts

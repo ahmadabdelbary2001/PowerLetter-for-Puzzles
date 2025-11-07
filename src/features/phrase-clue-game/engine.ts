@@ -1,112 +1,58 @@
 // src/features/phrase-clue-game/engine.ts
 /**
- * Phrase Clue Game Engine - Implements game logic for the word clue puzzle game
- * Handles loading levels from JSON files and generating letter options for the player
+ * @description The game engine for the Phrase Clue game.
+ * It extends the shared ClueGameEngine to inherit all common level-loading logic,
+ * and only needs to provide its unique, game-specific implementation details.
  */
-import type { Language, Difficulty, GameCategory } from '@/types/game';
-import { shuffleArray, generateLetters } from '@/lib/gameUtils';
-import type { IGameEngine } from '@/games/engine/types';
-import { GAME_REGISTRY } from '@/games/GameRegistry'; // NEW: Import the game registry
+import type { Language, GameCategory, Difficulty } from '@/types/game';
+import { ClueGameEngine, type ClueLevel } from '@/games/engine/ClueGameEngine';
 
 /**
- * Interface defining the structure of a phrase clue game level
+ * @interface PhraseLevel
+ * @description Defines the specific structure of a level for the Phrase Clue game.
  */
-export interface Level {
-  id: string;
+export interface PhraseLevel extends ClueLevel {
   difficulty: Difficulty;
   clue: string;
-  solution: string;
 }
 
-/**
- * Interface for dynamically imported level modules
- */
-interface LevelModule {
-  default?: { levels?: unknown[] };
-  levels?: unknown[];
-}
-
-/**
- * Engine class that handles loading and processing phrase clue game levels
- */
-class PhraseClueGameEngine implements IGameEngine<Level> {
-  /**
-   * Loads game levels based on language, categories, and difficulty
-   */
-  public async loadLevels(options: {
-    language: Language;
-    categories: GameCategory[];
-    difficulty: Difficulty;
-  }): Promise<Level[]> {
-    const { language, categories, difficulty } = options;
-
-    // --- Dynamically determine categories instead of hardcoding them. ---
-    let categoriesToLoad: GameCategory[];
-
-    if (categories.includes('general')) {
-      // If 'general' is selected, get ALL available categories for the 'phrase-clue' game from the registry.
-      const phraseClueGameConfig = GAME_REGISTRY.find(game => game.id === 'phrase-clue');
-      // Filter out 'general' itself to avoid trying to load a 'general.json' file.
-      categoriesToLoad = phraseClueGameConfig?.availableCategories?.filter(cat => cat !== 'general') ?? [];
-    } else {
-      // Otherwise, just load the specifically selected categories.
-      categoriesToLoad = categories;
-    }
-
-    const modules = import.meta.glob('/src/data/**/*.json');
-
-    const promises = categoriesToLoad.map(async (cat) => {
-      try {
-        const path = `/src/data/${language}/phrase-clue/${cat}/${difficulty}.json`;
-        const moduleLoader = modules[path];
-
-        if (!moduleLoader) {
-          console.warn(`PhraseClueGameEngine: Module not found for path: ${path}`);
-          return [];
-        }
-
-        const module = (await moduleLoader()) as LevelModule;
-        const levels = module.default?.levels || module.levels || [];
-
-        return levels.map((lvl: unknown): Level | null => {
-          if (typeof lvl === 'object' && lvl !== null) {
-            const levelObj = lvl as Record<string, unknown>;
-            return {
-              id: String(levelObj.id ?? `${difficulty}-${Math.random().toString(36).slice(2, 8)}`),
-              clue: String(levelObj.clue ?? ''),
-              solution: String(levelObj.solution ?? ''),
-              difficulty,
-            };
-          }
-          return null;
-        }).filter((l): l is Level => l !== null);
-      } catch (err) {
-        console.error(`PhraseClueGameEngine: Failed to load levels for ${language}/${cat}/${difficulty}.`, err);
-        return [];
-      }
-    });
-
-    const results = await Promise.all(promises);
-    const allLevels = results.flat();
-
-    if (allLevels.length === 0) {
-      return [{
-        id: 'error-level',
-        difficulty: 'easy',
-        clue: 'Could not load levels for the selected categories.',
-        solution: 'ERROR'
-      }];
-    }
-    
-    return shuffleArray(allLevels);
+// The engine class extends the base and implements the required abstract methods.
+class PhraseClueGameEngine extends ClueGameEngine<PhraseLevel> {
+  protected getGameId(): 'phrase-clue' {
+    return 'phrase-clue';
   }
 
-  /**
-   * Generates letter options for a given solution word
-   */
-  public generateLetters(solution: string, difficulty: Difficulty, language: Language): string[] {
-    return generateLetters(solution, difficulty, language, false);
+  protected getModulePath(language: Language, category: GameCategory, difficulty?: Difficulty): string {
+    return `/src/data/${language}/phrase-clue/${category}/${difficulty}.json`;
+  }
+
+  protected validateLevel(levelData: unknown, difficulty?: Difficulty): PhraseLevel | null {
+    const lvl = levelData as Record<string, unknown>;
+    if (lvl && typeof lvl === 'object' && 'id' in lvl && 'clue' in lvl && 'solution' in lvl) {
+      return {
+        id: String(lvl.id),
+        clue: String(lvl.clue),
+        solution: String(lvl.solution),
+        difficulty: difficulty ?? 'easy',
+      };
+    }
+    return null;
+  }
+
+  protected getErrorLevel(): PhraseLevel {
+    return {
+      id: 'error-level',
+      difficulty: 'easy',
+      clue: 'Could not load levels for the selected categories.',
+      solution: 'ERROR',
+    };
+  }
+
+  protected isKidsMode(): boolean {
+    // Phrase clue game is not a kids' game for letter generation.
+    return false;
   }
 }
 
+// Export a single instance of the engine.
 export const phraseClueGameEngine = new PhraseClueGameEngine();

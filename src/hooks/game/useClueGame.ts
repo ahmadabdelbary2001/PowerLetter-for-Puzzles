@@ -1,114 +1,164 @@
 // src/hooks/game/useClueGame.ts
 /**
- * @description A shared hook for managing the state of any word-based puzzle game.
- * It encapsulates the generic logic for handling user input, game state, and notifications,
- * which can be extended by specific game hooks (like usePhraseClueGame).
+ * @description A unified, shared hook for managing the state of any "clue-style" puzzle game.
+ * It now encapsulates the core game loop, including the complex logic for checking answers
+ * in both single-player and competitive modes, while allowing for game-specific configuration.
  */
-import { useCallback } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useGame } from '@/hooks/useGame';
+import { useGameMode } from '@/hooks/useGameMode';
+import { useTranslation } from '@/hooks/useTranslation';
 import type { IGameEngine } from '@/games/engine/types';
 import type { Language, Difficulty, GameCategory, GameLevel } from '@/types/game';
 
+// Helper to normalize strings for comparison, making it language-agnostic and robust.
+const normalize = (s: string) => s.toLowerCase().trim();
+
 /**
  * @interface ClueGameOptions
- * @description Defines the options required to initialize the word puzzle game hook.
+ * @description Defines the options required to initialize the clue game hook.
  */
 interface ClueGameOptions<T extends GameLevel> {
   engine: IGameEngine<T>;
   language: Language;
   categories: GameCategory[];
   difficulty?: Difficulty;
+  getPoints?: (level: T) => number;
 }
 
-export function useClueGame<T extends GameLevel & { solution: string; difficulty?: Difficulty }>({
+export function useClueGame<T extends GameLevel & { solution: string }>({
   engine,
   language,
   categories,
   difficulty,
+  getPoints = () => 1,
 }: ClueGameOptions<T>) {
-  // --- Destructure all properties from useGame directly. ---
-  // This allows us to pass stable functions like `dispatch` and `setNotification`
-  // into the dependency arrays of our callbacks, satisfying the ESLint rule.
+  // --- Base Hooks ---
   const {
-    loading,
-    levels,
-    currentLevel,
-    currentLevelIndex,
-    solution,
-    notification,
-    setNotification,
-    gameState,
-    dispatch,
-    nextLevel,
-    prevLevel,
-    resetLevel,
+    loading, levels, currentLevel, currentLevelIndex, solution, notification,
+    setNotification, gameState, dispatch, nextLevel, prevLevel, resetLevel,
   } = useGame<T>(engine, { language, categories, difficulty });
 
-  /**
-   * @function setNotificationWithTimeout
-   * @description A wrapper for setNotification that automatically clears the message.
-   */
-  const setNotificationWithTimeout = useCallback((
-    newNotification: { message: string; type: 'success' | 'error' } | null
-  ) => {
-    setNotification(newNotification);
-    if (newNotification) {
-      setTimeout(() => {
-        setNotification(null);
-      }, 2500);
-    }
-    // --- Add `setNotification` to the dependency array. ---
-  }, [setNotification]);
+  const { gameMode, teams, currentTeam, setCurrentTeam, updateScore, nextTurn, consumeHint } = useGameMode();
+  const { t } = useTranslation();
 
-  /**
-   * @function onLetterClick
-   * @description Dispatches an action to place a letter in the answer slots.
-   */
+  // --- Shared State ---
+  const [wrongAnswers, setWrongAnswers] = useState<string[]>([]);
+  const [attemptedTeams, setAttemptedTeams] = useState<Set<number>>(new Set());
+
+  // --- Effects ---
+  useEffect(() => {
+    if (gameMode === 'competitive' && teams.length > 0) {
+      setCurrentTeam(currentLevelIndex % teams.length);
+    }
+  }, [currentLevelIndex, gameMode, teams.length, setCurrentTeam]);
+
+  useEffect(() => {
+    setWrongAnswers([]);
+    setAttemptedTeams(new Set());
+  }, [currentLevelIndex]);
+
+  // --- Centralized onCheck Logic ---
+  const onCheck = useCallback(() => {
+    if (gameState.gameState !== 'playing' || !currentLevel) return;
+
+    const isCorrect = normalize(gameState.answerSlots.join('')) === normalize(solution);
+
+    if (isCorrect) {
+      dispatch({ type: 'SET_GAME_STATE', payload: 'won' });
+      if (gameMode === 'competitive') {
+        const points = getPoints(currentLevel);
+        updateScore(teams[currentTeam].id, points);
+        setNotification({ message: `${t.congrats} +${points}`, type: 'success' });
+        setTimeout(() => nextLevel(), 2000);
+      } else {
+        setNotification({ message: t.congrats, type: 'success' });
+      }
+    } else {
+      dispatch({ type: 'SET_GAME_STATE', payload: 'failed' });
+      const currentAnswer = gameState.answerSlots.join('');
+      if (currentAnswer && !wrongAnswers.includes(currentAnswer)) {
+        setWrongAnswers(prev => [...prev, currentAnswer]);
+      }
+      setNotification({ message: t.wrongAnswer, type: 'error' });
+
+      if (gameMode === 'competitive') {
+        const newAttemptedTeams = new Set(attemptedTeams).add(currentTeam);
+        setAttemptedTeams(newAttemptedTeams);
+        if (newAttemptedTeams.size >= teams.length) {
+          nextTurn('lose');
+          setTimeout(() => {
+            dispatch({ type: 'SHOW', solution, letters: gameState.letters });
+            setNotification({ message: `${t.solutionWas}: ${solution}`, type: 'error' });
+            setTimeout(() => nextLevel(), 2500);
+          }, 2000);
+        } else {
+          nextTurn('lose');
+          setTimeout(() => {
+            dispatch({ type: 'CLEAR' });
+            dispatch({ type: 'SET_GAME_STATE', payload: 'playing' });
+          }, 2000);
+        }
+      } else {
+        setTimeout(() => {
+          dispatch({ type: 'CLEAR' });
+          dispatch({ type: 'SET_GAME_STATE', payload: 'playing' });
+        }, 2000);
+      }
+    }
+  }, [
+    gameState, currentLevel, solution, gameMode, teams, currentTeam, getPoints, wrongAnswers,
+    updateScore, setNotification, nextTurn, nextLevel, dispatch, t, attemptedTeams
+  ]);
+
+  // --- Other Callbacks ---
   const onLetterClick = useCallback((index: number) => {
     if (gameState.gameState === 'playing') {
-      // The 'letters' property is now correctly available on gameState.
       dispatch({ type: 'PLACE', gridIndex: index, letter: gameState.letters[index] });
     }
-    // --- Add `gameState` and `dispatch` to the dependency array. ---
   }, [gameState, dispatch]);
 
-  /**
-   * @function onRemove
-   * @description Dispatches an action to remove the last placed letter.
-   */
-  const onRemove = useCallback(() => {
-    dispatch({ type: 'REMOVE_LAST' });
-    // --- Add `dispatch` to the dependency array. ---
-  }, [dispatch]);
+  const onRemove = useCallback(() => dispatch({ type: 'REMOVE_LAST' }), [dispatch]);
+  const onClear = useCallback(() => dispatch({ type: 'CLEAR' }), [dispatch]);
 
-  /**
-   * @function onClear
-   * @description Dispatches an action to clear all non-hint letters from the board.
-   */
-  const onClear = useCallback(() => {
-    dispatch({ type: 'CLEAR' });
-    // --- Add `dispatch` to the dependency array. ---
-  }, [dispatch]);
+  const onShow = useCallback(() => {
+    // --- Added gameState.gameState to dependency array ---
+    if (gameState.gameState !== 'playing') return;
+    dispatch({ type: 'SHOW', solution, letters: gameState.letters });
+    setNotification({ message: `${t.solutionWas}: ${solution}`, type: 'error' });
+    if (gameMode === 'competitive') {
+      nextTurn('lose');
+      setTimeout(() => nextLevel(), 2500);
+    } else {
+      dispatch({ type: 'SET_GAME_STATE', payload: 'won' });
+    }
+  }, [dispatch, solution, gameState.letters, gameState.gameState, gameMode, nextTurn, nextLevel, setNotification, t.solutionWas]);
 
-  // Return all the state and functions needed by the specific game hooks.
+  const onHint = useCallback(() => {
+    // --- Added gameState.gameState to dependency array ---
+    if (gameState.gameState !== 'playing') return;
+    if (gameMode === 'competitive' && !consumeHint(teams[currentTeam].id)) {
+      setNotification({ message: t.noHintsLeft, type: 'error' });
+      return;
+    }
+    dispatch({ type: 'HINT', solution, letters: gameState.letters });
+  }, [dispatch, solution, gameState.letters, gameState.gameState, gameMode, consumeHint, teams, currentTeam, setNotification, t.noHintsLeft]);
+
+  // --- Control State Logic ---
+  const canRemove = useMemo(() => gameState.gameState === 'playing' && gameState.slotIndices.some(i => i !== null && !gameState.hintIndices.includes(i as number)), [gameState]);
+  const canClear = useMemo(() => gameState.gameState === 'playing' && gameState.slotIndices.filter(i => i !== null).length > gameState.hintIndices.length, [gameState]);
+  const canCheck = useMemo(() => gameState.gameState === 'playing' && gameState.answerSlots.every(ch => ch !== ''), [gameState]);
+  const canHint = useMemo(() => {
+    if (gameState.gameState !== 'playing') return false;
+    return gameMode !== 'competitive' || (teams[currentTeam]?.hintsRemaining ?? 0) > 0;
+  }, [gameState.gameState, gameMode, teams, currentTeam]);
+
+  // --- Return everything needed ---
   return {
-    loading,
-    levels,
-    currentLevel,
-    currentLevelIndex,
-    solution,
-    notification,
-    // Expose the new auto-clearing notification setter
-    setNotification: setNotificationWithTimeout,
-    gameState,
-    dispatch,
-    nextLevel,
-    prevLevel,
-    resetLevel,
-    // Expose letters for convenience
-    letters: gameState.letters,
-    onLetterClick,
-    onRemove,
-    onClear,
+    loading, levels, currentLevel, currentLevelIndex, solution, notification,
+    setNotification, gameState, dispatch, nextLevel, prevLevel, resetLevel,
+    letters: gameState.letters, wrongAnswers,
+    onLetterClick, onRemove, onClear, onCheck, onShow, onHint,
+    canRemove, canClear, canCheck, canHint,
   };
 }
