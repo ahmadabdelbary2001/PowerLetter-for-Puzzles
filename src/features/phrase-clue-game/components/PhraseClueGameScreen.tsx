@@ -14,20 +14,17 @@ import GameControls from "@/components/organisms/GameControls";
 import { useTranslation } from "@/hooks/useTranslation";
 import { usePhraseClueGame } from "../hooks/usePhraseClueGame";
 import { useInstructions } from "@/hooks/useInstructions";
-import { useGameMode } from "@/hooks/useGameMode";
 import { ClueGameLayout } from "@/components/templates/ClueGameLayout";
 
 const PhraseClueGameScreen: React.FC = () => {
   const { t } = useTranslation();
   const instructionsData = useInstructions("phraseClue");
-  const { gameMode } = useGameMode();
 
   // All game logic is now neatly contained in this hook.
   const {
     loading,
     currentLevel,
     solution,
-    letters,
     notification,
     wrongAnswers,
     gameState, // This now correctly contains the full reducer state
@@ -47,6 +44,7 @@ const PhraseClueGameScreen: React.FC = () => {
     canClear,
     canCheck,
     canHint,
+    gameMode,
   } = usePhraseClueGame();
 
   // Handle loading state
@@ -90,7 +88,7 @@ const PhraseClueGameScreen: React.FC = () => {
       solutionContent={<SolutionBoxes solution={solution} currentWord={answerSlots.join("")} />}
       letterOptionsContent={
         <LetterGrid
-          letters={letters}
+          letters={gameState.letters}
           selectedIndices={slotIndices.filter((i: number | null): i is number => i !== null)}
           onLetterClick={onLetterClick}
           disabled={gameState.gameState !== "playing"}

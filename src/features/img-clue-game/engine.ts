@@ -24,7 +24,7 @@ class ImgClueGameEngine extends ClueGameEngine<ImageLevel> {
 
   protected getModulePath(language: Language, category: GameCategory): string {
     // This game does not use difficulty in its path structure.
-    return `/src/data/${language}/image-clue/${category}/data.json`;
+    return `/src/data/${language}/img-clue/${category}/data.json`;
   }
 
   protected validateLevel(levelData: unknown): ImageLevel | null {

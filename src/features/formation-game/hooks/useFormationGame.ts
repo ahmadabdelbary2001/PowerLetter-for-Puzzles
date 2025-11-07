@@ -3,18 +3,18 @@
  * @description Custom hook to manage the state and logic for the Word Formation game.
  */
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useTranslation } from "@/hooks/useTranslation";
 import { useGame } from '@/hooks/useGame';
+// --- Import the centralized navigation hook. ---
+import { useGameNavigation } from '@/hooks/game/useGameNavigation';
 import { formationGameEngine, type FormationLevel } from '../engine';
 
 export function useFormationGame() {
-  const navigate = useNavigate();
-  const params = useParams<{ gameType?: string }>();
-  // FIX: Destructure all necessary values from useGameMode for the hint logic
   const { language, categories, difficulty, gameMode, teams, currentTeam, consumeHint } = useGameMode();
   const { t } = useTranslation();
+  // --- Get the handleBack function from the shared hook. ---
+  const { handleBack } = useGameNavigation();
 
   const { loading, currentLevel, currentLevelIndex, nextLevel } = useGame<FormationLevel>(
     formationGameEngine,
@@ -142,14 +142,6 @@ export function useFormationGame() {
 
     setTimeout(() => setNotification(null), 1500);
   }, [currentLevel, revealedCells, foundWords, gameMode, teams, currentTeam, consumeHint, t, nextLevel]);
-
-  const handleBack = useCallback(() => {
-    if (gameMode === 'competitive') {
-      navigate(`/team-config/${params.gameType}`);
-    } else {
-      navigate(`/game-mode/${params.gameType}`);
-    }
-  }, [navigate, params.gameType, gameMode]);
 
   return {
     loading,

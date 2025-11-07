@@ -13,7 +13,6 @@ import GameControls from "@/components/organisms/GameControls";
 import { ArrowLeft, ArrowRight, Volume2 } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useImageClueGame } from "../hooks/useImageClueGame";
-import { useGameMode } from "@/hooks/useGameMode";
 import { useInstructions } from "@/hooks/useInstructions";
 import { ClueGameLayout } from "@/components/templates/ClueGameLayout";
 
@@ -27,14 +26,12 @@ const ImgClueGameScreen: React.FC = () => {
     description: instructionsData.description ?? "",
     steps: instructionsData.steps ?? [],
   } : undefined;
-  const { gameMode } = useGameMode();
 
   // Destructure all state and handlers from the hook
   const {
     loading,
     currentLevel,
     solution,
-    letters,
     notification,
     wrongAnswers,
     gameState,
@@ -54,6 +51,7 @@ const ImgClueGameScreen: React.FC = () => {
     canRemove,
     canClear,
     canCheck,
+    gameMode,
   } = useImageClueGame();
 
   // --- FIX: The loading and error handling logic is now more robust. ---
@@ -103,7 +101,7 @@ const ImgClueGameScreen: React.FC = () => {
       }
       letterOptionsContent={
         <LetterGrid
-          letters={letters}
+          letters={gameState.letters}
           selectedIndices={slotIndices.filter((i): i is number => i !== null)}
           onLetterClick={onLetterClick}
           disabled={gameState.gameState !== "playing"}

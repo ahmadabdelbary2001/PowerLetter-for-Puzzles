@@ -1,73 +1,56 @@
 // src/hooks/game/useClueGame.ts
 /**
- * @description A unified, shared hook for managing the state of any "clue-style" puzzle game.
- * It now encapsulates the core game loop, including the complex logic for checking answers
- * in both single-player and competitive modes, while allowing for game-specific configuration.
+ * @description A specialized "mixin" hook for "clue-style" games.
+ * It takes the output from `useGameController` and enhances it with the logic
+ * specific to clue games, such as checking answers, handling hints, and managing competitive play.
  */
 import { useState, useCallback, useMemo, useEffect } from 'react';
-import { useGame } from '@/hooks/useGame';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useTranslation } from '@/hooks/useTranslation';
-import type { IGameEngine } from '@/games/engine/types';
-import type { Language, Difficulty, GameCategory, GameLevel } from '@/types/game';
+import type { GameLevel, Difficulty } from '@/types/game'; // Import Difficulty
+import type { useGameController } from './useGameController';
 
-// Helper to normalize strings for comparison, making it language-agnostic and robust.
+// Helper to normalize strings for comparison.
 const normalize = (s: string) => s.toLowerCase().trim();
 
-/**
- * @interface ClueGameOptions
- * @description Defines the options required to initialize the clue game hook.
- */
-interface ClueGameOptions<T extends GameLevel> {
-  engine: IGameEngine<T>;
-  language: Language;
-  categories: GameCategory[];
-  difficulty?: Difficulty;
+// --- The generic constraint for T now matches the one in useGameController. ---
+type GameController<T extends GameLevel & { solution: string; difficulty?: Difficulty }> = ReturnType<typeof useGameController<T>>;
+
+interface ClueGameMixinOptions<T> {
   getPoints?: (level: T) => number;
 }
 
-export function useClueGame<T extends GameLevel & { solution: string }>({
-  engine,
-  language,
-  categories,
-  difficulty,
-  getPoints = () => 1,
-}: ClueGameOptions<T>) {
-  // --- Base Hooks ---
-  const {
-    loading, levels, currentLevel, currentLevelIndex, solution, notification,
-    setNotification, gameState, dispatch, nextLevel, prevLevel, resetLevel,
-  } = useGame<T>(engine, { language, categories, difficulty });
-
+// --- The constraint here is also updated for consistency. ---
+export function useClueGame<T extends GameLevel & { solution: string; difficulty?: Difficulty; }> (
+  controller: GameController<T>,
+  options: ClueGameMixinOptions<T> = {}
+) {
+  const { getPoints = () => 1 } = options;
   const { gameMode, teams, currentTeam, setCurrentTeam, updateScore, nextTurn, consumeHint } = useGameMode();
   const { t } = useTranslation();
+  const { gameState, currentLevel, solution, dispatch, setNotification, nextLevel } = controller;
 
-  // --- Shared State ---
   const [wrongAnswers, setWrongAnswers] = useState<string[]>([]);
   const [attemptedTeams, setAttemptedTeams] = useState<Set<number>>(new Set());
 
-  // --- Effects ---
   useEffect(() => {
     if (gameMode === 'competitive' && teams.length > 0) {
-      setCurrentTeam(currentLevelIndex % teams.length);
+      setCurrentTeam(controller.currentLevelIndex % teams.length);
     }
-  }, [currentLevelIndex, gameMode, teams.length, setCurrentTeam]);
+  }, [controller.currentLevelIndex, gameMode, teams.length, setCurrentTeam]);
 
   useEffect(() => {
     setWrongAnswers([]);
     setAttemptedTeams(new Set());
-  }, [currentLevelIndex]);
+  }, [controller.currentLevelIndex]);
 
-  // --- Centralized onCheck Logic ---
   const onCheck = useCallback(() => {
     if (gameState.gameState !== 'playing' || !currentLevel) return;
-
     const isCorrect = normalize(gameState.answerSlots.join('')) === normalize(solution);
-
     if (isCorrect) {
       dispatch({ type: 'SET_GAME_STATE', payload: 'won' });
       if (gameMode === 'competitive') {
-        const points = getPoints(currentLevel);
+        const points = getPoints(currentLevel as T);
         updateScore(teams[currentTeam].id, points);
         setNotification({ message: `${t.congrats} +${points}`, type: 'success' });
         setTimeout(() => nextLevel(), 2000);
@@ -81,7 +64,6 @@ export function useClueGame<T extends GameLevel & { solution: string }>({
         setWrongAnswers(prev => [...prev, currentAnswer]);
       }
       setNotification({ message: t.wrongAnswer, type: 'error' });
-
       if (gameMode === 'competitive') {
         const newAttemptedTeams = new Set(attemptedTeams).add(currentTeam);
         setAttemptedTeams(newAttemptedTeams);
@@ -111,18 +93,14 @@ export function useClueGame<T extends GameLevel & { solution: string }>({
     updateScore, setNotification, nextTurn, nextLevel, dispatch, t, attemptedTeams
   ]);
 
-  // --- Other Callbacks ---
   const onLetterClick = useCallback((index: number) => {
     if (gameState.gameState === 'playing') {
       dispatch({ type: 'PLACE', gridIndex: index, letter: gameState.letters[index] });
     }
   }, [gameState, dispatch]);
-
   const onRemove = useCallback(() => dispatch({ type: 'REMOVE_LAST' }), [dispatch]);
   const onClear = useCallback(() => dispatch({ type: 'CLEAR' }), [dispatch]);
-
   const onShow = useCallback(() => {
-    // --- Added gameState.gameState to dependency array ---
     if (gameState.gameState !== 'playing') return;
     dispatch({ type: 'SHOW', solution, letters: gameState.letters });
     setNotification({ message: `${t.solutionWas}: ${solution}`, type: 'error' });
@@ -132,19 +110,16 @@ export function useClueGame<T extends GameLevel & { solution: string }>({
     } else {
       dispatch({ type: 'SET_GAME_STATE', payload: 'won' });
     }
-  }, [dispatch, solution, gameState.letters, gameState.gameState, gameMode, nextTurn, nextLevel, setNotification, t.solutionWas]);
-
+  }, [dispatch, solution, gameState, gameMode, nextTurn, nextLevel, setNotification, t.solutionWas]);
   const onHint = useCallback(() => {
-    // --- Added gameState.gameState to dependency array ---
     if (gameState.gameState !== 'playing') return;
     if (gameMode === 'competitive' && !consumeHint(teams[currentTeam].id)) {
       setNotification({ message: t.noHintsLeft, type: 'error' });
       return;
     }
     dispatch({ type: 'HINT', solution, letters: gameState.letters });
-  }, [dispatch, solution, gameState.letters, gameState.gameState, gameMode, consumeHint, teams, currentTeam, setNotification, t.noHintsLeft]);
+  }, [dispatch, solution, gameState, gameMode, consumeHint, teams, currentTeam, setNotification, t.noHintsLeft]);
 
-  // --- Control State Logic ---
   const canRemove = useMemo(() => gameState.gameState === 'playing' && gameState.slotIndices.some(i => i !== null && !gameState.hintIndices.includes(i as number)), [gameState]);
   const canClear = useMemo(() => gameState.gameState === 'playing' && gameState.slotIndices.filter(i => i !== null).length > gameState.hintIndices.length, [gameState]);
   const canCheck = useMemo(() => gameState.gameState === 'playing' && gameState.answerSlots.every(ch => ch !== ''), [gameState]);
@@ -153,11 +128,9 @@ export function useClueGame<T extends GameLevel & { solution: string }>({
     return gameMode !== 'competitive' || (teams[currentTeam]?.hintsRemaining ?? 0) > 0;
   }, [gameState.gameState, gameMode, teams, currentTeam]);
 
-  // --- Return everything needed ---
   return {
-    loading, levels, currentLevel, currentLevelIndex, solution, notification,
-    setNotification, gameState, dispatch, nextLevel, prevLevel, resetLevel,
-    letters: gameState.letters, wrongAnswers,
+    ...controller,
+    wrongAnswers,
     onLetterClick, onRemove, onClear, onCheck, onShow, onHint,
     canRemove, canClear, canCheck, canHint,
   };

@@ -3,10 +3,11 @@
  * @description Custom hook to manage the state and logic for the Letter Flow game.
  */
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useTranslation } from "@/hooks/useTranslation";
 import { useGame } from '@/hooks/useGame';
+// --- Import the centralized navigation hook. ---
+import { useGameNavigation } from '@/hooks/game/useGameNavigation';
 import { letterFlowGameEngine, type LetterFlowLevel, type BoardCell, type WordPath } from '../engine';
 import { colorForString } from '../utils/colors';
 
@@ -15,12 +16,10 @@ import { colorForString } from '../utils/colors';
  * This hook handles game initialization, board state, user interactions, and game progression.
  */
 export function useLetterFlowGame() {
-  // Navigation and URL parameters
-  const navigate = useNavigate();
-  const params = useParams<{ gameType?: string }>();
-  // Game mode configuration and settings
   const { language, categories, difficulty, gameMode, teams, currentTeam, consumeHint } = useGameMode();
   const { t } = useTranslation();
+  // --- Get the handleBack function from the shared hook. ---
+  const { handleBack } = useGameNavigation();
 
   // --- Destructure `nextLevel` to be used and exported ---
   const { loading, currentLevel, currentLevelIndex, nextLevel } = useGame<LetterFlowLevel>(
@@ -310,13 +309,6 @@ export function useLetterFlowGame() {
     setGameState('playing');
     startNotification('Game reset - all connections removed', 'info');
   }, [startNotification, endpointColorMap, setGameState]);
-  const handleBack = useCallback(() => {
-    if (gameMode === 'competitive') {
-      navigate(`/team-config/${params.gameType}`);
-    } else {
-      navigate(`/game-mode/${params.gameType}`);
-    }
-  }, [navigate, params.gameType, gameMode]);
 
   return {
     loading,
