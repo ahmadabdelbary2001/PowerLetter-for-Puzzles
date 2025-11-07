@@ -1,1 +1,0 @@
-import{b as r,a as i}from"./Notification-BQeTBVRQ.js";import{e as u}from"./index-CjyIWeEv.js";function f(n){const{language:e,categories:a,difficulty:o,gameMode:s}=u(),t=r(n.engine,{language:e,categories:a,difficulty:o}),{handleBack:m}=i();return{...t,handleBack:m,language:e,categories:a,difficulty:o,gameMode:s}}export{f as u};
