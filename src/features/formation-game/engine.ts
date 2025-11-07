@@ -2,10 +2,12 @@
 /**
  * @description Game engine for the Word Formation (Crossword) Challenge.
  * This engine handles loading levels and generating letter sets for the game.
+ * --- It now extends the BaseGameEngine for architectural consistency,
+ * but overrides the `loadLevels` method to handle its unique, non-category-based loading logic. ---
  */
 import type { Language, Difficulty, GameCategory } from '@/types/game';
 import { shuffleArray } from '@/lib/gameUtils';
-import type { IGameEngine } from '@/games/engine/types';
+import { BaseGameEngine } from '@/games/engine/BaseGameEngine';
 
 /**
  * Represents a single cell in the crossword grid.
@@ -33,6 +35,7 @@ export interface FormationLevel {
 
 /**
  * Type definition for the structure of imported level modules.
+ * (This is a shared convention across engines).
  */
 interface LevelModule {
   default?: { levels?: unknown[] }; // Optional default export containing levels array
@@ -40,67 +43,99 @@ interface LevelModule {
 
 /**
  * Implements the game engine for the Word Formation (Crossword) Challenge.
- * Handles loading levels from JSON files and generating shuffled letter sets.
+ * --- Now extends BaseGameEngine. ---
  */
-class FormationGameEngine implements IGameEngine<FormationLevel> {
+class FormationGameEngine extends BaseGameEngine<FormationLevel> {
   /**
-   * Loads game levels based on the specified language, categories, and difficulty.
+   * --- OVERRIDE: This engine has simpler loading logic that doesn't use categories. ---
+   * We override the base `loadLevels` method to implement this specific logic directly,
+   * while preserving all original functionality.
    * @param options - Configuration options for loading levels
-   * @param options.language - The language to load levels for
-   * @param options.categories - Array of game categories to filter by
-   * @param options.difficulty - The difficulty level to load levels for
    * @returns Promise<FormationLevel[]> - Array of loaded levels
    */
   public async loadLevels(options: {
     language: Language;
-    categories: GameCategory[];
+    categories: GameCategory[]; // Kept for interface consistency, but unused.
     difficulty?: Difficulty;
   }): Promise<FormationLevel[]> {
     const { language, difficulty } = options;
+    // This game requires a difficulty to load levels.
     if (!difficulty) return []; // Return empty array if no difficulty specified
 
     try {
-      // Construct the path to the JSON file containing levels for the specified language and difficulty
-      const path = `/src/data/${language}/formation/${difficulty}.json`;
+      // Construct the path to the JSON file using the getModulePath helper method.
+      const path = this.getModulePath(language, '' as GameCategory, difficulty);
 
       // Get all JSON module importers
       const modules = import.meta.glob('/src/data/**/*.json');
       const moduleLoader = modules[path];
 
-      // Return empty array if the specific file doesn't exist
-      if (!moduleLoader) return [];
+      // Return empty array if the specific file doesn't exist (original behavior).
+      if (!moduleLoader) {
+        return [];
+      }
 
       // Load the module and extract levels
       const module = (await moduleLoader()) as LevelModule;
       const levels = module.default?.levels || [];
 
-      // Transform and validate each level
-      return levels.map((lvl: unknown): FormationLevel | null => {
-        // Check if the level has the required properties
-        if (
-          typeof lvl === 'object' && lvl !== null &&
-          'id' in lvl && 'words' in lvl && Array.isArray(lvl.words) &&
-          'grid' in lvl && 'baseLetters' in lvl
-        ) {
-          return {
-            id: String(lvl.id),
-            difficulty,
-            words: lvl.words as string[],
-            grid: lvl.grid as GridCell[],
-            baseLetters: String(lvl.baseLetters),
-            solution: (lvl.words as string[])[0] || '', // Use first word as solution
-          };
-        }
-        return null; // Skip invalid levels
-      }).filter((l): l is FormationLevel => l !== null); // Filter out null values
+      // Transform and validate each level using the validateLevel helper method.
+      const validatedLevels = levels
+        .map(lvl => this.validateLevel(lvl, difficulty))
+        .filter((l): l is FormationLevel => l !== null); // Filter out null values
+
+      // If validation results in an empty array, return it (original behavior).
+      if (validatedLevels.length === 0) {
+        return [];
+      }
+      
+      return validatedLevels;
+
     } catch (err) {
-      // Log error and return error level if loading fails
+      // Log error and return an error level if loading fails (original behavior).
       console.error(`FormationGameEngine: Failed to load levels for ${language}/${difficulty}.`, err);
-      return [{ id: 'error', difficulty: 'easy', words: [], grid: [], baseLetters: 'ERROR', solution: '' }];
+      return [this.getErrorLevel()];
     }
   }
 
+  // --- Implementation of abstract methods from BaseGameEngine ---
+
+  protected getGameId(): string {
+    return 'formation';
+  }
+
+  protected getModulePath(language: Language, _: GameCategory, difficulty?: Difficulty): string {
+    // The path for this game is based on difficulty, not category.
+    return `/src/data/${language}/formation/${difficulty}.json`;
+  }
+
+  protected validateLevel(levelData: unknown, difficulty?: Difficulty): FormationLevel | null {
+    const lvl = levelData as Record<string, unknown>;
+    // Check if the level has the required properties
+    if (
+      lvl && typeof lvl === 'object' &&
+      'id' in lvl && 'words' in lvl && Array.isArray(lvl.words) &&
+      'grid' in lvl && 'baseLetters' in lvl
+    ) {
+      return {
+        id: String(lvl.id),
+        difficulty: difficulty ?? 'easy', // Assign difficulty from context
+        words: lvl.words as string[],
+        grid: lvl.grid as GridCell[],
+        baseLetters: String(lvl.baseLetters),
+        solution: (lvl.words as string[])[0] || '', // Use first word as solution
+      };
+    }
+    return null; // Skip invalid levels
+  }
+
+  protected getErrorLevel(): FormationLevel {
+    // Returns a default error level object to prevent crashes, matching original behavior.
+    return { id: 'error', difficulty: 'easy', words: [], grid: [], baseLetters: 'ERROR', solution: '' };
+  }
+
   /**
+   * --- PRESERVED: The original generateLetters method with its exact signature. ---
    * Generates a shuffled array of letters from the base letters.
    * @param _s - Unused parameter (solution string)
    * @param _d - Unused parameter (difficulty)

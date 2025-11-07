@@ -7,18 +7,24 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useTranslation } from "@/hooks/useTranslation";
 import { useGame } from '@/hooks/useGame';
-import { letterFlowGameEngineInstance, type letterFlowLevel, type BoardCell, type WordPath } from '../engine';
+import { letterFlowGameEngine, type LetterFlowLevel, type BoardCell, type WordPath } from '../engine';
 import { colorForString } from '../utils/colors';
 
+/**
+ * Custom hook for managing the Letter Flow game logic and state.
+ * This hook handles game initialization, board state, user interactions, and game progression.
+ */
 export function useLetterFlowGame() {
+  // Navigation and URL parameters
   const navigate = useNavigate();
   const params = useParams<{ gameType?: string }>();
+  // Game mode configuration and settings
   const { language, categories, difficulty, gameMode, teams, currentTeam, consumeHint } = useGameMode();
   const { t } = useTranslation();
 
   // --- Destructure `nextLevel` to be used and exported ---
-  const { loading, currentLevel, currentLevelIndex, nextLevel } = useGame<letterFlowLevel>(
-    letterFlowGameEngineInstance,
+  const { loading, currentLevel, currentLevelIndex, nextLevel } = useGame<LetterFlowLevel>(
+    letterFlowGameEngine,
     { language, categories, difficulty }
   );
 
@@ -35,7 +41,7 @@ export function useLetterFlowGame() {
     if (currentLevel.board && currentLevel.board.length > 0 && currentLevel.board.some(c => c.letter)) {
       setBoard(currentLevel.board.map(c => ({ ...c })));
     } else {
-      const newBoard = letterFlowGameEngineInstance.generateBoard("", currentLevel.difficulty, language, currentLevel.board.map(cell => cell.letter).join(""));
+      const newBoard = letterFlowGameEngine.generateBoard("", currentLevel.difficulty, language, currentLevel.board.map(cell => cell.letter).join(""));
       setBoard(newBoard);
     }
     setFoundWords([]);
@@ -330,7 +336,6 @@ export function useLetterFlowGame() {
     onHint,
     onUndo,
     onReset,
-    // --- Export the `nextLevel` function ---
     nextLevel,
   };
 }

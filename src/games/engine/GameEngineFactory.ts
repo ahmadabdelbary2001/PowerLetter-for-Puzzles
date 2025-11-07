@@ -2,7 +2,7 @@
 import { phraseClueGameEngine } from '@/features/phrase-clue-game/engine';
 import { formationGameEngine } from '@/features/formation-game/engine';
 import { imgClueGameEngine } from '@/features/img-clue-game/engine';
-import { letterFlowGameEngineInstance } from '@/features/letter-flow-game/engine';
+import { letterFlowGameEngine } from '@/features/letter-flow-game/engine';
 import { outsideStoryGameEngine } from '@/features/outside-story-game/engine';
 import { imgChoiceGameEngine } from '@/features/img-choice-game/engine';
 import { wordChoiceGameEngine } from '@/features/word-choice-game/engine';
@@ -17,7 +17,7 @@ export function getGameEngine(gameId: GameConfig['id']) {
     case 'image-clue':
       return imgClueGameEngine;
     case 'letter-flow':
-      return letterFlowGameEngineInstance;
+      return letterFlowGameEngine;
     case 'img-choice':
       return imgChoiceGameEngine;
     case 'outside-the-story':

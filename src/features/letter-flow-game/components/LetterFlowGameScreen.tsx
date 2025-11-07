@@ -16,7 +16,7 @@ import { useGameMode } from '@/hooks/useGameMode';
 import { usePassiveTouchFix } from '../hooks/usePassiveTouchFix';
 import { Button } from '@/components/ui/button';
 import { FlowGameLayout } from '@/components/templates/FlowGameLayout';
-import type { letterFlowLevel } from '../engine';
+import type { LetterFlowLevel } from '../engine';
 
 const LetterFlowGameScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -60,7 +60,7 @@ const LetterFlowGameScreen: React.FC = () => {
     );
   }
 
-  const totalWords = Math.floor(((currentLevel as letterFlowLevel)?.endpoints.length ?? 0) / 2);
+  const totalWords = Math.floor(((currentLevel as LetterFlowLevel)?.endpoints.length ?? 0) / 2);
 
   return (
     <FlowGameLayout
