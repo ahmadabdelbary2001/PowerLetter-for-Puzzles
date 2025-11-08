@@ -1,8 +1,8 @@
 // src/features/letter-flow-game/components/LetterFlowGameScreen.tsx
 /**
  * @description The main UI component for the Letter Flow game.
- * This component now uses the shared FlowGameLayout to structure the page,
- * passing its game-specific elements as content slots.
+ * It is now a "dumb" presentational component that receives all data and logic
+ * from the `useLetterFlowGame` hook.
  */
 import React from 'react';
 import { useLetterFlowGame } from '../hooks/useLetterFlowGame';
@@ -10,23 +10,15 @@ import { LetterFlowBoard } from '@/components/molecules/LetterFlowBoard';
 import { FoundWords } from '@/components/molecules/FoundWords';
 import GameControls from '@/components/organisms/GameControls';
 import { GameProgress } from '@/components/molecules/GameProgress';
-import { useTranslation } from "@/hooks/useTranslation";
-import { useInstructions } from '@/hooks/useInstructions';
-import { useGameMode } from '@/hooks/useGameMode';
 import { usePassiveTouchFix } from '../hooks/usePassiveTouchFix';
 import { Button } from '@/components/ui/button';
 import { FlowGameLayout } from '@/components/templates/FlowGameLayout';
 import type { LetterFlowLevel } from '../engine';
 
 const LetterFlowGameScreen: React.FC = () => {
-  const { t } = useTranslation();
-  const { gameMode } = useGameMode();
-
-  const rawInstructions = useInstructions('letterFlow');
-  const instructions = rawInstructions ? { title: rawInstructions.title ?? '', description: rawInstructions.description ?? '', steps: rawInstructions.steps ?? [] } : undefined;
   usePassiveTouchFix();
 
-  // --- Destructure `nextLevel` from the hook ---
+  // The hook now provides EVERYTHING the component needs.
   const {
     loading,
     currentLevel,
@@ -45,7 +37,10 @@ const LetterFlowGameScreen: React.FC = () => {
     onReset,
     clearSelection,
     currentLevelIndex,
-    nextLevel, // Now available to be passed down
+    nextLevel,
+    t,
+    instructions,
+    gameModeState,
   } = useLetterFlowGame();
 
   if (loading) {
@@ -90,7 +85,6 @@ const LetterFlowGameScreen: React.FC = () => {
           onRemoveLetter={onUndo}
           onClearAnswer={clearSelection}
           onHint={onHint}
-          // --- Pass the `nextLevel` function to the `onNextLevel` prop ---
           onNextLevel={nextLevel}
           canRemove={foundWords.length > 0}
           canClear={selectedPath.length > 0}
@@ -98,17 +92,11 @@ const LetterFlowGameScreen: React.FC = () => {
           canNext={gameState === 'won'}
           canHint={foundWords.length < totalWords}
           gameState={gameState}
-          gameMode={gameMode}
+          gameMode={gameModeState.gameMode}
           isKidsMode={false}
           labels={{
-            remove: t.undo,
-            clear: t.clear,
-            check: t.check,
-            hint: t.hint,
-            showSolution: t.showSolution,
-            reset: t.reset,
-            prev: t.prev,
-            next: t.next,
+            remove: t.undo, clear: t.clear, check: t.check, hint: t.hint,
+            showSolution: t.showSolution, reset: t.reset, prev: t.prev, next: t.next,
           }}
           showOnly={['remove', 'hint', 'reset', 'next']}
         />

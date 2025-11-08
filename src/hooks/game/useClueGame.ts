@@ -1,34 +1,35 @@
 // src/hooks/game/useClueGame.ts
 /**
  * @description A specialized "mixin" hook for "clue-style" games.
- * It takes the output from `useGameController` and enhances it with the logic
- * specific to clue games, such as checking answers, handling hints, and managing competitive play.
+ * --- It is now a PURE mixin that does not call any global state hooks directly. ---
  */
 import { useState, useCallback, useMemo, useEffect } from 'react';
-import { useGameMode } from '@/hooks/useGameMode';
-import { useTranslation } from '@/hooks/useTranslation';
-import type { GameLevel, Difficulty } from '@/types/game'; // Import Difficulty
+import type { GameLevel, Difficulty } from '@/types/game';
 import type { useGameController } from './useGameController';
 
-// Helper to normalize strings for comparison.
 const normalize = (s: string) => s.toLowerCase().trim();
 
-// --- The generic constraint for T now matches the one in useGameController. ---
 type GameController<T extends GameLevel & { solution: string; difficulty?: Difficulty }> = ReturnType<typeof useGameController<T>>;
 
 interface ClueGameMixinOptions<T> {
   getPoints?: (level: T) => number;
 }
 
-// --- The constraint here is also updated for consistency. ---
 export function useClueGame<T extends GameLevel & { solution: string; difficulty?: Difficulty; }> (
   controller: GameController<T>,
   options: ClueGameMixinOptions<T> = {}
 ) {
   const { getPoints = () => 1 } = options;
-  const { gameMode, teams, currentTeam, setCurrentTeam, updateScore, nextTurn, consumeHint } = useGameMode();
-  const { t } = useTranslation();
-  const { gameState, currentLevel, solution, dispatch, setNotification, nextLevel } = controller;
+
+  // --- Destructure everything from the controller object. ---
+  const {
+    gameState, currentLevel, solution, dispatch, setNotification, nextLevel,
+    gameModeState, // Get the full gameMode state object from the controller.
+    t, // Get the translation function from the controller.
+  } = controller;
+
+  // --- Destructure the specific functions needed from gameModeState. ---
+  const { gameMode, teams, currentTeam, setCurrentTeam, updateScore, nextTurn, consumeHint } = gameModeState;
 
   const [wrongAnswers, setWrongAnswers] = useState<string[]>([]);
   const [attemptedTeams, setAttemptedTeams] = useState<Set<number>>(new Set());
@@ -133,5 +134,6 @@ export function useClueGame<T extends GameLevel & { solution: string; difficulty
     wrongAnswers,
     onLetterClick, onRemove, onClear, onCheck, onShow, onHint,
     canRemove, canClear, canCheck, canHint,
+    gameMode,
   };
 }

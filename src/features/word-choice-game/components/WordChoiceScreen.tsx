@@ -7,27 +7,11 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, Volume2, CheckCircle, XCircle } from "lucide-react";
-import { useTranslation } from "@/hooks/useTranslation";
 import { useWordChoiceGame } from "@/features/word-choice-game/hooks/useWordChoiceGame";
 import { cn } from "@/lib/utils";
-import { useInstructions } from "@/hooks/useInstructions";
 import { MultipleChoiceLayout } from "@/components/templates/MultipleChoiceLayout";
 
 const WordChoiceScreen: React.FC = () => {
-  // Get translation functions and text direction
-  const { t, i18n } = useTranslation();
-  const dir = i18n.dir();
-
-  // Get instructions
-  const rawInstructions = useInstructions("wordChoice");
-  const instructions = rawInstructions
-    ? {
-        title: rawInstructions.title ?? "",
-        description: rawInstructions.description ?? "",
-        steps: rawInstructions.steps ?? [],
-      }
-    : undefined;
-
   // Extract all necessary state and functions from the custom hook
   const {
     loading,
@@ -41,7 +25,12 @@ const WordChoiceScreen: React.FC = () => {
     handleOptionClick,
     nextLevel,
     handleBack,
+    t,
+    i18n,
+    instructions,
   } = useWordChoiceGame();
+
+  const dir = i18n.dir();
 
   // Render loading state
   if (loading) {

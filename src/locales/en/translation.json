@@ -75,17 +75,17 @@
 
   "kidsGamesTitle": "Kids Puzzles",
   "kidsGamesDesc": "Fun and educational games designed for children.",
-  "imageClueTitle": "Picture to Word",
-  "imageClueDesc": "Form the word that matches the picture from the given letters.",
-  "imageClueFeatures": ["Builds spelling skills", "Visual association", "Audio support"],
+  "imgClueTitle": "Picture to Word",
+  "imgClueDesc": "Form the word that matches the picture from the given letters.",
+  "imgClueFeatures": ["Builds spelling skills", "Visual association", "Audio support"],
 
   "wordChoiceTitle": "Find the Word",
   "wordChoiceDesc": "Look at the picture and choose the correct word from a list.",
   "wordChoiceFeatures": ["Improves reading", "Multiple choice", "Immediate feedback"],
 
-  "ImgChoiceTitle": "Find the Picture",
-  "ImgChoiceDesc": "Read the word and choose the picture that matches it.",
-  "ImgChoiceFeatures": ["Tests comprehension", "Visual recognition", "Fun and interactive"],
+  "imgChoiceTitle": "Find the Picture",
+  "imgChoiceDesc": "Read the word and choose the picture that matches it.",
+  "imgChoiceFeatures": ["Tests comprehension", "Visual recognition", "Fun and interactive"],
 
   "pictureToWordTitle": "Picture to Word",
   "pictureToWordDesc": "Form the word that matches the picture from the given letters.",

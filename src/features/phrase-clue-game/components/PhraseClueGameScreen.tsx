@@ -11,15 +11,10 @@ import { Badge } from "@/components/ui/badge";
 import { SolutionBoxes } from "@/components/molecules/SolutionBoxes";
 import { LetterGrid } from "@/components/molecules/LetterGrid";
 import GameControls from "@/components/organisms/GameControls";
-import { useTranslation } from "@/hooks/useTranslation";
 import { usePhraseClueGame } from "../hooks/usePhraseClueGame";
-import { useInstructions } from "@/hooks/useInstructions";
 import { ClueGameLayout } from "@/components/templates/ClueGameLayout";
 
 const PhraseClueGameScreen: React.FC = () => {
-  const { t } = useTranslation();
-  const instructionsData = useInstructions("phraseClue");
-
   // All game logic is now neatly contained in this hook.
   const {
     loading,
@@ -45,6 +40,8 @@ const PhraseClueGameScreen: React.FC = () => {
     canCheck,
     canHint,
     gameMode,
+    t,
+    instructions,
   } = usePhraseClueGame();
 
   // Handle loading state
@@ -65,12 +62,6 @@ const PhraseClueGameScreen: React.FC = () => {
       </div>
     );
   }
-
-  const instructions = instructionsData ? {
-    title: instructionsData.title,
-    description: instructionsData.description ?? "",
-    steps: instructionsData.steps ?? [],
-  } : undefined;
 
   // Destructure properties from the correctly typed gameState.
   const { answerSlots, slotIndices, hintIndices } = gameState;
@@ -122,7 +113,7 @@ const PhraseClueGameScreen: React.FC = () => {
           canPrev={currentLevelIndex > 0}
           canNext={currentLevelIndex < levels.length - 1}
           gameState={gameState.gameState}
-          gameMode={gameMode} // This prop is now correctly passed and typed
+          gameMode={gameMode}
           isKidsMode={false}
           labels={{
             remove: t.remove,

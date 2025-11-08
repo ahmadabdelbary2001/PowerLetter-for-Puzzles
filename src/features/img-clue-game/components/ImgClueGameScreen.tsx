@@ -11,22 +11,10 @@ import { SolutionBoxes } from "@/components/molecules/SolutionBoxes";
 import { LetterGrid } from "@/components/molecules/LetterGrid";
 import GameControls from "@/components/organisms/GameControls";
 import { ArrowLeft, ArrowRight, Volume2 } from "lucide-react";
-import { useTranslation } from "@/hooks/useTranslation";
 import { useImageClueGame } from "../hooks/useImageClueGame";
-import { useInstructions } from "@/hooks/useInstructions";
 import { ClueGameLayout } from "@/components/templates/ClueGameLayout";
 
 const ImgClueGameScreen: React.FC = () => {
-  // Get translations, instructions, and game mode
-  const { t, i18n } = useTranslation();
-  const dir = i18n.dir();
-  const instructionsData = useInstructions("imageClue");
-  const instructions = instructionsData ? {
-    title: instructionsData.title,
-    description: instructionsData.description ?? "",
-    steps: instructionsData.steps ?? [],
-  } : undefined;
-
   // Destructure all state and handlers from the hook
   const {
     loading,
@@ -52,9 +40,12 @@ const ImgClueGameScreen: React.FC = () => {
     canClear,
     canCheck,
     gameMode,
+    t,
+    i18n,
+    instructions,
   } = useImageClueGame();
 
-  // --- FIX: The loading and error handling logic is now more robust. ---
+  const dir = i18n.dir();
 
   // 1. Handle the initial loading state.
   if (loading) {
@@ -79,7 +70,7 @@ const ImgClueGameScreen: React.FC = () => {
   // If we reach this point, we know `currentLevel` is a valid object.
   return (
     <ClueGameLayout
-      title={t.imageClueTitle}
+      title={t.imgClueTitle}
       levelIndex={currentLevelIndex}
       onBack={handleBack}
       instructions={instructions}

@@ -1,35 +1,20 @@
 // src/features/formation-game/components/FormationGameScreen.tsx
 /**
  * @description The main UI component for the Word Formation Challenge.
- * This component now uses the shared WordFormationLayout to structure the page,
- * passing its game-specific elements as content slots.
+ * It is now a "dumb" presentational component that receives all data and logic
+ * from the `useFormationGame` hook.
  */
 import React from 'react';
 import { useFormationGame } from '../hooks/useFormationGame';
-import { useTranslation } from "@/hooks/useTranslation";
 import { RotateCcw, Check, Lightbulb } from 'lucide-react';
 import { CrosswordGrid } from '@/components/molecules/CrosswordGrid';
 import { LetterCircle } from '@/components/molecules/LetterCircle';
 import { GameButton } from '@/components/atoms/GameButton';
-import { useInstructions } from '@/hooks/useInstructions';
 import { Button } from '@/components/ui/button';
-// The import of the reusable layout template is correct.
 import { WordFormationLayout } from '@/components/templates/WordFormationLayout';
 
 const FormationGameScreen: React.FC = () => {
-  const { t } = useTranslation();
-
-  // Get instructions
-  const rawInstructions = useInstructions('formation');
-  const instructions = rawInstructions
-    ? {
-        title: rawInstructions.title ?? t.formationTitle,
-        description: rawInstructions.description ?? '',
-        steps: rawInstructions.steps ?? [],
-      }
-    : undefined;
-
-  // Get all state and handlers from the game's specific hook
+  // The hook now provides EVERYTHING the component needs.
   const {
     loading,
     currentLevel,
@@ -45,9 +30,10 @@ const FormationGameScreen: React.FC = () => {
     onShuffle,
     onCheckWord,
     onHint,
+    t,
+    instructions,
   } = useFormationGame();
 
-  // Loading and error states
   if (loading) {
     return <div className="flex justify-center items-center h-screen"><p>{t.loading}...</p></div>;
   }
@@ -60,17 +46,14 @@ const FormationGameScreen: React.FC = () => {
     );
   }
 
-  // The usage of WordFormationLayout is correct.
   return (
     <WordFormationLayout
-      // All required props are correctly passed.
       title={t.formationTitle}
       levelIndex={currentLevelIndex}
       onBack={handleBack}
       difficulty={currentLevel.difficulty}
       instructions={instructions}
       notificationMessage={notification}
-      // Game-specific content slots are correctly filled.
       gridContent={
         <CrosswordGrid grid={currentLevel.grid} revealedCells={revealedCells} />
       }

@@ -14,10 +14,10 @@ export type InstructionSet = {
 export type InstructionKey =
   | "phraseClue"
   | "formation"
-  | "imageClue"
+  | "imgClue"
   | "letterFlow"
   | "outsideStory"
-  | "ImgChoice"
+  | "imgChoice"
   | "wordChoice";
 
 /**
@@ -53,7 +53,7 @@ export function useFormationInstructions(): InstructionSet | null {
 }
 
 export function useImageClueInstructions(): InstructionSet | null {
-  return useInstructions("imageClue");
+  return useInstructions("imgClue");
 }
 
 export function useLetterFlowInstructions(): InstructionSet | null {
@@ -65,7 +65,7 @@ export function useOutsideStoryInstructions(): InstructionSet | null {
 }
 
 export function useImgChoiceInstructions(): InstructionSet | null {
-  return useInstructions("ImgChoice");
+  return useInstructions("imgChoice");
 }
 
 export function useWordChoiceInstructions(): InstructionSet | null {

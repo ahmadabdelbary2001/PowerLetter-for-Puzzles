@@ -1,25 +1,20 @@
 // src/features/formation-game/hooks/useFormationGame.ts
 /**
- * @description Custom hook to manage the state and logic for the Word Formation game.
+ * @description Final "assembler" hook for the Word Formation game.
+ * It assembles all logic and content needed by the UI.
  */
 import { useState, useEffect, useCallback } from 'react';
-import { useGameMode } from '@/hooks/useGameMode';
-import { useTranslation } from "@/hooks/useTranslation";
-import { useGame } from '@/hooks/useGame';
-// --- Import the centralized navigation hook. ---
-import { useGameNavigation } from '@/hooks/game/useGameNavigation';
+import { useGameController } from '@/hooks/game/useGameController';
 import { formationGameEngine, type FormationLevel } from '../engine';
 
 export function useFormationGame() {
-  const { language, categories, difficulty, gameMode, teams, currentTeam, consumeHint } = useGameMode();
-  const { t } = useTranslation();
-  // --- Get the handleBack function from the shared hook. ---
-  const { handleBack } = useGameNavigation();
+  const controller = useGameController<FormationLevel>({
+    engine: formationGameEngine,
+    gameId: 'formation',
+  });
 
-  const { loading, currentLevel, currentLevelIndex, nextLevel } = useGame<FormationLevel>(
-    formationGameEngine,
-    { language, categories, difficulty }
-  );
+  const { currentLevel, gameModeState, t, nextLevel } = controller;
+  const { gameMode, teams, currentTeam, consumeHint } = gameModeState;
 
   const [letters, setLetters] = useState<string[]>([]);
   const [currentInput, setCurrentInput] = useState<string>("");
@@ -31,14 +26,15 @@ export function useFormationGame() {
   useEffect(() => {
     if (currentLevel) {
       if (formationGameEngine.generateLetters) {
-        setLetters(formationGameEngine.generateLetters("", currentLevel.difficulty, language, currentLevel.baseLetters));
+        // --- The call now correctly passes only one argument. ---
+        setLetters(formationGameEngine.generateLetters(currentLevel.baseLetters));
       }
       setFoundWords(new Set());
       setCurrentInput("");
       setUsedLetterIndices([]);
       setRevealedCells(new Set());
     }
-  }, [currentLevel, language]);
+  }, [currentLevel]);
 
   const onLetterSelect = useCallback((letter: string, index: number) => {
     if (usedLetterIndices.includes(index)) return;
@@ -55,104 +51,70 @@ export function useFormationGame() {
     setLetters(prev => [...prev].sort(() => Math.random() - 0.5));
   }, []);
 
-  /**
-   * FIX: Removed unnecessary dependencies from the useCallback array.
-   * The function now only re-creates when `currentInput` or `currentLevel` changes.
-   */
   const onCheckWord = useCallback(() => {
     if (!currentLevel || currentInput.length === 0) return;
-
     const currentFoundWords = new Set(foundWords);
     if (currentLevel.words.includes(currentInput) && !currentFoundWords.has(currentInput)) {
       currentFoundWords.add(currentInput);
       setFoundWords(currentFoundWords);
-
       const wordIndex = currentLevel.words.indexOf(currentInput);
       const newRevealed = new Set(revealedCells);
       currentLevel.grid.forEach(cell => {
-        if (cell.words.includes(wordIndex)) {
-          newRevealed.add(`${cell.x},${cell.y}`);
-        }
+        if (cell.words.includes(wordIndex)) newRevealed.add(`${cell.x},${cell.y}`);
       });
       setRevealedCells(newRevealed);
       setNotification(t.congrats);
-
       if (currentFoundWords.size === currentLevel.words.length) {
         setTimeout(() => nextLevel(), 2000);
       }
     } else {
       setNotification(currentFoundWords.has(currentInput) ? t.alreadyFound : t.wrongAnswer);
     }
-
     setCurrentInput("");
     setUsedLetterIndices([]);
     setTimeout(() => setNotification(null), 1500);
   }, [currentInput, currentLevel, foundWords, revealedCells, t, nextLevel]);
 
-
-  /**
-   * FIX: The onHint function now correctly handles competitive mode by consuming a hint
-   * from the active team and displaying a notification if no hints are left.
-   */
   const onHint = useCallback(() => {
     if (!currentLevel) return;
-
-    // Handle hint consumption for competitive mode
     if (gameMode === 'competitive') {
       if (!consumeHint(teams[currentTeam].id)) {
         setNotification(t.noHintsLeft);
         setTimeout(() => setNotification(null), 2000);
-        return; // Stop if no hints are available
+        return;
       }
     }
-
-    const unrevealedCells = currentLevel.grid.filter(
-      cell => !revealedCells.has(`${cell.x},${cell.y}`)
-    );
-
+    const unrevealedCells = currentLevel.grid.filter(cell => !revealedCells.has(`${cell.x},${cell.y}`));
     if (unrevealedCells.length === 0) return;
-
     const randomCell = unrevealedCells[Math.floor(Math.random() * unrevealedCells.length)];
     const newRevealed = new Set(revealedCells).add(`${randomCell.x},${randomCell.y}`);
     setRevealedCells(newRevealed);
-
-    // Check if the hint completed any words
     const newlyFoundWords: string[] = [];
     currentLevel.words.forEach((word, wordIndex) => {
       if (foundWords.has(word)) return;
-      const allCellsRevealed = currentLevel.grid
-        .filter(cell => cell.words.includes(wordIndex))
-        .every(cell => newRevealed.has(`${cell.x},${cell.y}`));
-      if (allCellsRevealed) {
-        newlyFoundWords.push(word);
-      }
+      const allCellsRevealed = currentLevel.grid.filter(cell => cell.words.includes(wordIndex)).every(cell => newRevealed.has(`${cell.x},${cell.y}`));
+      if (allCellsRevealed) newlyFoundWords.push(word);
     });
-
     if (newlyFoundWords.length > 0) {
       const updatedFoundWords = new Set([...foundWords, ...newlyFoundWords]);
       setFoundWords(updatedFoundWords);
       setNotification(`${t.congrats} ${t.found} ${newlyFoundWords.join(', ')}`);
-
       if (updatedFoundWords.size === currentLevel.words.length) {
         setTimeout(() => nextLevel(), 2000);
       }
     } else {
       setNotification(t.hintUsed);
     }
-
     setTimeout(() => setNotification(null), 1500);
   }, [currentLevel, revealedCells, foundWords, gameMode, teams, currentTeam, consumeHint, t, nextLevel]);
 
   return {
-    loading,
-    currentLevel,
-    currentLevelIndex,
+    ...controller,
     letters,
     currentInput,
     revealedCells,
     notification,
     usedLetterIndices,
-    handleBack,
     onLetterSelect,
     onRemoveLast,
     onShuffle,

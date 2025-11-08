@@ -1,9 +1,10 @@
 // src/features/outside-story-game/components/OutsideStoryScreen.tsx
 import React from 'react';
-import { useTranslation } from '@/hooks/useTranslation';
+import { Button } from '@/components/ui/button';
 import { useOutsideStory } from '../hooks/useOutsideStory';
 import { OutsideStoryLayout } from '@/components/templates/OutsideStoryLayout';
 
+// Import all the sub-screen components
 import RoleRevealHandoffScreen from './screens/RoleRevealHandoffScreen';
 import RoleRevealPlayerScreen from './screens/RoleRevealPlayerScreen';
 import QuestionIntroScreen from './screens/QuestionIntroScreen';
@@ -14,18 +15,26 @@ import ResultsScreen from './screens/ResultsScreen';
 import RoundEndScreen from './screens/RoundEndScreen';
 
 const OutsideStoryScreen: React.FC = () => {
-  const { t } = useTranslation();
+  // --- Call the single hook and assign its entire return value to a single constant. ---
   const game = useOutsideStory();
 
-  // Use the loadingLevels boolean OR check for a currentRound to show a loading state.
-  // This is now a reliable way to wait for the game to be ready.
-  if (game.loadingLevels || !game.currentRound) {
+  // --- Destructure the needed properties directly from the 'game' object. ---
+  const {
+    loadingLevels,
+    currentRound,
+    handleBack,
+    t,
+    instructions,
+  } = game;
+
+  // --- The loading and error handling logic is now consistent with other games. ---
+  if (loadingLevels || !currentRound) {
     return (
-      <OutsideStoryLayout onBack={() => window.history.back()}>
-        <div className="w-full h-full flex items-center justify-center p-4 min-h-[50vh]">
-          <p className="text-xl">{t.loading ?? 'Loading...'}</p>
-        </div>
-      </OutsideStoryLayout>
+      <div className="flex flex-col justify-center items-center h-screen gap-4 p-4 text-center">
+        <p className="text-xl font-semibold">{t.loading ?? 'Loading...'}</p>
+        {/* The back button is now available even during loading. */}
+        <Button onClick={handleBack}>{t.back}</Button>
+      </div>
     );
   }
 
@@ -54,7 +63,12 @@ const OutsideStoryScreen: React.FC = () => {
   };
 
   return (
-    <OutsideStoryLayout onBack={() => window.history.back()}>
+    <OutsideStoryLayout
+      // Pass standard layout props
+      title={t.outsideTheStoryTitle}
+      onBack={handleBack}
+      instructions={instructions}
+    >
       {renderScreen()}
     </OutsideStoryLayout>
   );

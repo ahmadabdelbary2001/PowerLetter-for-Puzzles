@@ -17,6 +17,7 @@ export interface OutsideStoryLevel extends GameLevel {
   language: Language;
   category: GameCategory;
   words: string[];
+  solution: string;
   meta?: Record<string, unknown>;
 }
 
@@ -83,11 +84,15 @@ class OutsideStoryGameEngine extends BaseGameEngine<OutsideStoryLevel> {
         const module = await loader();
         const words = Array.isArray(module.default?.words) ? module.default.words.map(String) : [];
         
+        // For Outside Story, the first word in the list is the solution
+        const solution = words.length > 0 ? words[0] : "";
+        
         results.push({
           id: `${language}-${cat}`, // Generate a consistent ID.
           language,
           category: cat,
           words,
+          solution,
           meta: module.default?.meta ?? {},
         });
       } catch (err) {
@@ -110,6 +115,7 @@ class OutsideStoryGameEngine extends BaseGameEngine<OutsideStoryLevel> {
       language: 'en',
       category: 'general',
       words: ['ERROR'],
+      solution: 'ERROR',
     };
   }
 }

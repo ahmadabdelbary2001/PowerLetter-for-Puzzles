@@ -135,15 +135,12 @@ class FormationGameEngine extends BaseGameEngine<FormationLevel> {
   }
 
   /**
-   * --- PRESERVED: The original generateLetters method with its exact signature. ---
    * Generates a shuffled array of letters from the base letters.
-   * @param _s - Unused parameter (solution string)
-   * @param _d - Unused parameter (difficulty)
-   * @param _l - Unused parameter (language)
+   * --- The signature is now corrected to only accept the argument it actually uses. ---
    * @param baseLetters - The base set of letters to shuffle
    * @returns string[] - Shuffled array of letters
    */
-  public generateLetters(_s: string, _d: Difficulty, _l: Language, baseLetters?: string): string[] {
+  public generateLetters(baseLetters: string): string[] {
     if (!baseLetters) return []; // Return empty array if no base letters provided
     return shuffleArray(baseLetters.split('')); // Split base letters into array and shuffle
   }

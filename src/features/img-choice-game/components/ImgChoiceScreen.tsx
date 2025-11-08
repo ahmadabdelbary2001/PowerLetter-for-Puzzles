@@ -7,26 +7,11 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, Volume2, CheckCircle, XCircle } from "lucide-react";
-import { useTranslation } from "@/hooks/useTranslation";
 import { useImgChoiceGame } from "@/features/img-choice-game/hooks/useImgChoiceGame";
 import { cn } from "@/lib/utils";
-import { useInstructions } from "@/hooks/useInstructions";
 import { MultipleChoiceLayout } from "@/components/templates/MultipleChoiceLayout";
 
 const ImgChoiceScreen: React.FC = () => {
-  const { t, i18n } = useTranslation();
-  const dir = i18n.dir();
-
-  // Get instructions
-  const rawInstructions = useInstructions("ImgChoice");
-  const instructions = rawInstructions
-    ? {
-        title: rawInstructions.title ?? "",
-        description: rawInstructions.description ?? "",
-        steps: rawInstructions.steps ?? [],
-      }
-    : undefined;
-
   // Get all state and handlers from the game's specific hook
   const {
     loading,
@@ -40,7 +25,12 @@ const ImgChoiceScreen: React.FC = () => {
     handleOptionClick,
     nextLevel,
     handleBack,
+    t,
+    i18n,
+    instructions,
   } = useImgChoiceGame();
+
+  const dir = i18n.dir();
 
   // Show loading spinner
   if (loading) {
@@ -74,7 +64,7 @@ const ImgChoiceScreen: React.FC = () => {
   return (
     <MultipleChoiceLayout
       // Pass standard layout props
-      title={t.ImgChoiceTitle ?? t.findThePictureTitle ?? "Find the Image"}
+      title={t.imgChoiceTitle ?? t.findThePictureTitle ?? "Find the Image"}
       levelIndex={0} // This game doesn't show a level index, so 0 is fine
       onBack={handleBack}
       instructions={instructions}
