@@ -25,7 +25,6 @@ export function useClueGame<T extends GameLevel & { solution: string; difficulty
   const {
     gameState, currentLevel, solution, dispatch, setNotification, nextLevel,
     gameModeState, // Get the full gameMode state object from the controller.
-    t, // Get the translation function from the controller.
   } = controller;
 
   // --- Destructure the specific functions needed from gameModeState. ---
@@ -53,10 +52,12 @@ export function useClueGame<T extends GameLevel & { solution: string; difficulty
       if (gameMode === 'competitive') {
         const points = getPoints(currentLevel as T);
         updateScore(teams[currentTeam].id, points);
-        setNotification({ message: `${t.congrats} +${points}`, type: 'success' });
+        // --- Use the specific 'congrats' key. The points can be added in the UI if needed, but this is cleaner. ---
+        setNotification({ messageKey: 'congrats', type: 'success' });
         setTimeout(() => nextLevel(), 2000);
       } else {
-        setNotification({ message: t.congrats, type: 'success' });
+        // --- Use the specific 'congrats' key. ---
+        setNotification({ messageKey: 'congrats', type: 'success' });
       }
     } else {
       dispatch({ type: 'SET_GAME_STATE', payload: 'failed' });
@@ -64,7 +65,8 @@ export function useClueGame<T extends GameLevel & { solution: string; difficulty
       if (currentAnswer && !wrongAnswers.includes(currentAnswer)) {
         setWrongAnswers(prev => [...prev, currentAnswer]);
       }
-      setNotification({ message: t.wrongAnswer, type: 'error' });
+      // --- Use the specific 'wrongAnswer' key. ---
+      setNotification({ messageKey: 'wrongAnswer', type: 'error' });
       if (gameMode === 'competitive') {
         const newAttemptedTeams = new Set(attemptedTeams).add(currentTeam);
         setAttemptedTeams(newAttemptedTeams);
@@ -72,7 +74,8 @@ export function useClueGame<T extends GameLevel & { solution: string; difficulty
           nextTurn('lose');
           setTimeout(() => {
             dispatch({ type: 'SHOW', solution, letters: gameState.letters });
-            setNotification({ message: `${t.solutionWas}: ${solution}`, type: 'error' });
+            // --- FIX: Use the 'solutionWas' key and pass the solution for interpolation. ---
+            setNotification({ messageKey: 'solutionWas', options: { solution }, type: 'error' });
             setTimeout(() => nextLevel(), 2500);
           }, 2000);
         } else {
@@ -91,7 +94,7 @@ export function useClueGame<T extends GameLevel & { solution: string; difficulty
     }
   }, [
     gameState, currentLevel, solution, gameMode, teams, currentTeam, getPoints, wrongAnswers,
-    updateScore, setNotification, nextTurn, nextLevel, dispatch, t, attemptedTeams
+    updateScore, setNotification, nextTurn, nextLevel, dispatch, attemptedTeams
   ]);
 
   const onLetterClick = useCallback((index: number) => {
@@ -104,22 +107,25 @@ export function useClueGame<T extends GameLevel & { solution: string; difficulty
   const onShow = useCallback(() => {
     if (gameState.gameState !== 'playing') return;
     dispatch({ type: 'SHOW', solution, letters: gameState.letters });
-    setNotification({ message: `${t.solutionWas}: ${solution}`, type: 'error' });
+    // --- Use the 'solutionWas' key and pass the solution for interpolation. ---
+    setNotification({ messageKey: 'solutionWas', options: { solution }, type: 'error' });
     if (gameMode === 'competitive') {
       nextTurn('lose');
       setTimeout(() => nextLevel(), 2500);
     } else {
       dispatch({ type: 'SET_GAME_STATE', payload: 'won' });
     }
-  }, [dispatch, solution, gameState, gameMode, nextTurn, nextLevel, setNotification, t.solutionWas]);
+  }, [dispatch, solution, gameState, gameMode, nextTurn, nextLevel, setNotification]);
+
   const onHint = useCallback(() => {
     if (gameState.gameState !== 'playing') return;
     if (gameMode === 'competitive' && !consumeHint(teams[currentTeam].id)) {
-      setNotification({ message: t.noHintsLeft, type: 'error' });
+      // --- Use the specific 'noMoreHints' key. ---
+      setNotification({ messageKey: 'noMoreHints', type: 'error' });
       return;
     }
     dispatch({ type: 'HINT', solution, letters: gameState.letters });
-  }, [dispatch, solution, gameState, gameMode, consumeHint, teams, currentTeam, setNotification, t.noHintsLeft]);
+  }, [dispatch, solution, gameState, gameMode, consumeHint, teams, currentTeam, setNotification]);
 
   const canRemove = useMemo(() => gameState.gameState === 'playing' && gameState.slotIndices.some(i => i !== null && !gameState.hintIndices.includes(i as number)), [gameState]);
   const canClear = useMemo(() => gameState.gameState === 'playing' && gameState.slotIndices.filter(i => i !== null).length > gameState.hintIndices.length, [gameState]);

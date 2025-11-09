@@ -30,18 +30,23 @@ export type RoundInfo = {
 
 export function useOutsideStory() {
   // --- 1. CONTROLLER LAYER ---
-  // --- The `as any` cast is no longer needed and has been removed. ---
-  // The controller is now flexible enough to handle this engine's level type.
+  // --- Use the central game controller ---
   const controller = useGameController<OutsideStoryLevel>({
     engine: outsideStoryGameEngine,
     gameId: 'outsideStory',
   });
-  const { gameModeState, t, instructions, handleBack  } = controller;
-  const { teams, language, categories, resetScores, setGameMode } = gameModeState;
+
+  // --- Destructure everything from the controller ---
+  const {
+    levels: loadedLevels, // Rename to avoid conflict
+    loading: loadingLevels, // Rename to avoid conflict
+    gameModeState,
+    setNotification, // Get the setter for local notifications
+  } = controller;
+
+  const { teams, resetScores, setGameMode } = gameModeState;
 
   const [gameState, setGameState] = useState<GameState>('role_reveal_handoff');
-  const [levels, setLevels] = useState<OutsideStoryLevel[]>([]);
-  const [loadingLevels, setLoadingLevels] = useState(true);
   const [currentRound, setCurrentRound] = useState<RoundInfo | null>(null);
   const [history, setHistory] = useState<RoundInfo[]>([]);
   const [currentPlayerTurn, setCurrentPlayerTurn] = useState<number>(0);
@@ -49,13 +54,13 @@ export function useOutsideStory() {
   const [votingPlayerIndex, setVotingPlayerIndex] = useState<number>(0);
 
   const startRound = useCallback((category: string) => {
-    const level = levels.find(l => l.category === category);
+    const level = loadedLevels.find(l => l.category === category);
     if (!level || level.words.length < 8) {
-      console.error(t.notEnoughWords ?? 'Not enough words for this category.');
+      setNotification({ messageKey: 'notEnoughWords', type: 'error' });
       return;
     }
     if (teams.length < 3) {
-      console.error(t.min3Players ?? 'Add at least 3 players.');
+      setNotification({ messageKey: 'min3Players', type: 'error' });
       return;
     }
     const shuffled = [...level.words].sort(() => 0.5 - Math.random());
@@ -71,26 +76,15 @@ export function useOutsideStory() {
     setCurrentRound(round);
     setCurrentPlayerTurn(0);
     setGameState('role_reveal_handoff');
-  }, [levels, teams, t]);
+  }, [loadedLevels, teams, setNotification]);
+
+  // --- The local useEffect for loading levels is no longer needed. ---
+  // The useGameController handles this automatically.
 
   useEffect(() => {
-    let mounted = true;
-    setLoadingLevels(true);
-    (async () => {
-      try {
-        const loadedLevels = await outsideStoryGameEngine.loadLevels({ language, categories });
-        if (mounted) setLevels(loadedLevels);
-      } finally {
-        if (mounted) setLoadingLevels(false);
-      }
-    })();
-    return () => { mounted = false; };
-  }, [language, categories]);
-
-  useEffect(() => {
-    if (loadingLevels || levels.length === 0 || currentRound) return;
-    startRound(levels[0].category);
-  }, [loadingLevels, levels, currentRound, startRound]);
+    if (loadingLevels || loadedLevels.length === 0 || currentRound) return;
+    startRound(loadedLevels[0].category);
+  }, [loadingLevels, loadedLevels, currentRound, startRound]);
 
   const setupQuestionTurns = useCallback(() => {
     if (teams.length < 2) return;
@@ -161,9 +155,11 @@ export function useOutsideStory() {
   }, [setGameMode, resetScores]);
 
   // --- 3. RETURN THE FINAL OBJECT FOR THE UI ---
+  // --- Return the properties from the controller ---
   return {
+    ...controller, // Spread the controller to include notification, onClearNotification, etc.
     players: teams,
-    levels,
+    levels: loadedLevels,
     loadingLevels,
     currentRound,
     history,
@@ -183,8 +179,5 @@ export function useOutsideStory() {
     },
     votingPlayerIndex,
     nextVoter,
-    t,
-    instructions,
-    handleBack,
   } as const;
 }

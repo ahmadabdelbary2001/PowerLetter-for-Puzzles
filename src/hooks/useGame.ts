@@ -7,6 +7,7 @@ import { useState, useEffect, useCallback, useReducer } from 'react';
 import { gameReducer } from '@/lib/gameReducer';
 import type { IGameEngine } from '@/games/engine/types';
 import type { Language, Difficulty, GameCategory } from '@/types/game';
+import type { NotificationData } from '@/components/atoms/Notification';
 
 export function useGame<T extends { solution: string; difficulty?: Difficulty }>(
   engine: IGameEngine<T>,
@@ -19,7 +20,7 @@ export function useGame<T extends { solution: string; difficulty?: Difficulty }>
   const [levels, setLevels] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentLevelIndex, setCurrentLevelIndex] = useState(0);
-  const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [notification, setNotification] = useState<NotificationData | null>(null);
 
   const currentLevel = levels[currentLevelIndex];
   const solution = currentLevel?.solution ?? '';
@@ -80,6 +81,11 @@ export function useGame<T extends { solution: string; difficulty?: Difficulty }>
     }
   }, [currentLevelIndex, levels, resetLevel]);
 
+  // --- Create the clear function ---
+  const onClearNotification = useCallback(() => {
+    setNotification(null);
+  }, []);
+
   return {
     loading,
     levels,
@@ -88,6 +94,7 @@ export function useGame<T extends { solution: string; difficulty?: Difficulty }>
     solution,
     notification,
     setNotification,
+    onClearNotification,
     gameState,
     dispatch,
     nextLevel,

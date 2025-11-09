@@ -21,6 +21,7 @@ const PhraseClueGameScreen: React.FC = () => {
     currentLevel,
     solution,
     notification,
+    onClearNotification,
     wrongAnswers,
     gameState, // This now correctly contains the full reducer state
     currentLevelIndex,
@@ -75,6 +76,7 @@ const PhraseClueGameScreen: React.FC = () => {
       difficulty={currentLevel.difficulty}
       instructions={instructions} // This now matches the expected type
       notification={notification}
+      onClearNotification={onClearNotification}
       promptContent={null}
       solutionContent={<SolutionBoxes solution={solution} currentWord={answerSlots.join("")} />}
       letterOptionsContent={

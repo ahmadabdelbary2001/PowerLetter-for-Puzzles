@@ -6,6 +6,7 @@
  */
 import React from 'react';
 import { GameLayout } from '@/components/templates/GameLayout';
+import type { NotificationData } from '@/components/atoms/Notification';
 
 /**
  * @interface OutsideStoryLayoutProps
@@ -15,6 +16,8 @@ interface OutsideStoryLayoutProps {
   title: string;
   children: React.ReactNode;
   onBack: () => void;
+  notification: NotificationData | null;
+  onClearNotification: () => void;
   instructions?: {
     title: string;
     description: string;
@@ -23,20 +26,17 @@ interface OutsideStoryLayoutProps {
 }
 
 export const OutsideStoryLayout: React.FC<OutsideStoryLayoutProps> = ({ 
-  title,
   children,
-  onBack, 
-  instructions
+  // --- Gather all remaining props to pass to GameLayout ---
+  ...gameLayoutProps
 }) => {
   return (
+    // --- Spread all props, including notification props, to GameLayout ---
     <GameLayout
-      title={title}
-      onBack={onBack}
+      {...gameLayoutProps}
       layoutType="text"
-      levelIndex={0} // This game doesn't have traditional levels, so we use 0.
-      instructions={instructions}
+      levelIndex={0} // This game doesn't have traditional levels
     >
-      {/* This is the characteristic blue container for the game's content. */}
       <div className="w-full h-full flex flex-col items-center justify-center p-4 bg-blue-500 text-white rounded-lg min-h-[50vh]">
         {children}
       </div>

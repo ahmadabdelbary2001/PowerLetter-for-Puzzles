@@ -7,7 +7,7 @@
  */
 import React from 'react';
 import { GameLayout } from '@/components/templates/GameLayout';
-import { Notification, type NotificationType } from '@/components/atoms/Notification';
+import type { NotificationData } from '@/components/atoms/Notification';
 
 /**
  * @interface MultipleChoiceLayoutProps
@@ -18,8 +18,8 @@ interface MultipleChoiceLayoutProps {
   title: string;
   levelIndex: number;
   onBack: () => void;
-  notificationMessage: string | null;
-  notificationType?: NotificationType;
+  notification: NotificationData | null;
+  onClearNotification: () => void;
   promptContent: React.ReactNode;
   optionsContent: React.ReactNode;
   nextButtonContent?: React.ReactNode;
@@ -31,34 +31,16 @@ interface MultipleChoiceLayoutProps {
 }
 
 export const MultipleChoiceLayout: React.FC<MultipleChoiceLayoutProps> = ({
-  title,
-  levelIndex,
-  onBack,
-  notificationMessage,
-  notificationType, // Default is handled by Notification component
   promptContent,
   optionsContent,
   nextButtonContent,
-  instructions,
+  // --- Gather all remaining props to pass to GameLayout ---
+  ...gameLayoutProps
 }) => {
   return (
-    // Pass all required props to GameLayout component.
-    // We explicitly set layoutType to 'image' as it provides the best centering for this game style.
-    <GameLayout 
-      title={title}
-      levelIndex={levelIndex}
-      onBack={onBack}
-      layoutType="image"
-      instructions={instructions}
-    >
+    // --- Spread all props, including notification props, to GameLayout ---
+    <GameLayout {...gameLayoutProps} layoutType="image">
       <div className="flex flex-col items-center justify-center h-full w-full p-4">
-        {/* Slot for the notification */}
-        {notificationMessage && (
-          <div className="absolute top-20 left-1/2 -translate-x-1/2 z-50">
-            <Notification message={notificationMessage} type={notificationType} duration={1200} />
-          </div>
-        )}
-
         {/* Slot for the main game prompt (e.g., a word or an image) */}
         <div className="w-full max-w-md mb-8">
           {promptContent}

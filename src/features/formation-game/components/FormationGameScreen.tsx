@@ -23,6 +23,7 @@ const FormationGameScreen: React.FC = () => {
     currentInput,
     revealedCells,
     notification,
+    onClearNotification,
     usedLetterIndices,
     handleBack,
     onLetterSelect,
@@ -53,7 +54,8 @@ const FormationGameScreen: React.FC = () => {
       onBack={handleBack}
       difficulty={currentLevel.difficulty}
       instructions={instructions}
-      notificationMessage={notification}
+      notification={notification}
+      onClearNotification={onClearNotification}
       gridContent={
         <CrosswordGrid grid={currentLevel.grid} revealedCells={revealedCells} />
       }

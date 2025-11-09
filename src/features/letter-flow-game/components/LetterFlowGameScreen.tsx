@@ -26,6 +26,7 @@ const LetterFlowGameScreen: React.FC = () => {
     selectedPath,
     foundWords,
     notification,
+    onClearNotification,
     gameState,
     activeLetter,
     handleBack,
@@ -65,6 +66,7 @@ const LetterFlowGameScreen: React.FC = () => {
       difficulty={currentLevel.difficulty}
       instructions={instructions}
       notification={notification}
+      onClearNotification={onClearNotification}
       boardContent={
         <LetterFlowBoard
           cells={board}
@@ -108,6 +110,7 @@ const LetterFlowGameScreen: React.FC = () => {
           t={{ selected: t.selected, of: t.of }}
         />
       }
+      children={null}
     />
   );
 };

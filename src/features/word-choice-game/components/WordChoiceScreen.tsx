@@ -19,6 +19,8 @@ const WordChoiceScreen: React.FC = () => {
     shuffledOptions,
     answerStatus,
     selectedOption,
+    notification,
+    onClearNotification,
     audioRef,
     getAssetPath,
     playSound,
@@ -51,15 +53,6 @@ const WordChoiceScreen: React.FC = () => {
     );
   }
 
-  // Build notification for success/incorrect attempts
-  const notifMessage =
-    answerStatus === "correct"
-      ? t.congrats ?? "Correct!"
-      : answerStatus === "incorrect"
-      ? t.wrongAnswer ?? "Wrong! Try again"
-      : null;
-  const notifType = answerStatus === "correct" ? "success" : "error";
-
   // --- Use the new MultipleChoiceLayout ---
   return (
     <MultipleChoiceLayout
@@ -68,8 +61,8 @@ const WordChoiceScreen: React.FC = () => {
       levelIndex={0} // Temporary value - should be updated based on actual level index
       onBack={handleBack}
       instructions={instructions}
-      notificationMessage={notifMessage}
-      notificationType={notifType}
+      notification={notification}
+      onClearNotification={onClearNotification}
       // Pass game-specific content into the layout's slots
       promptContent={
         <div className="relative aspect-video bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center">

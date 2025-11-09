@@ -11,6 +11,7 @@ import { Scoreboard } from '@/components/molecules/Scoreboard';
 import { TeamDisplay } from '@/components/molecules/TeamDisplay';
 import GameInstructions from '@/components/molecules/GameInstructions';
 import { InGameSettings } from '@/components/molecules/InGameSettings';
+import { Notification, type NotificationData } from '@/components/atoms/Notification';
 import type { Difficulty } from '@/types/game';
 import { cn } from '@/lib/utils';
 
@@ -20,6 +21,8 @@ interface GameLayoutProps {
   levelIndex: number;
   onBack: () => void;
   difficulty?: Difficulty;
+  notification: NotificationData | null;
+  onClearNotification: () => void; 
   layoutType?: 'text' | 'image';
   instructions?: {
     title: string;
@@ -33,6 +36,8 @@ export const GameLayout: React.FC<GameLayoutProps> = ({
   title,
   levelIndex,
   onBack,
+  notification,
+  onClearNotification,
   difficulty,
   layoutType = 'text',
   instructions,
@@ -44,14 +49,27 @@ export const GameLayout: React.FC<GameLayoutProps> = ({
   return (
     <>
       <Header currentView="play" showLanguage={false} />
+
+      {/* Render notification as a fixed, viewport-anchored element so it floats at a fixed height */}
+      {notification && (
+        <Notification
+          messageKey={notification.messageKey}
+          type={notification.type}
+          duration={notification.duration}
+          onClose={onClearNotification}
+          options={notification.options}
+        />
+      )}
+
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-6" dir={dir}>
         <div
           className={cn(
-            "mx-auto space-y-4 sm:space-y-6",
+            "relative mx-auto space-y-4 sm:space-y-6",
             layoutType === 'image' ? 'max-w-xl' : 'max-w-5xl'
           )}
         >
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          {/* Add a small top padding so page content won't visually bump into the floating notification */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pt-12">
             <div className="flex items-center gap-2">
               <Button variant="ghost" onClick={onBack} className="flex items-center gap-2">
                 {dir === "rtl" ? <ArrowRight /> : <ArrowLeft />} {t.back}
@@ -62,8 +80,6 @@ export const GameLayout: React.FC<GameLayoutProps> = ({
               {gameMode === "competitive" && teams.length > 0 && (
                 <TeamDisplay teams={teams} currentTeam={currentTeam} showScore={true} />
               )}
-              {/* The InGameSettings component is now rendered for ALL modes.
-                  It is smart enough to decide what to show internally. */}
               <InGameSettings />
             </div>
           </div>

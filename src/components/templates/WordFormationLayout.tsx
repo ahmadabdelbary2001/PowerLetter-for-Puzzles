@@ -6,9 +6,8 @@
  * a grid, an input display, a letter selector, and game controls.
  */
 import React from 'react';
-// --- Import the GameLayout component itself, not a separate props type ---
 import { GameLayout } from '@/components/templates/GameLayout';
-import { Notification } from '@/components/atoms/Notification';
+import type { NotificationData } from '@/components/atoms/Notification';
 
 /**
  * @interface WordFormationLayoutProps
@@ -17,8 +16,13 @@ import { Notification } from '@/components/atoms/Notification';
  */
 // --- Use React.ComponentProps to correctly infer the props from GameLayout ---
 interface WordFormationLayoutProps extends Omit<React.ComponentProps<typeof GameLayout>, 'children'> {
-  notificationMessage: string | null;
-  notificationType?: 'success' | 'error' | 'warning' | 'info';
+  title: string;
+  levelIndex: number;
+  onBack: () => void;
+  difficulty?: 'easy' | 'medium' | 'hard';
+  instructions?: { title: string; description: string; steps: string[] };
+  notification: NotificationData | null;
+  onClearNotification: () => void;
   gridContent: React.ReactNode;
   inputDisplayContent: React.ReactNode;
   letterSelectorContent: React.ReactNode;
@@ -26,8 +30,6 @@ interface WordFormationLayoutProps extends Omit<React.ComponentProps<typeof Game
 }
 
 export const WordFormationLayout: React.FC<WordFormationLayoutProps> = ({
-  notificationMessage,
-  notificationType = 'info',
   gridContent,
   inputDisplayContent,
   letterSelectorContent,
@@ -39,9 +41,6 @@ export const WordFormationLayout: React.FC<WordFormationLayoutProps> = ({
     // --- Spread the gathered props onto the GameLayout component ---
     // This ensures `title`, `levelIndex`, `onBack`, etc., are all passed correctly.
     <GameLayout {...gameLayoutProps}>
-      {/* Slot for the notification */}
-      {notificationMessage && <Notification message={notificationMessage} type={notificationType} />}
-
       {/* Main content area for the game, arranged vertically */}
       <div className="flex flex-col items-center gap-2 sm:gap-3">
         {/* Slot for the main game grid (e.g., CrosswordGrid) */}

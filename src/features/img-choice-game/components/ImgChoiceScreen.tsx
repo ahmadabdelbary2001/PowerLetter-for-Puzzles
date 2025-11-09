@@ -19,6 +19,8 @@ const ImgChoiceScreen: React.FC = () => {
     shuffledOptions,
     answerStatus,
     selectedOption,
+    notification,
+    onClearNotification,
     audioRef,
     getAssetPath,
     playSound,
@@ -51,16 +53,6 @@ const ImgChoiceScreen: React.FC = () => {
     );
   }
 
-  // Determine notification message and type
-  const notifMessage =
-    answerStatus === "correct"
-      ? t.congrats ?? "Correct!"
-      : answerStatus === "incorrect"
-      ? t.wrongAnswer ?? "Wrong! Try again"
-      : null;
-  const notifType = answerStatus === "correct" ? "success" : "error";
-
-  // --- Use the new MultipleChoiceLayout ---
   return (
     <MultipleChoiceLayout
       // Pass standard layout props
@@ -68,8 +60,8 @@ const ImgChoiceScreen: React.FC = () => {
       levelIndex={0} // This game doesn't show a level index, so 0 is fine
       onBack={handleBack}
       instructions={instructions}
-      notificationMessage={notifMessage}
-      notificationType={notifType}
+      notification={notification}
+      onClearNotification={onClearNotification}
       // Pass game-specific content into the layout's slots
       promptContent={
         <div className="relative bg-card rounded-lg p-6 flex items-center justify-center">

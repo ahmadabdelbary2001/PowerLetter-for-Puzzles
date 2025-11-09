@@ -22,6 +22,8 @@ const OutsideStoryScreen: React.FC = () => {
   const {
     loadingLevels,
     currentRound,
+    notification,
+    onClearNotification,
     handleBack,
     t,
     instructions,
@@ -68,6 +70,8 @@ const OutsideStoryScreen: React.FC = () => {
       title={t.outsideTheStoryTitle}
       onBack={handleBack}
       instructions={instructions}
+      notification={notification}
+      onClearNotification={onClearNotification}
     >
       {renderScreen()}
     </OutsideStoryLayout>

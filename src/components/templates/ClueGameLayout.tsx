@@ -7,12 +7,7 @@
  */
 import React from 'react';
 import { GameLayout } from './GameLayout';
-import { Notification as NotificationComponent } from '@/components/atoms/Notification';
-
-type Notification = {
-  message: string;
-  type: 'success' | 'error' | 'warning' | 'info';
-};
+import type { NotificationData } from '@/components/atoms/Notification';
 
 type Instructions = {
   title: string;
@@ -30,7 +25,8 @@ interface ClueGameLayoutProps {
   onBack: () => void;
   difficulty?: 'easy' | 'medium' | 'hard';
   instructions?: Instructions;
-  notification: Notification | null;
+  notification: NotificationData | null;
+  onClearNotification: () => void;
   // --- Added layoutType to the props ---
   // This allows child components to specify the container size.
   layoutType?: 'text' | 'image';
@@ -42,38 +38,17 @@ interface ClueGameLayoutProps {
 }
 
 export const ClueGameLayout: React.FC<ClueGameLayoutProps> = ({
-  title,
-  levelIndex,
-  onBack,
-  difficulty,
-  instructions,
-  notification,
-  // --- Destructure layoutType ---
-  layoutType,
   promptContent,
   solutionContent,
   letterOptionsContent,
   gameControlsContent,
   wrongAnswersContent,
+  // --- Gather all remaining props to pass to GameLayout ---
+  ...gameLayoutProps
 }) => {
-  // Determine notification message and type
-  const notifMessage = notification?.message ?? null;
-  const notifType = notification?.type ?? "info";
-
   return (
-    <GameLayout
-      title={title}
-      levelIndex={levelIndex}
-      onBack={onBack}
-      difficulty={difficulty}
-      instructions={instructions}
-      // --- Pass the layoutType prop down to GameLayout ---
-      // This will apply the correct max-width to the container.
-      layoutType={layoutType}
-    >
-      {/* Display notification if there is one */}
-      {notifMessage && <NotificationComponent message={notifMessage} type={notifType} />}
-      
+    // --- Spread all props, including notification props, to GameLayout ---
+    <GameLayout {...gameLayoutProps}>
       {/* Slots for game content */}
       {promptContent}
       {solutionContent}

@@ -21,6 +21,7 @@ const ImgClueGameScreen: React.FC = () => {
     currentLevel,
     solution,
     notification,
+    onClearNotification,
     wrongAnswers,
     gameState,
     currentLevelIndex,
@@ -75,6 +76,7 @@ const ImgClueGameScreen: React.FC = () => {
       onBack={handleBack}
       instructions={instructions}
       notification={notification}
+      onClearNotification={onClearNotification}
       layoutType="image"
       // Pass game-specific content into the layout's slots
       promptContent={

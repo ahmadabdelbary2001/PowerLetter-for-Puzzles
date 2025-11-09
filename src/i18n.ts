@@ -6,10 +6,12 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 // static JSON resources (local files)
 import en from './locales/en/translation.json';
 import ar from './locales/ar/translation.json';
+import enNotification from './locales/en/notification.json';
+import arNotification from './locales/ar/notification.json';
 
 const resources = {
-  en: { translation: en },
-  ar: { translation: ar },
+  en: { translation: en, notification: enNotification },
+  ar: { translation: ar, notification: arNotification },
 };
 
 i18n

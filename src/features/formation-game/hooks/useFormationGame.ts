@@ -1,7 +1,7 @@
 // src/features/formation-game/hooks/useFormationGame.ts
 /**
  * @description Final "assembler" hook for the Word Formation game.
- * It assembles all logic and content needed by the UI.
+ * --- It now uses the centralized notification system correctly. ---
  */
 import { useState, useEffect, useCallback } from 'react';
 import { useGameController } from '@/hooks/game/useGameController';
@@ -13,20 +13,18 @@ export function useFormationGame() {
     gameId: 'formation',
   });
 
-  const { currentLevel, gameModeState, t, nextLevel } = controller;
+  const { currentLevel, gameModeState, nextLevel, setNotification } = controller;
   const { gameMode, teams, currentTeam, consumeHint } = gameModeState;
 
   const [letters, setLetters] = useState<string[]>([]);
   const [currentInput, setCurrentInput] = useState<string>("");
   const [foundWords, setFoundWords] = useState<Set<string>>(new Set());
   const [revealedCells, setRevealedCells] = useState<Set<string>>(new Set());
-  const [notification, setNotification] = useState<string | null>(null);
   const [usedLetterIndices, setUsedLetterIndices] = useState<number[]>([]);
 
   useEffect(() => {
     if (currentLevel) {
       if (formationGameEngine.generateLetters) {
-        // --- The call now correctly passes only one argument. ---
         setLetters(formationGameEngine.generateLetters(currentLevel.baseLetters));
       }
       setFoundWords(new Set());
@@ -63,24 +61,23 @@ export function useFormationGame() {
         if (cell.words.includes(wordIndex)) newRevealed.add(`${cell.x},${cell.y}`);
       });
       setRevealedCells(newRevealed);
-      setNotification(t.congrats);
+      setNotification({ messageKey: 'wordFound', type: 'success' });
       if (currentFoundWords.size === currentLevel.words.length) {
         setTimeout(() => nextLevel(), 2000);
       }
     } else {
-      setNotification(currentFoundWords.has(currentInput) ? t.alreadyFound : t.wrongAnswer);
+      const messageKey = currentFoundWords.has(currentInput) ? 'alreadyFound' : 'wordNotFound';
+      setNotification({ messageKey, type: 'error' });
     }
     setCurrentInput("");
     setUsedLetterIndices([]);
-    setTimeout(() => setNotification(null), 1500);
-  }, [currentInput, currentLevel, foundWords, revealedCells, t, nextLevel]);
+  }, [currentInput, currentLevel, foundWords, revealedCells, setNotification, nextLevel]);
 
   const onHint = useCallback(() => {
     if (!currentLevel) return;
     if (gameMode === 'competitive') {
       if (!consumeHint(teams[currentTeam].id)) {
-        setNotification(t.noHintsLeft);
-        setTimeout(() => setNotification(null), 2000);
+        setNotification({ messageKey: 'noMoreHints', type: 'error' });
         return;
       }
     }
@@ -98,22 +95,20 @@ export function useFormationGame() {
     if (newlyFoundWords.length > 0) {
       const updatedFoundWords = new Set([...foundWords, ...newlyFoundWords]);
       setFoundWords(updatedFoundWords);
-      setNotification(`${t.congrats} ${t.found} ${newlyFoundWords.join(', ')}`);
+      setNotification({ messageKey: 'wordFound', type: 'success' });
       if (updatedFoundWords.size === currentLevel.words.length) {
         setTimeout(() => nextLevel(), 2000);
       }
     } else {
-      setNotification(t.hintUsed);
+      setNotification({ messageKey: 'hintUsed', type: 'info' });
     }
-    setTimeout(() => setNotification(null), 1500);
-  }, [currentLevel, revealedCells, foundWords, gameMode, teams, currentTeam, consumeHint, t, nextLevel]);
+  }, [currentLevel, revealedCells, foundWords, gameMode, teams, currentTeam, consumeHint, nextLevel, setNotification]);
 
   return {
     ...controller,
     letters,
     currentInput,
     revealedCells,
-    notification,
     usedLetterIndices,
     onLetterSelect,
     onRemoveLast,
