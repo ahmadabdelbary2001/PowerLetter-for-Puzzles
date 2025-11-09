@@ -17,15 +17,8 @@
   "congrats": "مبروك!",
   "wrongAnswer": "الإجابة خاطئة! حاول مرة أخرى.",
   "wrongAttempts": "محاولات خاطئة",
-  "solutionWas": "كان الحل هو: {{solution}}",
+  "solutionWas": "كان الحل هو",
   "found": "تم العثور على!",
   "of": "من",
-  "connectionRemoved": "تمت إزالة الاتصال لـ: {{letter}}",
-  "connectionMade": "تم توصيل: {{letter}}",
-  "connectionsReset": "تمت إعادة تعيين جميع الاتصالات.",
-  "pathInvalid": "يجب أن يربط المسار بين نقطتي نهاية!",
-  "connectionOverlap": "تمت إزالة الاتصال (الاتصالات) الحالية بواسطة اتصال جديد.",
-  "hintRevealed": "تلميح: تم توصيل {{letter}}",
-  "connectionReplaced": "تم توصيل: {{newLetter}} (تمت إزالة التداخل مع: {{oldLetters}})",
   "undefined": "غير معرفة"
 }

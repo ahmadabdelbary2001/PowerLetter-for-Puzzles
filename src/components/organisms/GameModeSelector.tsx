@@ -74,7 +74,8 @@ const difficulties = [
 
 
 const GameModeSelector: React.FC = () => {
-  const { setGameMode, categories: selectedCategories, setCategories, setDifficulty } = useGameMode();
+   // --- Get `gameMode` directly from the hook at the top level. ---
+  const { gameMode, setGameMode, categories: selectedCategories, setCategories, setDifficulty } = useGameMode();
   const { translate, i18n } = useTranslation();
   const dir = i18n.dir(); // 'ltr' or 'rtl' for the active language;
   const navigate = useNavigate();
@@ -178,7 +179,7 @@ const GameModeSelector: React.FC = () => {
 
   const handleDifficultySelect = (difficulty: Difficulty) => {
     setDifficulty(difficulty);
-    const { gameMode } = useGameMode.getState();
+    // --- Use the `gameMode` variable that we got from the hook. ---
     if (gameMode === 'competitive') {
       navigate(`/team-config/${gameType}`);
     } else {

@@ -1,124 +1,24 @@
 // src/hooks/useGameMode.ts
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import type { GameState, Team, GameCategory } from '@/types/game';
+/**
+ * @description The new, central hook for accessing all game state.
+ * It is now a simple "assembler" hook that combines the state and actions
+ * from the dedicated `useGameSettingsStore` and `useTeamStore`.
+ * This provides a single, consistent interface for all components.
+ */
+import { useGameSettingsStore } from '@/stores/useGameSettingsStore';
+import { useTeamStore } from '@/stores/useTeamStore';
 
-export const useGameMode = create<GameState>()(
-  persist(
-    (set, get) => ({
-      // Initial state values
-      language: 'en',
-      gameMode: 'single',
-      gameType: null,
-      categories: ['general'],
-      difficulty: 'easy',
-      teams: [],
-      currentTeam: 0,
-      scores: {},
-      isRTL: false,
+export function useGameMode() {
+  // 1. Get all state and actions from the settings store.
+  const settings = useGameSettingsStore();
 
-      // --- Actions ---
-      setLanguage: (language) => set({ language, isRTL: language === 'ar' }),
-      setGameMode: (gameMode) => set({ gameMode }),
-      setGameType: (gameType) => set({ gameType }),
-      setCategories: (categories) => set({ categories }),
-      setCategory: (category: GameCategory) => set({ categories: [category] }),
-      setDifficulty: (difficulty) => set({ difficulty }),
-      setTeams: (teams) => set({ teams }),
-      setCurrentTeam: (currentTeam) => set({ currentTeam }),
+  // 2. Get all state and actions from the team store.
+  const teams = useTeamStore();
 
-      resetScores: (pointsAwarded: Record<number, number>) => {
-        set((state) => {
-          const newScores = { ...state.scores };
-          const newTeams = state.teams.map(team => {
-            const points = pointsAwarded[team.id] || 0;
-            const newScore = (newScores[team.id] || 0) + points;
-            newScores[team.id] = newScore;
-            return { ...team, score: newScore };
-          });
-          return { scores: newScores, teams: newTeams };
-        });
-      },
-
-      initializeTeams: (teamCount, names = [], hintsPerTeam = 3) => {
-        const newTeams: Team[] = Array.from({ length: teamCount }, (_, i) => ({
-          id: i,
-          name: names?.[i] ?? `Team ${i + 1}`,
-          score: 0,
-          hintsRemaining: hintsPerTeam,
-        }));
-        const newScores = newTeams.reduce((acc, team) => ({ ...acc, [team.id]: 0 }), {});
-        set({ teams: newTeams, scores: newScores, currentTeam: 0 });
-      },
-
-      renameTeam: (teamId, newName) => {
-        set((state) => ({
-          teams: state.teams.map((team) => (team.id === teamId ? { ...team, name: newName } : team)),
-        }));
-      },
-
-      updateScore: (teamId, points) => {
-        set((state) => {
-          const currentScore = Number(state.scores[teamId] || 0);
-          const pointsToAdd = Number(points);
-          const newScore = currentScore + pointsToAdd;
-
-          const newScores = { ...state.scores, [teamId]: newScore };
-          const newTeams = state.teams.map((team) =>
-            team.id === teamId ? { ...team, score: newScore } : team
-          );
-          return { scores: newScores, teams: newTeams };
-        });
-      },
-
-      consumeHint: (teamId) => {
-        const team = get().teams.find((t) => t.id === teamId);
-        if (!team || team.hintsRemaining <= 0) return false;
-        set((state) => ({
-          teams: state.teams.map((t) => (t.id === teamId ? { ...t, hintsRemaining: t.hintsRemaining - 1 } : t)),
-        }));
-        return true;
-      },
-
-      // --- CRITICAL FIX ---
-      // This is the robust implementation from the 'old' file, now in the main file.
-      nextTurn: (outcome: 'win' | 'lose') => {
-        set((state) => {
-          const { teams, currentTeam, gameMode } = state;
-          const n = teams.length;
-          if (gameMode !== 'competitive' || n < 2) return {};
-
-          let next: number;
-          if (outcome === 'win') {
-            // On a win, simply go to the next player in order.
-            next = (currentTeam + 1) % n;
-          } else {
-            // On a loss, use the more complex rotation logic.
-            if (n % 2 === 0) {
-              // Even number of teams: go back one player.
-              next = (currentTeam - 1 + n) % n;
-            } else {
-              // Odd number of teams: jump back by half the team count.
-              const half = Math.floor(n / 2);
-              next = (currentTeam - half + n) % n;
-            }
-          }
-          return { currentTeam: next };
-        });
-      },
-
-      resetGame: () => {
-        set({
-          teams: [],
-          scores: {},
-          currentTeam: 0,
-          categories: ['general'],
-          difficulty: 'easy',
-        });
-      },
-    }),
-    {
-      name: 'powerletter-game-storage',
-    }
-  )
-);
+  // 3. Return a single, combined object.
+  // We can spread both objects because their properties do not conflict.
+  return {
+    ...settings,
+    ...teams,
+  };
+}

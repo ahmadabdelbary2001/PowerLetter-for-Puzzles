@@ -27,8 +27,8 @@ const categoriesData = [
 
 // --- Main Component ---
 const KidsGameModeSelector: React.FC = () => {
-  // Custom hooks for game state and translation
-  const { setGameMode, setCategories } = useGameMode();
+  // --- Get `gameMode` directly from the hook at the top level. ---
+  const { gameMode, setGameMode, setCategories } = useGameMode();
   const { t, i18n } = useTranslation();
   const dir = i18n.dir(); // 'ltr' or 'rtl' for the active language;
   const navigate = useNavigate();
@@ -73,7 +73,7 @@ const KidsGameModeSelector: React.FC = () => {
   // Finalize selections and navigate to appropriate game screen
   const handleContinueFromCategories = () => {
     setCategories(selectedCategories);
-    const { gameMode } = useGameMode.getState();
+    // --- Use the `gameMode` variable that we got from the hook. ---
     if (gameMode === 'competitive') {
       navigate(`/team-config/${gameType}`);
     } else {
