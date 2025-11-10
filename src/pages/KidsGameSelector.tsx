@@ -16,7 +16,7 @@ import Footer from '@/components/organisms/Footer';
 import { useNavigate } from 'react-router-dom';
 import { GAME_REGISTRY, type GameConfig } from '@/games/GameRegistry';
 import { cn } from '@/lib/utils';
-import { normalizeToStringArray } from '@/lib/i18nUtils';
+// --- The i18nUtils helper is no longer needed. ---
 
 /**
  * The KidsGameSelector component provides a curated list of games suitable for children.
@@ -54,20 +54,21 @@ const KidsGameSelector: React.FC = () => {
             <div className="flex items-center justify-center mb-4">
               <ToyBrick className="w-10 h-10 text-green-600 dark:text-green-400" />
               <h1 className="text-3xl md:text-4xl font-bold dark:text-white ml-3 mr-3 bg-gradient-to-r from-green-500 to-yellow-500 bg-clip-text text-transparent">
-                {t.kidsGamesTitle}
+                {/* --- Use new function syntax with namespace --- */}
+                {t('kidsGamesTitle', { ns: 'games' })}
               </h1>
             </div>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              {t.kidsGamesDesc}
+              {/* --- Use new function syntax with namespace --- */}
+              {t('kidsGamesDesc', { ns: 'games' })}
             </p>
           </div>
 
           {/* Game Cards Grid with kid-friendly styling */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             {kidsGames.map((game) => {
-              // normalize features per game (safe for TS)
-              const rawFeatures = i18n.t(game.featuresKey as string, { returnObjects: true });
-              const features = normalizeToStringArray(rawFeatures);
+              // --- Directly fetch the features array from the 'games' namespace ---
+              const features = t(game.featuresKey, { ns: 'games', returnObjects: true }) as string[];
 
               return (
                 <Card
@@ -89,26 +90,30 @@ const KidsGameSelector: React.FC = () => {
                     </div>
                     <div className="flex justify-between items-start mb-2">
                       <CardTitle className={`text-lg font-semibold flex-1 ${dir === 'rtl' ? 'text-right' : 'text-left'}`}>
-                        {t[game.titleKey as keyof typeof t]}
+                        {/* --- Use new function syntax with namespace --- */}
+                        {t(game.titleKey, { ns: 'games' })}
                       </CardTitle>
                       <Badge variant={game.status === 'available' ? 'default' : 'secondary'} className={game.status === 'available' ? 'bg-green-500 hover:bg-green-600' : 'bg-yellow-500 hover:bg-yellow-600 text-white'}>
-                        {t[game.status === 'available' ? 'available' : 'comingSoon']}
+                        {/* --- Use new function syntax (default ns is 'common') --- */}
+                        {t(game.status)}
                       </Badge>
                     </div>
                     <CardDescription className={`text-sm text-muted-foreground ${dir === 'rtl' ? 'text-right' : 'text-left'}`}>
-                      {t[game.descriptionKey as keyof typeof t]}
+                      {/* --- Use new function syntax with namespace --- */}
+                      {t(game.descriptionKey, { ns: 'games' })}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
                       <div>
                         <h4 className={`font-medium text-sm text-muted-foreground mb-2 ${dir === 'rtl' ? 'text-right' : ''}`}>
-                          {t.features}:
+                          {/* --- Use new function syntax (default ns is 'common') --- */}
+                          {t('features')}:
                         </h4>
                         <ul className={`text-xs text-muted-foreground space-y-2 ${dir === 'rtl' ? 'text-right' : ''}`}>
                           {features.map((feature, index) => (
                             <li key={index} className="flex items-center">
-                              <span className={`w-1.5 h-1.5 bg-primary rounded-full mt-1.5 ${dir === 'rtl' ? 'ml-3' : 'mr-3'}`}></span>
+                              <span className={`w-1.5 h-1.5 bg-green-500 rounded-full mt-1.5 ${dir === 'rtl' ? 'ml-3' : 'mr-3'}`}></span>
                               <span>{feature}</span>
                             </li>
                           ))}
@@ -119,7 +124,8 @@ const KidsGameSelector: React.FC = () => {
                         disabled={game.status !== 'available'}
                         variant={game.status === 'available' ? 'default' : 'secondary'}
                       >
-                        {game.status === 'available' ? t.playNow : t.comingSoon}
+                        {/* --- Use new function syntax (default ns is 'common') --- */}
+                        {game.status === 'available' ? t('playNow') : t('comingSoon')}
                         {game.status !== 'available' && <Lock className="w-4 h-4 ml-2" />}
                       </Button>
                     </div>
@@ -130,7 +136,8 @@ const KidsGameSelector: React.FC = () => {
           </div>
 
           <div className="text-center text-gray-500 dark:text-gray-400 text-sm mt-8">
-            <p>{t.moreGames}</p>
+            {/* --- Use new function syntax with namespace --- */}
+            <p>{t('moreGames', { ns: 'games' })}</p>
           </div>
         </div>
       </main>

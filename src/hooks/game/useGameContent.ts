@@ -10,8 +10,9 @@ import { useInstructions, type InstructionKey } from '@/hooks/useInstructions';
 import { useNotification } from '@/hooks/useNotification';
 
 export function useGameContent(gameId: InstructionKey) {
-  // 1. Get the main translation function `t` for general UI text (e.g., "Back", "Level").
-  const { t, i18n } = useTranslation();
+  // 1. Get all translation context: `t`, `i18n`, and `dir`.
+  // --- Destructure `dir` so it can be passed down. ---
+  const { t, i18n, dir } = useTranslation();
 
   // 2. Get the dedicated `tNotification` object for notification-specific text.
   const { tNotification } = useNotification();
@@ -31,8 +32,10 @@ export function useGameContent(gameId: InstructionKey) {
   // 5. Return a single, unified object with all content needed by the UI.
   return {
     t,
-    tNotification, // Pass down the dedicated notification translator
+    tNotification,
     i18n,
+    // --- Return `dir` as part of the content object. ---
+    dir,
     instructions,
   };
 }

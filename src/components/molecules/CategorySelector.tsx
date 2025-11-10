@@ -15,7 +15,7 @@ import type { GameCategory } from "@/types/game";
 /**
  * Data structure for a game category
  */
-interface CategoryData {
+export interface CategoryData { // Exporting for use in other components
   /** Unique identifier for the category */
   id: GameCategory;
   /** Icon to display for the category */
@@ -74,9 +74,9 @@ export function CategorySelector({
               </div>
             )}
             {/* Category icon */}
-            <div className="text-gray-700 dark:text-gray-300">{cat.icon}</div>
-            {/* Category label (translated) */}
-            <p className="mt-2 font-semibold text-sm sm:text-base">{t[cat.labelKey as keyof typeof t]}</p>
+            <div className="text-gray-700 dark:text-gray-300 flex justify-center">{cat.icon}</div>
+            {/* --- Use new function syntax with the correct namespace --- */}
+            <p className="mt-2 font-semibold text-sm sm:text-base">{t(cat.labelKey, { ns: 'selection' })}</p>
           </Card>
         );
       })}

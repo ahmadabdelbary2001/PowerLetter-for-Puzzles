@@ -1,20 +1,26 @@
 // src/hooks/useTranslation.ts
+/**
+ * @description A custom wrapper around the `react-i18next` hook.
+ * It synchronizes the i18next language state with the global application state
+ * from `useGameMode` and provides a powerful `t` function that can access
+ * any translation namespace.
+ */
 import { useEffect, useMemo } from 'react';
 import { useTranslation as useI18nextHook } from 'react-i18next';
 import { useGameMode } from '@/hooks/useGameMode';
 
-/**
- * useTranslation - wrapper around react-i18next hook
- * Keeps language synced with global state and supports t.key access
- */
+// --- Define all available namespaces for type safety ---
+const namespaces = ['common', 'games', 'landing', 'outside_the_story', 'selection', 'team', 'notification'] as const;
+
 export function useTranslation() {
   const { language: appLang } = useGameMode();
-  const { t: i18nT, i18n } = useI18nextHook();
+  
+  // --- Tell the hook to load all our namespaces ---
+  const { t, i18n } = useI18nextHook(namespaces);
 
   // Sync i18n language with app state
   useEffect(() => {
-    if (!appLang) return;
-    if (i18n.language !== appLang) {
+    if (appLang && i18n.language !== appLang) {
       i18n.changeLanguage(appLang).catch(() => {
         // ignore missing locale errors
       });
@@ -36,21 +42,10 @@ export function useTranslation() {
     [i18n, appLang]
   );
 
-  // Proxy: allow `t.back` → i18n.t('back')
-  const t = useMemo(() => {
-    const proxy = new Proxy(
-      {},
-      {
-        get: (_target, prop: string | symbol) => {
-          if (typeof prop !== 'string') return undefined;
-          return i18nT(prop);
-        },
-      }
-    );
-    return proxy as Record<string, string>;
-  }, [i18nT]);
-
-  return { t, dir, i18n, translate: i18nT };
+  // --- The proxy is no longer needed. We return the real `t` function. ---
+  // The real `t` function is more powerful and can handle namespaces.
+  // Example: t('myKey', { ns: 'games' })
+  return { t, dir, i18n };
 }
 
 export default useTranslation;

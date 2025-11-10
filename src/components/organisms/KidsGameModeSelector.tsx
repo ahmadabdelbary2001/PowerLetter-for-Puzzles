@@ -67,8 +67,8 @@ const KidsGameModeSelector: React.FC = () => {
       case 2:
         return (
           <>
-            <h2 className="text-2xl sm:text-3xl font-bold text-center mb-2">{t.selectCategory}</h2>
-            <p className="text-center text-muted-foreground mb-6">{t.selectCategoryHint}</p>
+            <h2 className="text-2xl sm:text-3xl font-bold text-center mb-2">{t('selectCategory', { ns: 'selection' })}</h2>
+            <p className="text-center text-muted-foreground mb-6">{t('selectCategoryHint', { ns: 'selection' })}</p>
             <CategorySelector
               // --- Create a mutable copy of the readonly array ---
               categories={[...KIDS_CATEGORIES]}
@@ -78,7 +78,7 @@ const KidsGameModeSelector: React.FC = () => {
             />
             <div className="flex justify-center mt-8">
               <Button onClick={handleContinueFromCategories} disabled={selectedCategories.length === 0}>
-                {t.continue} {dir === 'rtl' ? <ArrowLeft className="w-4 h-4 mr-2" /> : <ArrowRight className="w-4 h-4 ml-2" />}
+                {t('continue')} {dir === 'rtl' ? <ArrowLeft className="w-4 h-4 mr-2" /> : <ArrowRight className="w-4 h-4 ml-2" />}
               </Button>
             </div>
           </>

@@ -18,14 +18,15 @@ import { GameSelectionLayout } from '../templates/GameSelectionLayout';
 import { CATEGORIES_BY_GAME } from '@/config/gameCategories';
 
 const difficulties = [
-    { id: 'easy', labelKey: 'easy', color: 'bg-green-500' },
-    { id: 'medium', labelKey: 'medium', color: 'bg-yellow-500' },
-    { id: 'hard', labelKey: 'hard', color: 'bg-red-500' },
+    { id: 'easy' as const, labelKey: 'easy', color: 'bg-green-500' },
+    { id: 'medium' as const, labelKey: 'medium', color: 'bg-yellow-500' },
+    { id: 'hard' as const, labelKey: 'hard', color: 'bg-red-500' },
 ] as const;
 
 const GameModeSelector: React.FC = () => {
   const { gameMode, setGameMode, categories: selectedCategories, setCategories, setDifficulty } = useGameMode();
-  const { translate, i18n } = useTranslation();
+  // --- Destructure 't' instead of 'translate' ---
+  const { t, i18n } = useTranslation();
   const dir = i18n.dir();
   const navigate = useNavigate();
   const { gameType } = useParams<{ gameType: string }>();
@@ -107,19 +108,20 @@ const GameModeSelector: React.FC = () => {
       case 2:
         return (
           <>
-            <h2 className="text-2xl sm:text-3xl font-bold text-center mb-2">{translate("selectCategory")}</h2>
+            {/* --- Use t() with namespace --- */}
+            <h2 className="text-2xl sm:text-3xl font-bold text-center mb-2">{t("selectCategory", { ns: 'selection' })}</h2>
             <p className="text-sm text-muted-foreground mb-2">
-              {isOutsideStory ? translate("selectSingleCategoryHint") : translate("selectCategoryHint")}
+              {isOutsideStory ? t("selectSingleCategoryHint", { ns: 'selection' }) : t("selectCategoryHint", { ns: 'selection' })}
             </p>
             <CategorySelector
-              // --- Create a mutable copy of the readonly array ---
               categories={gameType ? [...(CATEGORIES_BY_GAME[gameType] || CATEGORIES_BY_GAME.default)] : [...CATEGORIES_BY_GAME.default]}
               selectedCategories={selectedCategories}
               onCategoryToggle={handleCategoryToggle}
             />
             <div className="flex justify-center mt-8">
               <Button onClick={handleContinueFromCategories} disabled={selectedCategories.length === 0}>
-                {translate("continue")} {dir === 'rtl' ? <ArrowLeft className="w-4 h-4 mr-2" /> : <ArrowRight className="w-4 h-4 ml-2" />}
+                {/* --- Use t() (default ns is 'common') --- */}
+                {t("continue")} {dir === 'rtl' ? <ArrowLeft className="w-4 h-4 mr-2" /> : <ArrowRight className="w-4 h-4 ml-2" />}
               </Button>
             </div>
           </>
@@ -127,7 +129,8 @@ const GameModeSelector: React.FC = () => {
       case 3:
         return (
           <>
-            <h2 className="text-2xl sm:text-3xl font-bold text-center mb-6">{translate("selectDifficulty")}</h2>
+            {/* --- Use t() with namespace --- */}
+            <h2 className="text-2xl sm:text-3xl font-bold text-center mb-6">{t("selectDifficulty", { ns: 'selection' })}</h2>
             <DifficultySelector difficulties={[...difficulties]} onDifficultySelect={handleDifficultySelect} />
           </>
         );

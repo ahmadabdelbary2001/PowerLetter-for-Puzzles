@@ -40,32 +40,32 @@ export const InGameSettings: React.FC = () => {
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="icon">
           <Settings className="h-5 w-5" />
-          <span className="sr-only">{t.gameSettings ?? 'Game Settings'}</span>
+          <span className="sr-only">{t('gameSettings', { ns: 'selection' })}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuLabel>{t.gameSettings ?? 'Game Settings'}</DropdownMenuLabel>
+        <DropdownMenuLabel>{t('gameSettings', { ns: 'selection' })}</DropdownMenuLabel>
         <DropdownMenuSeparator />
 
         {/* This now navigates to the dedicated settings route for teams */}
         {showChangeTeams && (
           <DropdownMenuItem onSelect={() => navigate(`/settings/teams/${gameType}`)}>
             <Users className="mr-2 h-4 w-4" />
-            <span>{t.changeTeams ?? 'Change Teams'}</span>
+            <span>{t('changeTeams', { ns: 'selection' })}</span>
           </DropdownMenuItem>
         )}
 
         {showChangeDifficulty && (
           <DropdownMenuItem onSelect={() => navigate(`/settings/difficulty/${gameType}`)}>
             <BarChart3 className="mr-2 h-4 w-4" />
-            <span>{t.changeLevel ?? 'Change Level'}</span>
+            <span>{t('changeLevel', { ns: 'selection' })}</span>
           </DropdownMenuItem>
         )}
 
         {showChangeCategory && (
           <DropdownMenuItem onSelect={() => navigate(`/settings/category/${gameType}`)}>
             <Layers className="mr-2 h-4 w-4" />
-            <span>{t.changeCategory ?? 'Change Category'}</span>
+            <span>{t('changeCategory', { ns: 'selection' })}</span>
           </DropdownMenuItem>
         )}
       </DropdownMenuContent>

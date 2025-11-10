@@ -17,7 +17,7 @@ import Footer from '@/components/organisms/Footer';
 import { useNavigate } from 'react-router-dom';
 import { GAME_REGISTRY, type GameConfig } from '@/games/GameRegistry';
 import { cn } from '@/lib/utils';
-import { normalizeToStringArray } from '@/lib/i18nUtils';
+// --- The i18nUtils helper is no longer needed. ---
 
 /**
  * The GameTypeSelector component renders a list of available games.
@@ -55,19 +55,20 @@ const GameTypeSelector: React.FC = () => {
           {/* Page Header */}
           <div className="text-center mb-8 md:mb-12">
             <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-4">
-              {t.selectGame}
+              {/* --- Use new function syntax with namespace --- */}
+              {t('selectGame', { ns: 'games' })}
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              {t.selectGameDesc}
+              {/* --- Use new function syntax with namespace --- */}
+              {t('selectGameDesc', { ns: 'games' })}
             </p>
           </div>
 
           {/* Game Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             {adultGames.map((game) => {
-              // normalize features per game (safe for TS)
-              const rawFeatures = i18n.t(game.featuresKey as string, { returnObjects: true });
-              const features = normalizeToStringArray(rawFeatures);
+              // --- Directly fetch the features array from the 'games' namespace ---
+              const features = t(game.featuresKey, { ns: 'games', returnObjects: true }) as string[];
 
               return (
                 <Card
@@ -89,21 +90,25 @@ const GameTypeSelector: React.FC = () => {
                     </div>
                     <div className="flex justify-between items-start mb-2">
                       <CardTitle className={`text-lg font-semibold flex-1 ${dir === 'rtl' ? 'text-right' : 'text-left'}`}>
-                        {t[game.titleKey as keyof typeof t]}
+                        {/* --- Use new function syntax with namespace --- */}
+                        {t(game.titleKey, { ns: 'games' })}
                       </CardTitle>
                       <Badge variant={game.status === 'available' ? 'default' : 'secondary'} className={game.status === 'available' ? 'bg-green-500 hover:bg-green-600' : 'bg-yellow-500 hover:bg-yellow-600 text-white'}>
-                        {t[game.status === 'available' ? 'available' : 'comingSoon']}
+                        {/* --- Use new function syntax (default ns is 'common') --- */}
+                        {t(game.status)}
                       </Badge>
                     </div>
                     <CardDescription className={`text-sm text-muted-foreground ${dir === 'rtl' ? 'text-right' : 'text-left'}`}>
-                      {t[game.descriptionKey as keyof typeof t]}
+                      {/* --- Use new function syntax with namespace --- */}
+                      {t(game.descriptionKey, { ns: 'games' })}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
                       <div>
                         <h4 className={`font-medium text-sm text-muted-foreground mb-2 ${dir === 'rtl' ? 'text-right' : ''}`}>
-                          {t.features}:
+                          {/* --- Use new function syntax (default ns is 'common') --- */}
+                          {t('features')}:
                         </h4>
                         <ul className={`text-xs text-muted-foreground space-y-2 ${dir === 'rtl' ? 'text-right' : ''}`}>
                           {features.map((feature, index) => (
@@ -122,12 +127,14 @@ const GameTypeSelector: React.FC = () => {
                         {game.status === 'available' ? (
                           <>
                             <Search className="w-4 h-4 mr-2" />
-                            {t.playNow}
+                            {/* --- Use new function syntax (default ns is 'common') --- */}
+                            {t('playNow')}
                           </>
                         ) : (
                           <>
                             <Lock className="w-4 h-4 mr-2" />
-                            {t.comingSoon}
+                            {/* --- Use new function syntax (default ns is 'common') --- */}
+                            {t('comingSoon')}
                           </>
                         )}
                       </Button>
@@ -138,7 +145,8 @@ const GameTypeSelector: React.FC = () => {
             })}
           </div>
           <div className="text-center text-gray-500 dark:text-gray-400 text-sm mt-8">
-            <p>{t.moreGames}</p>
+            {/* --- Use new function syntax with namespace --- */}
+            <p>{t('moreGames', { ns: 'games' })}</p>
           </div>
         </div>
       </main>

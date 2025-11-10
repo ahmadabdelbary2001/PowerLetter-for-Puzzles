@@ -28,7 +28,7 @@ interface DifficultyOption {
  */
 interface DifficultySelectorProps {
   /** Array of available difficulty options */
-  difficulties: DifficultyOption[];
+  difficulties: readonly DifficultyOption[]; // Use readonly for better type safety with `as const`
   /** Callback function when a difficulty is selected */
   onDifficultySelect: (difficulty: Difficulty) => void;
   /** Additional CSS classes for custom styling */
@@ -60,8 +60,8 @@ export function DifficultySelector({
             diff.color
           )}
         >
-          {/* Translated difficulty label */}
-          {t[diff.labelKey as keyof typeof t]}
+          {/* --- Use new function syntax for translation --- */}
+          {t(diff.labelKey)}
         </Button>
       ))}
     </div>

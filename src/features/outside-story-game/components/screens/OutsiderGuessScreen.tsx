@@ -42,7 +42,7 @@ const OutsiderGuessScreen: React.FC<Props> = ({ game }) => {
 
   return (
     <div className="text-center max-w-md">
-      <h2 className="text-3xl font-bold mb-4">{t.outsiderGuessTitle?.replace('{player}', outsider.name) ?? `${outsider.name}, what's the story?`}</h2>
+      <h2 className="text-3xl font-bold mb-4">{t('outsiderGuessTitle', { ns: 'outside_the_story' })?.replace('{player}', outsider.name)}</h2>
       <div className="grid grid-cols-2 gap-3">
         {currentRound.words.map(word => {
           const isSelected = selectedGuess === word;

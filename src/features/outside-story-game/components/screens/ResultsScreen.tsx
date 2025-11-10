@@ -11,9 +11,9 @@ const ResultsScreen: React.FC<Props> = ({ game }) => {
   if (!currentRound || !currentRound.roundResult) {
     return (
       <div className="text-center">
-        <p>{t.loadingResults ?? 'Loading results...'}</p>
+        <p>{t('loadingResults', { ns: 'outside_the_story' })}</p>
         {/* --- Go to round_end, not a non-existent state --- */}
-        <Button onClick={() => setGameState('round_end')} className="mt-4">{t.continue ?? 'Continue'}</Button>
+        <Button onClick={() => setGameState('round_end')} className="mt-4">{t('continue')}</Button>
       </div>
     );
   }
@@ -23,18 +23,18 @@ const ResultsScreen: React.FC<Props> = ({ game }) => {
   let outcomeMessage = '';
   if (votedPlayerId === currentRound.outsiderId) {
     if (outsiderGuessedCorrectly) {
-      outcomeMessage = t.outsiderCaughtButGuessed?.replace('{secret}', currentRound.secret) ?? `You were caught! But you guessed the story (${currentRound.secret}), well done!`;
+      outcomeMessage = t('outsiderCaughtButGuessed', { ns: 'outside_the_story' })?.replace('{secret}', currentRound.secret);
     } else {
-      outcomeMessage = t.insidersWin?.replace('{secret}', currentRound.secret) ?? `The Insiders win! The story was (${currentRound.secret}).`;
+      outcomeMessage = t('insidersWin', { ns: 'outside_the_story' })?.replace('{secret}', currentRound.secret);
     }
   } else {
-    outcomeMessage = t.outsiderWins?.replace('{player}', outsider?.name ?? '') ?? `${outsider?.name} fooled you all! They were the Outsider.`;
+    outcomeMessage = t('outsiderWins', { ns: 'outside_the_story' })?.replace('{player}', outsider?.name ?? '');
   }
 
   // Main results screen UI
   return (
     <div className="text-center max-w-md">
-      <h2 className="text-4xl font-bold mb-6">{t.results ?? 'Results'}</h2>
+      <h2 className="text-4xl font-bold mb-6">{t('results', { ns: 'outside_the_story' })}</h2>
       
       <div className="space-y-2 my-4 w-full text-2xl">
         {players.map(p => (
@@ -49,7 +49,7 @@ const ResultsScreen: React.FC<Props> = ({ game }) => {
 
       {/* --- Go to round_end on next --- */}
       <Button onClick={() => setGameState('round_end')} className="mt-8 w-full">
-        {t.next ?? 'Next'}
+        {t('next')}
       </Button>
     </div>
   );

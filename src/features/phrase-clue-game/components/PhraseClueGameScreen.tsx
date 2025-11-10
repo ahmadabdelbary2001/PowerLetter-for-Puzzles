@@ -49,7 +49,8 @@ const PhraseClueGameScreen: React.FC = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <p>{t.loading}...</p>
+        {/* --- Use new function syntax --- */}
+        <p>{t('loading')}...</p>
       </div>
     );
   }
@@ -58,8 +59,9 @@ const PhraseClueGameScreen: React.FC = () => {
   if (!currentLevel || currentLevel.solution === "ERROR") {
     return (
       <div className="flex flex-col justify-center items-center h-screen gap-4 p-4 text-center">
-        <p className="text-xl font-semibold">{t.noLevelsFound}</p>
-        <Button onClick={handleBack}>{t.back}</Button>
+        {/* --- Use new function syntax --- */}
+        <p className="text-xl font-semibold">{t('noLevelsFound')}</p>
+        <Button onClick={handleBack}>{t('back')}</Button>
       </div>
     );
   }
@@ -91,7 +93,8 @@ const PhraseClueGameScreen: React.FC = () => {
       wrongAnswersContent={
         wrongAnswers.length > 0 && (
           <div className="mt-2">
-            <p className="text-sm text-muted-foreground mb-1">{t.wrongAttempts}:</p>
+            {/* --- Use new function syntax --- */}
+            <p className="text-sm text-muted-foreground mb-1">{t('wrongAttempts')}:</p>
             <div className="flex flex-wrap gap-1 justify-center">
               {wrongAnswers.map((answer, index) => <Badge key={index} variant="destructive">{answer}</Badge>)}
             </div>
@@ -117,15 +120,16 @@ const PhraseClueGameScreen: React.FC = () => {
           gameState={gameState.gameState}
           gameMode={gameMode}
           isKidsMode={false}
+          // --- Pass translated strings correctly ---
           labels={{
-            remove: t.remove,
-            clear: t.clear,
-            check: t.check,
-            hint: t.hint,
-            showSolution: t.showSolution,
-            reset: t.reset,
-            prev: t.prev,
-            next: t.next,
+            remove: t('remove'),
+            clear: t('clear'),
+            check: t('check'),
+            hint: t('hint'),
+            showSolution: t('showSolution'),
+            reset: t('reset'),
+            prev: t('prev'),
+            next: t('next'),
           }}
         />
       }

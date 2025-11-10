@@ -27,13 +27,13 @@ const RoleRevealHandoffScreen: React.FC<Props> = ({ game }) => {
     <div className="text-center max-w-md">
       <h2 className="text-3xl font-bold mb-4">{player.name}</h2>
       <p className="text-xl">
-        {t.givePhoneToPlayer?.replace('{player}', player.name) ?? `Give the phone to ${player.name}`}
+        {t('givePhoneToPlayer', { ns: 'outside_the_story' })?.replace('{player}', player.name)}
       </p>
       <p className="text-xl mt-2">
-        {t.pressNextToSeeRole ?? 'Press next to see if you are in or out of the story. Don\'t let anyone else see the screen!'}
+        {t('pressNextToSeeRole', { ns: 'outside_the_story' })}
       </p>
       <Button onClick={() => setGameState('role_reveal_player')} className="mt-8 w-full">
-        {t.next ?? 'Next'}
+        {t('next')}
       </Button>
     </div>
   );

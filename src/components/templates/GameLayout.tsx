@@ -72,7 +72,8 @@ export const GameLayout: React.FC<GameLayoutProps> = ({
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pt-12">
             <div className="flex items-center gap-2">
               <Button variant="ghost" onClick={onBack} className="flex items-center gap-2">
-                {dir === "rtl" ? <ArrowRight /> : <ArrowLeft />} {t.back}
+                {/* --- Use new function syntax (default ns is 'common') --- */}
+                {dir === "rtl" ? <ArrowRight /> : <ArrowLeft />} {t('back')}
               </Button>
               {instructions && <GameInstructions instructions={instructions} />}
             </div>
@@ -89,11 +90,13 @@ export const GameLayout: React.FC<GameLayoutProps> = ({
               <div className="flex justify-between items-center">
                 {difficulty && (
                   <Badge variant={difficulty === 'easy' ? 'default' : difficulty === 'medium' ? 'secondary' : 'destructive'}>
-                    {t[difficulty]}
+                    {/* --- Use new function syntax (default ns is 'common') --- */}
+                    {t(difficulty)}
                   </Badge>
                 )}
                 <CardTitle className="text-center flex-1 px-4">{title}</CardTitle>
-                <Badge variant="secondary">{t.level} {levelIndex + 1}</Badge>
+                {/* --- Use new function syntax (default ns is 'common') --- */}
+                <Badge variant="secondary">{t('level')} {levelIndex + 1}</Badge>
               </div>
             </CardHeader>
             <CardContent className={cn(layoutType === 'image' ? 'space-y-4' : 'space-y-6')}>

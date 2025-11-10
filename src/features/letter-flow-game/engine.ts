@@ -21,7 +21,7 @@ export interface BoardCell {
 }
 
 /**
- * --- FIX: This interface is now correctly exported. ---
+ * --- This interface is now correctly exported. ---
  * Represents a path that forms a word on the game board
  */
 export interface WordPath {

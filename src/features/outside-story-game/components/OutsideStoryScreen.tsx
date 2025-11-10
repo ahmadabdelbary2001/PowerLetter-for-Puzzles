@@ -33,9 +33,9 @@ const OutsideStoryScreen: React.FC = () => {
   if (loadingLevels || !currentRound) {
     return (
       <div className="flex flex-col justify-center items-center h-screen gap-4 p-4 text-center">
-        <p className="text-xl font-semibold">{t.loading ?? 'Loading...'}</p>
+        <p className="text-xl font-semibold">{t('loading')}</p>
         {/* The back button is now available even during loading. */}
-        <Button onClick={handleBack}>{t.back}</Button>
+        <Button onClick={handleBack}>{t('back')}</Button>
       </div>
     );
   }
@@ -67,7 +67,7 @@ const OutsideStoryScreen: React.FC = () => {
   return (
     <OutsideStoryLayout
       // Pass standard layout props
-      title={t.outsideTheStoryTitle}
+      title={t('outsideTheStoryTitle', { ns: 'games' })}
       onBack={handleBack}
       instructions={instructions}
       notification={notification}

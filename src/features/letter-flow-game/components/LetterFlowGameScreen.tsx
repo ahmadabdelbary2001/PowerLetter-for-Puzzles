@@ -45,13 +45,15 @@ const LetterFlowGameScreen: React.FC = () => {
   } = useLetterFlowGame();
 
   if (loading) {
-    return <div className="flex justify-center items-center h-screen"><p>{t.loading}...</p></div>;
+    // --- Use new function syntax (default ns is 'common') ---
+    return <div className="flex justify-center items-center h-screen"><p>{t('loading')}...</p></div>;
   }
   if (!currentLevel) {
     return (
       <div className="flex flex-col items-center justify-center h-screen gap-4 p-4 text-center">
-        <p className="text-xl font-semibold">{t.noLevelsFound}</p>
-        <Button onClick={handleBack}>{t.back}</Button>
+        {/* --- Use new function syntax (default ns is 'common') --- */}
+        <p className="text-xl font-semibold">{t('noLevelsFound')}</p>
+        <Button onClick={handleBack}>{t('back')}</Button>
       </div>
     );
   }
@@ -60,7 +62,8 @@ const LetterFlowGameScreen: React.FC = () => {
 
   return (
     <FlowGameLayout
-      title={t.letterFlowTitle ?? currentLevel.id}
+      // --- Use new function syntax with namespace ---
+      title={t('letterFlowTitle', { ns: 'games' }) ?? currentLevel.id}
       levelIndex={currentLevelIndex ?? 0}
       onBack={handleBack}
       difficulty={currentLevel.difficulty}
@@ -79,7 +82,8 @@ const LetterFlowGameScreen: React.FC = () => {
         />
       }
       foundWordsContent={
-        foundWords.length > 0 ? <FoundWords foundWords={foundWords} t={{ selected: t.selected }} /> : null
+        // --- Pass the translated string correctly ---
+        foundWords.length > 0 ? <FoundWords foundWords={foundWords} t={{ selected: t('selected') }} /> : null
       }
       gameControlsContent={
         <GameControls
@@ -96,9 +100,10 @@ const LetterFlowGameScreen: React.FC = () => {
           gameState={gameState}
           gameMode={gameModeState.gameMode}
           isKidsMode={false}
+          // --- Pass translated strings correctly ---
           labels={{
-            remove: t.undo, clear: t.clear, check: t.check, hint: t.hint,
-            showSolution: t.showSolution, reset: t.reset, prev: t.prev, next: t.next,
+            remove: t('undo'), clear: t('clear'), check: t('check'), hint: t('hint'),
+            showSolution: t('showSolution'), reset: t('reset'), prev: t('prev'), next: t('next'),
           }}
           showOnly={['remove', 'hint', 'reset', 'next']}
         />
@@ -107,7 +112,8 @@ const LetterFlowGameScreen: React.FC = () => {
         <GameProgress
           foundWords={foundWords}
           totalWords={totalWords}
-          t={{ selected: t.selected, of: t.of }}
+          // --- Pass translated strings correctly ---
+          t={{ selected: t('selected'), of: t('of') }}
         />
       }
       children={null}

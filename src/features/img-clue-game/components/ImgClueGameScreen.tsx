@@ -50,7 +50,7 @@ const ImgClueGameScreen: React.FC = () => {
 
   // 1. Handle the initial loading state.
   if (loading) {
-    return <div className="flex justify-center items-center h-screen"><p>{t.loading}...</p></div>;
+    return <div className="flex justify-center items-center h-screen"><p>{t('loading')}...</p></div>;
   }
 
   // 2. Handle the case where loading is finished but no valid level was found.
@@ -59,8 +59,8 @@ const ImgClueGameScreen: React.FC = () => {
   if (!currentLevel || currentLevel.solution === "ERROR") {
     return (
       <div className="flex flex-col justify-center items-center h-screen gap-4 p-4 text-center">
-        <p className="text-xl font-semibold">{t.noLevelsFound}</p>
-        <Button onClick={handleBack}>{t.back}</Button>
+        <p className="text-xl font-semibold">{t('noLevelsFound')}</p>
+        <Button onClick={handleBack}>{t('back')}</Button>
       </div>
     );
   }
@@ -71,7 +71,7 @@ const ImgClueGameScreen: React.FC = () => {
   // If we reach this point, we know `currentLevel` is a valid object.
   return (
     <ClueGameLayout
-      title={t.imgClueTitle}
+      title={t('imgClueTitle', { ns: 'games' })}
       levelIndex={currentLevelIndex}
       onBack={handleBack}
       instructions={instructions}
@@ -104,7 +104,7 @@ const ImgClueGameScreen: React.FC = () => {
       wrongAnswersContent={
         wrongAnswers.length > 0 && (
           <div className="mt-2">
-            <p className="text-sm text-muted-foreground mb-1">{t.wrongAttempts}:</p>
+            <p className="text-sm text-muted-foreground mb-1">{t('wrongAttempts')}:</p>
             <div className="flex flex-wrap gap-1 justify-center">
               {wrongAnswers.map((answer, index) => <Badge key={index} variant="destructive">{answer}</Badge>)}
             </div>
@@ -115,7 +115,7 @@ const ImgClueGameScreen: React.FC = () => {
         // This logic correctly shows the "Next" button or the game controls.
         gameState.gameState === "won" && gameMode !== "competitive" ? (
           <Button onClick={nextLevel} className="w-full bg-green-600 hover:bg-green-700 text-lg py-6">
-            {t.next}{" "}
+            {t('next')}{" "}
             {dir === "rtl" ? <ArrowLeft className="ml-2" /> : <ArrowRight className="ml-2" />}
           </Button>
         ) : (
@@ -134,7 +134,7 @@ const ImgClueGameScreen: React.FC = () => {
             gameState={gameState.gameState}
             gameMode={gameMode}
             isKidsMode={true}
-            labels={{ remove: t.remove, clear: t.clear, check: t.check, hint: t.hint, showSolution: t.showSolution, reset: t.reset, prev: t.prev, next: t.next }}
+            labels={{ remove: t('remove'), clear: t('clear'), check: t('check'), hint: t('hint'), showSolution: t('showSolution'), reset: t('reset'), prev: t('prev'), next: t('next') }}
           />
         )
       }

@@ -1,0 +1,15 @@
+{
+  "teamSetup": "Team Setup",
+  "teamSetupDesc": "Configure teams for competitive play",
+  "numTeams": "Number of Teams",
+  "numTeamsDesc": "Choose the number of teams (2-8 teams)",
+  "teamNames": "Team Names",
+  "team": "Team",
+  "hintsPerTeam": "Hints per Team",
+  "hintsPerTeamDesc": "Set how many hints each team can use for the entire game (shared across levels).",
+  "hints": "Hints",
+  "noHintsLeft": "No hints left for your team!",
+  "scoreboard": "Scoreboard",
+  "currentTurn": "Current Turn",
+  "points": "Points"
+}

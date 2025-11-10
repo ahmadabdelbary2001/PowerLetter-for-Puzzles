@@ -1,0 +1,48 @@
+{
+  "selectMode": "اختر نمط اللعب",
+  "selectModeDesc": "كيف تريد أن تلعب اليوم؟",
+  "singlePlayer": "لاعب واحد",
+  "singlePlayerDesc": "العب بمفردك وتحدى نفسك",
+  "competitive": "تنافسي",
+  "competitiveDesc": "العب مع الأصدقاء في فرق",
+  "singleFeatures": [
+    "تقدم شخصي",
+    "تحديات متدرجة",
+    "نظام تلميحات"
+  ],
+  "competitiveFeatures": [
+    "فرق متعددة",
+    "نظام نقاط",
+    "دوران الأدوار"
+  ],
+
+  "selectCategory": "اختر فئة",
+  "selectDifficulty": "اختر الصعوبة",
+  "selectCategoryHint": "يمكنك اختيار موضوع واحد أو أكثر، أو اختيار 'عام' لتشمل جميع المواضيع.",
+  "selectSingleCategoryHint": "اختر موضوعًا واحدًا فقط للبدء.",
+  "animals": "حيوانات",
+  "science": "علوم",
+  "geography": "جغرافيا",
+  "generalKnowledge": "منوع",
+  "general": "منوع",
+  "fruits-and-vegetables": "فواكه وخضار",
+  "anime": "أنمي",
+  "cars": "سيارات",
+  "cartoons": "رسوم متحركة",
+  "characters": "شخصيات",
+  "clothes": "ملابس",
+  "drinks": "مشروبات",
+  "foods": "أطعمة",
+  "football": "كرة قدم",
+  "gamers": "لاعبين",
+  "k-pop": "كيبوب",
+  "series": "مسلسلات",
+  "spy": "جاسوسية",
+  "sweets": "حلويات",
+  "shapes": "أشكال",
+
+  "gameSettings": "إعدادات اللعبة",
+  "changeTeams": "تغيير الفرق",
+  "changeLevel": "تغيير المستوى",
+  "changeCategory": "تغيير الفئة"
+}

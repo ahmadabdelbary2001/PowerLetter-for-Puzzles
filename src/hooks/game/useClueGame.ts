@@ -74,7 +74,7 @@ export function useClueGame<T extends GameLevel & { solution: string; difficulty
           nextTurn('lose');
           setTimeout(() => {
             dispatch({ type: 'SHOW', solution, letters: gameState.letters });
-            // --- FIX: Use the 'solutionWas' key and pass the solution for interpolation. ---
+            // --- Use the 'solutionWas' key and pass the solution for interpolation. ---
             setNotification({ messageKey: 'solutionWas', options: { solution }, type: 'error' });
             setTimeout(() => nextLevel(), 2500);
           }, 2000);

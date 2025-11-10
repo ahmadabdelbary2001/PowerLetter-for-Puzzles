@@ -9,7 +9,7 @@ import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 import { useTranslation } from "../hooks/useTranslation";
 import { useNavigate } from "react-router-dom";
-import { normalizeToStringArray } from '@/lib/i18nUtils';
+// --- The i18nUtils helper is no longer needed for this component. ---
 
 /**
  * The HeroSection component serves as the "above the fold" content for the homepage.
@@ -23,10 +23,10 @@ export default function HeroSection(): JSX.Element {
   const dir = i18n.dir(); // 'ltr' or 'rtl' for the active language
   const navigate = useNavigate();
 
-  // Request i18next to return objects/arrays for this key (safe if the resource is an array/object)
-  // then normalize into readonly string[]
-  const rawHeroFeatures = i18n.t('herofeatures', { returnObjects: true });
-  const heroFeatures = normalizeToStringArray(rawHeroFeatures);
+  // --- Directly fetch the array from the correct namespace. ---
+  // We specify the 'landing' namespace and tell t() to return the array object.
+  // We can safely cast it as we control the JSON file structure.
+  const heroFeatures = t('herofeatures', { ns: 'landing', returnObjects: true }) as string[];
 
   /**
    * Handles the click event for the "Start Playing" button.
@@ -49,26 +49,30 @@ export default function HeroSection(): JSX.Element {
           <div className="space-y-6">
             <div className="space-y-3">
               <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
-                🚀 {t.betaStatus}
+                🚀 {t('betaStatus', { ns: 'landing' })}
               </Badge>
 
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
                 <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">PowerLetter</span>
-                <br />
-                <span className="text-foreground">{t.wordPuzzles}</span>
+
+                <br></br>
+
+                <span className="text-foreground">{t('wordPuzzles', { ns: 'landing' })}</span>
               </h1>
 
               <p className="text-base sm:text-lg md:text-xl text-muted-foreground leading-relaxed max-w-lg">
-                {t.heroDescription}
+                {t('heroDescription', { ns: 'landing' })}
               </p>
             </div>
 
             {/* Key Features List */}
             <div className="space-y-2">
+              {/* --- The display logic is simplified. --- */}
+              {/* The feature string is now displayed directly without complex splitting. */}
               {heroFeatures.map((feature: string, index: number) => (
-                <div key={index} className="flex flex-wrap items-baseline gap-3 text-foreground">
-                  <span className="text-lg font-semibold">{feature.split(" ")[0]}</span>
-                  <span className="text-sm text-muted-foreground">{feature.substring(feature.indexOf(" ") + 1)}</span>
+                <div key={index} className="flex items-center gap-2 text-foreground">
+                  <span className="text-primary">✓</span>
+                  <span>{feature}</span>
                 </div>
               ))}
             </div>
@@ -80,14 +84,14 @@ export default function HeroSection(): JSX.Element {
                 size="lg"
                 className="w-full sm:w-auto bg-gradient-to-r from-primary to-primary-light hover:from-primary-dark hover:to-primary text-lg px-6 py-3 shadow-lg hover:shadow-xl transition-all duration-300"
               >
-                🎮 {t.startPlaying}
+                🎮 {t('startPlaying', { ns: 'landing' })}
               </Button>
               <Button
                 variant="outline"
                 size="lg"
                 className="w-full sm:w-auto text-lg px-6 py-3 border-primary/30 hover:bg-primary/10"
               >
-                📚 {t.howToPlay}
+                📚 {t('howToPlay', { ns: 'landing' })}
               </Button>
             </div>
 
@@ -95,15 +99,15 @@ export default function HeroSection(): JSX.Element {
             <div className="flex flex-wrap gap-6 pt-4">
               <div className="min-w-[90px] text-center">
                 <div className="text-2xl sm:text-3xl font-bold text-primary">5+</div>
-                <div className="text-sm text-muted-foreground">{t.gameTypes}</div>
+                <div className="text-sm text-muted-foreground">{t('gameTypes', { ns: 'landing' })}</div>
               </div>
               <div className="min-w-[90px] text-center">
                 <div className="text-2xl sm:text-3xl font-bold text-secondary">2</div>
-                <div className="text-sm text-muted-foreground">{t.languages}</div>
+                <div className="text-sm text-muted-foreground">{t('languages', { ns: 'landing' })}</div>
               </div>
               <div className="min-w-[90px] text-center">
                 <div className="text-2xl sm:text-3xl font-bold text-warning">∞</div>
-                <div className="text-sm text-muted-foreground">{t.learning}</div>
+                <div className="text-sm text-muted-foreground">{t('learning', { ns: 'landing' })}</div>
               </div>
             </div>
           </div>

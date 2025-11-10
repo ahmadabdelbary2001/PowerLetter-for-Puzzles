@@ -16,7 +16,7 @@ const VotingScreen: React.FC<Props> = ({ game }) => {
   // This guard clause prevents the out-of-bounds error.
   if (!currentVoter) {
     finishVoting();
-    return <p>{t.loading ?? 'Loading...'}</p>; // Show loading while results are calculated
+    return <p>{t('loading')}</p>; // Show loading while results are calculated
   }
 
   // Logic for handling votes and continuing
@@ -36,14 +36,14 @@ const VotingScreen: React.FC<Props> = ({ game }) => {
   if (voteCasted) {
     const nextVoterPlayer = players[votingPlayerIndex + 1];
     const message = nextVoterPlayer
-      ? t.passDeviceAndVote?.replace('{player}', nextVoterPlayer.name) ?? `Pass the device to ${nextVoterPlayer.name} to vote.`
-      : t.submitVote ?? 'Submit Vote';
+      ? t('passDeviceAndVote', { ns: 'outside_the_story' })?.replace('{player}', nextVoterPlayer.name)
+      : t('submitVote', { ns: 'outside_the_story' });
 
     return (
       <div className="text-center max-w-md">
         <h2 className="text-3xl font-bold mb-4">{message}</h2>
         <Button onClick={handleContinue} className="mt-8 w-full">
-          {t.next ?? 'Next'}
+          {t('next')}
         </Button>
       </div>
     );
@@ -53,7 +53,7 @@ const VotingScreen: React.FC<Props> = ({ game }) => {
   return (
     <div className="text-center max-w-md">
       <h2 className="text-3xl font-bold mb-4">
-        {t.yourTurnToVote?.replace('{player}', currentVoter.name) ?? `${currentVoter.name}, it's your turn to vote.`}
+        {t('yourTurnToVote', { ns: 'outside_the_story' })?.replace('{player}', currentVoter.name)}
       </h2>
       <div className="flex flex-col gap-3 w-full">
         {voteOptions.map(p => (

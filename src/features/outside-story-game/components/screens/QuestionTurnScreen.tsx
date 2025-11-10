@@ -11,7 +11,7 @@ const QuestionTurnScreen: React.FC<Props> = ({ game }) => {
 
   // --- Guard clause to prevent rendering before pairs are ready ---
   if (!questionPairs || questionPairs.length === 0 || currentPlayerTurn >= questionPairs.length) {
-    return <p>{t.loading ?? 'Loading...'}</p>;
+    return <p>{t('loading')}</p>;
   }
 
   // --- Get the current pair from the stable array ---
@@ -29,16 +29,16 @@ const QuestionTurnScreen: React.FC<Props> = ({ game }) => {
 
   return (
     <div className="text-center max-w-md">
-      <h2 className="text-3xl font-bold mb-4">{t.questionTime ?? 'Question Time'}</h2>
+      <h2 className="text-3xl font-bold mb-4">{t('questionTime', { ns: 'outside_the_story' })}</h2>
       <p className="text-xl">
         {/* This message will now appear correctly for all players */}
-        {t.askerToAskeeInstruction
+        {t('askerToAskeeInstruction', { ns: 'outside_the_story' })
           ?.replace('{asker}', asker.name)
           .replace('{askee}', askee.name) 
-          ?? `${asker.name}, ask ${askee.name} a question about the topic! Choose your question carefully so the Outsider doesn't figure it out.`}
+        }
       </p>
       <Button onClick={handleNext} className="mt-8 w-full">
-        {t.next ?? 'Next'}
+        {t('next')}
       </Button>
     </div>
   );

@@ -11,13 +11,13 @@ const QuestionIntroScreen: React.FC<Props> = ({ game }) => {
 
   return (
     <div className="text-center max-w-md">
-      <h2 className="text-3xl font-bold mb-4">{t.questionTime ?? 'Question Time'}</h2>
+      <h2 className="text-3xl font-bold mb-4">{t('questionTime', { ns: 'outside_the_story' })}</h2>
       <p className="text-xl">
-        {t.questionIntroInstruction ?? 'Each person will ask another person a question related to the topic. Press next to see who asks who.'}
+        {t('questionIntroInstruction', { ns: 'outside_the_story' })}
       </p>
       {/* --- This button now calls the function to prepare the question turns --- */}
       <Button onClick={setupQuestionTurns} className="mt-8 w-full">
-        {t.next ?? 'Next'}
+        {t('next')}
       </Button>
     </div>
   );

@@ -1,0 +1,16 @@
+{
+  "betaStatus": "Now in Beta",
+  "wordPuzzles": "Word Puzzles",
+  "heroDescription": "Challenge your mind with our collection of educational word puzzle games. Master vocabulary in both Arabic and English through engaging gameplay.",
+  "startPlaying": "Start Playing Now",
+  "howToPlay": "How to Play",
+  "gameTypes": "Game Types",
+  "languages": "Languages",
+  "learning": "Learning",
+  "herofeatures": [
+    "🎯 Multiple game types with unique challenges",
+    "🌍 Full Arabic and English support with RTL",
+    "🧠 Educational focus with word meanings",
+    "💡 Smart hint system to guide learning"
+  ]
+}

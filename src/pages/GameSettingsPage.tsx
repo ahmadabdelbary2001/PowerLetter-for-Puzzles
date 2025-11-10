@@ -75,13 +75,13 @@ const GameSettingsPage: React.FC = () => {
   };
 
   const getTitle = () => {
-    if (settingType === 'difficulty') return t.changeLevel;
-    if (settingType === 'category') return t.changeCategory;
-    return t.gameSettings;
+    // --- Use new function syntax with namespace ---
+    if (settingType === 'difficulty') return t('changeLevel', { ns: 'selection' });
+    if (settingType === 'category') return t('changeCategory', { ns: 'selection' });
+    return t('gameSettings', { ns: 'selection' });
   };
 
-  // --- CRITICAL FIX ---
-  // The call to toCamelCase is removed. Pass the raw catId as the labelKey.
+  // Pass the raw catId as the labelKey.
   // CategorySelector will handle the conversion internally.
   const displayCategories = (gameConfig?.availableCategories || []).map(catId => ({
     id: catId,
@@ -102,7 +102,10 @@ const GameSettingsPage: React.FC = () => {
               {settingType === 'difficulty' && (
                 <>
                   <DifficultySelector difficulties={difficultyOptions} onDifficultySelect={setDifficulty} />
-                  <p className="text-center text-muted-foreground">{t.difficulty}: {t[difficulty]}</p>
+                  {/* --- Use new function syntax with namespace --- */}
+                  <p className="text-center text-muted-foreground">
+                    {t('difficulty', { ns: 'common' })}: {t(difficulty, { ns: 'common' })}
+                  </p>
                 </>
               )}
               {settingType === 'category' && (
@@ -116,10 +119,12 @@ const GameSettingsPage: React.FC = () => {
               <div className="flex justify-between items-center pt-4">
                 <Button variant="outline" onClick={() => navigate(-1)} className="flex items-center gap-2">
                   {dir === 'rtl' ? <ArrowRight className="w-4 h-4" /> : <ArrowLeft className="w-4 h-4" />}
-                  {t.back}
+                  {/* --- Use new function syntax (default ns is 'common') --- */}
+                  {t('back')}
                 </Button>
                 <Button onClick={handleDone} className="flex items-center gap-2">
-                  {t.confirm ?? 'Done'}
+                  {/* --- Use new function syntax (default ns is 'common') --- */}
+                  {t('confirm')}
                   {dir === 'rtl' ? <ArrowLeft className="w-4 h-4" /> : <ArrowRight className="w-4 h-4" />}
                 </Button>
               </div>

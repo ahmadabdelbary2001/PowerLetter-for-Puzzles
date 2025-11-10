@@ -26,15 +26,15 @@ const RoleRevealPlayerScreen: React.FC<Props> = ({ game }) => {
       {isOutsider ? (
         <p className="text-xl">
           {/* --- Pass the category to the translation function --- */}
-          {t.youAreTheOutsider?.replace('{category}', translatedCategory) ?? 'You are the Outsider! Try to figure out the story.'}
+          {t('youAreTheOutsider', { ns: 'outside_the_story' })?.replace('{category}', translatedCategory)}
         </p>
       ) : (
         <p className="text-xl">
-          {t.youAreAnInsider?.replace('{secret}', currentRound?.secret ?? '') ?? `You are an Insider! The story is **${currentRound?.secret}**. Your goal is to find out who among you is the Outsider.`}
+          {t('youAreAnInsider', { ns: 'outside_the_story' })?.replace('{secret}', currentRound?.secret ?? '')}
         </p>
       )}
       <Button onClick={handleContinue} className="mt-8 w-full">
-        {t.next ?? 'Next'}
+        {t('next')}
       </Button>
     </div>
   );

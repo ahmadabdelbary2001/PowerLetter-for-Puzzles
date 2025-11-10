@@ -12,7 +12,6 @@ import {
   ArrowRight
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { useTranslation } from "@/hooks/useTranslation";
 import type { GameMode } from '@/types/game';
 
 /**
@@ -51,6 +50,8 @@ interface Props {
   isKidsMode?: boolean;
   showOnly?: ButtonKey[];
   icons?: Partial<Record<ButtonKey, LucideIcon>>;
+  // --- Make `dir` prop optional to prevent breaking changes. ---
+  dir?: 'ltr' | 'rtl';
 }
 
 /**
@@ -78,8 +79,9 @@ export const GameControls: React.FC<Props> = ({
   isKidsMode = false,
   showOnly,
   icons,
+  // --- Accept `dir` from props and provide a default value. ---
+  dir = 'ltr',
 }) => {
-  const { dir } = useTranslation();
 
   // Helper functions
   const shouldShow = (key: ButtonKey) => {
@@ -99,8 +101,7 @@ export const GameControls: React.FC<Props> = ({
     );
   }
 
-  // --- This block now ONLY handles the 'won' state in single-player mode ---
-  // It renders the navigational controls.
+  // This block now ONLY handles the 'won' state in single-player mode
   if (gameState === 'won' && gameMode !== 'competitive') {
     return (
       <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
@@ -123,10 +124,7 @@ export const GameControls: React.FC<Props> = ({
     );
   }
 
-  // --- This is now the default block for BOTH 'playing' AND 'failed' states ---
-  // It renders the primary action controls. The `can...` props (e.g., `canCheck`)
-  // will correctly disable the buttons during the 'failed' state, but the buttons
-  // themselves will remain visible.
+  // This is now the default block for BOTH 'playing' AND 'failed' states
   return (
     <div className="flex flex-wrap gap-1 sm:gap-2 justify-center mt-4">
       {shouldShow('remove') && (

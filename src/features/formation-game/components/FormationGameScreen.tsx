@@ -36,20 +36,20 @@ const FormationGameScreen: React.FC = () => {
   } = useFormationGame();
 
   if (loading) {
-    return <div className="flex justify-center items-center h-screen"><p>{t.loading}...</p></div>;
+    return <div className="flex justify-center items-center h-screen"><p>{t('loading')}...</p></div>;
   }
   if (!currentLevel || currentLevel.baseLetters === 'ERROR') {
     return (
       <div className="flex flex-col justify-center items-center h-screen gap-4 p-4 text-center">
-        <p className="text-xl font-semibold">{t.noLevelsFound}</p>
-        <Button onClick={handleBack}>{t.back}</Button>
+        <p className="text-xl font-semibold">{t('noLevelsFound')}</p>
+        <Button onClick={handleBack}>{t('back')}</Button>
       </div>
     );
   }
 
   return (
     <WordFormationLayout
-      title={t.formationTitle}
+      title={t('formationTitle', { ns: 'games' })}
       levelIndex={currentLevelIndex}
       onBack={handleBack}
       difficulty={currentLevel.difficulty}
@@ -81,7 +81,7 @@ const FormationGameScreen: React.FC = () => {
             icon={RotateCcw}
             className="flex-1 min-w-[80px] sm:min-w-[100px] py-1.5 sm:py-2 h-auto text-xs sm:text-sm px-2"
           >
-            {t.remove}
+            {t('remove')}
           </GameButton>
           <GameButton
             variant="outline"
@@ -90,7 +90,7 @@ const FormationGameScreen: React.FC = () => {
             icon={Lightbulb}
             className="flex-1 min-w-[80px] sm:min-w-[100px] py-1.5 sm:py-2 h-auto text-xs sm:text-sm px-2"
           >
-            {t.hint}
+            {t('hint')}
           </GameButton>
           <GameButton
             isPrimary={true}
@@ -99,7 +99,7 @@ const FormationGameScreen: React.FC = () => {
             icon={Check}
             className="flex-1 min-w-[120px] sm:min-w-[160px] py-2 sm:py-2.5 h-auto text-xs sm:text-sm px-3.5 text-center whitespace-nowrap font-semibold"
           >
-            {t.check}
+            {t('check')}
           </GameButton>
         </>
       }

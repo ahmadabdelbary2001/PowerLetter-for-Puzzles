@@ -1,0 +1,48 @@
+{
+  "selectMode": "Choose Game Mode",
+  "selectModeDesc": "How would you like to play today?",
+  "singlePlayer": "Single Player",
+  "singlePlayerDesc": "Play solo and challenge yourself",
+  "competitive": "Competitive",
+  "competitiveDesc": "Play with friends in teams",
+  "singleFeatures": [
+    "Personal progress",
+    "Progressive challenges",
+    "Hint system"
+  ],
+  "competitiveFeatures": [
+    "Multiple teams",
+    "Scoring system",
+    "Turn-based play"
+  ],
+
+  "selectCategory": "Select a Category",
+  "selectDifficulty": "Select Difficulty",
+  "selectCategoryHint": "You can pick one or more topics, or choose 'General' to include them all.",
+  "selectSingleCategoryHint": "Select one topic to start your round.",
+  "animals": "Animals",
+  "science": "Science",
+  "geography": "Geography",
+  "generalKnowledge": "General",
+  "general": "General",
+  "fruits-and-vegetables": "Fruits & Vegetables",
+  "anime": "Anime",
+  "cars": "Cars",
+  "cartoons": "Cartoons",
+  "characters": "Characters",
+  "clothes": "Clothes",
+  "drinks": "Drinks",
+  "foods": "Foods",
+  "football": "Football",
+  "gamers": "Gamers",
+  "k-pop": "K-Pop",
+  "series": "Series",
+  "spy": "Spy",
+  "sweets": "Sweets",
+  "shapes": "Shapes",
+  
+  "gameSettings": "Game Settings",
+  "changeTeams": "Change Teams",
+  "changeLevel": "Change Level",
+  "changeCategory": "Change Category"
+}

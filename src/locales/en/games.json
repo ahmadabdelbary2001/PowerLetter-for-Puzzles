@@ -1,0 +1,54 @@
+{
+  "howToPlay": "How to Play",
+  "gameplaySteps": "Gameplay Steps:",
+  "selectGame": "Choose Game Type",
+  "selectGameDesc": "Select the type of challenge you want to play",
+  "moreGames": "More games and features coming soon! Stay tuned for updates.",
+
+  "formationTitle": "Word Formation Challenge",
+  "formationDesc": "Find all possible words that can be formed from a given set of letters",
+  "formationFeatures": [
+    "Multiple word discovery",
+    "Progressive difficulty",
+    "Bilingual support"
+  ],
+
+  "phraseClueTitle": "Clue-Driven Word Find",
+  "phraseClueDesc": "Find the hidden word by unscrambling letters using the provided clue",
+  "phraseClueFeatures": [
+    "Scrambled letters",
+    "Helpful clues",
+    "Hint system"
+  ],
+
+  "letterFlowTitle": "Letter Flow",
+  "letterFlowDesc": "Connect matching letters to fill the grid and reveal the hidden word.",
+  "letterFlowFeatures": [
+    "Spatial puzzle solving",
+    "Fill the entire grid",
+    "Combines logic and vocabulary"
+  ],
+  
+  "outsideTheStoryTitle": "Outside the Story",
+  "outsideTheStoryDesc": "One player is outside the story (does not know the secret). The others try to find them by asking clever questions.",
+  "outsideTheStoryFeatures": [
+    "Group deduction",
+    "Social bluffing",
+    "Family friendly"
+  ],
+
+  "kidsGamesTitle": "Kids Puzzles",
+  "kidsGamesDesc": "Fun and educational games designed for children.",
+  
+  "imgClueTitle": "Picture to Word",
+  "imgClueDesc": "Form the word that matches the picture from the given letters.",
+  "imgClueFeatures": ["Builds spelling skills", "Visual association", "Audio support"],
+
+  "wordChoiceTitle": "Find the Word",
+  "wordChoiceDesc": "Look at the picture and choose the correct word from a list.",
+  "wordChoiceFeatures": ["Improves reading", "Multiple choice", "Immediate feedback"],
+
+  "imgChoiceTitle": "Find the Picture",
+  "imgChoiceDesc": "Read the word and choose the picture that matches it.",
+  "imgChoiceFeatures": ["Tests comprehension", "Visual recognition", "Fun and interactive"]
+}

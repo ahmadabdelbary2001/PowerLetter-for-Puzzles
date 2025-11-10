@@ -36,7 +36,7 @@ export const Scoreboard: React.FC<ScoreboardProps> = ({ teams, currentTeam }) =>
     <Card>
       <CardHeader>
         {/* Title of the scoreboard */}
-        <CardTitle className="text-center">{t.scoreboard}</CardTitle>
+        <CardTitle className="text-center">{t('scoreboard', { ns: 'team' })}</CardTitle>
       </CardHeader>
       <CardContent className="grid gap-2">
         {/* Render each team as a row in the scoreboard */}
@@ -49,10 +49,10 @@ export const Scoreboard: React.FC<ScoreboardProps> = ({ teams, currentTeam }) =>
             )}
           >
             <span className="font-medium">
-              {team.name} {index === currentTeam && `(${t.currentTurn})`}
+              {team.name} {index === currentTeam && `(${t('currentTurn', { ns: 'team' })})`}
             </span>
             <div className="flex items-center gap-3">
-              <Badge variant="secondary">{team.score} {t.points}</Badge>
+              <Badge variant="secondary">{team.score} {t('points', { ns: 'team' })}</Badge>
               <div className="flex items-center text-sm text-muted-foreground">
                 <Lightbulb className="w-4 h-4 mr-1 text-yellow-500" />
                 {team.hintsRemaining}

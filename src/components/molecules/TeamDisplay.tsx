@@ -51,7 +51,7 @@ export function TeamDisplay({
           {/* Team badge with name and score - highlighted for current team */}
           <Badge variant={idx === currentTeam ? "default" : "secondary"} className="px-3">
             {team.name}
-            {showScore && `: ${team.score} ${t.points}`}
+            {showScore && `: ${team.score} ${t('points', { ns: 'team' })}`}
           </Badge>
           {/* Show hints remaining if enabled */}
           {showHints && (

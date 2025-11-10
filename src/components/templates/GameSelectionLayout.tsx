@@ -44,7 +44,7 @@ export const GameSelectionLayout: React.FC<GameSelectionLayoutProps> = ({
         <div className="mt-8 flex justify-start">
           <Button variant="outline" onClick={onBack} className="flex items-center gap-2">
             {dir === 'rtl' ? <ArrowRight className="w-4 h-4" /> : <ArrowLeft className="w-4 h-4" />}
-            {t.back}
+            {t('back')}
           </Button>
         </div>
       </main>
