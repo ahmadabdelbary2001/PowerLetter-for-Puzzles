@@ -1,8 +1,13 @@
 // src/features/outside-story-game/components/OutsideStoryScreen.tsx
+/**
+ * @description The main entry point for the "Outside the Story" game.
+ * This component is wrapped by the `GameScreen` HOC to handle loading and error states.
+ * It acts as a router, rendering the correct sub-screen based on the current `gameState`.
+ */
 import React from 'react';
-import { Button } from '@/components/ui/button';
 import { useOutsideStory } from '../hooks/useOutsideStory';
 import { OutsideStoryLayout } from '@/components/templates/OutsideStoryLayout';
+import { GameScreen } from '@/components/organisms/GameScreen'; // Import the HOC
 
 // Import all the sub-screen components
 import RoleRevealHandoffScreen from './screens/RoleRevealHandoffScreen';
@@ -14,14 +19,9 @@ import OutsiderGuessScreen from './screens/OutsiderGuessScreen';
 import ResultsScreen from './screens/ResultsScreen';
 import RoundEndScreen from './screens/RoundEndScreen';
 
-const OutsideStoryScreen: React.FC = () => {
-  // --- Call the single hook and assign its entire return value to a single constant. ---
-  const game = useOutsideStory();
-
-  // --- Destructure the needed properties directly from the 'game' object. ---
+// 1. Define the pure UI component. It receives the entire 'game' object from the hook.
+const OutsideStoryGame: React.FC<ReturnType<typeof useOutsideStory>> = (game) => {
   const {
-    loadingLevels,
-    currentRound,
     notification,
     onClearNotification,
     handleBack,
@@ -29,17 +29,7 @@ const OutsideStoryScreen: React.FC = () => {
     instructions,
   } = game;
 
-  // --- The loading and error handling logic is now consistent with other games. ---
-  if (loadingLevels || !currentRound) {
-    return (
-      <div className="flex flex-col justify-center items-center h-screen gap-4 p-4 text-center">
-        <p className="text-xl font-semibold">{t('loading')}</p>
-        {/* The back button is now available even during loading. */}
-        <Button onClick={handleBack}>{t('back')}</Button>
-      </div>
-    );
-  }
-
+  // This internal router decides which sub-screen to show.
   const renderScreen = () => {
     switch (game.gameState) {
       case 'role_reveal_handoff':
@@ -66,7 +56,6 @@ const OutsideStoryScreen: React.FC = () => {
 
   return (
     <OutsideStoryLayout
-      // Pass standard layout props
       title={t('outsideTheStoryTitle', { ns: 'games' })}
       onBack={handleBack}
       instructions={instructions}
@@ -77,5 +66,10 @@ const OutsideStoryScreen: React.FC = () => {
     </OutsideStoryLayout>
   );
 };
+
+// 2. Create the final export by wrapping the pure UI component with the GameScreen HOC.
+const OutsideStoryScreen: React.FC = () => (
+  <GameScreen useGameHook={useOutsideStory} GameComponent={OutsideStoryGame} />
+);
 
 export default OutsideStoryScreen;

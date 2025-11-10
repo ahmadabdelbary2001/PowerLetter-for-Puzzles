@@ -1,8 +1,8 @@
 // src/features/img-clue-game/components/ImgClueGameScreen.tsx
 /**
  * ImgClueGameScreen component - Main game screen for the image clue puzzle game.
- * This component now uses the shared ClueGameLayout to structure the page,
- * passing its game-specific elements (image prompt, solution boxes) as content slots.
+ * This component is now wrapped by the `GameScreen` HOC, which handles all
+ * loading and error states, keeping this file focused on the game's specific UI.
  */
 import React from "react";
 import { Button } from "@/components/ui/button";
@@ -13,62 +13,40 @@ import GameControls from "@/components/organisms/GameControls";
 import { ArrowLeft, ArrowRight, Volume2 } from "lucide-react";
 import { useImageClueGame } from "../hooks/useImageClueGame";
 import { ClueGameLayout } from "@/components/templates/ClueGameLayout";
+import { GameScreen } from "@/components/organisms/GameScreen"; // Import the HOC
 
-const ImgClueGameScreen: React.FC = () => {
-  // Destructure all state and handlers from the hook
-  const {
-    loading,
-    currentLevel,
-    solution,
-    notification,
-    onClearNotification,
-    wrongAnswers,
-    gameState,
-    currentLevelIndex,
-    levels,
-    audioRef,
-    getAssetPath,
-    playSound,
-    onCheck,
-    onLetterClick,
-    onRemove,
-    onClear,
-    nextLevel,
-    prevLevel,
-    handleBack,
-    resetLevel,
-    canRemove,
-    canClear,
-    canCheck,
-    gameMode,
-    t,
-    i18n,
-    instructions,
-  } = useImageClueGame();
-
+// 1. Define the pure UI component.
+const ImgClueGame: React.FC<ReturnType<typeof useImageClueGame>> = ({
+  currentLevel,
+  solution,
+  notification,
+  onClearNotification,
+  wrongAnswers,
+  gameState,
+  currentLevelIndex,
+  levels,
+  audioRef,
+  getAssetPath,
+  playSound,
+  onCheck,
+  onLetterClick,
+  onRemove,
+  onClear,
+  nextLevel,
+  prevLevel,
+  handleBack,
+  resetLevel,
+  canRemove,
+  canClear,
+  canCheck,
+  gameMode,
+  t,
+  i18n,
+  instructions,
+}) => {
   const dir = i18n.dir();
-
-  // 1. Handle the initial loading state.
-  if (loading) {
-    return <div className="flex justify-center items-center h-screen"><p>{t('loading')}...</p></div>;
-  }
-
-  // 2. Handle the case where loading is finished but no valid level was found.
-  // This check is now performed *before* any attempt to render the main UI.
-  // This prevents the "Cannot read properties of undefined" crash.
-  if (!currentLevel || currentLevel.solution === "ERROR") {
-    return (
-      <div className="flex flex-col justify-center items-center h-screen gap-4 p-4 text-center">
-        <p className="text-xl font-semibold">{t('noLevelsFound')}</p>
-        <Button onClick={handleBack}>{t('back')}</Button>
-      </div>
-    );
-  }
-
-  // Unchanged: Destructure properties from the gameState now that we know it's safe.
   const { answerSlots, slotIndices, hintIndices } = gameState;
 
-  // If we reach this point, we know `currentLevel` is a valid object.
   return (
     <ClueGameLayout
       title={t('imgClueTitle', { ns: 'games' })}
@@ -78,10 +56,8 @@ const ImgClueGameScreen: React.FC = () => {
       notification={notification}
       onClearNotification={onClearNotification}
       layoutType="image"
-      // Pass game-specific content into the layout's slots
       promptContent={
         <div className="relative aspect-video bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center">
-          {/* This line is now safe because we've already checked that `currentLevel` exists. */}
           <img src={getAssetPath(currentLevel.image)} alt={solution} className="max-h-full max-w-full object-contain" />
           <Button size="icon" onClick={playSound} className="absolute top-3 right-3 rounded-full bg-black/50 hover:bg-black/70">
             <Volume2 className="h-6 w-6 text-white" />
@@ -89,9 +65,7 @@ const ImgClueGameScreen: React.FC = () => {
           <audio ref={audioRef} src={getAssetPath(currentLevel.sound)} preload="auto" />
         </div>
       }
-      solutionContent={
-        <SolutionBoxes solution={solution} currentWord={answerSlots.join("")} />
-      }
+      solutionContent={<SolutionBoxes solution={solution} currentWord={answerSlots.join("")} />}
       letterOptionsContent={
         <LetterGrid
           letters={gameState.letters}
@@ -112,11 +86,9 @@ const ImgClueGameScreen: React.FC = () => {
         )
       }
       gameControlsContent={
-        // This logic correctly shows the "Next" button or the game controls.
         gameState.gameState === "won" && gameMode !== "competitive" ? (
           <Button onClick={nextLevel} className="w-full bg-green-600 hover:bg-green-700 text-lg py-6">
-            {t('next')}{" "}
-            {dir === "rtl" ? <ArrowLeft className="ml-2" /> : <ArrowRight className="ml-2" />}
+            {t('next')}{" "}{dir === "rtl" ? <ArrowLeft className="ml-2" /> : <ArrowRight className="ml-2" />}
           </Button>
         ) : (
           <GameControls
@@ -141,5 +113,10 @@ const ImgClueGameScreen: React.FC = () => {
     />
   );
 };
+
+// 2. Create the final export by wrapping the pure UI component with the GameScreen HOC.
+const ImgClueGameScreen: React.FC = () => (
+  <GameScreen useGameHook={useImageClueGame} GameComponent={ImgClueGame} />
+);
 
 export default ImgClueGameScreen;

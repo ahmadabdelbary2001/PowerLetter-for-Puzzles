@@ -1,8 +1,8 @@
 // src/features/letter-flow-game/components/LetterFlowGameScreen.tsx
 /**
  * @description The main UI component for the Letter Flow game.
- * It is now a "dumb" presentational component that receives all data and logic
- * from the `useLetterFlowGame` hook.
+ * It is now a pure presentational component wrapped by the `GameScreen` HOC,
+ * which handles all loading and error states.
  */
 import React from 'react';
 import { useLetterFlowGame } from '../hooks/useLetterFlowGame';
@@ -11,58 +11,40 @@ import { FoundWords } from '@/components/molecules/FoundWords';
 import GameControls from '@/components/organisms/GameControls';
 import { GameProgress } from '@/components/molecules/GameProgress';
 import { usePassiveTouchFix } from '../hooks/usePassiveTouchFix';
-import { Button } from '@/components/ui/button';
 import { FlowGameLayout } from '@/components/templates/FlowGameLayout';
 import type { LetterFlowLevel } from '../engine';
+import { GameScreen } from '@/components/organisms/GameScreen'; // Import the HOC
 
-const LetterFlowGameScreen: React.FC = () => {
+// 1. Define the pure UI component.
+const LetterFlowGame: React.FC<ReturnType<typeof useLetterFlowGame>> = ({
+  currentLevel,
+  board,
+  selectedPath,
+  foundWords,
+  notification,
+  onClearNotification,
+  gameState,
+  activeLetter,
+  handleBack,
+  handleMouseDown,
+  handleMouseEnter,
+  handleMouseUp,
+  onHint,
+  onUndo,
+  onReset,
+  clearSelection,
+  currentLevelIndex,
+  nextLevel,
+  t,
+  instructions,
+  gameModeState,
+}) => {
   usePassiveTouchFix();
-
-  // The hook now provides EVERYTHING the component needs.
-  const {
-    loading,
-    currentLevel,
-    board,
-    selectedPath,
-    foundWords,
-    notification,
-    onClearNotification,
-    gameState,
-    activeLetter,
-    handleBack,
-    handleMouseDown,
-    handleMouseEnter,
-    handleMouseUp,
-    onHint,
-    onUndo,
-    onReset,
-    clearSelection,
-    currentLevelIndex,
-    nextLevel,
-    t,
-    instructions,
-    gameModeState,
-  } = useLetterFlowGame();
-
-  if (loading) {
-    // --- Use new function syntax (default ns is 'common') ---
-    return <div className="flex justify-center items-center h-screen"><p>{t('loading')}...</p></div>;
-  }
-  if (!currentLevel) {
-    return (
-      <div className="flex flex-col items-center justify-center h-screen gap-4 p-4 text-center">
-        {/* --- Use new function syntax (default ns is 'common') --- */}
-        <p className="text-xl font-semibold">{t('noLevelsFound')}</p>
-        <Button onClick={handleBack}>{t('back')}</Button>
-      </div>
-    );
-  }
 
   const totalWords = Math.floor(((currentLevel as LetterFlowLevel)?.endpoints.length ?? 0) / 2);
 
   return (
     <FlowGameLayout
-      // --- Use new function syntax with namespace ---
       title={t('letterFlowTitle', { ns: 'games' }) ?? currentLevel.id}
       levelIndex={currentLevelIndex ?? 0}
       onBack={handleBack}
@@ -82,7 +64,6 @@ const LetterFlowGameScreen: React.FC = () => {
         />
       }
       foundWordsContent={
-        // --- Pass the translated string correctly ---
         foundWords.length > 0 ? <FoundWords foundWords={foundWords} t={{ selected: t('selected') }} /> : null
       }
       gameControlsContent={
@@ -100,7 +81,6 @@ const LetterFlowGameScreen: React.FC = () => {
           gameState={gameState}
           gameMode={gameModeState.gameMode}
           isKidsMode={false}
-          // --- Pass translated strings correctly ---
           labels={{
             remove: t('undo'), clear: t('clear'), check: t('check'), hint: t('hint'),
             showSolution: t('showSolution'), reset: t('reset'), prev: t('prev'), next: t('next'),
@@ -112,7 +92,6 @@ const LetterFlowGameScreen: React.FC = () => {
         <GameProgress
           foundWords={foundWords}
           totalWords={totalWords}
-          // --- Pass translated strings correctly ---
           t={{ selected: t('selected'), of: t('of') }}
         />
       }
@@ -120,5 +99,10 @@ const LetterFlowGameScreen: React.FC = () => {
     />
   );
 };
+
+// 2. Create the final export by wrapping the pure UI component with the GameScreen HOC.
+const LetterFlowGameScreen: React.FC = () => (
+  <GameScreen useGameHook={useLetterFlowGame} GameComponent={LetterFlowGame} />
+);
 
 export default LetterFlowGameScreen;

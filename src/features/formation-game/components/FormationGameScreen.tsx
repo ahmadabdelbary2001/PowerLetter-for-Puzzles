@@ -1,8 +1,8 @@
 // src/features/formation-game/components/FormationGameScreen.tsx
 /**
  * @description The main UI component for the Word Formation Challenge.
- * It is now a "dumb" presentational component that receives all data and logic
- * from the `useFormationGame` hook.
+ * It is now a pure presentational component wrapped by the `GameScreen` HOC,
+ * which handles all loading and error states.
  */
 import React from 'react';
 import { useFormationGame } from '../hooks/useFormationGame';
@@ -10,43 +10,28 @@ import { RotateCcw, Check, Lightbulb } from 'lucide-react';
 import { CrosswordGrid } from '@/components/molecules/CrosswordGrid';
 import { LetterCircle } from '@/components/molecules/LetterCircle';
 import { GameButton } from '@/components/atoms/GameButton';
-import { Button } from '@/components/ui/button';
 import { WordFormationLayout } from '@/components/templates/WordFormationLayout';
+import { GameScreen } from '@/components/organisms/GameScreen'; // Import the HOC
 
-const FormationGameScreen: React.FC = () => {
-  // The hook now provides EVERYTHING the component needs.
-  const {
-    loading,
-    currentLevel,
-    currentLevelIndex,
-    letters,
-    currentInput,
-    revealedCells,
-    notification,
-    onClearNotification,
-    usedLetterIndices,
-    handleBack,
-    onLetterSelect,
-    onRemoveLast,
-    onShuffle,
-    onCheckWord,
-    onHint,
-    t,
-    instructions,
-  } = useFormationGame();
-
-  if (loading) {
-    return <div className="flex justify-center items-center h-screen"><p>{t('loading')}...</p></div>;
-  }
-  if (!currentLevel || currentLevel.baseLetters === 'ERROR') {
-    return (
-      <div className="flex flex-col justify-center items-center h-screen gap-4 p-4 text-center">
-        <p className="text-xl font-semibold">{t('noLevelsFound')}</p>
-        <Button onClick={handleBack}>{t('back')}</Button>
-      </div>
-    );
-  }
-
+// 1. Define the pure UI component. It receives all props from the hook.
+const FormationGame: React.FC<ReturnType<typeof useFormationGame>> = ({
+  currentLevel,
+  currentLevelIndex,
+  letters,
+  currentInput,
+  revealedCells,
+  notification,
+  onClearNotification,
+  usedLetterIndices,
+  handleBack,
+  onLetterSelect,
+  onRemoveLast,
+  onShuffle,
+  onCheckWord,
+  onHint,
+  t,
+  instructions,
+}) => {
   return (
     <WordFormationLayout
       title={t('formationTitle', { ns: 'games' })}
@@ -106,5 +91,10 @@ const FormationGameScreen: React.FC = () => {
     />
   );
 };
+
+// 2. Create the final export by wrapping the pure UI component with the GameScreen HOC.
+const FormationGameScreen: React.FC = () => (
+  <GameScreen useGameHook={useFormationGame} GameComponent={FormationGame} />
+);
 
 export default FormationGameScreen;

@@ -1,8 +1,8 @@
 // src/features/word-choice-game/components/WordChoiceScreen.tsx
 /**
  * This component implements the UI for the Word Choice game.
- * It uses the shared MultipleChoiceLayout to structure the page, passing
- * its game-specific elements (image prompt, word options) as content slots.
+ * It is wrapped by the `GameScreen` HOC to handle loading and error states,
+ * keeping this file focused solely on the game's presentation logic.
  */
 import React from "react";
 import { Button } from "@/components/ui/button";
@@ -10,60 +10,36 @@ import { ArrowLeft, ArrowRight, Volume2, CheckCircle, XCircle } from "lucide-rea
 import { useWordChoiceGame } from "@/features/word-choice-game/hooks/useWordChoiceGame";
 import { cn } from "@/lib/utils";
 import { MultipleChoiceLayout } from "@/components/templates/MultipleChoiceLayout";
+import { GameScreen } from "@/components/organisms/GameScreen"; // Import the HOC
 
-const WordChoiceScreen: React.FC = () => {
-  // Extract all necessary state and functions from the custom hook
-  const {
-    loading,
-    currentLevel,
-    shuffledOptions,
-    answerStatus,
-    selectedOption,
-    notification,
-    onClearNotification,
-    audioRef,
-    getAssetPath,
-    playSound,
-    handleOptionClick,
-    nextLevel,
-    handleBack,
-    t,
-    i18n,
-    instructions,
-  } = useWordChoiceGame();
-
+// 1. Define the pure UI component.
+const WordChoiceGame: React.FC<ReturnType<typeof useWordChoiceGame>> = ({
+  currentLevel,
+  shuffledOptions,
+  answerStatus,
+  selectedOption,
+  notification,
+  onClearNotification,
+  audioRef,
+  getAssetPath,
+  playSound,
+  handleOptionClick,
+  nextLevel,
+  handleBack,
+  t,
+  i18n,
+  instructions,
+}) => {
   const dir = i18n.dir();
 
-  // Render loading state
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <p>{t('loading')}...</p>
-      </div>
-    );
-  }
-
-  // Render error state
-  if (!currentLevel || currentLevel.solution === "ERROR") {
-    return (
-      <div className="flex flex-col justify-center items-center h-screen gap-4 p-4 text-center">
-        <p className="text-xl font-semibold">{t('noLevelsFound')}</p>
-        <Button onClick={handleBack}>{t('back')}</Button>
-      </div>
-    );
-  }
-
-  // --- Use the new MultipleChoiceLayout ---
   return (
     <MultipleChoiceLayout
-      // Pass standard layout props
       title={t('wordChoiceTitle', { ns: 'games' })}
-      levelIndex={0} // Temporary value - should be updated based on actual level index
+      levelIndex={0}
       onBack={handleBack}
       instructions={instructions}
       notification={notification}
       onClearNotification={onClearNotification}
-      // Pass game-specific content into the layout's slots
       promptContent={
         <div className="relative aspect-video bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center">
           <img src={getAssetPath(currentLevel.image)} alt="Guess the word" className="max-h-full max-w-full object-contain" />
@@ -82,13 +58,7 @@ const WordChoiceScreen: React.FC = () => {
               key={option}
               onClick={() => handleOptionClick(option)}
               disabled={answerStatus === "correct"}
-              className={cn(
-                "text-base h-16 flex items-center justify-center gap-2 transition-all duration-300",
-                isSelected && answerStatus === "correct" && "bg-green-500 hover:bg-green-600 border-2 border-green-700",
-                isSelected && answerStatus === "incorrect" && "bg-red-500 hover:bg-red-500 border-2 border-red-700",
-                !isSelected && answerStatus === "incorrect" && isCorrectSolution && "bg-green-200 text-green-800 border-2 border-green-400",
-                answerStatus === "idle" && "bg-card text-card-foreground hover:bg-muted"
-              )}
+              className={cn("text-base h-16 flex items-center justify-center gap-2 transition-all duration-300", isSelected && answerStatus === "correct" && "bg-green-500 hover:bg-green-600 border-2 border-green-700", isSelected && answerStatus === "incorrect" && "bg-red-500 hover:bg-red-500 border-2 border-red-700", !isSelected && answerStatus === "incorrect" && isCorrectSolution && "bg-green-200 text-green-800 border-2 border-green-400", answerStatus === "idle" && "bg-card text-card-foreground hover:bg-muted")}
             >
               {option}
               {isSelected && answerStatus === "correct" && <CheckCircle />}
@@ -100,13 +70,17 @@ const WordChoiceScreen: React.FC = () => {
       nextButtonContent={
         answerStatus === "correct" && (
           <Button onClick={nextLevel} className="w-full bg-green-600 hover:bg-green-700 text-lg py-6">
-            {t('next')}{" "}
-            {dir === "rtl" ? <ArrowLeft className="ml-2" /> : <ArrowRight className="ml-2" />}
+            {t('next')}{" "}{dir === "rtl" ? <ArrowLeft className="ml-2" /> : <ArrowRight className="ml-2" />}
           </Button>
         )
       }
     />
   );
 };
+
+// 2. Create the final export by wrapping the pure UI component with the GameScreen HOC.
+const WordChoiceScreen: React.FC = () => (
+  <GameScreen useGameHook={useWordChoiceGame} GameComponent={WordChoiceGame} />
+);
 
 export default WordChoiceScreen;

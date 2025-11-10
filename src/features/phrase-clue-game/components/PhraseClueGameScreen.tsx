@@ -1,82 +1,55 @@
 // src/features/phrase-clue-game/components/PhraseClueGameScreen.tsx
 /**
  * Main component for the Phrase Clue Game interface.
- * This component is now a "presentational" component that assembles the UI
- * using the shared ClueGameLayout and passes down the state and logic
- * from the usePhraseClueGame hook.
+ * This component is now wrapped by the `GameScreen` HOC, which handles all
+ * loading and error states, keeping this file focused on the game's specific UI.
  */
 import React from "react";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { SolutionBoxes } from "@/components/molecules/SolutionBoxes";
 import { LetterGrid } from "@/components/molecules/LetterGrid";
 import GameControls from "@/components/organisms/GameControls";
 import { usePhraseClueGame } from "../hooks/usePhraseClueGame";
 import { ClueGameLayout } from "@/components/templates/ClueGameLayout";
+import { GameScreen } from "@/components/organisms/GameScreen"; // Import the HOC
 
-const PhraseClueGameScreen: React.FC = () => {
-  // All game logic is now neatly contained in this hook.
-  const {
-    loading,
-    currentLevel,
-    solution,
-    notification,
-    onClearNotification,
-    wrongAnswers,
-    gameState, // This now correctly contains the full reducer state
-    currentLevelIndex,
-    levels,
-    onCheck,
-    onShow,
-    onLetterClick,
-    onRemove,
-    onClear,
-    onHint,
-    nextLevel,
-    prevLevel,
-    handleBack,
-    resetLevel,
-    canRemove,
-    canClear,
-    canCheck,
-    canHint,
-    gameMode,
-    t,
-    instructions,
-  } = usePhraseClueGame();
-
-  // Handle loading state
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        {/* --- Use new function syntax --- */}
-        <p>{t('loading')}...</p>
-      </div>
-    );
-  }
-
-  // Handle error state
-  if (!currentLevel || currentLevel.solution === "ERROR") {
-    return (
-      <div className="flex flex-col justify-center items-center h-screen gap-4 p-4 text-center">
-        {/* --- Use new function syntax --- */}
-        <p className="text-xl font-semibold">{t('noLevelsFound')}</p>
-        <Button onClick={handleBack}>{t('back')}</Button>
-      </div>
-    );
-  }
-
-  // Destructure properties from the correctly typed gameState.
+// 1. Define the pure UI component.
+const PhraseClueGame: React.FC<ReturnType<typeof usePhraseClueGame>> = ({
+  currentLevel,
+  solution,
+  notification,
+  onClearNotification,
+  wrongAnswers,
+  gameState,
+  currentLevelIndex,
+  levels,
+  onCheck,
+  onShow,
+  onLetterClick,
+  onRemove,
+  onClear,
+  onHint,
+  nextLevel,
+  prevLevel,
+  handleBack,
+  resetLevel,
+  canRemove,
+  canClear,
+  canCheck,
+  canHint,
+  gameMode,
+  t,
+  instructions,
+}) => {
   const { answerSlots, slotIndices, hintIndices } = gameState;
 
-  // Use the ClueGameLayout to render the UI.
   return (
     <ClueGameLayout
       title={currentLevel.clue}
       levelIndex={currentLevelIndex}
       onBack={handleBack}
       difficulty={currentLevel.difficulty}
-      instructions={instructions} // This now matches the expected type
+      instructions={instructions}
       notification={notification}
       onClearNotification={onClearNotification}
       promptContent={null}
@@ -93,7 +66,6 @@ const PhraseClueGameScreen: React.FC = () => {
       wrongAnswersContent={
         wrongAnswers.length > 0 && (
           <div className="mt-2">
-            {/* --- Use new function syntax --- */}
             <p className="text-sm text-muted-foreground mb-1">{t('wrongAttempts')}:</p>
             <div className="flex flex-wrap gap-1 justify-center">
               {wrongAnswers.map((answer, index) => <Badge key={index} variant="destructive">{answer}</Badge>)}
@@ -120,7 +92,6 @@ const PhraseClueGameScreen: React.FC = () => {
           gameState={gameState.gameState}
           gameMode={gameMode}
           isKidsMode={false}
-          // --- Pass translated strings correctly ---
           labels={{
             remove: t('remove'),
             clear: t('clear'),
@@ -136,5 +107,10 @@ const PhraseClueGameScreen: React.FC = () => {
     />
   );
 };
+
+// 2. Create the final export by wrapping the pure UI component with the GameScreen HOC.
+const PhraseClueGameScreen: React.FC = () => (
+  <GameScreen useGameHook={usePhraseClueGame} GameComponent={PhraseClueGame} />
+);
 
 export default PhraseClueGameScreen;
