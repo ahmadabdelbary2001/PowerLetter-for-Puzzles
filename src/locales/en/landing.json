@@ -1,18 +1,52 @@
 {
-  "betaStatus": "Now in Beta",
-  "wordPuzzles": "Word Puzzles",
-  "heroDescription": "Challenge your mind with our collection of educational word puzzle games. Master vocabulary in both Arabic and English through engaging gameplay.",
-  "startPlaying": "Start Playing Now",
+  "beta": "Beta",
+  "betaStatus": "Now in Beta - Try It Free!",
+  "wordPuzzles": "Educational Word Puzzles",
+  "heroDescription": "Challenge your mind with our collection of educational word puzzle games designed to boost vocabulary and cognitive skills in both Arabic and English.",
+  "heroAdditionalDescription": "Master vocabulary through immersive gameplay that adapts to your learning pace. Perfect for students, language learners, and puzzle enthusiasts of all ages.",
+  "startPlaying": "Start Playing",
+  "kidsGames": "Kids Games",
   "howToPlay": "How to Play",
-  "gameTypes": "Game Types",
-  "languages": "Languages",
-  "learning": "Learning",
+  "tagline": "Smart Puzzles for Smart Minds",
+  "educational": "Educational",
+  "bilingual": "Bilingual",
   "herofeatures": [
-    "🎯 Multiple game types with unique challenges",
-    "🌍 Full Arabic and English support with RTL",
-    "🧠 Educational focus with word meanings",
-    "💡 Smart hint system to guide learning"
+    {
+      "icon": "🎯",
+      "title": "6+ Game Modes",
+      "description": "Unique challenges with progressive difficulty levels for all ages."
+    },
+    {
+      "icon": "🌍",
+      "title": "Bilingual Support",
+      "description": "Full Arabic & English with RTL interface and seamless switching."
+    },
+    {
+      "icon": "🧠",
+      "title": "Learn & Play",
+      "description": "Smart hint system with word meanings and educational content."
+    },
+    {
+      "icon": "🏆",
+      "title": "Multiplayer & Solo",
+      "description": "Team competitions or personal progress tracking for all skill levels."
+    }
   ],
-  "tagline": "Educational Puzzles",
-  "beta": "Beta"
+  "stats": [
+    {
+      "value": "6+",
+      "label": "Game Types",
+      "icon": "brain"
+    },
+    {
+      "value": "2",
+      "label": "Languages",
+      "icon": "languages"
+    },
+    {
+      "value": "∞",
+      "label": "Learning Fun",
+      "icon": "users"
+    }
+  ]
 }
