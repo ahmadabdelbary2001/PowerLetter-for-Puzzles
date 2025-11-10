@@ -12,6 +12,7 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 // static JSON resources (local files)
 // --- Import all namespaces for English ---
 import enCommon from './locales/en/common.json';
+import enFooter from './locales/en/footer.json';
 import enGames from './locales/en/games.json';
 import enLanding from './locales/en/landing.json';
 import enOutsideStory from './locales/en/outside_the_story.json';
@@ -21,6 +22,7 @@ import enNotification from './locales/en/notification.json';
 
 // --- Import all namespaces for Arabic ---
 import arCommon from './locales/ar/common.json';
+import arFooter from './locales/ar/footer.json';
 import arGames from './locales/ar/games.json';
 import arLanding from './locales/ar/landing.json';
 import arOutsideStory from './locales/ar/outside_the_story.json';
@@ -32,6 +34,7 @@ import arNotification from './locales/ar/notification.json';
 const resources = {
   en: {
     common: enCommon,
+    footer: enFooter,
     games: enGames,
     landing: enLanding,
     outside_the_story: enOutsideStory,
@@ -41,6 +44,7 @@ const resources = {
   },
   ar: {
     common: arCommon,
+    footer: arFooter,
     games: arGames,
     landing: arLanding,
     outside_the_story: arOutsideStory,
@@ -57,7 +61,7 @@ i18n
     resources,
     fallbackLng: 'en',
     // --- Define the default and loaded namespaces ---
-    ns: ['common', 'games', 'landing', 'outside_the_story', 'selection', 'team', 'notification'],
+    ns: ['common', 'footer', 'games', 'landing', 'outside_the_story', 'selection', 'team', 'notification'],
     defaultNS: 'common', // Set a default to avoid needing to specify it everywhere
     supportedLngs: ['en', 'ar'],
     debug: process.env.NODE_ENV === 'development',

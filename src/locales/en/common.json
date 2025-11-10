@@ -1,4 +1,10 @@
 {
+  "home": "Home",
+  "games": "Games",
+  "kids": "Kids",
+  "help": "Help",
+  "openMenu": "Open menu",
+  "closeMenu": "Close menu",
   "back": "Back",
   "level": "Level",
   "difficulty": "Difficulty",

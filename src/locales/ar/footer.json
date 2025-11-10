@@ -1,0 +1,15 @@
+{
+  "description": "لعبة ألغاز تعليمية لعشاق الكلمات. تحدى عقلك بألغاز كلمات شيقة بلغات متعددة.",
+  "followUs": "تابعنا على {{social}}",
+  "quickLinks": "روابط سريعة",
+  "aboutUs": "من نحن",
+  "privacyPolicy": "سياسة الخصوصية",
+  "termsOfService": "شروط الخدمة",
+  "faq": "الأسئلة الشائعة",
+  "contact": "اتصل بنا",
+  "availableForSupport": "متواجدون للدعم",
+  "copyright": "© {{year}} PowerLetter. جميع الحقوق محفوظة.",
+  "version": "الإصدار",
+  "madeWith": "صُنع بـ",
+  "byTeam": "بواسطة فريق PowerLetter"
+}

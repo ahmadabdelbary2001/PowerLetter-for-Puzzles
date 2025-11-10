@@ -13,53 +13,37 @@ import { Menu, ToyBrick } from "lucide-react";
 import React, { useEffect, useRef } from "react";
 import ModeToggler from "@/components/molecules/ModeToggler";
 import { Logo } from "@/components/atoms/Logo";
+import { useTranslation } from "@/hooks/useTranslation";
 
-/**
- * Props for the Header component
- */
 interface HeaderProps {
-  /** Current active view for highlighting navigation */
   currentView?: "home" | "selection" | "play" | "kids";
-  /** Whether to show language selector */
   showLanguage?: boolean;
 }
 
 export function Header({ currentView, showLanguage = true }: HeaderProps) {
-  // Get current language and language change function from game mode context
   const { language: currentLanguage, setLanguage: onLanguageChange } = useGameMode();
-  // State for mobile menu open/close
+  const { t } = useTranslation(); // Get the translation function
   const [mobileOpen, setMobileOpen] = React.useState(false);
-  // ID for mobile navigation accessibility
   const mobileNavId = "mobile-navigation";
 
-  // Refs for mobile panel and toggle button
   const mobilePanelRef = useRef<HTMLDivElement | null>(null);
   const toggleButtonRef = useRef<HTMLButtonElement | null>(null);
 
-  // Effect to handle closing mobile menu when clicking outside
   useEffect(() => {
     if (!mobileOpen) return;
-
-    // Handle clicks outside the mobile menu
     function handleOutside(e: MouseEvent | TouchEvent) {
       const target = e.target as Node | null;
       if (!target) return;
-      if (mobilePanelRef.current && mobilePanelRef.current.contains(target)) return;
-      if (toggleButtonRef.current && toggleButtonRef.current.contains(target)) return;
+      if (mobilePanelRef.current?.contains(target)) return;
+      if (toggleButtonRef.current?.contains(target)) return;
       setMobileOpen(false);
     }
-
-    // Handle escape key press
     function handleEsc(e: KeyboardEvent) {
       if (e.key === "Escape") setMobileOpen(false);
     }
-
-    // Add event listeners
     document.addEventListener("mousedown", handleOutside);
     document.addEventListener("touchstart", handleOutside);
     document.addEventListener("keydown", handleEsc);
-
-    // Clean up event listeners
     return () => {
       document.removeEventListener("mousedown", handleOutside);
       document.removeEventListener("touchstart", handleOutside);
@@ -70,51 +54,29 @@ export function Header({ currentView, showLanguage = true }: HeaderProps) {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center h-16 justify-between">
-        {/* Logo / Brand */}
         <Logo />
-
-        {/* Desktop nav */}
         <nav className="hidden sm:flex items-center gap-1" role="navigation" aria-label="Main">
           <Link to="/">
-            <Button
-              variant="ghost"
-              size="sm"
-              className={cn("text-muted-foreground hover:text-foreground", currentView === "home" && "text-foreground bg-accent")}
-            >
-              Home
+            <Button variant="ghost" size="sm" className={cn("text-muted-foreground hover:text-foreground", currentView === "home" && "text-foreground bg-accent")}>
+              {t('home')}
             </Button>
           </Link>
           <Link to="/games">
-            <Button
-              variant="ghost"
-              size="sm"
-              className={cn("text-muted-foreground hover:text-foreground", currentView === "selection" && "text-foreground bg-accent")}
-            >
-              Games
+            <Button variant="ghost" size="sm" className={cn("text-muted-foreground hover:text-foreground", currentView === "selection" && "text-foreground bg-accent")}>
+              {t('games')}
             </Button>
           </Link>
-          {/* Kids section link with toy brick icon */}
           <Link to="/kids-games">
-            <Button
-              variant="ghost"
-              size="sm"
-              className={cn(
-                "text-muted-foreground hover:text-foreground flex items-center gap-1",
-                currentView === "kids" && "text-foreground bg-accent"
-              )}
-            >
+            <Button variant="ghost" size="sm" className={cn("text-muted-foreground hover:text-foreground flex items-center gap-1", currentView === "kids" && "text-foreground bg-accent")}>
               <ToyBrick className="w-4 h-4 text-green-500" />
-              Kids
+              {t('kids')}
             </Button>
           </Link>
           <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
-            Help
+            {t('help')}
           </Button>
         </nav>
-
-        {/* Right side controls */}
         <div className="flex items-center gap-3">
-          {/* Language selector - different styles for desktop and mobile */}
           {showLanguage && (
             <>
               <div className="hidden sm:block">
@@ -125,20 +87,14 @@ export function Header({ currentView, showLanguage = true }: HeaderProps) {
               </div>
             </>
           )}
-          {/* Mode toggler - different styles for desktop and mobile */}
-          <div className="hidden sm:block">
-            <ModeToggler />
-          </div>
-          <div className="sm:hidden">
-            <ModeToggler />
-          </div>
-          {/* Mobile menu toggle button */}
+          <div className="hidden sm:block"><ModeToggler /></div>
+          <div className="sm:hidden"><ModeToggler /></div>
           <div className="sm:hidden">
             <button
               ref={toggleButtonRef}
               aria-controls={mobileNavId}
               aria-expanded={mobileOpen}
-              aria-label={mobileOpen ? "Close menu" : "Open menu"}
+              aria-label={mobileOpen ? t('closeMenu') : t('openMenu')}
               onClick={() => setMobileOpen((s) => !s)}
               className="p-2 rounded-md hover:bg-muted/10 focus:outline-none focus:ring-2 focus:ring-primary"
             >
@@ -147,34 +103,27 @@ export function Header({ currentView, showLanguage = true }: HeaderProps) {
           </div>
         </div>
       </div>
-
-      {/* Mobile panel - only shown when mobileOpen is true */}
       {mobileOpen && (
-        <div
-          id={mobileNavId}
-          ref={mobilePanelRef}
-          className="sm:hidden border-t border-border/40 bg-background/95"
-        >
+        <div id={mobileNavId} ref={mobilePanelRef} className="sm:hidden border-t border-border/40 bg-background/95">
           <div className="px-4 py-3 space-y-2">
             <Link to="/" onClick={() => setMobileOpen(false)} className="block">
               <Button variant="ghost" size="sm" className={cn("w-full justify-start", currentView === "home" && "bg-accent")}>
-                Home
+                {t('home')}
               </Button>
             </Link>
             <Link to="/games" onClick={() => setMobileOpen(false)} className="block">
               <Button variant="ghost" size="sm" className={cn("w-full justify-start", currentView === "selection" && "bg-accent")}>
-                Games
+                {t('games')}
               </Button>
             </Link>
-            {/* Kids section link for mobile menu */}
             <Link to="/kids-games" onClick={() => setMobileOpen(false)} className="block">
               <Button variant="ghost" size="sm" className={cn("w-full justify-start flex items-center gap-2", currentView === "kids" && "bg-accent")}>
                 <ToyBrick className="w-4 h-4 text-green-500" />
-                Kids
+                {t('kids')}
               </Button>
             </Link>
             <Button variant="ghost" size="sm" className="w-full justify-start" onClick={() => setMobileOpen(false)}>
-              Help
+              {t('help')}
             </Button>
           </div>
         </div>

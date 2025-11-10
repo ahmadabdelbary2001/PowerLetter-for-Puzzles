@@ -1,0 +1,15 @@
+{
+  "description": "Educational puzzle game for word enthusiasts. Challenge your mind with engaging word puzzles in multiple languages.",
+  "followUs": "Follow us on {{social}}",
+  "quickLinks": "Quick Links",
+  "aboutUs": "About Us",
+  "privacyPolicy": "Privacy Policy",
+  "termsOfService": "Terms of Service",
+  "faq": "FAQ",
+  "contact": "Contact",
+  "availableForSupport": "Available for support",
+  "copyright": "© {{year}} PowerLetter. All rights reserved.",
+  "version": "Version",
+  "madeWith": "Made with",
+  "byTeam": "by PowerLetter Team"
+}

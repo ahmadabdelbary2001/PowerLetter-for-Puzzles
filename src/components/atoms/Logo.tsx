@@ -9,6 +9,7 @@
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/hooks/useTranslation";
 
 /**
  * Props for the Logo component
@@ -31,6 +32,8 @@ interface LogoProps {
  * elements on smaller screens.
  */
 export function Logo({ showText = true, showBadge = true, className }: LogoProps) {
+  const { t } = useTranslation(); // Get the translation function
+
   return (
     <Link to="/" className={cn("flex items-center gap-3 hover:opacity-80 transition-opacity", className)}>
       <div className="relative">
@@ -47,13 +50,15 @@ export function Logo({ showText = true, showBadge = true, className }: LogoProps
           <h1 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
             PowerLetter
           </h1>
-          <p className="text-xs text-muted-foreground -mt-1">Educational Puzzles</p>
+          {/* --- Use translation for the tagline --- */}
+          <p className="text-xs text-muted-foreground -mt-1">{t('tagline', { ns: 'landing' })}</p>
         </div>
       )}
       {/* Beta badge - hidden on small screens */}
       {showBadge && (
         <Badge variant="outline" className="ml-2 text-xs bg-gradient-to-r from-primary/10 to-secondary/10 hidden sm:inline">
-          Beta
+          {/* --- Use translation for the badge text --- */}
+          {t('beta', { ns: 'landing' })}
         </Badge>
       )}
     </Link>
