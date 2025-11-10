@@ -10,35 +10,19 @@ import React, { useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Globe } from "lucide-react";
 import type { Language } from "@/types/game";
+import { cn } from "@/lib/utils";
 
-/**
- * Props for the LanguageSelector component
- */
 interface LanguageSelectorProps {
-  /** The currently selected language */
   currentLanguage: Language;
-  /** Callback function when a language is selected */
   onLanguageChange: (language: Language) => void;
-  /** Whether to display in compact mode (smaller button) */
   compact?: boolean;
 }
 
-/**
- * Available languages with their display names and flag emojis
- */
 const languages: Array<{ code: Language; name: string; flag: string }> = [
   { code: "en", name: "English", flag: "🇺🇸" },
   { code: "ar", name: "العربية", flag: "🇸🇦" },
 ];
 
-/**
- * LanguageSelector component - A dropdown for language selection
- * 
- * This component renders a dropdown button that shows the current language
- * and allows users to select from available languages. It has two display modes:
- * compact (shows only language code) and full (shows language name and flag).
- * The component is accessible, supporting keyboard navigation and screen readers.
- */
 export default function LanguageSelector({
   currentLanguage,
   onLanguageChange,
@@ -48,56 +32,48 @@ export default function LanguageSelector({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
 
-  /**
-   * Handles language selection from the dropdown
-   * @param language - The selected language code
-   */
-  const handleLanguageSelect = (language: Language) => {
-    onLanguageChange(language);
-    setIsOpen(false);
-    buttonRef.current?.focus();
-  };
-
-  /**
-   * Effect to handle clicks outside the component to close the dropdown
-   */
   useEffect(() => {
-    function handleOutside(e: MouseEvent) {
+    function onDocClick(e: MouseEvent) {
       if (!containerRef.current) return;
       if (!(e.target instanceof Node)) return;
       if (!containerRef.current.contains(e.target)) setIsOpen(false);
     }
-    document.addEventListener("mousedown", handleOutside);
-    return () => document.removeEventListener("mousedown", handleOutside);
-  }, []);
-
-  /**
-   * Effect to handle Escape key to close the dropdown
-   */
-  useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") {
         setIsOpen(false);
         buttonRef.current?.focus();
       }
+      if (e.key === "ArrowDown" && isOpen) {
+        const firstBtn = containerRef.current?.querySelector("button[role='option']");
+        (firstBtn as HTMLElement | null)?.focus();
+      }
     }
-    if (isOpen) document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
+    document.addEventListener("mousedown", onDocClick);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDocClick);
+      document.removeEventListener("keydown", onKey);
+    };
   }, [isOpen]);
 
-  const currentLang = languages.find((lang) => lang.code === currentLanguage);
+  const currentLang = languages.find((l) => l.code === currentLanguage) || languages[0];
 
-  /**
-   * Dropdown list component - right-aligned on desktop, full-width on small screens
-   */
+  const handleSelect = (code: Language) => {
+    onLanguageChange(code);
+    setIsOpen(false);
+    buttonRef.current?.focus();
+  };
+
+  // Dropdown list
   const list = (
     <div
       ref={containerRef}
-      className={`absolute right-0 mt-2 ${compact ? "w-40" : "w-48 sm:w-48"} bg-background border rounded-md shadow-lg z-50`}
+      className={cn(
+        "absolute right-0 mt-2 z-50 w-44 rounded-lg shadow-lg overflow-hidden border bg-white dark:bg-gray-800",
+        compact ? "text-sm" : "text-base"
+      )}
       role="listbox"
       aria-orientation="vertical"
-      aria-activedescendant={currentLanguage}
-      tabIndex={-1}
     >
       <div className="py-1">
         {languages.map((lang) => {
@@ -107,11 +83,15 @@ export default function LanguageSelector({
               key={lang.code}
               role="option"
               aria-selected={selected}
-              className={`flex items-center gap-2 w-full px-4 py-2 text-left hover:bg-muted ${selected ? "bg-muted/50 font-semibold" : ""}`}
-              onClick={() => handleLanguageSelect(lang.code)}
+              onClick={() => handleSelect(lang.code)}
+              className={cn(
+                "flex items-center gap-3 w-full px-3 py-2 text-left hover:bg-slate-50 dark:hover:bg-gray-700 transition-colors",
+                selected ? "bg-slate-100 dark:bg-gray-700 font-semibold" : "font-normal"
+              )}
             >
-              <span>{lang.flag}</span>
+              <span className="text-lg">{lang.flag}</span>
               <span className="truncate">{lang.name}</span>
+              {selected && <span className="ml-auto text-xs text-indigo-600">✓</span>}
             </button>
           );
         })}
@@ -119,51 +99,43 @@ export default function LanguageSelector({
     </div>
   );
 
-  // Compact mode display
   if (compact) {
     return (
       <div className="relative inline-block">
         <Button
           variant="ghost"
           size="sm"
+          ref={buttonRef}
           onClick={() => setIsOpen((s) => !s)}
-          className="flex items-center gap-1 px-2"
           aria-haspopup="listbox"
           aria-expanded={isOpen}
-          ref={buttonRef}
+          className="flex items-center gap-1 px-2"
         >
           <Globe className="w-4 h-4" />
           <span className="sr-only">Language</span>
-          <span className="text-xs">{currentLang?.code.toUpperCase()}</span>
+          <span className="text-xs">{currentLang.code.toUpperCase()}</span>
         </Button>
-        {/* on mobile the list is small/compact */}
         {isOpen && list}
       </div>
     );
   }
 
-  // Default (desktop) display: show full name and flag, but compact visually on small screens
   return (
     <div className="relative inline-block">
       <Button
         variant="ghost"
+        ref={buttonRef}
         onClick={() => setIsOpen((s) => !s)}
-        className="flex items-center gap-2 px-2"
         aria-haspopup="listbox"
         aria-expanded={isOpen}
-        ref={buttonRef}
+        className="flex items-center gap-2 px-3"
       >
         <Globe className="w-4 h-4" />
-        <span className="mr-2 hidden sm:inline">{currentLang?.name}</span>
-        <span>{currentLang?.flag}</span>
+        <span className="hidden sm:inline">{currentLang.name}</span>
+        <span className="ml-1">{currentLang.flag}</span>
       </Button>
 
-      {isOpen && (
-        // wrap on small viewport to make the list easier to tap — make the parent relative so this can be positioned properly
-        <div className="sm:relative">
-          {list}
-        </div>
-      )}
+      {isOpen && <div className="sm:relative">{list}</div>}
     </div>
   );
 }
