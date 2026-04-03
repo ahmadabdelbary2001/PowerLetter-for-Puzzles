@@ -1,9 +1,9 @@
 export default function HomePage() {
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white">
+    <main className="min-h-screen flex flex-col items-center justify-center bg-linear-to-br from-slate-900 via-purple-900 to-slate-900 text-white">
       <div className="text-center space-y-6 px-4">
         {/* Logo / Icon */}
-        <div className="w-24 h-24 mx-auto rounded-3xl bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center shadow-2xl">
+        <div className="w-24 h-24 mx-auto rounded-3xl bg-linear-to-br from-purple-500 to-blue-500 flex items-center justify-center shadow-2xl">
           <span className="text-4xl">🧩</span>
         </div>
 
