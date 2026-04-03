@@ -1,5 +1,6 @@
 import * as React from "react";
 import type { VariantProps } from "class-variance-authority";
+
 import { cn } from "../lib/utils";
 import { badgeVariants } from "./badge-variants";
 
@@ -9,14 +10,7 @@ export interface BadgeProps
   as?: React.ElementType;
 }
 
-function Badge({
-  as: Component = "div",
-  className,
-  variant,
-  size,
-  style,
-  ...props
-}: BadgeProps) {
+function Badge({ as: Component = "div", className, variant, size, style, ...props }: BadgeProps) {
   const gradientStyle =
     variant === "default"
       ? {
@@ -25,15 +19,9 @@ function Badge({
         }
       : undefined;
 
-  const mergedStyle = { ...(style ?? {}), ...(gradientStyle ?? {}) };
+  const mergedStyle = { ...(style || {}), ...(gradientStyle || {}) };
 
-  return (
-    <Component
-      className={cn(badgeVariants({ variant, size }), className)}
-      style={mergedStyle}
-      {...props}
-    />
-  );
+  return <Component className={cn(badgeVariants({ variant, size }), className)} style={mergedStyle} {...props} />;
 }
 
 export { Badge };

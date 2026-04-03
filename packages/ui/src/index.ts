@@ -1,26 +1,13 @@
-// @powerletter/ui — Shared Design System (Atomic Design)
+export { Button } from './atoms/Button';
+export type { ButtonProps } from './atoms/Button';
+export { buttonVariants } from './atoms/button-variants';
 
-// ── Utilities ────────────────────────────────────────────────────
-export { cn } from "./lib/utils";
+export { Badge } from './atoms/Badge';
+export type { BadgeProps } from './atoms/Badge';
+export { badgeVariants } from './atoms/badge-variants';
 
-// ── Variants (CVA) ───────────────────────────────────────────────
-export { buttonVariants } from "./atoms/button-variants";
-export { badgeVariants } from "./atoms/badge-variants";
+export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from './atoms/Card';
 
-// ── Atoms ────────────────────────────────────────────────────────
-export { Button } from "./atoms/Button";
-export type { ButtonProps } from "./atoms/Button";
+export { Input } from './atoms/Input';
 
-export { Badge } from "./atoms/Badge";
-export type { BadgeProps } from "./atoms/Badge";
-
-export {
-  Card,
-  CardHeader,
-  CardFooter,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "./atoms/Card";
-
-export { Input } from "./atoms/Input";
+export { cn } from './lib/utils';

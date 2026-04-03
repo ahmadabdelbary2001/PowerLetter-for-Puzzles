@@ -15,14 +15,18 @@
     "android:build": "tauri android build"
   },
   "dependencies": {
-    "@radix-ui/react-dialog": "^1.1.15",
-    "@radix-ui/react-dropdown-menu": "^2.1.16",
-    "@radix-ui/react-label": "^2.1.7",
-    "@radix-ui/react-slot": "^1.2.3",
-    "@radix-ui/react-toast": "^1.2.14",
-    "@radix-ui/react-tooltip": "^1.2.7",
+    "@powerletter/core": "workspace:*",
+    "@powerletter/ui": "workspace:*",
+    "@radix-ui/react-dialog": "^1.1.2",
+    "@radix-ui/react-dropdown-menu": "^2.1.2",
+    "@radix-ui/react-label": "^2.1.2",
+    "@radix-ui/react-slot": "^1.1.2",
+    "@radix-ui/react-toast": "^1.2.2",
+    "@radix-ui/react-tooltip": "^1.1.2",
     "@tanstack/react-query": "^5.84.2",
-    "axios": "^1.13.1",
+    "@tauri-apps/api": "^2.0.0",
+    "@tauri-apps/plugin-log": "^2.0.0",
+    "axios": "^1.7.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "i18next": "^25.6.0",
@@ -37,14 +41,14 @@
     "sonner": "^2.0.7",
     "styled-components": "^6.1.19",
     "tailwind-merge": "^3.3.1",
-    "zustand": "^5.0.7",
-    "@tauri-apps/api": "^2",
-    "@tauri-apps/plugin-log": "^2"
+    "zustand": "^5.0.7"
   },
   "devDependencies": {
     "@eslint/js": "^9.30.1",
+    "@powerletter/config": "workspace:*",
     "@tailwindcss/container-queries": "^0.1.1",
     "@tailwindcss/postcss": "^4.1.11",
+    "@tauri-apps/cli": "^2.0.0",
     "@types/autoprefixer": "^10.2.4",
     "@types/node": "^24.1.0",
     "@types/react": "^18.3.23",
@@ -61,10 +65,6 @@
     "tailwindcss": "^4.1.11",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.35.1",
-    "vite": "^7.0.6",
-    "@tauri-apps/cli": "^2",
-    "@powerletter/ui": "workspace:*",
-    "@powerletter/core": "workspace:*",
-    "@powerletter/config": "workspace:*"
+    "vite": "^7.0.6"
   }
 }

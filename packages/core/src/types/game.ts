@@ -1,6 +1,4 @@
-// packages/core/src/types/game.ts
-// Shared domain types — used by desktop-mobile, web, and future packages
-
+// Shared game types — used by desktop-mobile, web, and future packages
 export type Language = 'en' | 'ar';
 export type GameMode = 'single' | 'competitive';
 export type GameType =
@@ -13,14 +11,13 @@ export type GameType =
   | 'img-choice'
   | 'word-choice';
 export type Difficulty = 'easy' | 'medium' | 'hard';
-export type AgeGroup = 'kids' | 'adult';
 
-export type GameCategory =
-  | 'animals'
-  | 'science'
-  | 'geography'
-  | 'fruits-and-vegetables'
-  | 'shapes'
+export type GameCategory = 
+  | 'animals' 
+  | 'science' 
+  | 'geography' 
+  | 'fruits-and-vegetables' 
+  | 'shapes' 
   | 'general'
   | 'anime'
   | 'cars'
@@ -46,9 +43,6 @@ export interface GameLevel {
   data?: unknown;
 }
 
-/**
- * Contract every game engine must implement.
- */
 export interface IGameEngine<T extends GameLevel> {
   loadLevels: (options: {
     language: Language;
@@ -95,51 +89,3 @@ export interface GameState {
   nextTurn: (outcome: 'win' | 'lose') => void;
   resetGame: () => void;
 }
-
-/**
- * Metadata for a registered game — used by GameRegistry.
- */
-export interface GameRegistryEntry {
-  id: GameType;
-  ageGroup: AgeGroup;
-  titleKey: string;
-  descriptionKey: string;
-  featuresKey: string;
-  status: 'available' | 'coming-soon';
-  supportedSettings: Array<'teams' | 'difficulty' | 'category'>;
-  availableCategories?: GameCategory[];
-  tags?: string[];
-  difficultyLevels?: Difficulty[];
-}
-
-// ── Lesson types (Phase 6) ────────────────────────────────────────
-export type LessonType = 'animal' | 'country' | 'vocabulary';
-
-export interface AnimalLesson {
-  type: 'animal';
-  id: string;
-  name: Record<Language, string>;
-  imageUrl?: string;
-  soundUrl?: string;
-  facts?: Record<Language, string[]>;
-}
-
-export interface CountryLesson {
-  type: 'country';
-  id: string;
-  name: Record<Language, string>;
-  capital: Record<Language, string>;
-  flagUrl?: string;
-  info?: Record<Language, string>;
-}
-
-export interface VocabularyLesson {
-  type: 'vocabulary';
-  id: string;
-  word: Record<Language, string>;
-  meaning: Record<Language, string>;
-  example?: Record<Language, string>;
-  audioUrl?: string;
-}
-
-export type Lesson = AnimalLesson | CountryLesson | VocabularyLesson;

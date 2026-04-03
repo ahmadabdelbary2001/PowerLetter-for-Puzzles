@@ -1,8 +1,8 @@
-import * as React from "react";
-import { cn } from "../lib/utils";
+import * as React from "react"
+import { cn } from "../lib/utils"
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  className?: string;
+  className?: string
 }
 
 const Input: React.FC<InputProps> = ({ className, type = "text", ...props }) => {
@@ -18,7 +18,7 @@ const Input: React.FC<InputProps> = ({ className, type = "text", ...props }) => 
       )}
       {...props}
     />
-  );
-};
+  )
+}
 
-export { Input };
+export { Input }
