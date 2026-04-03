@@ -2,8 +2,10 @@
 import { useMemo } from "react";
 import { useTranslation as useI18next } from "react-i18next";
 
-import en from "@/locales/en/instructions.json";
-import ar from "@/locales/ar/instructions.json";
+import { resources } from "@powerletter/core";
+
+const en = resources.en.instructions;
+const ar = resources.ar.instructions;
 
 export type InstructionSet = {
   title: string;

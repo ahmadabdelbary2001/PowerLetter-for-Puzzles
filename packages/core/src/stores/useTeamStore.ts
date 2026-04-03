@@ -1,13 +1,7 @@
-// src/stores/useTeamStore.ts
-/**
- * @description A Zustand store for managing the state of teams in competitive mode.
- * This includes team details, scores, hints, and turn-taking logic.
- */
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { Team } from '@powerletter/core';
 
-// Define the shape of the team state and its actions
 interface TeamState {
   teams: Team[];
   currentTeam: number;
@@ -26,12 +20,10 @@ interface TeamState {
 export const useTeamStore = create<TeamState>()(
   persist(
     (set, get) => ({
-      // Initial state values
       teams: [],
       currentTeam: 0,
       scores: {},
 
-      // --- Actions ---
       setTeams: (teams) => set({ teams }),
       setCurrentTeam: (currentTeam) => set({ currentTeam }),
 
@@ -116,7 +108,7 @@ export const useTeamStore = create<TeamState>()(
       },
     }),
     {
-      name: 'powerletter-team-storage', // Use a new name for the persisted storage
+      name: 'powerletter-team-storage',
     }
   )
 );

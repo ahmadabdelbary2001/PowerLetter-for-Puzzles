@@ -5,8 +5,7 @@
  * from the dedicated `useGameSettingsStore` and `useTeamStore`.
  * This provides a single, consistent interface for all components.
  */
-import { useGameSettingsStore } from '@/stores/useGameSettingsStore';
-import { useTeamStore } from '@/stores/useTeamStore';
+import { useGameSettingsStore, useTeamStore } from '@powerletter/core';
 
 export function useGameMode() {
   // 1. Get all state and actions from the settings store.
