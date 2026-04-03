@@ -1,46 +1,60 @@
+import { Button, Badge } from "@powerletter/ui";
+import { Gamepad2, GraduationCap, Sparkles } from "lucide-react";
+
 export default function HomePage() {
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center bg-linear-to-br from-slate-900 via-purple-900 to-slate-900 text-white">
-      <div className="text-center space-y-6 px-4">
+    <main className="min-h-screen flex flex-col items-center justify-center bg-linear-to-br from-slate-900 via-purple-900 to-slate-900 text-white overflow-hidden relative">
+      {/* Background blobs for depth */}
+      <div className="absolute top-[-10%] right-[-10%] w-96 h-96 bg-purple-600/20 rounded-full blur-3xl" />
+      <div className="absolute bottom-[-10%] left-[-10%] w-96 h-96 bg-blue-600/20 rounded-full blur-3xl" />
+
+      <div className="text-center space-y-8 px-4 relative z-10">
         {/* Logo / Icon */}
-        <div className="w-24 h-24 mx-auto rounded-3xl bg-linear-to-br from-purple-500 to-blue-500 flex items-center justify-center shadow-2xl">
-          <span className="text-4xl">🧩</span>
+        <div className="w-24 h-24 mx-auto rounded-3xl bg-linear-to-br from-purple-500 to-blue-500 flex items-center justify-center shadow-2xl animate-float">
+          <span className="text-4xl text-white">⚡</span>
         </div>
 
         {/* Title */}
-        <h1 className="text-5xl font-bold tracking-tight">
-          PowerLetter
-          <span className="block text-2xl font-normal text-purple-300 mt-2">
-            for Puzzles
-          </span>
-        </h1>
+        <div className="space-y-2">
+          <Badge variant="outline" className="bg-purple-500/10 border-purple-500/20 text-purple-300">
+            <Sparkles className="w-3 h-3 mr-2" />
+            Monorepo Powered
+          </Badge>
+          <h1 className="text-5xl md:text-6xl font-bold tracking-tight">
+            <span className="bg-linear-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+              PowerLetter
+            </span>
+          </h1>
+          <p className="text-xl font-medium text-purple-200">
+            Multilingual Puzzles & Learning
+          </p>
+        </div>
 
         {/* Description */}
         <p className="text-lg text-slate-300 max-w-md mx-auto leading-relaxed">
-          A multilingual puzzle &amp; learning platform. Play games, follow
-          learning paths, and explore lessons in Arabic &amp; English.
+          The same core game logic and UI system, now optimized for the web.
+          Play in Arabic & English with seamless synchronization.
         </p>
 
-        {/* Status badge */}
-        <div className="inline-flex items-center gap-2 bg-purple-500/20 border border-purple-500/30 rounded-full px-4 py-2 text-sm text-purple-300">
-          <span className="w-2 h-2 rounded-full bg-purple-400 animate-pulse" />
-          Web App — Phase 1 Complete ✅
+        {/* Links */}
+        <div className="flex gap-4 justify-center pt-6 flex-wrap">
+          <Button size="lg" className="bg-purple-600 hover:bg-purple-500 rounded-xl shadow-xl transition-all hover:scale-105 active:scale-95">
+            <Gamepad2 className="w-5 h-5 mr-3" />
+            Browse Games
+          </Button>
+          <Button size="lg" variant="outline" className="rounded-xl border-slate-700 hover:bg-slate-800 transition-all hover:scale-105 active:scale-95">
+            <GraduationCap className="w-5 h-5 mr-3" />
+            Start Lessons
+          </Button>
         </div>
 
-        {/* Links */}
-        <div className="flex gap-4 justify-center pt-4 flex-wrap">
-          <a
-            href="/games"
-            className="px-6 py-3 rounded-xl bg-purple-600 hover:bg-purple-500 transition-colors font-medium"
-          >
-            Browse Games →
-          </a>
-          <a
-            href="/lessons"
-            className="px-6 py-3 rounded-xl bg-slate-700 hover:bg-slate-600 transition-colors font-medium"
-          >
-            Lessons →
-          </a>
+        {/* Status indicator */}
+        <div className="pt-8 opacity-60 flex items-center justify-center gap-3 text-sm">
+          <span className="flex h-2 w-2 relative">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+          </span>
+          Next.js 15.3 + Tailwind 4.0
         </div>
       </div>
     </main>
