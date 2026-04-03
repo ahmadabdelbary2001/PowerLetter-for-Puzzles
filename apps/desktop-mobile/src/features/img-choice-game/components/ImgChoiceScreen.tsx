@@ -5,10 +5,9 @@
  * loading and error states. This file is only responsible for the game's specific UI.
  */
 import React from "react";
-import { Button } from "@/components/ui/button";
+import { Button, cn } from "@powerletter/ui";
 import { ArrowLeft, ArrowRight, Volume2, CheckCircle, XCircle } from "lucide-react";
 import { useImgChoiceGame } from "@/features/img-choice-game/hooks/useImgChoiceGame";
-import { cn } from "@/lib/utils";
 import { MultipleChoiceLayout } from "@/components/templates/MultipleChoiceLayout";
 import { GameScreen } from "@/components/organisms/GameScreen"; // Import the HOC
 

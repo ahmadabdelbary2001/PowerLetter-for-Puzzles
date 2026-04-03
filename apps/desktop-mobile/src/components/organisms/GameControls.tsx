@@ -12,7 +12,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import type { GameMode } from '@/types/game';
+import type { GameMode } from '@powerletter/core';
 
 /**
  * Props interface for the GameControls component

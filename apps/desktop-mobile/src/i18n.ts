@@ -64,7 +64,7 @@ i18n
     ns: ['common', 'footer', 'games', 'landing', 'outside_the_story', 'selection', 'team', 'notification'],
     defaultNS: 'common', // Set a default to avoid needing to specify it everywhere
     supportedLngs: ['en', 'ar'],
-    debug: process.env.NODE_ENV === 'development',
+    debug: import.meta.env.DEV,
     interpolation: {
       escapeValue: false,
     },

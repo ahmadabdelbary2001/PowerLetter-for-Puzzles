@@ -6,7 +6,7 @@
  */
 import { useState, useEffect } from "react"
 import { SolutionBox } from "@/components/atoms/SolutionBox"
-import { cn } from "@/lib/utils"
+import { cn } from "@powerletter/ui"
 
 /**
  * Props for the SolutionBoxes component

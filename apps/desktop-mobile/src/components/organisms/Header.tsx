@@ -8,10 +8,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { Button, cn } from "@powerletter/ui";
 import LanguageSelector from "@/components/molecules/LanguageSelector";
 import ModeToggler from "@/components/molecules/ModeToggler";
-import { cn } from "@/lib/utils";
 import { useGameMode } from "@/hooks/useGameMode";
 import { Menu, ToyBrick, Home, Gamepad2, HelpCircle } from "lucide-react";
 import Logo from "@/components/atoms/Logo";
@@ -75,7 +74,7 @@ export function Header({ currentView, showLanguage = true }: HeaderProps) {
   }, [mobileOpen]);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
         <Logo />
 

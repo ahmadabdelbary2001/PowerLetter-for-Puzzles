@@ -1,9 +1,6 @@
 // src/pages/TeamConfigurator.tsx
 import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Button, Card, CardHeader, CardTitle, CardDescription, CardContent, Input, Label } from '@powerletter/ui';
 import { Users, Plus, Minus, ArrowRight, ArrowLeft } from 'lucide-react';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useTranslation } from "@/hooks/useTranslation";
@@ -63,7 +60,7 @@ export const TeamConfigurator: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+    <div className="min-h-screen bg-linear-to-br from-background via-background to-muted/20">
       <Header />
       <main className="min-h-[calc(100vh-8rem)] flex items-center justify-center">
         <div className="container mx-auto px-4 py-8 max-w-2xl" dir={dir}>
@@ -85,7 +82,7 @@ export const TeamConfigurator: React.FC = () => {
                     <Button size="icon" variant="outline" onClick={() => handleTeamCountChange(teamCount - 1)} disabled={teamCount <= (isOutsideStory ? 3 : 2)}>
                       <Minus className="w-4 h-4" />
                     </Button>
-                    <div id="team-count-display" className="text-2xl font-bold min-w-[3rem] text-center text-primary">{teamCount}</div>
+                    <div id="team-count-display" className="text-2xl font-bold min-w-12 text-center text-primary">{teamCount}</div>
                     <Button size="icon" variant="outline" onClick={() => handleTeamCountChange(teamCount + 1)} disabled={teamCount >= 8}>
                       <Plus className="w-4 h-4" />
                     </Button>
@@ -98,7 +95,7 @@ export const TeamConfigurator: React.FC = () => {
                     {Array.from({ length: teamCount }).map((_, i) => (
                       <div key={i} className="flex items-center gap-3">
                         {/* --- Use new function syntax with namespace --- */}
-                        <Label htmlFor={`team-name-${i}`} className="min-w-[4rem] text-sm text-muted-foreground">{t('team', { ns: 'selection' })} {i + 1}</Label>
+                        <Label htmlFor={`team-name-${i}`} className="min-w-16 text-sm text-muted-foreground">{t('team', { ns: 'selection' })} {i + 1}</Label>
                         <Input id={`team-name-${i}`} value={teamNames[i] || ''} onChange={e => handleTeamNameChange(i, e.target.value)} placeholder={`${t('team', { ns: 'selection' })} ${i + 1}`} dir={dir} />
                       </div>
                     ))}
@@ -110,7 +107,7 @@ export const TeamConfigurator: React.FC = () => {
                     <Label htmlFor="hints-display" className="text-lg font-semibold">{t('hintsPerTeam', { ns: 'team' })}</Label>
                     <div className="flex items-center justify-center gap-4">
                       <Button size="icon" variant="outline" onClick={() => setHintsPerTeam(h => Math.max(0, h - 1))} disabled={hintsPerTeam <= 0}><Minus className="w-4 h-4" /></Button>
-                      <div id="hints-display" className="text-2xl font-bold min-w-[3rem] text-center text-primary">{hintsPerTeam}</div>
+                      <div id="hints-display" className="text-2xl font-bold min-w-12 text-center text-primary">{hintsPerTeam}</div>
                       <Button size="icon" variant="outline" onClick={() => setHintsPerTeam(h => Math.min(10, h + 1))} disabled={hintsPerTeam >= 10}><Plus className="w-4 h-4" /></Button>
                     </div>
                     {/* --- Use new function syntax with namespace --- */}

@@ -6,7 +6,7 @@
  * It supports different visual states for selection, hints, and disabled states.
  * The component is responsive and adjusts its size based on the device type.
  */
-import { cn } from "@/lib/utils"
+import { cn } from "@powerletter/ui"
 
 /**
  * Props for the LetterBox component

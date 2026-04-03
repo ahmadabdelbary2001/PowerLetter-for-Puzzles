@@ -5,8 +5,7 @@
  * This component provides a standardized button style for all game controls.
  * It supports icons, different variants, and a special primary styling.
  */
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { Button, cn } from "@powerletter/ui";
 import type { LucideIcon } from "lucide-react";
 
 /**
@@ -66,7 +65,9 @@ export function GameButton({
       )}
     >
       {Icon && (
-        <Icon className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2 flex-shrink-0" />
+        <div className="shrink-0">
+          <Icon className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
+        </div>
       )}
       {children}
     </Button>

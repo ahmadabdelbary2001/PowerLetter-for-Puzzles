@@ -8,7 +8,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useGameController } from '@/hooks/game/useGameController';
 import { outsideStoryGameEngine, type OutsideStoryLevel } from '@/features/outside-story-game/engine';
-import type { Team } from '@/types/game';
+import type { Team } from '@powerletter/core';
 
 // Type definitions for the game's internal state
 export type GameState =

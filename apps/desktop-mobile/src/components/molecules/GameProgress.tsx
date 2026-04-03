@@ -5,7 +5,7 @@
  * This component displays the current progress in the Letter Flow game,
  * showing how many words have been found out of the total.
  */
-import { cn } from "@/lib/utils"
+import { cn } from "@powerletter/ui"
 
 /**
  * Props for the GameProgress component

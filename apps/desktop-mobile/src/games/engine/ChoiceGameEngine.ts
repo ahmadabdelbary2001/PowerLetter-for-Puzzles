@@ -4,7 +4,7 @@
  * It extends the foundational BaseGameEngine and adds shared logic for validating
  * choice-based levels, such as ensuring the solution is always in the options.
  */
-import type { Language, GameCategory, GameLevel } from '@/types/game';
+import type { Language, GameCategory, GameLevel } from '@powerletter/core';
 import { BaseGameEngine } from './BaseGameEngine';
 
 export interface ChoiceLevel extends GameLevel {

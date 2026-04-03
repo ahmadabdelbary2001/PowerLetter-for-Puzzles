@@ -8,7 +8,7 @@
  * - Connection directions & colors (use endpoint/path colors first)
  */
 import { LetterFlowCell } from "@/components/atoms/LetterFlowCell";
-import { cn } from "@/lib/utils";
+import { cn } from "@powerletter/ui";
 import type { BoardCell } from "@/features/letter-flow-game/engine";
 import { colorForString } from "@/features/letter-flow-game/utils/colors";
 

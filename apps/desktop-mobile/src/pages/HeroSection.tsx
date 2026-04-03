@@ -3,9 +3,8 @@
  * @description The main landing page component that combines the best elements from previous versions
  * with consistent styling from KidsGameSelector and GameTypeSelector pages.
  */
-import { Button } from "../components/ui/button";
-import { Badge } from "../components/ui/badge";
-import { useTranslation } from "../hooks/useTranslation";
+import { Button, Badge } from "@powerletter/ui";
+import { useTranslation } from "@/hooks/useTranslation";
 import { useNavigate } from "react-router-dom";
 import { Sparkles, Trophy, Lightbulb, Brain, Languages, Users, Gamepad2, ToyBrick } from "lucide-react";
 
@@ -28,7 +27,7 @@ export default function HeroSection(): JSX.Element {
   const handleHowToPlay = () => navigate("/help");
 
   return (
-    <section className="relative w-full min-h-screen overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-blue-950 dark:to-indigo-950">
+    <section className="relative w-full min-h-screen overflow-hidden bg-linear-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-blue-950 dark:to-indigo-950">
       {/* Animated Background Elements - Consistent with Game Selection Pages */}
       <div className="absolute inset-0 z-0">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob dark:bg-blue-900/50"></div>
@@ -44,14 +43,14 @@ export default function HeroSection(): JSX.Element {
             <div className="space-y-6">
               <Badge
                 variant="outline"
-                className="bg-gradient-to-r from-primary/10 to-secondary/10 border-primary/20 text-primary px-4 py-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 animate-fade-in-up"
+                className="bg-linear-to-r from-primary/10 to-secondary/10 border-primary/20 text-primary px-4 py-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 animate-fade-in-up"
               >
                 <Sparkles className="w-4 h-4 mr-2" />
                 {t('betaStatus', { ns: 'landing' })}
               </Badge>
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">
-                <span className="bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent animate-gradient bg-300%">
+                <span className="bg-linear-to-r from-primary via-secondary to-primary bg-clip-text text-transparent animate-gradient bg-300%">
                   PowerLetter
                 </span>
 
@@ -80,7 +79,7 @@ export default function HeroSection(): JSX.Element {
                   className="flex items-start gap-3 p-4 rounded-2xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border border-slate-200 dark:border-slate-700 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
-                  <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-r from-primary to-secondary rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-md">
+                  <div className="shrink-0 w-10 h-10 bg-linear-to-r from-primary to-secondary rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-md">
                     <span className="text-white text-lg">{feature.icon}</span>
                   </div>
                   <div className="flex-1 min-w-0">
@@ -100,7 +99,7 @@ export default function HeroSection(): JSX.Element {
               <Button
                 onClick={handleStartPlaying}
                 size="lg"
-                className="w-full sm:w-auto bg-gradient-to-r from-primary to-primary/80 hover:from-primary/80 hover:to-primary text-primary-foreground text-lg px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group"
+                className="w-full sm:w-auto bg-linear-to-r from-primary to-primary/80 hover:from-primary/80 hover:to-primary text-primary-foreground text-lg px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group"
               >
                 <Gamepad2 className="w-5 h-5 mr-3 group-hover:scale-110 transition-transform duration-300" />
                 {t('startPlaying', { ns: 'landing' })}
@@ -147,9 +146,9 @@ export default function HeroSection(): JSX.Element {
 
           {/* Right Side: Interactive Game Preview - Now responsive */}
           <div className="relative lg:order-2 mt-12 lg:mt-0">
-            <div className="relative bg-gradient-to-br from-white/80 to-white/60 dark:from-slate-800/80 dark:to-slate-800/60 rounded-3xl p-4 sm:p-8 shadow-2xl backdrop-blur-sm border border-white/20 animate-float">
+            <div className="relative bg-linear-to-br from-white/80 to-white/60 dark:from-slate-800/80 dark:to-slate-800/60 rounded-3xl p-4 sm:p-8 shadow-2xl backdrop-blur-sm border border-white/20 animate-float">
               {/* Main Game Preview Container */}
-              <div className="w-full h-64 sm:h-80 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-2xl flex items-center justify-center relative overflow-hidden">
+              <div className="w-full h-64 sm:h-80 bg-linear-to-br from-primary/10 to-secondary/10 rounded-2xl flex items-center justify-center relative overflow-hidden">
                 {/* Floating Game Elements */}
                 <div className="absolute top-4 left-4 w-10 h-10 sm:w-14 sm:h-14 bg-blue-500 rounded-lg animate-bounce shadow-lg flex items-center justify-center">
                   <span className="text-white font-bold text-base sm:text-lg">A</span>
@@ -166,7 +165,7 @@ export default function HeroSection(): JSX.Element {
 
                 {/* Central PowerLetter Icon */}
                 <div className="relative z-10 text-center">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-r from-primary to-secondary rounded-2xl flex items-center justify-center shadow-2xl mx-auto mb-4 animate-pulse-slow">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 bg-linear-to-r from-primary to-secondary rounded-2xl flex items-center justify-center shadow-2xl mx-auto mb-4 animate-pulse-slow">
                     <span className="text-2xl sm:text-3xl text-white">⚡</span>
                   </div>
                   <h3 className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-white mb-2">PowerLetter</h3>
@@ -175,10 +174,10 @@ export default function HeroSection(): JSX.Element {
               </div>
 
               {/* Floating Achievement Badges */}
-              <div className="absolute -top-2 -right-2 sm:-top-3 sm:-right-3 bg-gradient-to-r from-primary to-secondary text-white p-2 sm:p-3 rounded-full shadow-2xl flex items-center justify-center">
+              <div className="absolute -top-2 -right-2 sm:-top-3 sm:-right-3 bg-linear-to-r from-primary to-secondary text-white p-2 sm:p-3 rounded-full shadow-2xl flex items-center justify-center">
                 <Trophy className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
-              <div className="absolute -bottom-2 -left-2 sm:-bottom-3 sm:-left-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white p-2 sm:p-3 rounded-full shadow-2xl flex items-center justify-center">
+              <div className="absolute -bottom-2 -left-2 sm:-bottom-3 sm:-left-3 bg-linear-to-r from-purple-500 to-purple-600 text-white p-2 sm:p-3 rounded-full shadow-2xl flex items-center justify-center">
                 <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
 

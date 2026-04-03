@@ -6,7 +6,7 @@
  * It's used in the game setup process to allow players to choose between
  * single player and competitive modes.
  */
-import { Card, CardTitle } from '@/components/ui/card';
+import { Card, CardTitle } from '@powerletter/ui';
 import { User, Users } from 'lucide-react';
 import { useTranslation } from "@/hooks/useTranslation";
 

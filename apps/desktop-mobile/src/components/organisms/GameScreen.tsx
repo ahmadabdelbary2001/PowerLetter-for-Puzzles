@@ -5,7 +5,7 @@
  * This pattern centralizes repetitive logic, keeping individual game screens clean and focused on their unique UI.
  */
 import React from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@powerletter/ui';
 import { useTranslation } from '@/hooks/useTranslation';
 
 // Define the minimum shape that any game hook MUST return.

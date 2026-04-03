@@ -5,7 +5,7 @@
  * This component displays a list of words that the player has successfully found.
  * It's responsive and adjusts its layout based on the device type and screen size.
  */
-import { cn } from "@/lib/utils"
+import { cn } from "@powerletter/ui"
 
 /**
  * Props for the FoundWords component

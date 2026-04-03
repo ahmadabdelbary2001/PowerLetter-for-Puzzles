@@ -1,5 +1,5 @@
 // src/games/engine/types.ts
-import type { Language, GameCategory, Difficulty } from '@/types/game';
+import type { Language, GameCategory, Difficulty } from '@powerletter/core';
 
 /**
  * Defines the common interface for any game engine in the application.

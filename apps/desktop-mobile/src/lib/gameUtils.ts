@@ -1,5 +1,5 @@
 // src/lib/gameUtils.ts
-import type { Difficulty, Language } from '@/types/game';
+import type { Difficulty, Language } from '@powerletter/core';
 
 /**
  * Shuffles an array in place using the Fisher-Yates algorithm and returns it.

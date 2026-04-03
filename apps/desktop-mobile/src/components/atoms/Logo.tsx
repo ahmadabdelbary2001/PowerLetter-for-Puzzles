@@ -7,8 +7,7 @@
  * The logo is responsive and adapts its display based on screen size.
  */
 import { Link } from "react-router-dom";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
+import { Badge, cn } from "@powerletter/ui";
 import { useTranslation } from "@/hooks/useTranslation";
 
 /**
@@ -38,16 +37,16 @@ export function Logo({ showText = true, showBadge = true, className }: LogoProps
     <Link to="/" className={cn("flex items-center gap-3 hover:opacity-80 transition-opacity", className)}>
       <div className="relative">
         {/* Lightning bolt icon with gradient text */}
-        <div className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+        <div className="text-2xl sm:text-3xl font-bold bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
           ⚡
         </div>
         {/* Animated pulse indicator */}
-        <div className="absolute -top-1 -right-1 w-2 h-2 bg-gradient-to-r from-warning to-warning-light rounded-full animate-pulse" />
+        <div className="absolute -top-1 -right-1 w-2 h-2 bg-linear-to-r from-warning to-warning-light rounded-full animate-pulse" />
       </div>
       {/* Logo text - hidden on small screens */}
       {showText && (
         <div className="hidden sm:block">
-          <h1 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          <h1 className="text-lg sm:text-xl font-bold bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
             PowerLetter
           </h1>
           {/* --- Use translation for the tagline --- */}
@@ -56,7 +55,7 @@ export function Logo({ showText = true, showBadge = true, className }: LogoProps
       )}
       {/* Beta badge - hidden on small screens */}
       {showBadge && (
-        <Badge variant="outline" className="ml-2 text-xs bg-gradient-to-r from-primary/10 to-secondary/10 hidden sm:inline">
+        <Badge variant="outline" className="ml-2 text-xs bg-linear-to-r from-primary/10 to-secondary/10 hidden sm:inline">
           {/* --- Use translation for the badge text --- */}
           {t('beta', { ns: 'landing' })}
         </Badge>

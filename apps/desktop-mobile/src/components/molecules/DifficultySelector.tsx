@@ -6,10 +6,9 @@
  * It's used in the game setup process to allow players to choose the difficulty
  * of the questions they want to play with.
  */
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { Button, cn } from "@powerletter/ui";
 import { useTranslation } from "@/hooks/useTranslation";
-import type { Difficulty } from "@/types/game";
+import type { Difficulty } from "@powerletter/core";
 
 /**
  * Data structure for a difficulty option

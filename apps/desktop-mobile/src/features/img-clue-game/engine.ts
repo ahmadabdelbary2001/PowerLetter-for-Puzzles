@@ -4,7 +4,7 @@
  * It extends the shared ClueGameEngine to inherit all common level-loading logic,
  * and only needs to provide its unique, game-specific implementation details.
  */
-import type { Language, GameCategory } from '@/types/game';
+import type { Language, GameCategory } from '@powerletter/core';
 import { ClueGameEngine, type ClueLevel } from '@/games/engine/ClueGameEngine';
 
 /**

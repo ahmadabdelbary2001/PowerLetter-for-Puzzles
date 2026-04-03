@@ -12,7 +12,7 @@ import { Header } from "@/components/organisms/Header";
 import HeroSection from "@/pages/HeroSection";
 import GameTypeSelector from "@/pages/GameTypeSelector";
 import Footer from "@/components/organisms/Footer";
-import type { Language } from "@/types/game";
+import type { Language } from "@powerletter/core";
 import { useGameMode } from "@/hooks/useGameMode";
 
 /**
@@ -54,7 +54,8 @@ const Index = () => {
   }, [language, setLanguage]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex flex-col">
+    <div className="min-h-screen flex flex-col">
+      <div className="fixed inset-0 bg-linear-to-br from-background via-muted/20 to-background -z-10" />
       {/* Render the global header, passing the current view for active link styling */}
       <Header currentView={currentView} />
 

@@ -7,7 +7,7 @@
  */
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { shuffleArray } from '@/lib/gameUtils';
-import type { GameLevel, Difficulty } from '@/types/game'; // Import Difficulty
+import type { GameLevel, Difficulty } from '@powerletter/core';
 import type { useGameController } from './useGameController';
 
 interface ChoiceLevel extends GameLevel {

@@ -1,7 +1,6 @@
-// src/games/GameRegistry.ts
 import React from 'react';
 import { Puzzle, Search, Image as ImageIcon, CheckSquare, SpellCheck, Share2, Users } from 'lucide-react';
-import type { GameCategory } from '@/types/game';
+import type { GameCategory } from '@powerletter/core';
 
 const PhraseClueGameScreen = React.lazy(() => import('@/features/phrase-clue-game/components/PhraseClueGameScreen'));
 const ImgClueGameScreen = React.lazy(() => import('@/features/img-clue-game/components/ImgClueGameScreen'));

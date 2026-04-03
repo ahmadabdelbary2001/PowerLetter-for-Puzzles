@@ -5,7 +5,7 @@
  * resolution and dynamic module importing. Subclasses must provide the specific
  * details for path construction and level validation.
  */
-import type { Language, GameCategory, Difficulty, GameLevel } from '@/types/game';
+import type { Language, GameCategory, Difficulty, GameLevel } from '@powerletter/core';
 import { shuffleArray } from '@/lib/gameUtils';
 import { GAME_REGISTRY } from '@/games/GameRegistry';
 import type { IGameEngine } from './types';

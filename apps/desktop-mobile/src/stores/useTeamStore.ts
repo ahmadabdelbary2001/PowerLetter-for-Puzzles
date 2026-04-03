@@ -5,7 +5,7 @@
  */
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { Team } from '@/types/game';
+import type { Team } from '@powerletter/core';
 
 // Define the shape of the team state and its actions
 interface TeamState {

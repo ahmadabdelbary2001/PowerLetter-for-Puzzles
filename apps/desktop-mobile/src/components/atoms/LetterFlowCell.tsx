@@ -1,6 +1,6 @@
 // src/components/atoms/LetterFlowCell.tsx (Radical and Corrected Version)
 import React from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@powerletter/ui";
 
 interface LetterFlowCellProps {
   letter: string;

@@ -7,10 +7,9 @@
  * navigation and screen reader support.
  */
 import React, { useRef, useEffect } from "react";
-import { Button } from "@/components/ui/button";
+import { Button, cn } from "@powerletter/ui";
 import { Globe } from "lucide-react";
-import type { Language } from "@/types/game";
-import { cn } from "@/lib/utils";
+import type { Language } from "@powerletter/core";
 
 interface LanguageSelectorProps {
   currentLanguage: Language;

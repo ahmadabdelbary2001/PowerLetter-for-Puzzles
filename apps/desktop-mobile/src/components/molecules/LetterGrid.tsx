@@ -8,7 +8,7 @@
  */
 import { useState, useEffect } from "react"
 import { LetterBox } from "@/components/atoms/LetterBox"
-import { cn } from "@/lib/utils"
+import { cn } from "@powerletter/ui"
 
 /**
  * Props for the LetterGrid component

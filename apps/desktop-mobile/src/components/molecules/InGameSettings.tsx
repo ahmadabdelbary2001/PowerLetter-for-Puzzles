@@ -7,8 +7,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
+  Button,
+} from "@powerletter/ui";
 import { Settings, Users, Layers, BarChart3 } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useNavigate, useParams } from "react-router-dom";

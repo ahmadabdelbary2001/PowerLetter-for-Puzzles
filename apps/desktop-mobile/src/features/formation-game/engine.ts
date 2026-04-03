@@ -5,7 +5,7 @@
  * --- It now extends the BaseGameEngine for architectural consistency,
  * but overrides the `loadLevels` method to handle its unique, non-category-based loading logic. ---
  */
-import type { Language, Difficulty, GameCategory } from '@/types/game';
+import type { Language, Difficulty, GameCategory } from '@powerletter/core';
 import { shuffleArray } from '@/lib/gameUtils';
 import { BaseGameEngine } from '@/games/engine/BaseGameEngine';
 

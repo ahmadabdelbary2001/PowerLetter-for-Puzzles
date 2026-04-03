@@ -5,10 +5,9 @@
  * keeping this file focused solely on the game's presentation logic.
  */
 import React from "react";
-import { Button } from "@/components/ui/button";
+import { Button, cn } from "@powerletter/ui";
 import { ArrowLeft, ArrowRight, Volume2, CheckCircle, XCircle } from "lucide-react";
 import { useWordChoiceGame } from "@/features/word-choice-game/hooks/useWordChoiceGame";
-import { cn } from "@/lib/utils";
 import { MultipleChoiceLayout } from "@/components/templates/MultipleChoiceLayout";
 import { GameScreen } from "@/components/organisms/GameScreen"; // Import the HOC
 

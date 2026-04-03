@@ -6,7 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import GridCellComponent from '@/components/atoms/GridCell';
 import type { GridCell as GridCellType } from '@/features/formation-game/engine';
-import { cn } from '@/lib/utils';
+import { cn } from "@powerletter/ui";
 
 interface CrosswordGridProps {
   grid: GridCellType[];

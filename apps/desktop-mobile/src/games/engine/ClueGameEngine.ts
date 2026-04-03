@@ -4,7 +4,7 @@
  * It extends the foundational BaseGameEngine and adds shared logic specific
  * to clue games, such as letter generation.
  */
-import type { Language, Difficulty, GameLevel } from '@/types/game';
+import type { Language, Difficulty, GameLevel } from '@powerletter/core';
 import { generateLetters } from '@/lib/gameUtils';
 import { BaseGameEngine } from './BaseGameEngine';
 

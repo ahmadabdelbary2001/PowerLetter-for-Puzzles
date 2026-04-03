@@ -4,7 +4,7 @@
  * --- It is now a PURE mixin that does not call any global state hooks directly. ---
  */
 import { useState, useCallback, useMemo, useEffect } from 'react';
-import type { GameLevel, Difficulty } from '@/types/game';
+import type { GameLevel, Difficulty } from '@powerletter/core';
 import type { useGameController } from './useGameController';
 
 const normalize = (s: string) => s.toLowerCase().trim();

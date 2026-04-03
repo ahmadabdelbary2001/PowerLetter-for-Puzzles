@@ -6,7 +6,7 @@
  * It supports different sizes and visual states (filled/empty) and is used in word games
  * to show the player's progress toward the solution.
  */
-import { cn } from "@/lib/utils";
+import { cn } from "@powerletter/ui";
 import { cva, type VariantProps } from "class-variance-authority";
 
 /**

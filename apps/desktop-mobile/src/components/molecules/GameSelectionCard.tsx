@@ -10,11 +10,8 @@
  * modern animations and icons for a polished user experience.
  */
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Badge, cn } from '@powerletter/ui';
 import { Lock, Search, CheckCircle, Star } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import type { GameConfig } from '@/games/GameRegistry';
 import { useTranslation } from '@/hooks/useTranslation';
 
@@ -85,8 +82,8 @@ export const GameSelectionCard: React.FC<GameSelectionCardProps> = ({ game, isSe
           {t(game.descriptionKey, { ns: 'games' })}
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex flex-col flex-grow p-4 pt-0 space-y-3">
-        <div className="flex-grow">
+      <CardContent className="flex flex-col grow p-4 pt-0 space-y-3">
+        <div className="grow">
           <h4 className={cn("font-semibold text-xs text-muted-foreground mb-2", dir === 'rtl' ? 'text-right' : '')}>
             {t('features')}:
           </h4>

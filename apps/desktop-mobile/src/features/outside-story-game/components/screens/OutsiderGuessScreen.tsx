@@ -1,8 +1,8 @@
 // src/features/outside-story-game/components/screens/OutsiderGuessScreen.tsx
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button, cn } from '@powerletter/ui';
+import type { Team } from '@powerletter/core';
 import type { useOutsideStory } from '../../hooks/useOutsideStory';
-import { cn } from '@/lib/utils'; // Import cn for conditional classes
 
 type Props = { game: ReturnType<typeof useOutsideStory> };
 
@@ -13,7 +13,7 @@ const OutsiderGuessScreen: React.FC<Props> = ({ game }) => {
   const [selectedGuess, setSelectedGuess] = useState<string | null>(null);
   const [guessStatus, setGuessStatus] = useState<'correct' | 'incorrect' | null>(null);
 
-  const outsider = players.find(p => p.id === currentRound?.outsiderId);
+  const outsider = players.find((p: Team) => p.id === currentRound?.outsiderId);
 
   if (!currentRound || !outsider) {
     setGameState('results');
@@ -26,7 +26,7 @@ const OutsiderGuessScreen: React.FC<Props> = ({ game }) => {
    * to show visual feedback on the button, then calls the main game logic
    * after a short delay.
    */
-  const onGuess = (word: string) => {
+  const onGuess = (word: string): void => {
     // Don't allow another guess while one is being processed
     if (selectedGuess) return;
 

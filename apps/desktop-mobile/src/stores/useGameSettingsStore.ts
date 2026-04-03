@@ -6,7 +6,7 @@
  */
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { Language, GameMode, GameType, GameCategory, Difficulty } from '@/types/game';
+import type { Language, GameMode, GameType, GameCategory, Difficulty } from '@powerletter/core';
 
 // Define the shape of the settings state and its actions
 interface GameSettingsState {

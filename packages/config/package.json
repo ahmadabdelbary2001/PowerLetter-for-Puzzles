@@ -9,9 +9,7 @@
     ".": "./src/index.ts",
     "./*": "./src/*"
   },
-  "scripts": {
-    "build": "tsc"
-  },
+  "scripts": {},
   "devDependencies": {
     "typescript": "~5.8.3"
   }

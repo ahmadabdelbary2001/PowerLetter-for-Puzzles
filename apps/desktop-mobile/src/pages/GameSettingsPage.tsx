@@ -3,8 +3,7 @@ import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useTranslation } from '@/hooks/useTranslation';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button, Card, CardContent, CardHeader, CardTitle } from '@powerletter/ui';
 import { Header } from '@/components/organisms/Header';
 import { DifficultySelector } from '@/components/molecules/DifficultySelector';
 import { CategorySelector } from '@/components/molecules/CategorySelector';
@@ -13,7 +12,7 @@ import {
   ArrowLeft, ArrowRight, BrainCircuit, FlaskConical, Globe, Shapes, Apple, Palette, 
   Music, Car, Clapperboard, Utensils, GlassWater, Heart, Swords, Cake, Shirt, Tv, Gamepad, User
 } from 'lucide-react';
-import type { GameCategory } from '@/types/game';
+import type { GameCategory } from '@powerletter/core';
 
 const difficultyOptions = [
   { id: 'easy' as const, labelKey: 'easy', color: 'bg-green-500 hover:bg-green-600' },
@@ -90,7 +89,8 @@ const GameSettingsPage: React.FC = () => {
   }));
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+    <div className="min-h-screen relative">
+      <div className="fixed inset-0 bg-linear-to-br from-background via-muted/20 to-background -z-10" />
       <Header currentView="play" />
       <main className="min-h-[calc(100vh-8rem)] flex items-center justify-center">
         <div className="container mx-auto px-4 py-8 max-w-4xl" dir={dir}>

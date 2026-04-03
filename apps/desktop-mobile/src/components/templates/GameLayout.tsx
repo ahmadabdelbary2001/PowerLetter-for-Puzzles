@@ -1,8 +1,6 @@
 // src/components/templates/GameLayout.tsx
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Button, Card, CardHeader, CardTitle, CardContent, Badge, cn } from '@powerletter/ui';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useTranslation } from "@/hooks/useTranslation";
@@ -12,8 +10,7 @@ import { TeamDisplay } from '@/components/molecules/TeamDisplay';
 import GameInstructions from '@/components/molecules/GameInstructions';
 import { InGameSettings } from '@/components/molecules/InGameSettings';
 import { Notification, type NotificationData } from '@/components/atoms/Notification';
-import type { Difficulty } from '@/types/game';
-import { cn } from '@/lib/utils';
+import type { Difficulty } from '@powerletter/core';
 
 interface GameLayoutProps {
   children: React.ReactNode;
@@ -61,7 +58,7 @@ export const GameLayout: React.FC<GameLayoutProps> = ({
         />
       )}
 
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-6" dir={dir}>
+      <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-6" dir={dir}>
         <div
           className={cn(
             "relative mx-auto space-y-4 sm:space-y-6",

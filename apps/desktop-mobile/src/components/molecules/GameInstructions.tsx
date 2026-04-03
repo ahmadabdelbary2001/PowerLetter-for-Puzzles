@@ -2,8 +2,7 @@
 
 import React, { useState } from 'react';
 import { useTranslation } from "@/hooks/useTranslation";
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button, Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from '@powerletter/ui';
 
 interface GameInstructionsProps {
   instructions: {

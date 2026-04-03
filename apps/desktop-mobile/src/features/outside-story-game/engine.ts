@@ -5,7 +5,7 @@
  * --- It now extends the BaseGameEngine for architectural consistency,
  * simplifying its implementation by inheriting the core level-loading loop. ---
  */
-import type { Language, GameCategory, GameLevel } from '@/types/game';
+import type { Language, GameCategory, GameLevel } from '@powerletter/core';
 import { BaseGameEngine } from '@/games/engine/BaseGameEngine';
 
 /**
@@ -82,7 +82,8 @@ class OutsideStoryGameEngine extends BaseGameEngine<OutsideStoryLevel> {
 
       try {
         const module = await loader();
-        const words = Array.isArray(module.default?.words) ? module.default.words.map(String) : [];
+        const moduleDefault = module.default;
+        const words = (moduleDefault && Array.isArray(moduleDefault.words)) ? moduleDefault.words.map(String) : [];
         
         // For Outside Story, the first word in the list is the solution
         const solution = words.length > 0 ? words[0] : "";
@@ -93,7 +94,7 @@ class OutsideStoryGameEngine extends BaseGameEngine<OutsideStoryLevel> {
           category: cat,
           words,
           solution,
-          meta: module.default?.meta ?? {},
+          meta: moduleDefault?.meta ?? {},
         });
       } catch (err) {
         console.error(`OutsideStoryGameEngine: Failed to load or parse ${path}`, err);

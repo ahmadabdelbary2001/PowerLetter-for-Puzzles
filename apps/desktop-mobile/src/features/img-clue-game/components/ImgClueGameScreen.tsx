@@ -5,8 +5,7 @@
  * loading and error states, keeping this file focused on the game's specific UI.
  */
 import React from "react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Button, Badge } from "@powerletter/ui";
 import { SolutionBoxes } from "@/components/molecules/SolutionBoxes";
 import { LetterGrid } from "@/components/molecules/LetterGrid";
 import GameControls from "@/components/organisms/GameControls";

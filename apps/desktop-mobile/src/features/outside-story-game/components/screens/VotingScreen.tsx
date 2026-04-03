@@ -1,6 +1,6 @@
 // src/features/outside-story-game/components/screens/VotingScreen.tsx
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@powerletter/ui';
 import type { useOutsideStory } from '../../hooks/useOutsideStory';
 
 type Props = { game: ReturnType<typeof useOutsideStory> };

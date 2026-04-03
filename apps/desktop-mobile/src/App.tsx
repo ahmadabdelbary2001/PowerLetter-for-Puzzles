@@ -1,8 +1,5 @@
-// src/App.tsx
 import { Suspense } from 'react';
-import { Toaster } from "@/components/ui/toaster";
-import Sonner from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster, Sonner, TooltipProvider } from "@powerletter/ui";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useParams } from "react-router-dom";
 import Index from "./pages/Index";

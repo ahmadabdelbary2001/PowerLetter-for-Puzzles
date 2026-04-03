@@ -7,7 +7,7 @@
 import { Link } from "react-router-dom";
 import Logo from "@/components/atoms/Logo";
 import { useTranslation } from "@/hooks/useTranslation";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@powerletter/ui";
 
 export default function Footer() {
   const { t } = useTranslation();
@@ -43,10 +43,10 @@ export default function Footer() {
                     key={s.id}
                     to={s.href}
                     aria-label={s.label}
-                    className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-indigo-50 dark:hover:bg-indigo-700/30 transition-colors"
+                    className="relative inline-flex items-center justify-center w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-indigo-50 dark:hover:bg-indigo-700/30 transition-colors overflow-hidden"
                   >
                     {/* simple decorative square as an icon placeholder */}
-                    <div className="w-4 h-4 rounded-sm bg-gradient-to-tr from-indigo-500 via-violet-500 to-pink-500" />
+                    <div className="absolute inset-0 bg-linear-to-tr from-primary/5 via-transparent to-primary/5 pointer-events-none" />
                   </Link>
                 ))}
               </div>

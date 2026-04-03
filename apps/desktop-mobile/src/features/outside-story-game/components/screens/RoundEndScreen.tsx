@@ -1,6 +1,6 @@
 // src/features/outside-story-game/components/screens/RoundEndScreen.tsx
 import React from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@powerletter/ui';
 import { useNavigate } from 'react-router-dom';
 import type { useOutsideStory } from '../../hooks/useOutsideStory';
 

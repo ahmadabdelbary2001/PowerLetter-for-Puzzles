@@ -6,11 +6,10 @@
  * It's used in the game setup process to allow players to choose which categories
  * of questions they want to play with.
  */
-import { Card } from "@/components/ui/card";
+import { Card, cn } from "@powerletter/ui";
 import { Check } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { useTranslation } from "@/hooks/useTranslation";
-import type { GameCategory } from "@/types/game";
+import type { GameCategory } from "@powerletter/core";
 
 /**
  * Data structure for a game category

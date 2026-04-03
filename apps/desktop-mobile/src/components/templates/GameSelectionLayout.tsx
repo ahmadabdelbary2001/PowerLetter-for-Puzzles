@@ -6,8 +6,7 @@
  * passed in as children.
  */
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { Button, Card } from '@powerletter/ui';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
 import { Header } from '@/components/organisms/Header';
 import { StepIndicator } from '@/components/atoms/StepIndicator';
