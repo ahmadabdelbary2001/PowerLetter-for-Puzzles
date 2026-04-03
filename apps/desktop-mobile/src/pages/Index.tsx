@@ -8,12 +8,10 @@
  */
 import { useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
-import { Header } from "@/components/organisms/Header";
-import HeroSection from "@/pages/HeroSection";
-import GameTypeSelector from "@/pages/GameTypeSelector";
-import Footer from "@/components/organisms/Footer";
+import { Header, Footer, useGameMode } from "@powerletter/core";
+import HeroSection from "./HeroSection";
+import GameTypeSelector from "./GameTypeSelector";
 import type { Language } from "@powerletter/core";
-import { useGameMode } from "@/hooks/useGameMode";
 
 /**
  * The Index component serves as the primary page layout.

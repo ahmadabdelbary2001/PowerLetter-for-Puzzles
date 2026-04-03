@@ -5,12 +5,15 @@
  * passing them to the reusable GameSelectionPageLayout and GameSelectionCard components.
  */
 import React from 'react';
-import { useGameMode } from '@/hooks/useGameMode';
-import { useTranslation } from "@/hooks/useTranslation";
+import { 
+  useGameMode, 
+  useTranslation, 
+  GAME_REGISTRY, 
+  type GameConfig, 
+  GameSelectionPageLayout, 
+  GameSelectionCard 
+} from '@powerletter/core';
 import { useNavigate } from 'react-router-dom';
-import { GAME_REGISTRY, type GameConfig } from '@/games/GameRegistry';
-import { GameSelectionPageLayout } from '@/components/templates/GameSelectionPageLayout';
-import { GameSelectionCard } from '@/components/molecules/GameSelectionCard';
 
 const GameTypeSelector: React.FC = () => {
   const { gameType, setGameType } = useGameMode();

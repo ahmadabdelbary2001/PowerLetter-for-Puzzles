@@ -2,9 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Card, CardHeader, CardTitle, CardDescription, CardContent, Input, Label } from '@powerletter/ui';
 import { Users, Plus, Minus, ArrowRight, ArrowLeft } from 'lucide-react';
-import { useGameMode } from '@/hooks/useGameMode';
-import { useTranslation } from "@/hooks/useTranslation";
-import { Header } from '@/components/organisms/Header';
+import { useGameMode, useTranslation, Header } from '@powerletter/core';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 
 export const TeamConfigurator: React.FC = () => {

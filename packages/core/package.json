@@ -14,10 +14,23 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "zustand": "^5.0.7"
+    "zustand": "^5.0.7",
+    "react-router-dom": "^6.20.0",
+    "react-i18next": "^14.0.0",
+    "i18next": "^23.0.0",
+    "lucide-react": "^0.344.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "@powerletter/ui": "workspace:*",
+    "styled-components": "^6.1.8"
   },
   "devDependencies": {
     "@types/node": "^24.1.0",
+    "@types/react": "^18.2.0",
     "typescript": "~5.8.3"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   }
 }

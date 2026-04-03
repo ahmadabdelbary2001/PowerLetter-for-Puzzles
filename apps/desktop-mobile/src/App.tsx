@@ -5,14 +5,16 @@ import { BrowserRouter, Routes, Route, useParams } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import GameTypeSelector from "./pages/GameTypeSelector";
-import { ThemeProvider } from "./contexts/ThemeProvider";
-import GameModeSelector from "./components/organisms/GameModeSelector";
-import KidsGameModeSelector from "./components/organisms/KidsGameModeSelector";
+import { 
+  ThemeProvider, 
+  GameModeSelector, 
+  KidsGameModeSelector, 
+  getGameConfig 
+} from "@powerletter/core";
 import { TeamConfigurator } from "./pages/TeamConfigurator";
 import GameSettingsPage from "./pages/GameSettingsPage";
 import KidsGameSelector from "./pages/KidsGameSelector";
-import { getGameConfig } from './games/GameRegistry';
-import '@/i18n';
+import './i18n';
 
 const queryClient = new QueryClient();
 

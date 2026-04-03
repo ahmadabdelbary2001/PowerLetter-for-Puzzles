@@ -4,7 +4,7 @@
  * with consistent styling from KidsGameSelector and GameTypeSelector pages.
  */
 import { Button, Badge } from "@powerletter/ui";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@powerletter/core";
 import { useNavigate } from "react-router-dom";
 import { Sparkles, Trophy, Lightbulb, Brain, Languages, Users, Gamepad2, ToyBrick } from "lucide-react";
 
