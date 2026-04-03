@@ -1,0 +1,23 @@
+[package]
+name = "powerletter-app"
+version = "0.1.0"
+description = "PowerLetter for Puzzles - Desktop & Mobile App"
+authors = ["Ahmad Abdelbary"]
+edition = "2021"
+
+[lib]
+name = "powerletter_app_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[[bin]]
+name = "powerletter-app"
+path = "src/main.rs"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-log = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"

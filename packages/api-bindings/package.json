@@ -1,0 +1,23 @@
+{
+  "name": "@powerletter/api-bindings",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*"
+  },
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "axios": "^1.13.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.1.0",
+    "typescript": "~5.8.3"
+  }
+}
