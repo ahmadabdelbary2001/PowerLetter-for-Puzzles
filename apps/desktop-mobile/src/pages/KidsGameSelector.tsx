@@ -7,10 +7,9 @@ import {
   useGameMode, 
   useTranslation, 
   GAME_REGISTRY, 
-  type GameConfig, 
-  GameSelectionPageLayout, 
-  GameSelectionCard 
+  type GameConfig
 } from '@powerletter/core';
+import { GameSelectionPageLayout, GameSelectionCard } from '@powerletter/ui';
 import { useNavigate } from 'react-router-dom';
 
 const KidsGameSelector: React.FC = () => {
@@ -29,7 +28,7 @@ const KidsGameSelector: React.FC = () => {
     <GameSelectionPageLayout
       pageTitle={
         <div className="flex items-center justify-center mb-4 gap-3">
-          <h1 className="text-3xl md:text-4xl font-extrabold ml-1 bg-clip-text text-transparent bg-gradient-to-r from-green-600 via-yellow-400 to-pink-400">
+          <h1 className="text-3xl md:text-4xl font-extrabold ml-1 bg-clip-text text-transparent bg-linear-to-r from-green-600 via-yellow-400 to-pink-400">
             {t('kidsGamesTitle', { ns: 'games' })}
           </h1>
         </div>

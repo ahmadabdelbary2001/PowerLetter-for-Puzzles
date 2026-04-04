@@ -1,12 +1,12 @@
 // src/pages/GameSettingsPage.tsx
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useGameMode, useTranslation, DifficultySelector, CategorySelector, getGameConfig, Header } from "@powerletter/core";
+import { useGameMode, useTranslation, getGameConfig } from "@powerletter/core";
 import { 
   ArrowLeft, ArrowRight, BrainCircuit, FlaskConical, Globe, Shapes, Apple, Palette, 
   Music, Car, Clapperboard, Utensils, GlassWater, Heart, Swords, Cake, Shirt, Tv, Gamepad, User
 } from 'lucide-react';
-import { Button, Card, CardContent, CardHeader, CardTitle } from '@powerletter/ui';
+import { Button, Card, CardContent, CardHeader, CardTitle, DifficultySelector, CategorySelector, Header } from '@powerletter/ui';
 import type { GameCategory } from '@powerletter/core';
 
 const difficultyOptions = [

@@ -21,7 +21,6 @@
     "lucide-react": "^0.344.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "@powerletter/ui": "workspace:*",
     "styled-components": "^6.1.8"
   },
   "devDependencies": {

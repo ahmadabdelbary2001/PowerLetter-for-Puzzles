@@ -8,7 +8,8 @@
  */
 import { useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
-import { Header, Footer, useGameMode } from "@powerletter/core";
+import { useGameMode } from "@powerletter/core";
+import { Header, Footer } from "@powerletter/ui";
 import HeroSection from "./HeroSection";
 import GameTypeSelector from "./GameTypeSelector";
 import type { Language } from "@powerletter/core";

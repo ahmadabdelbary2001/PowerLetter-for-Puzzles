@@ -9,10 +9,9 @@ import {
   useGameMode, 
   useTranslation, 
   GAME_REGISTRY, 
-  type GameConfig, 
-  GameSelectionPageLayout, 
-  GameSelectionCard 
+  type GameConfig
 } from '@powerletter/core';
+import { GameSelectionPageLayout, GameSelectionCard } from '@powerletter/ui';
 import { useNavigate } from 'react-router-dom';
 
 const GameTypeSelector: React.FC = () => {
@@ -30,12 +29,12 @@ const GameTypeSelector: React.FC = () => {
   return (
     <GameSelectionPageLayout
       pageTitle={
-        <h1 className="text-3xl md:text-4xl font-extrabold bg-clip-text text-transparent mb-4 bg-gradient-to-r from-primary to-primary/60">
+        <h1 className="text-3xl md:text-4xl font-extrabold bg-clip-text text-transparent mb-4 bg-linear-to-r from-primary to-primary/60">
           {t('selectGame', { ns: 'games' })}
         </h1>
       }
       pageDescription={t('selectGameDesc', { ns: 'games' })}
-      backgroundClass="bg-gradient-to-br from-background via-background to-muted/10 dark:from-slate-900 dark:to-slate-800"
+      backgroundClass="bg-linear-to-br from-background via-background to-muted/10 dark:from-slate-900 dark:to-slate-800"
       headerView="selection"
     >
       {adultGames.map((game) => (

@@ -24,5 +24,5 @@ function Badge({ as: Component = "div", className, variant, size, style, ...prop
   return <Component className={cn(badgeVariants({ variant, size }), className)} style={mergedStyle} {...props} />;
 }
 
-export { Badge };
-export default Badge;
+export { Badge, badgeVariants };
+

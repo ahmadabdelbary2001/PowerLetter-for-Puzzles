@@ -1,8 +1,8 @@
 // src/pages/TeamConfigurator.tsx
 import React, { useState, useEffect } from 'react';
-import { Button, Card, CardHeader, CardTitle, CardDescription, CardContent, Input, Label } from '@powerletter/ui';
+import { Button, Card, CardHeader, CardTitle, CardDescription, CardContent, Input, Label, Header } from '@powerletter/ui';
 import { Users, Plus, Minus, ArrowRight, ArrowLeft } from 'lucide-react';
-import { useGameMode, useTranslation, Header } from '@powerletter/core';
+import { useGameMode, useTranslation } from '@powerletter/core';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 
 export const TeamConfigurator: React.FC = () => {
