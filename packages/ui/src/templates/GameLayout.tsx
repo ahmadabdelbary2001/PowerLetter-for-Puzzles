@@ -1,16 +1,18 @@
 // src/components/templates/GameLayout.tsx
 import React from 'react';
-import { Button, Card, CardHeader, CardTitle, CardContent, Badge, cn } from '@powerletter/ui';
+import { Button } from '../atoms/Button';
+import { Card, CardHeader, CardTitle, CardContent } from '../atoms/Card';
+import { Badge } from '../atoms/Badge';
+import { cn } from '../lib/utils';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
-import { useGameMode } from '../../hooks/useGameMode';
-import { useTranslation } from "@powerletter/core";
-import Header from '../organisms/Header';
+import { useGameMode, useTranslation } from '@powerletter/core';
+import { Header } from '../organisms/Header';
 import { Scoreboard } from '../molecules/Scoreboard';
 import { TeamDisplay } from '../molecules/TeamDisplay';
-import GameInstructions from '../molecules/GameInstructions';
+import { GameInstructions } from '../molecules/GameInstructions';
 import { InGameSettings } from '../molecules/InGameSettings';
-import { Notification, type NotificationData } from '../atoms/Notification';
-import type { Difficulty } from '@powerletter/core';
+import { Notification } from '../atoms/Notification';
+import type { Difficulty, NotificationData } from '@powerletter/core';
 
 interface GameLayoutProps {
   children: React.ReactNode;

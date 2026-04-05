@@ -10,10 +10,13 @@
  * modern animations and icons for a polished user experience.
  */
 import React from 'react';
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Badge, cn } from '@powerletter/ui';
+import { Button } from '../atoms/Button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../atoms/Card';
+import { Badge } from '../atoms/Badge';
+import { cn } from '../lib/utils';
 import { Lock, Search, CheckCircle, Star } from 'lucide-react';
-import type { GameConfig } from '../../games/GameRegistry';
-import { useTranslation } from '../../hooks/useTranslation';
+import { useTranslation } from '@powerletter/core';
+import type { GameConfig } from '../registry/GameRegistry';
 
 interface GameSelectionCardProps {
   game: GameConfig;

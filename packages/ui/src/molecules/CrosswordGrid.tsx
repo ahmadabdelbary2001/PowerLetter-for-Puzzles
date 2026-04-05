@@ -4,9 +4,9 @@
  * This component renders a crossword grid with cells that can be revealed.
  */
 import React, { useState, useEffect } from 'react';
-import GridCellComponent from '../../components/atoms/GridCell';
-import type { GridCell as GridCellType } from '../../features/formation-game/engine';
-import { cn } from "../index";
+import { GridCell as GridCellComponent } from '../atoms/GridCell';
+import type { GridCell as GridCellType } from '@powerletter/core';
+import { cn } from "../lib/utils";
 
 interface CrosswordGridProps {
   grid: GridCellType[];

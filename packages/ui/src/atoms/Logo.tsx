@@ -41,7 +41,7 @@ export function Logo({ showText = true, showBadge = true, className }: LogoProps
           ⚡
         </div>
         {/* Animated pulse indicator */}
-        <div className="absolute -top-1 -right-1 w-2 h-2 bg-linear-to-r from-warning to-warning-light rounded-full animate-pulse" />
+        <div className="absolute -top-1 -right-1 w-2 h-2 bg-amber-400 rounded-full animate-pulse" />
       </div>
       {/* Logo text - hidden on small screens */}
       {showText && (

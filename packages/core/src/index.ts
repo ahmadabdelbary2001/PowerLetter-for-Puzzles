@@ -1,3 +1,5 @@
+"use client";
+
 export * from './types/game';
 export * from './stores/useGameSettingsStore';
 export * from './stores/useTeamStore';
@@ -6,6 +8,7 @@ export * from './i18n/resources';
 // Hooks
 export * from './hooks/useTranslation';
 export * from './hooks/useGameMode';
+export * from './hooks/useNotification';
 
 // Config & Constants
 export * from './config/gameCategories';
@@ -20,8 +23,8 @@ export { useOutsideStory } from './features/outside-story-game/hooks/useOutsideS
 export { usePhraseClueGame } from './features/phrase-clue-game/hooks/usePhraseClueGame';
 export { useWordChoiceGame } from './features/word-choice-game/hooks/useWordChoiceGame';
 export type { LetterFlowLevel, WordPath, BoardCell } from './features/letter-flow-game/engine';
+export type { GridCell, FormationLevel } from './features/formation-game/engine';
+export { colorForString } from './features/letter-flow-game/utils/colors';
 
-// Games
-export * from './games/GameRegistry';
 
 // Note: UI Components and Contexts have been moved to @powerletter/ui

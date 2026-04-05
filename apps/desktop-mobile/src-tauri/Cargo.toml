@@ -7,7 +7,7 @@ edition = "2021"
 
 [lib]
 name = "powerletter_app_lib"
-crate-type = ["staticlib", "cdylib", "rlib"]
+crate-type = ["rlib"]
 
 [[bin]]
 name = "powerletter-app"
@@ -21,3 +21,15 @@ tauri = { version = "2", features = [] }
 tauri-plugin-log = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+
+[profile.dev]
+incremental = false
+opt-level = 1
+lto = true
+codegen-units = 1
+
+[profile.release]
+lto = true
+codegen-units = 1
+panic = 'abort'
+strip = true

@@ -6,8 +6,7 @@
 import { useState, useEffect, useCallback, useReducer } from 'react';
 import { gameReducer } from '../lib/gameReducer';
 import type { IGameEngine } from '../games/engine/types';
-import type { Language, Difficulty, GameCategory } from '@powerletter/core';
-import type { NotificationData } from '../components/atoms/Notification';
+import type { Language, Difficulty, GameCategory, NotificationData } from '@powerletter/core';
 
 export function useGame<T extends { solution: string; difficulty?: Difficulty }>(
   engine: IGameEngine<T>,

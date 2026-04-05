@@ -6,8 +6,8 @@
  * a grid, an input display, a letter selector, and game controls.
  */
 import React from 'react';
-import { GameLayout } from '../../components/templates/GameLayout';
-import type { NotificationData } from '../../components/atoms/Notification';
+import { GameLayout } from './GameLayout';
+import type { NotificationData } from '@powerletter/core';
 
 /**
  * @interface WordFormationLayoutProps

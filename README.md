@@ -1,162 +1,124 @@
-# PowerLetter for Puzzles
+# 🧩 **PowerLetter for Puzzles**
+> _نظام ألعاب ألغاز متعدد ومتكامل يدعم أكثر من 7 أنماط مختلفة للعب، مبني بهيكلية Monorepo متقدمة للعمل على الويب (Next.js) وسطح المكتب/الهاتف المحمول (Tauri)._
 
-PowerLetter for Puzzles is a web-based word puzzle game designed to challenge your vocabulary and problem-solving skills. It offers a user-friendly interface and supports multiple languages, allowing players to choose their preferred language for an immersive experience.
+<div align="center">
+  <img src="https://img.shields.io/badge/Language-English-blue?style=flat-square" alt="English">
+  <a href="locales/README.en.md">English Version</a> |
+  <img src="https://img.shields.io/badge/Language-Arabic-green?style=flat-square" alt="Arabic">
+  <a href="#">النسخة العربية</a>
+</div>
 
-## Live Demo
+---
 
-Experience the game live at: [PowerLetter for Puzzles](https://ahmadabdelbary2001.github.io/PowerLetter-for-Puzzles/)
+## 📖 **نظرة عامة**
+> _يهدف هذا المشروع إلى تقديم منصة ألغاز متكاملة تدعم التنافسية. يتم تشغيل اللعبة عبر محرك ألعاب مخصص (Game Engine Factory) صُمم بعقلية قابلة للتوسع لإضافة عشرات الألعاب وتوحيد حالة اللعب بين المنصات المختلفة._
 
-## Features
+---
 
-- **Multi-language Support**: Play in English or Arabic.
-- **Game Modes**: Choose between Single Player and Competitive modes.
-  - **Single Player**: Focus on personal progress, progressive challenges, and a hint system.
-  - **Competitive**: Play with friends in teams, featuring a scoring system and turn-based play.
-- **Responsive Design**: Enjoy the game seamlessly across various devices.
+## 📋 **قائمة المحتويات** <a id="toc"></a>
+1. [✨ المميزات الرئيسية](#features)
+2. [💻 التقنيات المستخدمة](#tech-stack)
+3. [🚀 ابدأ الآن](#getting-started)
+4. [🎮 محرك الألعاب (Game Engine Factory)](#game-engine)
+5. [📁 هيكلية المشروع (FSD)](#project-structure)
+6. [📜 التراخيص](#license)
 
-## Technologies Used
+---
 
-- **React**: A JavaScript library for building user interfaces.
-- **TypeScript**: A typed superset of JavaScript that compiles to plain JavaScript.
-- **Vite**: A fast build tool that provides a lightning-fast development experience.
-- **Tailwind CSS**: A utility-first CSS framework for rapidly building custom designs.
-- **i18next**: Internationalization framework for multi-language support.
-- **Zustand**: State management for game modes and settings.
-- **gh-pages**: A tool to publish content to GitHub Pages.
+## ✨ **المميزات الرئيسية** <a id="features"></a>
+- **🧩 7+ أنماط ألعاب**: مجموعة متنوعة من الألغاز التي تدار بواسطة محرك ألعاب مركزي تفاعلي.
+- **🌍 دعم لغوي ديناميكي**: واجهات متوافقة بالكامل مع اللغتين العربية والإنجليزية، وتغيير حي لاتجاهات الشاشة (RTL/LTR) عبر i18next.
+- **🏆 نظام تنافسي**: حالة تطبيق معقدة مدعومة بـ Zustand لإدارة نقاط الفريق وحفظ إعدادات اللاعب.
+- **📱 توافقية عالية (Cross-Platform)**: يتم تصدير اللعبة كنسخة ويب (Web)، وتطبيق حاسوب (Desktop)، وتطبيق هاتف (Mobile) من نفس شيفرة المصدر الأساسية بفضل بنية Monorepo.
 
-## Getting Started
+<div align="center">
+  <a href="#toc">🔝 العودة للأعلى</a>
+</div>
 
-To run this project locally, follow these steps:
+---
 
-### Prerequisites
+## 💻 **التقنيات المستخدمة** <a id="tech-stack"></a>
+- **Turborepo**: لإدارة بنية الـ Monorepo بكفاءة عالية.
+- **Next.js & React**: لخدمة الواجهات الأمامية بتجربة أداء مذهلة.
+- **Tauri 2.0 (Rust)**: لتصدير الـ Web App إلى تطبيقات Native سريعة وخفيفة بالكمبيوتر.
+- **Zustand**: كمدير حالة (State Manager) مرن وسريع للتحكم باللعبة.
+- **TailwindCSS**: للتصميم المتجاوب والسريع.
+- **FSD Architecture**: الهيكلية المعمارية لتقسيم الميزات (Feature-Sliced Design).
 
-Make sure you have Node.js and npm (or yarn) installed on your machine.
+<div align="center">
+  <a href="#toc">🔝 العودة للأعلى</a>
+</div>
 
-### Installation
+---
 
-1. Clone the repository:
+## 🚀 **ابدأ الآن** <a id="getting-started"></a>
+
+### المتطلبات الأساسية
+- [x] **Node.js (v18+)**
+- [x] **pnpm** (مثبت عالمياً)
+
+### خطوات التثبيت
+1. استنساخ المستودع:
    ```bash
-   git clone https://github.com/ahmadabdelbary2001/PowerLetter-for-Puzzles.git
-   ```
-2. Navigate to the project directory:
-   ```bash
+   git clone https://github.com/Ahmad-J-Bary/power-letter-for-puzzles.git
    cd PowerLetter-for-Puzzles
    ```
-3. Install the dependencies:
+
+2. تثبيت الحزم:
    ```bash
-   npm install
-   # or yarn install
+   pnpm install
    ```
 
-### Running the Development Server
+3. تشغيل نسخة الويب:
+   ```bash
+   pnpm dev:web
+   ```
 
-To start the development server:
+4. أو تشغيل نسخة سطح المكتب:
+   ```bash
+   pnpm dev:desktop
+   ```
 
-```bash
-npm run dev
-# or yarn dev
-```
+<div align="center">
+  <a href="#toc">🔝 العودة للأعلى</a>
+</div>
 
-Open your browser and visit `http://localhost:5173` (or the port indicated in your terminal).
+---
 
-### Building for Production
+## 🎮 **محرك الألعاب (Game Engine Factory)** <a id="game-engine"></a>
+يكمن السر في قابلية التوسع من خلال تطبيق نمط المصنع (Factory Pattern). يقوم هذا المحرك المركزي، ذو الواجهة الموحدة، بالاستماع إلى مدخلات المستخدمين (Reducers) وإعادة بث الحالات المتغيرة لكل نوع من أنواع الألعاب السبع المختلفة، مما يبقي المنطق الأساسي معزولاً ويسهل إضافة ألعاب جديدة بأقل جهد برمجي.
 
-To build the project for production:
+<div align="center">
+  <a href="#toc">🔝 العودة للأعلى</a>
+</div>
 
-```bash
-npm run build
-# or yarn build
-```
+---
 
-This will create a `dist` directory with the production-ready files.
+## 📁 **هيكلية المشروع (FSD & Monorepo)** <a id="project-structure"></a>
+ ```bash
+ PowerLetter-for-Puzzles/
+ ├── apps/
+ │   ├── web/                    # تطبيق الـ Next.js (Web)
+ │   └── desktop/                # تطبيق الـ Tauri (Desktop/Mobile)
+ ├── packages/
+ │   ├── core/                   # (FSD Logic) الـ Reducers ومحرك الألعاب و Zustand
+ │   ├── ui/                     # مكونات الواجهة (FSD UI) والأنماط المعزولة
+ │   ├── config/                 # إعدادات الـ Tailwind و ESLint المشتركة
+ │   └── api-bindings/           # (في حالة وجود اتصال خلفي)
+ └── locales/                    # التوثيق والترجمة
+ ```
 
-### Deployment
+<div align="center">
+  <a href="#toc">🔝 العودة للأعلى</a>
+</div>
 
-The project is configured for deployment to GitHub Pages using `gh-pages`. To deploy:
+---
 
-```bash
-npm run deploy
-# or yarn deploy
-```
+## 📜 **التراخيص** <a id="license"></a>
+هذا المشروع مرخص بموجب رخصة MIT. راجع ملف `LICENSE` لمزيد من المعلومات.
 
-## Project Structure
+<div align="center">
+  <a href="#toc">🔝 العودة للأعلى</a>
+</div>
 
-```
-PowerLetter-for-Puzzles/
-├── public/
-│   ├── assets/
-│   │   ├── images/
-│   │   └── sounds/
-│   └── vite.svg
-├── scripts/
-│   └── copy-404.cjs
-├── src/
-│   ├── assets/
-│   ├── components/
-│   │   ├── atoms/
-│   │   ├── molecules/
-│   │   ├── organisms/
-│   │   ├── templates/
-│   │   └── ui/
-│   ├── contexts/
-│   │   ├── ThemeContext.ts
-│   │   └── ThemeProvider.tsx
-│   ├── data/
-│   │   ├── ar/
-│   │   └── en/
-│   ├── features/
-│   │   ├── formation-game/
-│   │   ├── img-choice-game/
-│   │   ├── img-clue-game/
-│   │   ├── letter-flow-game/
-│   │   ├── outside-story-game/
-│   │   ├── phrase-clue-game/
-│   │   ├── word-choice-game/
-│   ├── games/
-│   │   ├── GameRegistry.ts
-│   │   └── engine/
-│   ├── hooks/
-│   │   ├── game/
-│   │   ├── use-mobile.tsx
-│   │   ├── use-toast.ts
-│   │   ├── useGame.ts
-│   │   ├── useGameMode.ts
-│   │   ├── useInstructions.ts
-│   │   ├── useTheme.ts
-│   │   └── useTranslation.ts
-│   ├── lib/
-│   │   ├── gameReducer.ts
-│   │   ├── gameUtils.ts
-│   │   ├── i18nUtils.ts
-│   │   └── utils.ts
-│   ├── locales/
-│   │   ├── ar/
-│   │   └── en/
-│   ├── pages/
-│   │   ├── GameSettingsPage.tsx
-│   │   ├── GameTypeSelector.tsx
-│   │   ├── HeroSection.tsx
-│   │   ├── Index.tsx
-│   │   ├── KidsGameSelector.tsx
-│   │   ├── NotFound.tsx
-│   │   └── TeamConfigurator.tsx
-│   ├── types/
-│   │   └── game.ts
-│   ├── App.css
-│   ├── App.tsx
-│   ├── i18n.ts
-│   ├── main.tsx
-│   └── vite-env.d.ts
-├── .gitignore
-├── eslint.config.js
-├── index.html
-├── package-lock.json
-├── package.json
-├── postcss.config.cjs
-├── README.md
-├── tailwind.config.cjs
-├── tsconfig.app.json
-├── tsconfig.json
-├── tsconfig.node.json
-└── vite.config.ts
-```
+<p align="center"> تم التطوير بكل ❤️ بواسطة <a href="https://github.com/Ahmad-J-Bary">@Ahmad Abdelbary</a> </p>

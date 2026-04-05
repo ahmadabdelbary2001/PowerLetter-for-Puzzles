@@ -9,9 +9,9 @@
  * The grid gap has been reduced for a more compact layout.
  */
 import React from 'react';
-import { Header } from '../../components/organisms/Header';
-import Footer from '../../components/organisms/Footer';
-import { useTranslation } from '../../hooks/useTranslation';
+import { Header } from '../organisms/Header';
+import { Footer } from '../organisms/Footer';
+import { useTranslation } from '@powerletter/core';
 
 interface GameSelectionPageLayoutProps {
   pageTitle: React.ReactNode;

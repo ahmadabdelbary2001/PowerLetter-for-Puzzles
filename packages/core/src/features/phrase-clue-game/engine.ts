@@ -6,6 +6,7 @@
  */
 import type { Language, GameCategory, Difficulty } from '@powerletter/core';
 import { ClueGameEngine, type ClueLevel } from '../../games/engine/ClueGameEngine';
+import type { LevelModule } from '../../games/engine/BaseGameEngine';
 
 /**
  * @interface PhraseLevel
@@ -22,8 +23,8 @@ class PhraseClueGameEngine extends ClueGameEngine<PhraseLevel> {
     return 'phrase-clue';
   }
 
-  protected getModulePath(language: Language, category: GameCategory, difficulty?: Difficulty): string {
-    return `/src/data/${language}/phrase-clue/${category}/${difficulty}.json`;
+  protected loadModule(language: Language, category: GameCategory, difficulty?: Difficulty): Promise<LevelModule> {
+    return import(`../../data/${language}/phrase-clue/${category}/${difficulty}.json`);
   }
 
   protected validateLevel(levelData: unknown, difficulty?: Difficulty): PhraseLevel | null {

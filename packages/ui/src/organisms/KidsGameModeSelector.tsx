@@ -92,7 +92,7 @@ export const KidsGameModeSelector: React.FC = () => {
       totalSteps={2}
       onBack={handleBack}
       headerView="kids"
-      backgroundClass="bg-gradient-to-br from-green-50 via-background to-yellow-50 dark:from-gray-900 dark:to-gray-800"
+      backgroundClass="bg-linear-to-br from-green-50 via-background to-yellow-50 dark:from-gray-900 dark:to-gray-800"
     >
       {renderStepContent()}
     </GameSelectionLayout>

@@ -1,3 +1,5 @@
+"use client";
+
 // src/index.ts entry point for @powerletter/ui package
 
 // --- Atoms ---
@@ -110,6 +112,8 @@ export { GameSelectionPageLayout } from './templates/GameSelectionPageLayout';
 export { MultipleChoiceLayout } from './templates/MultipleChoiceLayout';
 export { OutsideStoryLayout } from './templates/OutsideStoryLayout';
 export { WordFormationLayout } from './templates/WordFormationLayout';
+export { GAME_REGISTRY, getGameConfig } from './registry/GameRegistry';
+export type { GameConfig } from './registry/GameRegistry';
 
 // --- Game Features (Screens) ---
 export { FormationGameScreen } from './screens/formation-game/FormationGameScreen';

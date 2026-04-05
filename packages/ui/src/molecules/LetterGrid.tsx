@@ -7,8 +7,8 @@
  * The component supports highlighting selected letters and hint letters.
  */
 import { useState, useEffect } from "react"
-import { LetterBox } from "../../components/atoms/LetterBox"
-import { cn } from "../index"
+import { LetterBox } from "../atoms/LetterBox"
+import { cn } from "../lib/utils"
 
 /**
  * Props for the LetterGrid component

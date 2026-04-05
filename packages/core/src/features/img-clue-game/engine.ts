@@ -6,6 +6,7 @@
  */
 import type { Language, GameCategory } from '@powerletter/core';
 import { ClueGameEngine, type ClueLevel } from '../../games/engine/ClueGameEngine';
+import type { LevelModule } from '../../games/engine/BaseGameEngine';
 
 /**
  * @interface ImageLevel
@@ -22,9 +23,8 @@ class ImgClueGameEngine extends ClueGameEngine<ImageLevel> {
     return 'img-clue';
   }
 
-  protected getModulePath(language: Language, category: GameCategory): string {
-    // This game does not use difficulty in its path structure.
-    return `/src/data/${language}/img-clue/${category}/data.json`;
+  protected loadModule(language: Language, category: GameCategory): Promise<LevelModule> {
+    return import(`../../data/${language}/img-clue/${category}/data.json`);
   }
 
   protected validateLevel(levelData: unknown): ImageLevel | null {

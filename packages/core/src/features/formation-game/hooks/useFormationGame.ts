@@ -1,3 +1,5 @@
+"use client";
+
 // src/features/formation-game/hooks/useFormationGame.ts
 /**
  * @description Final "assembler" hook for the Word Formation game.

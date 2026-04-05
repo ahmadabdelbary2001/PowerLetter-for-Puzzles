@@ -6,13 +6,17 @@
  * details for path construction and level validation.
  */
 import type { Language, GameCategory, Difficulty, GameLevel } from '@powerletter/core';
+import { GAME_METADATA } from '@powerletter/core';
 import { shuffleArray } from '../../lib/gameUtils';
-import { GAME_REGISTRY } from '../../games/GameRegistry';
 import type { IGameEngine } from './types';
 
 // A generic interface for the structure of dynamically imported level modules.
-interface LevelModule {
-  default?: { levels?: unknown[] };
+export interface LevelModule {
+  default?: {
+    levels?: unknown[];
+    words?: unknown[];
+    meta?: Record<string, unknown>;
+  };
   levels?: unknown[];
 }
 
@@ -29,27 +33,18 @@ export abstract class BaseGameEngine<T extends GameLevel> implements IGameEngine
   }): Promise<T[]> {
     const { language, categories, difficulty } = options;
     const gameId = this.getGameId();
-
     // Resolve categories: if 'general' is selected, get all available categories for this game.
-    const gameConfig = GAME_REGISTRY.find(game => game.id === gameId);
+    const gameConfig = GAME_METADATA.find(game => game.id === gameId);
     const allAvailableCategories = gameConfig?.availableCategories?.filter(cat => cat !== 'general') ?? [];
     const categoriesToLoad = categories.includes('general') ? allAvailableCategories : categories;
 
-    // Get all JSON modules from the data directory.
-    const modules = import.meta.glob('/src/data/**/*.json') as Record<string, () => Promise<LevelModule>>;
-
     const promises = categoriesToLoad.map(async (cat) => {
       try {
-        // Subclass provides the specific path to the module.
-        const path = this.getModulePath(language, cat, difficulty);
-        const moduleLoader = modules[path];
-
-        if (!moduleLoader) {
-          console.warn(`${gameId} Engine: Module not found for path: ${path}`);
-          return [];
-        }
-
-        const module = await moduleLoader();
+        // Use a subclass-implemented loadModule method. 
+        // This ensures Webpack can statically analyze the 'import()' path 
+        // because the path structure will be hardcoded in the generic subclass.
+        const module = await this.loadModule(language, cat, difficulty);
+        
         const rawLevels = module.default?.levels || module.levels || [];
 
         // Subclass provides the specific validation logic for each level.
@@ -78,8 +73,8 @@ export abstract class BaseGameEngine<T extends GameLevel> implements IGameEngine
   /** @returns The unique ID of the game (e.g., 'phrase-clue'). */
   protected abstract getGameId(): string;
 
-  /** @returns The path to the JSON module for a given category and difficulty. */
-  protected abstract getModulePath(language: Language, category: GameCategory, difficulty?: Difficulty): string;
+  /** @returns A Promise containing the dynamically imported level module */
+  protected abstract loadModule(language: Language, category: GameCategory, difficulty?: Difficulty): Promise<LevelModule>;
 
   /** @returns A validated level object or null if the raw level data is invalid. */
   protected abstract validateLevel(levelData: unknown, difficulty?: Difficulty, category?: GameCategory): T | null;

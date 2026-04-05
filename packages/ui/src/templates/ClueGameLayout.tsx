@@ -7,8 +7,7 @@
  */
 import React from 'react';
 import { GameLayout } from './GameLayout';
-import type { NotificationData } from '../atoms/Notification';
-import type { Difficulty } from '@powerletter/core';
+import type { Difficulty, NotificationData } from '@powerletter/core';
 
 /**
  * @interface ClueGameLayoutProps
@@ -40,7 +39,6 @@ export const ClueGameLayout: React.FC<ClueGameLayoutProps> = ({
   // --- Gather all other props to pass to GameLayout ---
   ...gameLayoutProps
 }) => {
-  const { layoutType = 'text' } = gameLayoutProps;
 
   return (
     // --- Spread the gathered props onto the GameLayout component ---

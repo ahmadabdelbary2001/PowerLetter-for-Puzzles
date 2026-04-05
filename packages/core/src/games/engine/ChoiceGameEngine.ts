@@ -4,7 +4,7 @@
  * It extends the foundational BaseGameEngine and adds shared logic for validating
  * choice-based levels, such as ensuring the solution is always in the options.
  */
-import type { Language, GameCategory, GameLevel } from '@powerletter/core';
+import type { GameLevel } from '@powerletter/core';
 import { BaseGameEngine } from './BaseGameEngine';
 
 export interface ChoiceLevel extends GameLevel {
@@ -12,12 +12,8 @@ export interface ChoiceLevel extends GameLevel {
   options: string[];
 }
 
-export abstract class ChoiceGameEngine<T extends ChoiceLevel> extends BaseGameEngine<T> {
-  // Provide a concrete implementation for the module path, as it's the same for all choice games.
-  protected getModulePath(language: Language, category: GameCategory): string {
-    return `/src/data/${language}/${this.getGameId()}/${category}/data.json`;
-  }
 
+export abstract class ChoiceGameEngine<T extends ChoiceLevel> extends BaseGameEngine<T> {
   // Provide a concrete implementation for level validation, as it's also shared.
   protected validateLevel(levelData: unknown): T | null {
     const levelObj = levelData as Record<string, unknown>;

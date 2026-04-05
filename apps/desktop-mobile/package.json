@@ -48,6 +48,7 @@
     "@powerletter/config": "workspace:*",
     "@tailwindcss/container-queries": "^0.1.1",
     "@tailwindcss/postcss": "^4.1.11",
+    "@tailwindcss/vite": "^4.2.2",
     "@tauri-apps/cli": "^2.0.0",
     "@types/autoprefixer": "^10.2.4",
     "@types/node": "^24.1.0",

@@ -1,11 +1,18 @@
 import { Suspense } from 'react';
-import { Toaster, Sonner, TooltipProvider, ThemeProvider, GameModeSelector, KidsGameModeSelector } from "@powerletter/ui";
+import { 
+  Toaster, 
+  Sonner, 
+  TooltipProvider, 
+  ThemeProvider, 
+  GameModeSelector, 
+  KidsGameModeSelector,
+  getGameConfig 
+} from "@powerletter/ui";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useParams } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import GameTypeSelector from "./pages/GameTypeSelector";
-import { getGameConfig } from "@powerletter/core";
 import { TeamConfigurator } from "./pages/TeamConfigurator";
 import GameSettingsPage from "./pages/GameSettingsPage";
 import KidsGameSelector from "./pages/KidsGameSelector";
@@ -45,7 +52,7 @@ const App = () => (
       <ThemeProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter basename="/PowerLetter-for-Puzzles">
+        <BrowserRouter>
           <Suspense fallback={<div className="flex justify-center items-center h-screen w-full">Loading...</div>}>
             <Routes>
               <Route path="/" element={<Index />} />

@@ -6,9 +6,9 @@ import { letterFlowGameEngine } from '../../features/letter-flow-game/engine';
 import { outsideStoryGameEngine } from '../../features/outside-story-game/engine';
 import { imgChoiceGameEngine } from '../../features/img-choice-game/engine';
 import { wordChoiceGameEngine } from '../../features/word-choice-game/engine';
-import type { GameConfig } from '../GameRegistry';
+import type { GameType } from '@powerletter/core';
 
-export function getGameEngine(gameId: GameConfig['id']) {
+export function getGameEngine(gameId: GameType) {
   switch (gameId) {
     case 'phrase-clue':
       return phraseClueGameEngine;

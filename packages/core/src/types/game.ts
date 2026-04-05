@@ -11,6 +11,14 @@ export type GameType =
   | 'img-choice'
   | 'word-choice';
 export type Difficulty = 'easy' | 'medium' | 'hard';
+export type NotificationType = 'success' | 'error' | 'warning' | 'info';
+
+export interface NotificationData {
+  messageKey: string;
+  type?: NotificationType;
+  duration?: number;
+  options?: Record<string, string | number>; // For interpolation
+}
 
 export type GameCategory = 
   | 'animals' 
@@ -32,6 +40,60 @@ export type GameCategory =
   | 'series'
   | 'spy'
   | 'sweets';
+
+export interface GameMetadata {
+  id: GameType;
+  type: 'adult' | 'kids';
+  availableCategories?: GameCategory[];
+  supportedSettings: ('teams' | 'difficulty' | 'category')[];
+}
+
+export const GAME_METADATA: GameMetadata[] = [
+  {
+    id: 'phrase-clue',
+    type: 'adult',
+    availableCategories: ['animals', 'science', 'geography', 'general'],
+    supportedSettings: ['teams', 'difficulty', 'category'],
+  },
+  {
+    id: 'formation',
+    type: 'adult',
+    supportedSettings: ['teams', 'difficulty'],
+  },
+  {
+    id: 'letter-flow',
+    type: 'adult',
+    supportedSettings: ['teams', 'difficulty'],
+  },
+  {
+    id: 'outside-the-story',
+    type: 'adult',
+    supportedSettings: ['teams', 'category'],
+    availableCategories: [
+      'animals', 'anime', 'cars', 'cartoons', 'characters', 'clothes',
+      'drinks', 'foods', 'football', 'fruits-and-vegetables', 'gamers',
+      'geography', 'k-pop', 'science', 'series', 'spy', 'sweets'
+    ],
+  },
+  {
+    id: 'image-clue',
+    type: 'kids',
+    supportedSettings: ['teams', 'category'],
+    availableCategories: ['animals', 'fruits-and-vegetables', 'shapes', 'general'],
+  },
+  {
+    id: 'img-choice',
+    type: 'kids',
+    supportedSettings: ['teams', 'category'],
+    availableCategories: ['animals', 'fruits-and-vegetables', 'shapes', 'general'],
+  },
+  {
+    id: 'word-choice',
+    type: 'kids',
+    supportedSettings: ['teams', 'category'],
+    availableCategories: ['animals', 'fruits-and-vegetables', 'shapes', 'general'],
+  },
+];
 
 export type GameId = string;
 

@@ -6,7 +6,7 @@ export const badgeVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-gradient-to-r from-indigo-500 via-violet-500 to-pink-500 text-white shadow-sm ring-1 ring-indigo-200/20",
+          "bg-linear-to-r from-indigo-500 via-violet-500 to-pink-500 text-white shadow-sm ring-1 ring-indigo-200/20",
         secondary:
           "bg-white/60 text-indigo-700 border border-indigo-100 shadow-sm dark:bg-gray-800/60 dark:text-indigo-200 dark:border-gray-700",
         destructive:

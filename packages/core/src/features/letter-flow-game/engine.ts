@@ -42,12 +42,7 @@ export interface LetterFlowLevel extends GameLevel {
   endpoints: { x: number; y: number; letter: string; color?: string }[];
 }
 
-/**
- * Represents a module structure for level data
- */
-interface LevelModule {
-  default?: { levels?: unknown[] };
-}
+import type { LevelModule } from '../../games/engine/BaseGameEngine';
 
 /**
  * Generates an HSL color with evenly distributed hues for visual distinction.
@@ -76,12 +71,7 @@ class LetterFlowGameEngine extends BaseGameEngine<LetterFlowLevel> {
     if (!difficulty) return [];
 
     try {
-      const path = this.getModulePath(language, '' as GameCategory, difficulty);
-      const modules = import.meta.glob('/src/data/**/*.json');
-      const moduleLoader = modules[path];
-      if (!moduleLoader) return [];
-
-      const module = (await moduleLoader()) as LevelModule;
+      const module = await this.loadModule(language, '' as GameCategory, difficulty);
       const levels = module.default?.levels || [];
 
       return levels
@@ -99,8 +89,8 @@ class LetterFlowGameEngine extends BaseGameEngine<LetterFlowLevel> {
     return 'letter-flow';
   }
 
-  protected getModulePath(language: Language, _: GameCategory, difficulty?: Difficulty): string {
-    return `/src/data/${language}/letter-flow/${difficulty}.json`;
+  protected loadModule(language: Language, _: GameCategory, difficulty?: Difficulty): Promise<LevelModule> {
+    return import(`../../data/${language}/letter-flow/${difficulty}.json`);
   }
 
   protected validateLevel(levelData: unknown, difficulty?: Difficulty): LetterFlowLevel | null {

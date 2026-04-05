@@ -12,8 +12,8 @@ import {
 import { Settings, Users, Layers, BarChart3 } from "lucide-react";
 import { useTranslation } from "@powerletter/core";
 import { useNavigate, useParams } from "react-router-dom";
-import { getGameConfig } from '../../games/GameRegistry';
-import { useGameMode } from '../../hooks/useGameMode';
+import { getGameConfig } from '../registry/GameRegistry';
+import { useGameMode } from '@powerletter/core';
 
 export const InGameSettings: React.FC = () => {
   const { t } = useTranslation();

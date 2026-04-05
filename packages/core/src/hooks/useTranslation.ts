@@ -5,6 +5,8 @@
  * from `useGameMode` and provides a powerful `t` function that can access
  * any translation namespace.
  */
+"use client";
+
 import { useEffect, useMemo } from 'react';
 import { useTranslation as useI18nextHook } from 'react-i18next';
 import { useGameMode } from '../hooks/useGameMode';

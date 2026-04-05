@@ -5,6 +5,8 @@
  * from the dedicated `useGameSettingsStore` and `useTeamStore`.
  * This provides a single, consistent interface for all components.
  */
+"use client";
+
 import { useGameSettingsStore, useTeamStore } from '@powerletter/core';
 
 export function useGameMode() {

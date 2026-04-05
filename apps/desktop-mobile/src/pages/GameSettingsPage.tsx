@@ -1,7 +1,8 @@
 // src/pages/GameSettingsPage.tsx
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useGameMode, useTranslation, getGameConfig } from "@powerletter/core";
+import { useGameMode, useTranslation } from "@powerletter/core";
+import { getGameConfig } from "@powerletter/ui";
 import { 
   ArrowLeft, ArrowRight, BrainCircuit, FlaskConical, Globe, Shapes, Apple, Palette, 
   Music, Car, Clapperboard, Utensils, GlassWater, Heart, Swords, Cake, Shirt, Tv, Gamepad, User

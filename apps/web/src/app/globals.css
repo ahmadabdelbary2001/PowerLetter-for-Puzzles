@@ -1,32 +1,9 @@
+/* Next.js Web App — Global Styles */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* Tell Tailwind v4 to also scan the shared UI package for class names */
+@source "../../../../packages/ui/src";
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-/* RTL Support */
-[dir="rtl"] {
-  font-family: 'Noto Sans Arabic', 'Cairo', system-ui, sans-serif;
-}
+/* Pull in all shared CSS variables, components, animations from the monorepo */
+@import "../../../../packages/ui/src/styles/theme.css";

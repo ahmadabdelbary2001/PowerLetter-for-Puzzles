@@ -6,10 +6,11 @@
  * passed in as children.
  */
 import React from 'react';
-import { Button, Card } from '@powerletter/ui';
+import { Button } from '../atoms/Button';
+import { Card } from '../atoms/Card';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
-import { Header } from '../../components/organisms/Header';
-import { StepIndicator } from '../../components/atoms/StepIndicator';
+import { Header } from '../organisms/Header';
+import { StepIndicator } from '../atoms/StepIndicator';
 import { useTranslation } from "@powerletter/core";
 
 interface GameSelectionLayoutProps {
@@ -27,7 +28,7 @@ export const GameSelectionLayout: React.FC<GameSelectionLayoutProps> = ({
   totalSteps,
   onBack,
   headerView,
-  backgroundClass = 'bg-gradient-to-br from-background via-background to-muted/20',
+  backgroundClass = 'bg-linear-to-br from-background via-background to-muted/20',
 }) => {
   const { t, i18n } = useTranslation();
   const dir = i18n.dir();

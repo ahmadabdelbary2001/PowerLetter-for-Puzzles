@@ -3,13 +3,13 @@
  * Playful, modern styling for the kids selection page.
  */
 import React from 'react';
+import { useGameMode, useTranslation } from '@powerletter/core';
 import { 
-  useGameMode, 
-  useTranslation, 
-  GAME_REGISTRY, 
+  GameSelectionPageLayout, 
+  GameSelectionCard,
+  GAME_REGISTRY,
   type GameConfig
-} from '@powerletter/core';
-import { GameSelectionPageLayout, GameSelectionCard } from '@powerletter/ui';
+} from '@powerletter/ui';
 import { useNavigate } from 'react-router-dom';
 
 const KidsGameSelector: React.FC = () => {

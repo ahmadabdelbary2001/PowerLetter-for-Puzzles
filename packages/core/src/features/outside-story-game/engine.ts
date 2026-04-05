@@ -21,17 +21,7 @@ export interface OutsideStoryLevel extends GameLevel {
   meta?: Record<string, unknown>;
 }
 
-/**
- * Defines the expected structure of the dynamically imported JSON modules.
- * (This is a shared convention across engines).
- */
-interface LevelModule {
-  default?: {
-    category?: GameCategory; // The category name inside the JSON
-    words?: unknown[];
-    meta?: Record<string, unknown>;
-  };
-}
+import type { LevelModule } from '../../games/engine/BaseGameEngine';
 
 /**
  * Implements the game engine for the Outside the Story game.
@@ -44,9 +34,8 @@ class OutsideStoryGameEngine extends BaseGameEngine<OutsideStoryLevel> {
     return 'outside-the-story';
   }
 
-  protected getModulePath(language: Language, category: GameCategory): string {
-    // The path for this game is based on the category name.
-    return `/src/data/${language}/outside-the-story/${category}.json`;
+  protected loadModule(language: Language, category: GameCategory): Promise<LevelModule> {
+    return import(`../../data/${language}/outside-the-story/${category}.json`);
   }
 
   protected validateLevel(): OutsideStoryLevel | null {
@@ -67,21 +56,11 @@ class OutsideStoryGameEngine extends BaseGameEngine<OutsideStoryLevel> {
     categories: GameCategory[];
   }): Promise<OutsideStoryLevel[]> {
     const { language, categories } = options;
-    const modules = import.meta.glob('/src/data/**/outside-the-story/*.json') as Record<string, () => Promise<LevelModule>>;
     const results: OutsideStoryLevel[] = [];
-
     // Manually iterate because we are not processing a `levels` array inside the JSON.
     for (const cat of categories) {
-      const path = `/src/data/${language}/outside-the-story/${cat}.json`;
-      const loader = modules[path];
-
-      if (!loader) {
-        console.warn(`OutsideStoryGameEngine: Could not find data file at path: ${path}`);
-        continue;
-      }
-
       try {
-        const module = await loader();
+        const module = await this.loadModule(language, cat);
         const moduleDefault = module.default;
         const words = (moduleDefault && Array.isArray(moduleDefault.words)) ? moduleDefault.words.map(String) : [];
         
@@ -97,7 +76,7 @@ class OutsideStoryGameEngine extends BaseGameEngine<OutsideStoryLevel> {
           meta: moduleDefault?.meta ?? {},
         });
       } catch (err) {
-        console.error(`OutsideStoryGameEngine: Failed to load or parse ${path}`, err);
+        console.error(`OutsideStoryGameEngine: Failed to load or parse for category ${cat}`, err);
       }
     }
 

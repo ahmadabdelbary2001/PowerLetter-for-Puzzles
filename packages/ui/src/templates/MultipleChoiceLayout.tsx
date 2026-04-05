@@ -6,8 +6,8 @@
  * and a next button, along with a notification area.
  */
 import React from 'react';
-import { GameLayout } from '../../components/templates/GameLayout';
-import type { NotificationData } from '../../components/atoms/Notification';
+import { GameLayout } from './GameLayout';
+import type { NotificationData } from '@powerletter/core';
 
 /**
  * @interface MultipleChoiceLayoutProps

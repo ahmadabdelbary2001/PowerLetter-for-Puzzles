@@ -4,18 +4,10 @@
  * It receives a messageKey and interpolation options, and translates them.
  */
 import { useEffect, useState } from 'react';
-import { cn } from '@powerletter/ui';
-import { useNotification } from '@powerletter/core/hooks/useNotification';
+import { cn } from '../lib/utils';
+import { useNotification, type NotificationData } from '@powerletter/core';
 import { CheckCircle, XCircle, Info, AlertTriangle, X } from 'lucide-react';
 
-export type NotificationType = 'success' | 'error' | 'warning' | 'info';
-
-export interface NotificationData {
-  messageKey: string;
-  type?: NotificationType;
-  duration?: number;
-  options?: Record<string, string | number>; // For interpolation
-}
 
 interface NotificationProps extends NotificationData {
   onClose: () => void;

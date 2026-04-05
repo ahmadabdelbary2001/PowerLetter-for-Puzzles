@@ -5,6 +5,8 @@
  * and only needs to provide its unique game ID.
  */
 import { ChoiceGameEngine, type ChoiceLevel } from '../../games/engine/ChoiceGameEngine';
+import type { Language, GameCategory } from '@powerletter/core';
+import type { LevelModule } from '../../games/engine/BaseGameEngine';
 
 /**
  * @interface ImgChoiceLevel
@@ -20,6 +22,10 @@ export interface ImgChoiceLevel extends ChoiceLevel {
 class ImageChoiceGameEngine extends ChoiceGameEngine<ImgChoiceLevel> {
   protected getGameId(): 'img-choice' {
     return 'img-choice';
+  }
+
+  protected loadModule(language: Language, category: GameCategory): Promise<LevelModule> {
+    return import(`../../data/${language}/img-choice/${category}/data.json`);
   }
 }
 

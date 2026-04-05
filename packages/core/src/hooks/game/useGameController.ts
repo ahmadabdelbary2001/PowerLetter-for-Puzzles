@@ -1,3 +1,5 @@
+"use client";
+
 // src/hooks/game/useGameController.ts
 /**
  * @description The new, central, foundational hook for all level-based games.

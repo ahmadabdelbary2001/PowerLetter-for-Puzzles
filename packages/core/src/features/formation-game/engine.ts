@@ -33,13 +33,7 @@ export interface FormationLevel {
   solution: string;     // First word in the words array (to satisfy useGame constraint)
 }
 
-/**
- * Type definition for the structure of imported level modules.
- * (This is a shared convention across engines).
- */
-interface LevelModule {
-  default?: { levels?: unknown[] }; // Optional default export containing levels array
-}
+import type { LevelModule } from '../../games/engine/BaseGameEngine';
 
 /**
  * Implements the game engine for the Word Formation (Crossword) Challenge.
@@ -63,20 +57,8 @@ class FormationGameEngine extends BaseGameEngine<FormationLevel> {
     if (!difficulty) return []; // Return empty array if no difficulty specified
 
     try {
-      // Construct the path to the JSON file using the getModulePath helper method.
-      const path = this.getModulePath(language, '' as GameCategory, difficulty);
-
-      // Get all JSON module importers
-      const modules = import.meta.glob('/src/data/**/*.json');
-      const moduleLoader = modules[path];
-
-      // Return empty array if the specific file doesn't exist (original behavior).
-      if (!moduleLoader) {
-        return [];
-      }
-
-      // Load the module and extract levels
-      const module = (await moduleLoader()) as LevelModule;
+      // Load the module and extract levels using a portable dynamic import.
+      const module = await this.loadModule(language, '' as GameCategory, difficulty);
       const levels = module.default?.levels || [];
 
       // Transform and validate each level using the validateLevel helper method.
@@ -104,9 +86,8 @@ class FormationGameEngine extends BaseGameEngine<FormationLevel> {
     return 'formation';
   }
 
-  protected getModulePath(language: Language, _: GameCategory, difficulty?: Difficulty): string {
-    // The path for this game is based on difficulty, not category.
-    return `/src/data/${language}/formation/${difficulty}.json`;
+  protected loadModule(language: Language, _: GameCategory, difficulty?: Difficulty): Promise<LevelModule> {
+    return import(`../../data/${language}/formation/${difficulty}.json`);
   }
 
   protected validateLevel(levelData: unknown, difficulty?: Difficulty): FormationLevel | null {

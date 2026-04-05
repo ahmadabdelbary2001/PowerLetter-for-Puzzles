@@ -5,7 +5,9 @@
  * each team's current score and available hints.
  */
 import React from 'react';
-import { Card, CardHeader, CardTitle, CardContent, Badge, cn } from '@powerletter/ui';
+import { Card, CardHeader, CardTitle, CardContent } from '../atoms/Card';
+import { Badge } from '../atoms/Badge';
+import { cn } from '../lib/utils';
 import { Lightbulb } from 'lucide-react';
 import { useTranslation } from "@powerletter/core";
 import type { Team } from '@powerletter/core';
