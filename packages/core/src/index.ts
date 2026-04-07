@@ -4,6 +4,7 @@ export * from './types/game';
 export * from './stores/useGameSettingsStore';
 export * from './stores/useTeamStore';
 export * from './i18n/resources';
+export { setupI18n, default as i18n } from './i18n/config';
 
 // Hooks
 export * from './hooks/useTranslation';

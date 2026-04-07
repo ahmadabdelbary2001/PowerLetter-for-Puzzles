@@ -7,11 +7,11 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '../atoms/Button';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
-import { useGameMode, useTranslation, CATEGORIES_BY_GAME } from '@powerletter/core';
+import { useGameMode, useTranslation, CATEGORIES_BY_GAME, GAME_METADATA } from '@powerletter/core';
 import { ModeSelector } from '../molecules/ModeSelector';
 import { CategorySelector } from '../molecules/CategorySelector';
 import { DifficultySelector } from '../molecules/DifficultySelector';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useAppRouter, useAppParams } from '../contexts/RouterContext';
 import type { GameCategory, Difficulty } from '@powerletter/core';
 import { GameSelectionLayout } from '../templates/GameSelectionLayout';
 
@@ -21,13 +21,21 @@ const difficulties = [
     { id: 'hard' as const, labelKey: 'hard', color: 'bg-red-500' },
 ] as const;
 
-export const GameModeSelector: React.FC = () => {
+export interface GameModeSelectorProps {
+  gameType?: string;
+}
+
+export const GameModeSelector: React.FC<GameModeSelectorProps> = ({ gameType: propGameType }) => {
   const { gameMode, setGameMode, categories: selectedCategories, setCategories, setDifficulty } = useGameMode();
   // --- Destructure 't' instead of 'translate' ---
   const { t, i18n } = useTranslation();
   const dir = i18n.dir();
-  const navigate = useNavigate();
-  const { gameType } = useParams<{ gameType: string }>();
+  const router = useAppRouter();
+  const { gameType: paramGameType } = useAppParams<{ gameType: string }>();
+  const gameType = propGameType || paramGameType;
+
+  const metadata = GAME_METADATA.find(g => g.id === gameType);
+  const supported = metadata?.supportedSettings || [];
 
   const isOutsideStory = gameType === 'outside-the-story';
   const skipModeStep = isOutsideStory;
@@ -54,7 +62,7 @@ export const GameModeSelector: React.FC = () => {
     if (step > 1) {
       setStep(s => s - 1);
     } else {
-      navigate('/games');
+      router.push('/games');
     }
   };
 
@@ -81,7 +89,11 @@ export const GameModeSelector: React.FC = () => {
   const handleContinueFromCategories = () => {
     if (selectedCategories.length === 0) return;
     if (skipDifficultyStep) {
-      navigate(`/team-config/${gameType}`);
+      if (gameMode === 'competitive') {
+        router.push(`/team-config/${gameType}`);
+      } else {
+        router.push(`/game/${gameType}`);
+      }
       return;
     }
     setStep(3);
@@ -90,9 +102,9 @@ export const GameModeSelector: React.FC = () => {
   const handleDifficultySelect = (difficulty: Difficulty) => {
     setDifficulty(difficulty);
     if (gameMode === 'competitive') {
-      navigate(`/team-config/${gameType}`);
+      router.push(`/team-config/${gameType}`);
     } else {
-      navigate(`/game/${gameType}`);
+      router.push(`/game/${gameType}`);
     }
   };
 
@@ -112,7 +124,7 @@ export const GameModeSelector: React.FC = () => {
               {isOutsideStory ? t("selectSingleCategoryHint", { ns: 'selection' }) : t("selectCategoryHint", { ns: 'selection' })}
             </p>
             <CategorySelector
-              categories={gameType ? [...(CATEGORIES_BY_GAME[gameType as keyof typeof CATEGORIES_BY_GAME] || CATEGORIES_BY_GAME.default)] : [...CATEGORIES_BY_GAME.default]}
+              categories={gameType ? [...(CATEGORIES_BY_GAME[gameType] || CATEGORIES_BY_GAME.default)] : [...CATEGORIES_BY_GAME.default]}
               selectedCategories={selectedCategories}
               onCategoryToggle={handleCategoryToggle}
             />

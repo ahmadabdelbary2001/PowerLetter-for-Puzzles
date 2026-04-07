@@ -1,9 +1,5 @@
-/* Next.js Web App — Global Styles */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
-@import "tailwindcss";
-
-/* Tell Tailwind v4 to also scan the shared UI package for class names */
-@source "../../../../packages/ui/src";
-
-/* Pull in all shared CSS variables, components, animations from the monorepo */
-@import "../../../../packages/ui/src/styles/theme.css";
+@import "../../../../packages/ui/src/styles/globals.css";
+/* PowerLetter Web — Main Stylesheet Entry */
+@source "../../../../packages/ui/src/**/*.tsx";
+@source "./**/*.tsx";
+@source "../components/**/*.tsx";

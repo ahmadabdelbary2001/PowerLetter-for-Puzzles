@@ -1,29 +1,27 @@
-// src/pages/GameTypeSelector.tsx
+"use client";
+
 /**
  * @description This page displays a selection of games for the main (adult) category.
- * It acts as a "container" component, fetching adult games from the registry and
- * passing them to the reusable GameSelectionPageLayout and GameSelectionCard components.
+ * Shared version for all monorepo apps.
+ * Restored to original styling from PowerLetter-for-Puzzles-old.
  */
 import React from 'react';
 import { useGameMode, useTranslation } from '@powerletter/core';
-import { 
-  GameSelectionPageLayout, 
-  GameSelectionCard,
-  GAME_REGISTRY,
-  type GameConfig
-} from '@powerletter/ui';
-import { useNavigate } from 'react-router-dom';
+import { GameSelectionPageLayout } from '../templates/GameSelectionPageLayout';
+import { GameSelectionCard } from '../molecules/GameSelectionCard';
+import { GAME_REGISTRY, type GameConfig } from '../registry/GameRegistry';
+import { useAppRouter } from '../contexts/RouterContext';
 
 const GameTypeSelector: React.FC = () => {
   const { gameType, setGameType } = useGameMode();
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const router = useAppRouter();
 
   const adultGames = GAME_REGISTRY.filter(game => game.type === 'adult');
 
   const handleGameTypeSelect = (typeId: GameConfig['id']): void => {
     setGameType(typeId);
-    navigate(`/game-mode/${typeId}`);
+    router.push(`/game-mode/${typeId}`);
   };
 
   return (

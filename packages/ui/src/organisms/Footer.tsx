@@ -4,7 +4,7 @@
  * Displays company information, quick links, contact details, and copyright information
  * Includes social media links and support status indicator
  */
-import { Link } from "react-router-dom";
+import { Link } from "../atoms/Link";
 import { Logo } from "../atoms/Logo";
 import { useTranslation } from "@powerletter/core";
 import { Badge } from "../atoms/Badge";

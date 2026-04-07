@@ -40,16 +40,13 @@ export abstract class BaseGameEngine<T extends GameLevel> implements IGameEngine
 
     const promises = categoriesToLoad.map(async (cat) => {
       try {
-        // Use a subclass-implemented loadModule method. 
-        // This ensures Webpack can statically analyze the 'import()' path 
-        // because the path structure will be hardcoded in the generic subclass.
-        const module = await this.loadModule(language, cat, difficulty);
+        const module = await this.safeLoadModule(language, cat, difficulty);
         
         const rawLevels = module.default?.levels || module.levels || [];
 
         // Subclass provides the specific validation logic for each level.
         return rawLevels
-          .map((lvl: unknown) => this.validateLevel(lvl, difficulty, cat))
+          .map((lvl: unknown) => this.validateLevel(lvl, difficulty ?? 'easy', cat))
           .filter((l): l is T => l !== null);
       } catch (err) {
         console.error(`${gameId} Engine: Failed to load levels for ${language}/${cat}.`, err);
@@ -66,6 +63,22 @@ export abstract class BaseGameEngine<T extends GameLevel> implements IGameEngine
     }
 
     return shuffleArray(allLevels);
+  }
+
+  /**
+   * @description A helper method that attempts to load a module for a specific difficulty,
+   * falling back to 'easy' if the requested difficulty is not available.
+   */
+  protected async safeLoadModule(language: Language, category: GameCategory, difficulty?: Difficulty): Promise<LevelModule> {
+    try {
+      return await this.loadModule(language, category, difficulty);
+    } catch (loadErr) {
+      if (difficulty && difficulty !== 'easy') {
+        console.warn(`${this.getGameId()} Engine: Failed to load ${difficulty} difficulty for ${category}. Falling back to easy.`);
+        return await this.loadModule(language, category, 'easy');
+      }
+      throw loadErr;
+    }
   }
 
   // --- Abstract Methods for Subclasses to Implement ---

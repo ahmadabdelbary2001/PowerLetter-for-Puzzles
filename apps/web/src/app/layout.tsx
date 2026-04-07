@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { I18nProvider } from "../components/I18nProvider";
+import { ThemeProvider, TooltipProvider, Toaster, Sonner } from "@powerletter/ui";
+import { NextRouterAdapter } from "../components/NextRouterAdapter";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "PowerLetter for Puzzles",
@@ -17,9 +20,21 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body suppressHydrationWarning>
+      <body suppressHydrationWarning className="min-h-screen font-sans antialiased">
         <I18nProvider>
-          {children}
+          <ThemeProvider>
+            <TooltipProvider>
+              <NextRouterAdapter>
+                <div className="relative flex min-h-screen flex-col">
+                  <Suspense fallback={<div className="flex h-screen items-center justify-center">Loading...</div>}>
+                    {children}
+                  </Suspense>
+                </div>
+                <Toaster />
+                <Sonner />
+              </NextRouterAdapter>
+            </TooltipProvider>
+          </ThemeProvider>
         </I18nProvider>
       </body>
     </html>

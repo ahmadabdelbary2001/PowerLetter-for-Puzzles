@@ -71,7 +71,7 @@ class LetterFlowGameEngine extends BaseGameEngine<LetterFlowLevel> {
     if (!difficulty) return [];
 
     try {
-      const module = await this.loadModule(language, '' as GameCategory, difficulty);
+      const module = await this.safeLoadModule(language, '' as GameCategory, difficulty);
       const levels = module.default?.levels || [];
 
       return levels

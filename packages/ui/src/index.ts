@@ -44,6 +44,7 @@ export {
 } from './atoms/DropdownMenu';
 export { Input } from './atoms/Input';
 export { Label } from './atoms/Label';
+export { Link } from './atoms/Link';
 export { 
   ToastProvider,
   ToastViewport,
@@ -65,6 +66,10 @@ export { cn } from './lib/utils';
 // --- Contexts ---
 export { ThemeProvider } from './contexts/ThemeProvider';
 export { useTheme } from './contexts/ThemeContext';
+export { LinkProvider, useLinkComponent } from './contexts/LinkContext';
+export type { LinkProps, LinkComponent } from './contexts/LinkContext';
+export { RouterProvider, useAppRouter, useAppLocation, useAppParams } from './contexts/RouterContext';
+export type { AppRouter, AppLocation, NavigateOptions } from './contexts/RouterContext';
 
 // --- Assets/UI Atoms ---
 export { GameButton } from './atoms/GameButton';
@@ -112,6 +117,15 @@ export { GameSelectionPageLayout } from './templates/GameSelectionPageLayout';
 export { MultipleChoiceLayout } from './templates/MultipleChoiceLayout';
 export { OutsideStoryLayout } from './templates/OutsideStoryLayout';
 export { WordFormationLayout } from './templates/WordFormationLayout';
+
+// --- Pages ---
+export { default as HeroSection } from './pages/HeroSection';
+export { default as IndexPage } from './pages/Index';
+export { default as GameTypeSelector } from './pages/GameTypeSelector';
+export { default as KidsGameSelector } from './pages/KidsGameSelector';
+export { default as GameSettingsPage } from './pages/GameSettingsPage';
+export { TeamConfigurator } from './pages/TeamConfigurator';
+export { default as NotFound } from './pages/NotFound';
 export { GAME_REGISTRY, getGameConfig } from './registry/GameRegistry';
 export type { GameConfig } from './registry/GameRegistry';
 

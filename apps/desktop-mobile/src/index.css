@@ -1,0 +1,5 @@
+@import "../../../packages/ui/src/styles/globals.css";
+
+/* Tell Tailwind to scan both the shared UI package and the local desktop source */
+@source "../../../packages/ui/src/**/*.tsx";
+@source "./**/*.tsx";

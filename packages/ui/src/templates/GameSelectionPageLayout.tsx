@@ -1,12 +1,13 @@
-// src/components/templates/GameSelectionPageLayout.tsx
+"use client";
+
 /**
  * Purpose: A reusable layout template for game selection pages.
+ * Shared version for all monorepo apps.
+ * Restored to original styling from PowerLetter-for-Puzzles-old.
  *
  * @description 
  * This component provides the standard page structure, including the header, footer,
- * and a main content area with a title and description. It accepts the page-specific
- * title, description, and game cards as children, promoting code reuse.
- * The grid gap has been reduced for a more compact layout.
+ * and a main content area with a title and description.
  */
 import React from 'react';
 import { Header } from '../organisms/Header';
@@ -44,7 +45,7 @@ export const GameSelectionPageLayout: React.FC<GameSelectionPageLayoutProps> = (
             </p>
           </div>
 
-          {/* Game Cards Grid with reduced gap */}
+          {/* Game Cards Grid - Restored to original gap configuration */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5 mb-8">
             {children}
           </div>

@@ -1,12 +1,16 @@
-// src/pages/HeroSection.tsx
+"use client";
+
 /**
  * @description The main landing page component that combines the best elements from previous versions
  * with consistent styling from KidsGameSelector and GameTypeSelector pages.
+ * Shared version for all monorepo apps.
  */
-import { Button, Badge } from "@powerletter/ui";
+import React from 'react';
+import { Button } from "../atoms/Button";
+import { Badge } from "../atoms/Badge";
 import { useTranslation } from "@powerletter/core";
-import { useNavigate } from "react-router-dom";
 import { Sparkles, Trophy, Lightbulb, Brain, Languages, Users, Gamepad2, ToyBrick } from "lucide-react";
+import { useAppRouter } from "../contexts/RouterContext";
 
 interface HeroFeature {
   icon: string;
@@ -17,14 +21,15 @@ interface HeroFeature {
 export default function HeroSection(): JSX.Element {
   const { t, i18n } = useTranslation();
   const dir = i18n.dir();
-  const navigate = useNavigate();
+  const router = useAppRouter();
 
-  const heroFeatures = t('herofeatures', { ns: 'landing', returnObjects: true }) as HeroFeature[];
-  const stats = t('stats', { ns: 'landing', returnObjects: true }) as Array<{ value: string; label: string; icon: string }>;
+  // Load translations with specific namespaces
+  const heroFeatures = (t('herofeatures', { ns: 'landing', returnObjects: true }) || []) as HeroFeature[];
+  const stats = (t('stats', { ns: 'landing', returnObjects: true }) || []) as Array<{ value: string; label: string; icon: string }>;
 
-  const handleStartPlaying = () => navigate("/games");
-  const handleKidsGames = () => navigate("/kids-games");
-  const handleHowToPlay = () => navigate("/help");
+  const handleStartPlaying = () => router.push("/games");
+  const handleKidsGames = () => router.push("/kids-games");
+  const handleHowToPlay = () => router.push("/help");
 
   return (
     <section className="relative w-full min-h-screen overflow-hidden bg-linear-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-blue-950 dark:to-indigo-950">
@@ -40,7 +45,7 @@ export default function HeroSection(): JSX.Element {
           {/* Left Side: Enhanced Content */}
           <div className="space-y-8">
             {/* Header Section */}
-            <div className="space-y-6">
+            <div className="space-y-6 text-center lg:text-left">
               <Badge
                 variant="outline"
                 className="bg-linear-to-r from-primary/10 to-secondary/10 border-primary/20 text-primary px-4 py-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 animate-fade-in-up"
@@ -53,9 +58,7 @@ export default function HeroSection(): JSX.Element {
                 <span className="bg-linear-to-r from-primary via-secondary to-primary bg-clip-text text-transparent animate-gradient bg-300%">
                   PowerLetter
                 </span>
-
                 <br />
-
                 <span className="text-slate-800 dark:text-white">
                   {t('wordPuzzles', { ns: 'landing' })}
                 </span>
@@ -71,9 +74,9 @@ export default function HeroSection(): JSX.Element {
               </div>
             </div>
 
-            {/* Enhanced Features Grid - Consistent with Game Cards */}
+            {/* Enhanced Features Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {heroFeatures.map((feature, index) => (
+              {Array.isArray(heroFeatures) && heroFeatures.map((feature, index) => (
                 <div
                   key={feature.title}
                   className="flex items-start gap-3 p-4 rounded-2xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border border-slate-200 dark:border-slate-700 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group"
@@ -82,7 +85,7 @@ export default function HeroSection(): JSX.Element {
                   <div className="shrink-0 w-10 h-10 bg-linear-to-r from-primary to-secondary rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-md">
                     <span className="text-white text-lg">{feature.icon}</span>
                   </div>
-                  <div className="flex-1 min-w-0">
+                  <div className="flex-1 min-w-0 text-left">
                     <h3 className="font-semibold text-slate-800 dark:text-white text-sm mb-1">
                       {feature.title}
                     </h3>
@@ -94,12 +97,12 @@ export default function HeroSection(): JSX.Element {
               ))}
             </div>
 
-            {/* Action Buttons - Consistent with Game Selection */}
+            {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 pt-4 justify-center lg:justify-start">
               <Button
                 onClick={handleStartPlaying}
                 size="lg"
-                className="w-full sm:w-auto bg-linear-to-r from-primary to-primary/80 hover:from-primary/80 hover:to-primary text-primary-foreground text-lg px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group"
+                className="w-full sm:w-auto bg-linear-to-r from-primary to-primary/80 hover:from-primary/80 hover:to-primary text-white text-lg px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group"
               >
                 <Gamepad2 className="w-5 h-5 mr-3 group-hover:scale-110 transition-transform duration-300" />
                 {t('startPlaying', { ns: 'landing' })}
@@ -124,9 +127,9 @@ export default function HeroSection(): JSX.Element {
               </Button>
             </div>
 
-            {/* Statistics - Enhanced with Icons */}
+            {/* Statistics */}
             <div className="grid grid-cols-3 gap-6 pt-8 border-t border-slate-200 dark:border-slate-700">
-              {stats.map((stat, index) => (
+              {Array.isArray(stats) && stats.map((stat, index) => (
                 <div
                   key={stat.label}
                   className="text-center group hover:scale-105 transition-transform duration-300"
@@ -144,10 +147,9 @@ export default function HeroSection(): JSX.Element {
             </div>
           </div>
 
-          {/* Right Side: Interactive Game Preview - Now responsive */}
+          {/* Right Side: Interactive Game Preview */}
           <div className="relative lg:order-2 mt-12 lg:mt-0">
             <div className="relative bg-linear-to-br from-white/80 to-white/60 dark:from-slate-800/80 dark:to-slate-800/60 rounded-3xl p-4 sm:p-8 shadow-2xl backdrop-blur-sm border border-white/20 animate-float">
-              {/* Main Game Preview Container */}
               <div className="w-full h-64 sm:h-80 bg-linear-to-br from-primary/10 to-secondary/10 rounded-2xl flex items-center justify-center relative overflow-hidden">
                 {/* Floating Game Elements */}
                 <div className="absolute top-4 left-4 w-10 h-10 sm:w-14 sm:h-14 bg-blue-500 rounded-lg animate-bounce shadow-lg flex items-center justify-center">

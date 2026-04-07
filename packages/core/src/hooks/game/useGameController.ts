@@ -43,7 +43,10 @@ export function useGameController<T extends GameLevel & { solution: string; diff
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const getAssetPath = (path: string) => {
     if (!path) return '';
-    const baseUrl = (import.meta.env.BASE_URL ?? '/').replace(/\/$/, '');
+    const baseUrl = (typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL
+      ? import.meta.env.BASE_URL
+      : (process.env.NEXT_PUBLIC_BASE_URL ?? '/')
+    ).replace(/\/$/, '');
     return `${baseUrl}/${path.replace(/^\//, '')}`;
   };
   const playSound = useCallback(() => {

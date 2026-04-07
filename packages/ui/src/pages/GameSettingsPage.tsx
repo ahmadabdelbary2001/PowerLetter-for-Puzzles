@@ -1,13 +1,18 @@
-// src/pages/GameSettingsPage.tsx
+"use client";
+
 import React from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
 import { useGameMode, useTranslation } from "@powerletter/core";
-import { getGameConfig } from "@powerletter/ui";
+import { getGameConfig } from "../registry/GameRegistry";
 import { 
   ArrowLeft, ArrowRight, BrainCircuit, FlaskConical, Globe, Shapes, Apple, Palette, 
   Music, Car, Clapperboard, Utensils, GlassWater, Heart, Swords, Cake, Shirt, Tv, Gamepad, User
 } from 'lucide-react';
-import { Button, Card, CardContent, CardHeader, CardTitle, DifficultySelector, CategorySelector, Header } from '@powerletter/ui';
+import { Button } from '../atoms/Button';
+import { Card, CardContent, CardHeader, CardTitle } from '../atoms/Card';
+import { DifficultySelector } from '../molecules/DifficultySelector';
+import { CategorySelector } from '../molecules/CategorySelector';
+import { Header } from '../organisms/Header';
+import { useAppParams, useAppRouter } from '../contexts/RouterContext';
 import type { GameCategory } from '@powerletter/core';
 
 const difficultyOptions = [
@@ -38,13 +43,16 @@ const categoryIconMap: Record<GameCategory, React.ReactNode> = {
   sweets: <Cake size={48} />,
 };
 
-// --- CRITICAL FIX ---
-// The redundant toCamelCase helper function has been removed from this file.
-// The logic is now centralized in CategorySelector.tsx.
+export interface GameSettingsPageProps {
+  settingType?: 'difficulty' | 'category';
+  gameType?: string;
+}
 
-const GameSettingsPage: React.FC = () => {
-  const { settingType, gameType } = useParams<{ settingType: 'difficulty' | 'category', gameType: string }>();
-  const navigate = useNavigate();
+const GameSettingsPage: React.FC<GameSettingsPageProps> = ({ settingType: propSettingType, gameType: propGameType }) => {
+  const { settingType: paramSettingType, gameType: paramGameType } = useAppParams<{ settingType: 'difficulty' | 'category', gameType: string }>();
+  const settingType = propSettingType || paramSettingType;
+  const gameType = propGameType || paramGameType;
+  const router = useAppRouter();
   const { t, i18n } = useTranslation();
   const dir = i18n.dir();
 
@@ -55,10 +63,10 @@ const GameSettingsPage: React.FC = () => {
     setCategories,
   } = useGameMode();
 
-  const gameConfig = getGameConfig(gameType);
+  const gameConfig = getGameConfig(gameType || '');
 
   const handleDone = () => {
-    navigate(`/game/${gameType}`);
+    router.push(`/game/${gameType}`);
   };
 
   const handleCategoryToggle = (cat: GameCategory) => {
@@ -70,14 +78,11 @@ const GameSettingsPage: React.FC = () => {
   };
 
   const getTitle = () => {
-    // --- Use new function syntax with namespace ---
     if (settingType === 'difficulty') return t('changeLevel', { ns: 'selection' });
     if (settingType === 'category') return t('changeCategory', { ns: 'selection' });
     return t('gameSettings', { ns: 'selection' });
   };
 
-  // Pass the raw catId as the labelKey.
-  // CategorySelector will handle the conversion internally.
   const displayCategories = (gameConfig?.availableCategories || []).map(catId => ({
     id: catId,
     labelKey: catId,
@@ -98,7 +103,6 @@ const GameSettingsPage: React.FC = () => {
               {settingType === 'difficulty' && (
                 <>
                   <DifficultySelector difficulties={difficultyOptions} onDifficultySelect={setDifficulty} />
-                  {/* --- Use new function syntax with namespace --- */}
                   <p className="text-center text-muted-foreground">
                     {t('difficulty', { ns: 'common' })}: {t(difficulty, { ns: 'common' })}
                   </p>
@@ -113,13 +117,11 @@ const GameSettingsPage: React.FC = () => {
               )}
 
               <div className="flex justify-between items-center pt-4">
-                <Button variant="outline" onClick={() => navigate(-1)} className="flex items-center gap-2">
+                <Button variant="outline" onClick={() => router.back()} className="flex items-center gap-2">
                   {dir === 'rtl' ? <ArrowRight className="w-4 h-4" /> : <ArrowLeft className="w-4 h-4" />}
-                  {/* --- Use new function syntax (default ns is 'common') --- */}
                   {t('back')}
                 </Button>
                 <Button onClick={handleDone} className="flex items-center gap-2">
-                  {/* --- Use new function syntax (default ns is 'common') --- */}
                   {t('confirm')}
                   {dir === 'rtl' ? <ArrowLeft className="w-4 h-4" /> : <ArrowRight className="w-4 h-4" />}
                 </Button>

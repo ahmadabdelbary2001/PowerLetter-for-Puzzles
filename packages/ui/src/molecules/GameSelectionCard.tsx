@@ -1,36 +1,39 @@
-// src/components/molecules/GameSelectionCard.tsx
+"use client";
+
 /**
  * Purpose: A reusable presentational component for displaying a single game card.
+ * Shared version for all monorepo apps.
+ * Restored to original styling from PowerLetter-for-Puzzles-old.
  *
  * @description
- * This "dumb" component receives all necessary data and styling through props,
- * making it highly configurable for different contexts (e.g., adult vs. kids games).
- * It handles displaying the game's icon, title, description, features, and status.
- * The design is compact, uses justified text for a cleaner appearance, and incorporates
- * modern animations and icons for a polished user experience.
+ * This component handles displaying the game's icon, title, description, features, and status.
+ * Optimized for a premium feel with hover animations and specific theme coloring.
  */
 import React from 'react';
 import { Button } from '../atoms/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../atoms/Card';
 import { Badge } from '../atoms/Badge';
-import { cn } from '../lib/utils';
 import { Lock, Search, CheckCircle, Star } from 'lucide-react';
-import { useTranslation } from '@powerletter/core';
+import { cn } from '../lib/utils';
 import type { GameConfig } from '../registry/GameRegistry';
+import { useTranslation } from '@powerletter/core';
 
 interface GameSelectionCardProps {
   game: GameConfig;
   isSelected: boolean;
   onSelect: (id: GameConfig['id']) => void;
-  themeColor: 'primary' | 'green-500'; // Enforce specific theme colors
+  themeColor: 'primary' | 'green-500';
 }
 
 export const GameSelectionCard: React.FC<GameSelectionCardProps> = ({ game, isSelected, onSelect, themeColor }) => {
   const { t, i18n } = useTranslation();
   const dir = i18n.dir();
-  const features = t(game.featuresKey, { ns: 'games', returnObjects: true }) as string[];
+  
+  // Use typed translations for featuresArray if possible, or fallback safely
+  const rawFeatures = t(game.featuresKey, { ns: 'games', returnObjects: true });
+  const features = Array.isArray(rawFeatures) ? rawFeatures : [];
 
-  // Dynamically create Tailwind classes based on the theme color from the first file
+  // Theme-aware Tailwind classes matching the original project's architecture
   const ringColorClass = themeColor === 'primary' ? 'ring-primary/50' : 'ring-green-500/50';
   const bgColorClass = themeColor === 'primary' ? 'bg-primary/5' : 'bg-green-500/5';
   const darkBgColorClass = themeColor === 'primary' ? 'dark:bg-primary/10' : 'dark:bg-green-500/10';
@@ -43,7 +46,7 @@ export const GameSelectionCard: React.FC<GameSelectionCardProps> = ({ game, isSe
     <Card
       key={game.id}
       className={cn(
-        "relative flex flex-col transition-all duration-300 hover:shadow-xl group", // Added 'group' for hover effects
+        "relative flex flex-col transition-all duration-300 hover:shadow-xl group",
         game.status === 'available'
           ? 'hover:scale-105 cursor-pointer bg-card'
           : 'opacity-60 cursor-not-allowed bg-card',
@@ -52,25 +55,22 @@ export const GameSelectionCard: React.FC<GameSelectionCardProps> = ({ game, isSe
       )}
       onClick={() => game.status === 'available' && onSelect(game.id)}
     >
-      {/* NEW: Selection indicator star icon from the second file */}
       {isSelected && (
-        <div className="absolute top-3 right-3 z-10">
-          <div className={cn("w-6 h-6 rounded-full flex items-center justify-center", badgeColorClass)}>
+        <div className={cn("absolute top-3 z-10", dir === 'rtl' ? 'left-3' : 'right-3')}>
+          <div className={cn("w-6 h-6 rounded-full flex items-center justify-center shadow-lg", badgeColorClass)}>
             <Star className="w-3.5 h-3.5 text-white fill-white" />
           </div>
         </div>
       )}
 
-      {/* Using compact padding and margins from the first file */}
       <CardHeader className="text-center p-4">
         <div className={cn("flex justify-center mb-3", iconTextColorClass)}>
-          {/* NEW: Applying hover animation from the second file */}
           <div className={cn(
             "w-14 h-14 rounded-lg flex items-center justify-center transition-all duration-300 shadow-md",
             "group-hover:scale-110 group-hover:rotate-6",
             iconBgColorClass
           )}>
-            {game.icon}
+            <span className="text-2xl">{game.icon}</span>
           </div>
         </div>
         <div className="flex justify-between items-start mb-2">
@@ -78,22 +78,22 @@ export const GameSelectionCard: React.FC<GameSelectionCardProps> = ({ game, isSe
             {t(game.titleKey, { ns: 'games' })}
           </CardTitle>
           <Badge variant={game.status === 'available' ? 'default' : 'secondary'} className={cn("ml-2 text-xs", game.status === 'available' ? 'bg-green-500' : 'bg-yellow-500 text-white')}>
-            {t(game.status)}
+            {t(game.status, { ns: 'games' })}
           </Badge>
         </div>
         <CardDescription className={cn("text-sm text-muted-foreground text-justify leading-relaxed", dir === 'rtl' ? 'text-right' : 'text-left')}>
           {t(game.descriptionKey, { ns: 'games' })}
         </CardDescription>
       </CardHeader>
+
       <CardContent className="flex flex-col grow p-4 pt-0 space-y-3">
         <div className="grow">
-          <h4 className={cn("font-semibold text-xs text-muted-foreground mb-2", dir === 'rtl' ? 'text-right' : '')}>
-            {t('features')}:
+          <h4 className={cn("font-semibold text-xs text-muted-foreground mb-2", dir === 'rtl' ? 'text-right' : 'text-left')}>
+            {t('features', { ns: 'games' })}:
           </h4>
-          <ul className={cn("text-xs text-muted-foreground space-y-1.5", dir === 'rtl' ? 'text-right' : '')}>
+          <ul className={cn("text-xs text-muted-foreground space-y-1.5", dir === 'rtl' ? 'text-right' : 'text-left')}>
             {features.map((feature, index) => (
               <li key={index} className="flex items-start gap-2">
-                {/* NEW: Using CheckCircle icon from the second file */}
                 <CheckCircle className={cn("w-4 h-4 mt-0.5 shrink-0", iconTextColorClass)} />
                 <span>{feature}</span>
               </li>
@@ -109,12 +109,12 @@ export const GameSelectionCard: React.FC<GameSelectionCardProps> = ({ game, isSe
           {game.status === 'available' ? (
             <>
               <Search className="w-4 h-4 mr-2" />
-              {t('playNow')}
+              {t('playNow', { ns: 'games' })}
             </>
           ) : (
             <>
               <Lock className="w-4 h-4 mr-2" />
-              {t('comingSoon')}
+              {t('comingSoon', { ns: 'games' })}
             </>
           )}
         </Button>

@@ -1,19 +1,19 @@
 // src/screens/outside-story/components/RoundEndScreen.tsx
 import React from 'react';
 import { Button } from '../../../atoms/Button';
-import { useNavigate } from 'react-router-dom';
+import { useAppRouter } from '../../../contexts/RouterContext';
 import type { useOutsideStory } from '@powerletter/core';
 
 type Props = { game: ReturnType<typeof useOutsideStory> };
 
 export const RoundEndScreen: React.FC<Props> = ({ game }) => {
   const { t, playAgain, changePlayersAndReset } = game;
-  const navigate = useNavigate();
+  const router = useAppRouter();
 
   const handleChangePlayers = () => {
     changePlayersAndReset();
     // Navigate to the global team configurator page
-    navigate('/settings/teams/outside-the-story');
+    router.push('/settings/teams/outside-the-story');
   };
 
   return (

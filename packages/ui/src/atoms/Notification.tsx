@@ -91,12 +91,11 @@ export function Notification({
         )}
       >
         <div className="flex items-start gap-3 p-3">
-          <div className="mt-0.5 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-white/30 dark:bg-black/20">
+          <div className="shrink-0">
             {icon}
           </div>
-
-          <div className="flex-1 min-w-0">
-            <p className="text-sm sm:text-base font-medium text-slate-900 dark:text-white break-words">
+          <div className="ml-3 w-0 flex-1 pt-0.5">
+            <p className="text-sm font-medium text-slate-900 dark:text-white wrap-break-word">
               {message}
             </p>
           </div>

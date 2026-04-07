@@ -7,7 +7,7 @@
  */
 
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "../atoms/Link";
 import { Button } from "../atoms/Button";
 import { cn } from "../lib/utils";
 import { LanguageSelector } from '../molecules/LanguageSelector';
@@ -74,7 +74,7 @@ export function Header({ currentView, showLanguage = true }: HeaderProps) {
   }, [mobileOpen]);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur-md supports-backdrop-filter:bg-background/60">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
         <Logo />
 

@@ -1,30 +1,47 @@
 // src/hooks/game/useGameNavigation.ts
 /**
- * @description A reusable hook that provides a standardized `handleBack` function
- * for navigating away from a game screen. It encapsulates the logic for determining
- * the correct back path based on the current game mode.
+ * @description A reusable hook that provides a standardized `handleBack` function.
+ *
+ * Two usage patterns:
+ *  1. Pass { navigate, gameType } directly (framework-agnostic).
+ *  2. Call with no args to get a `handleBack(navigate, gameType)` deferred form
+ *     — used by useGameController so core stays router-independent.
  */
 import { useCallback } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
 import { useGameMode } from '../../hooks/useGameMode';
 
-export function useGameNavigation() {
-  const navigate = useNavigate();
-  const params = useParams<{ gameType?: string }>();
+interface UseGameNavigationOptions {
+  navigate?: (path: string) => void;
+  gameType?: string;
+}
+
+export function useGameNavigation(options?: UseGameNavigationOptions) {
   const { gameMode } = useGameMode();
 
   /**
-   * @function handleBack
-   * @description Navigates the user back from the current game screen.
-   * - In 'competitive' mode, it returns to the team configuration screen.
-   * - In 'single' player mode (or for kids' games), it returns to the main game selection menu.
+   * Immediate handleBack — only works when navigate + gameType are provided.
    */
   const handleBack = useCallback(() => {
+    if (!options?.navigate) {
+      console.warn('useGameNavigation: no navigate function provided');
+      return;
+    }
     const backPath = gameMode === 'competitive'
-      ? `/team-config/${params.gameType}`
-      : '/games'; // All non-competitive modes go back to the main games list.
-    navigate(backPath);
-  }, [navigate, gameMode, params.gameType]);
+      ? `/team-config/${options.gameType}`
+      : '/games';
+    options.navigate(backPath);
+  }, [options?.navigate, options?.gameType, gameMode]);
 
-  return { handleBack };
+  /**
+   * Deferred handleBack — accepts navigate + gameType at call time.
+   * Used by useGameController which can't import from the router layer.
+   */
+  const handleBackWith = useCallback((navigate: (path: string) => void, gameType?: string) => {
+    const backPath = gameMode === 'competitive'
+      ? `/team-config/${gameType}`
+      : '/games';
+    navigate(backPath);
+  }, [gameMode]);
+
+  return { handleBack, handleBackWith };
 }

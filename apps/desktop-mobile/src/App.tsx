@@ -3,36 +3,63 @@ import {
   Toaster, 
   Sonner, 
   TooltipProvider, 
-  ThemeProvider, 
-  GameModeSelector, 
+  ThemeProvider,
+  LinkProvider,
+  RouterProvider,
+  IndexPage,
+  KidsGameSelector,
+  GameTypeSelector,
+  GameSettingsPage,
+  TeamConfigurator,
+  GameModeSelector,
   KidsGameModeSelector,
-  getGameConfig 
+  NotFound,
+  getGameConfig,
+  type LinkComponent
 } from "@powerletter/ui";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useParams } from "react-router-dom";
-import Index from "./pages/Index";
-import NotFound from "./pages/NotFound";
-import GameTypeSelector from "./pages/GameTypeSelector";
-import { TeamConfigurator } from "./pages/TeamConfigurator";
-import GameSettingsPage from "./pages/GameSettingsPage";
-import KidsGameSelector from "./pages/KidsGameSelector";
-import './i18n';
+import { BrowserRouter, Routes, Route, useParams, useNavigate, useLocation, Link as RouterLink } from "react-router-dom";
+import { setupI18n } from "@powerletter/core";
+
+// Initialize shared i18n
+setupI18n();
 
 const queryClient = new QueryClient();
 
-const GameModeSelectorWrapper = () => {
-  const { gameType } = useParams<{ gameType: string }>();
-  const config = getGameConfig(gameType);
-  
-  if (config?.type === 'kids') {
-    return <KidsGameModeSelector />;
-  }
-  return <GameModeSelector />;
+/**
+ * Platform-specific Router Adapter for React Router (Vite/Tauri)
+ */
+const ReactRouterAdapter = ({ children }: { children: React.ReactNode }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const params = useParams();
+
+  const router = {
+    push: (href: string) => navigate(href),
+    replace: (href: string) => navigate(href, { replace: true }),
+    back: () => navigate(-1),
+    prefetch: () => {},
+  };
+
+  const appLocation = {
+    pathname: location.pathname,
+    search: location.search,
+    hash: location.hash,
+    state: location.state,
+  };
+
+  return (
+    <RouterProvider router={router} location={appLocation} params={params}>
+      <LinkProvider component={RouterLink as LinkComponent}>
+        {children}
+      </LinkProvider>
+    </RouterProvider>
+  );
 };
 
 const GameScreenWrapper = () => {
   const { gameType } = useParams<{ gameType: string }>();
-  const config = getGameConfig(gameType);
+  const config = getGameConfig(gameType || '');
 
   if (!config) {
     return <NotFound />;
@@ -46,6 +73,26 @@ const GameScreenWrapper = () => {
   );
 };
 
+const GameModeSelectorWrapper = () => {
+  const { gameType } = useParams<{ gameType: string }>();
+  const config = getGameConfig(gameType || '');
+  
+  if (config?.type === 'kids') {
+    return <KidsGameModeSelector gameType={gameType} />;
+  }
+  return <GameModeSelector gameType={gameType} />;
+};
+
+const TeamConfiguratorWrapper = () => {
+  const { gameType } = useParams<{ gameType: string }>();
+  return <TeamConfigurator gameType={gameType} />;
+};
+
+const GameSettingsPageWrapper = () => {
+  const { settingType, gameType } = useParams<{ settingType: 'difficulty' | 'category', gameType: string }>();
+  return <GameSettingsPage settingType={settingType} gameType={gameType} />;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -53,26 +100,24 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Suspense fallback={<div className="flex justify-center items-center h-screen w-full">Loading...</div>}>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/games" element={<GameTypeSelector />} />
-              <Route path="/kids-games" element={<KidsGameSelector />} />
-              <Route path="/game-mode/:gameType" element={<GameModeSelectorWrapper />} />
-              
-              {/* This route now renders TeamConfigurator as a standalone page */}
-              <Route path="/team-config/:gameType" element={<TeamConfigurator />} />
-              
-              {/* This is the new, dedicated route for changing teams mid-game */}
-              <Route path="/settings/teams/:gameType" element={<TeamConfigurator />} />
+          <ReactRouterAdapter>
+            <Suspense fallback={<div className="flex justify-center items-center h-screen w-full">Loading...</div>}>
+              <Routes>
+                <Route path="/" element={<IndexPage />} />
+                <Route path="/games" element={<GameTypeSelector />} />
+                <Route path="/kids-games" element={<KidsGameSelector />} />
+                <Route path="/game-mode/:gameType" element={<GameModeSelectorWrapper />} />
+                
+                {/* Reusing shared pages across shells */}
+                <Route path="/team-config/:gameType" element={<TeamConfiguratorWrapper />} />
+                <Route path="/settings/teams/:gameType" element={<TeamConfiguratorWrapper />} />
+                <Route path="/settings/:settingType/:gameType" element={<GameSettingsPageWrapper />} />
 
-              {/* This route remains for difficulty and category changes */}
-              <Route path="/settings/:settingType/:gameType" element={<GameSettingsPage />} />
-
-              <Route path="/game/:gameType" element={<GameScreenWrapper />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
+                <Route path="/game/:gameType" element={<GameScreenWrapper />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
+          </ReactRouterAdapter>
         </BrowserRouter>
       </ThemeProvider>
     </TooltipProvider>

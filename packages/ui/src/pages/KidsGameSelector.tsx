@@ -1,27 +1,27 @@
+"use client";
+
 /**
  * KidsGameSelector.tsx
  * Playful, modern styling for the kids selection page.
+ * Restored to original styling from PowerLetter-for-Puzzles-old.
  */
 import React from 'react';
 import { useGameMode, useTranslation } from '@powerletter/core';
-import { 
-  GameSelectionPageLayout, 
-  GameSelectionCard,
-  GAME_REGISTRY,
-  type GameConfig
-} from '@powerletter/ui';
-import { useNavigate } from 'react-router-dom';
+import { GameSelectionPageLayout } from '../templates/GameSelectionPageLayout';
+import { GameSelectionCard } from '../molecules/GameSelectionCard';
+import { GAME_REGISTRY, type GameConfig } from '../registry/GameRegistry';
+import { useAppRouter } from '../contexts/RouterContext';
 
 const KidsGameSelector: React.FC = () => {
   const { gameType, setGameType } = useGameMode();
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const router = useAppRouter();
 
   const kidsGames = GAME_REGISTRY.filter(game => game.type === 'kids');
 
   const handleGameSelect = (gameId: GameConfig['id']) => {
     setGameType(gameId);
-    navigate(`/game-mode/${gameId}`);
+    router.push(`/game-mode/${gameId}`);
   };
 
   return (
@@ -37,7 +37,6 @@ const KidsGameSelector: React.FC = () => {
       // bright, playful gradient background (keeps green + yellow)
       backgroundClass="bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-green-50 via-yellow-50 to-pink-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-800"
       headerView="kids"
-      // tell the layout to show the playful blobs for kids
     >
       {kidsGames.map((game) => (
         <GameSelectionCard

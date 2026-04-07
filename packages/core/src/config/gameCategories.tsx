@@ -29,7 +29,7 @@ export const KIDS_CATEGORIES: readonly CategoryConfig[] = [
 // Define the categories for adult games
 export const CATEGORIES_BY_GAME: Record<string, readonly CategoryConfig[]> = {
   // Clue (adult) - includes "general"
-  clue: [
+  'phrase-clue': [
     { id: 'general', icon: <BrainCircuit size={48} />, labelKey: 'generalKnowledge' },
     { id: 'animals', icon: <PawPrint size={48} />, labelKey: 'animals' },
     { id: 'science', icon: <FlaskConical size={48} />, labelKey: 'science' },

@@ -6,19 +6,28 @@
 import React, { useState } from 'react';
 import { Button } from '../atoms/Button';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
-import { useGameMode, useTranslation, KIDS_CATEGORIES } from "@powerletter/core";
+import { useGameMode, useTranslation, KIDS_CATEGORIES, GAME_METADATA } from "@powerletter/core";
 import { ModeSelector } from '../molecules/ModeSelector';
 import { CategorySelector } from '../molecules/CategorySelector';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useAppRouter, useAppParams } from '../contexts/RouterContext';
 import type { GameCategory } from '@powerletter/core';
 import { GameSelectionLayout } from '../templates/GameSelectionLayout';
 
-export const KidsGameModeSelector: React.FC = () => {
+export interface KidsGameModeSelectorProps {
+  gameType?: string;
+}
+
+export const KidsGameModeSelector: React.FC<KidsGameModeSelectorProps> = ({ gameType: propGameType }) => {
   const { gameMode, setGameMode, setCategories } = useGameMode();
   const { t, i18n } = useTranslation();
   const dir = i18n.dir();
-  const navigate = useNavigate();
-  const { gameType } = useParams<{ gameType: string }>();
+  const router = useAppRouter();
+  const { gameType: paramGameType } = useAppParams<{ gameType: string }>();
+  const gameType = propGameType || paramGameType;
+
+  const metadata = GAME_METADATA.find(g => g.id === gameType);
+  const supported = metadata?.supportedSettings || [];
+  const skipCategoryStep = !supported.includes('category');
 
   const [step, setStep] = useState(1);
   const [selectedCategories, setSelectedCategories] = useState<GameCategory[]>([]);
@@ -27,7 +36,7 @@ export const KidsGameModeSelector: React.FC = () => {
     if (step > 1) {
       setStep(s => s - 1);
     } else {
-      navigate('/kids-games');
+      router.push('/kids-games');
     }
   };
 
@@ -52,9 +61,9 @@ export const KidsGameModeSelector: React.FC = () => {
   const handleContinueFromCategories = () => {
     setCategories(selectedCategories);
     if (gameMode === 'competitive') {
-      navigate(`/team-config/${gameType}`);
+      router.push(`/team-config/${gameType}`);
     } else {
-      navigate(`/game/${gameType}`);
+      router.push(`/game/${gameType}`);
     }
   };
 

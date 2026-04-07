@@ -14,11 +14,16 @@ interface Props {
  * Handles theme persistence in localStorage and applies theme classes to the document
  */
 export const ThemeProvider: React.FC<Props> = ({ children }) => {
-  // State for the current theme, initialized from localStorage or defaulting to 'light'
-  const [theme, setTheme] = useState<Theme>(() => {
-    const stored = localStorage.getItem('powerletter-theme');
-    return stored === 'dark' ? 'dark' : 'light';
-  });
+  // State for the current theme, defaulting to 'light'. Will be updated from localStorage in useEffect.
+  const [theme, setTheme] = useState<Theme>('light');
+
+  // Initial theme setup and persistence
+  useEffect(() => {
+    const stored = localStorage.getItem('powerletter-theme') as Theme | null;
+    if (stored) {
+      setTheme(stored);
+    }
+  }, []);
 
   // Effect to apply theme classes to the document and save to localStorage
   useEffect(() => {

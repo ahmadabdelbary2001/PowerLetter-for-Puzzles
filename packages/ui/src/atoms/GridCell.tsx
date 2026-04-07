@@ -36,7 +36,7 @@ export const GridCell: React.FC<GridCellProps> = ({
   return (
     <div
       className={cn(
-        "rounded-md flex items-center justify-center font-bold border-2 flex-shrink-0 transition-all duration-300",
+        "rounded-md flex items-center justify-center font-bold border-2 shrink-0 transition-all duration-300",
         isRevealed
           ? "bg-primary/90 border-primary text-primary-foreground animate-in fade-in zoom-in-50"
           : "bg-card border-border",

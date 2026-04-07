@@ -57,8 +57,8 @@ class FormationGameEngine extends BaseGameEngine<FormationLevel> {
     if (!difficulty) return []; // Return empty array if no difficulty specified
 
     try {
-      // Load the module and extract levels using a portable dynamic import.
-      const module = await this.loadModule(language, '' as GameCategory, difficulty);
+      // Load the module and extract levels using a portable dynamic import via the safe base helper.
+      const module = await this.safeLoadModule(language, '' as GameCategory, difficulty);
       const levels = module.default?.levels || [];
 
       // Transform and validate each level using the validateLevel helper method.

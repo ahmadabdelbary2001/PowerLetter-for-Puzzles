@@ -19,8 +19,8 @@ export interface ImageLevel extends ClueLevel {
 
 // The engine class extends the base and implements the required abstract methods.
 class ImgClueGameEngine extends ClueGameEngine<ImageLevel> {
-  protected getGameId(): 'img-clue' {
-    return 'img-clue';
+  protected getGameId(): 'image-clue' {
+    return 'image-clue';
   }
 
   protected loadModule(language: Language, category: GameCategory): Promise<LevelModule> {

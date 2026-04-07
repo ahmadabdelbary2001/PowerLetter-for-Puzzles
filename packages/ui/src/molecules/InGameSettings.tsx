@@ -11,14 +11,14 @@ import {
 } from "../index";
 import { Settings, Users, Layers, BarChart3 } from "lucide-react";
 import { useTranslation } from "@powerletter/core";
-import { useNavigate, useParams } from "react-router-dom";
+import { useAppRouter, useAppParams } from '../contexts/RouterContext';
 import { getGameConfig } from '../registry/GameRegistry';
 import { useGameMode } from '@powerletter/core';
 
 export const InGameSettings: React.FC = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
-  const { gameType } = useParams<{ gameType: string }>();
+  const router = useAppRouter();
+  const { gameType } = useAppParams<{ gameType: string }>();
   const { gameMode } = useGameMode();
   const gameConfig = getGameConfig(gameType);
 
@@ -49,21 +49,21 @@ export const InGameSettings: React.FC = () => {
 
         {/* This now navigates to the dedicated settings route for teams */}
         {showChangeTeams && (
-          <DropdownMenuItem onSelect={() => navigate(`/settings/teams/${gameType}`)}>
+          <DropdownMenuItem onSelect={() => router.push(`/settings/teams/${gameType}`)}>
             <Users className="mr-2 h-4 w-4" />
             <span>{t('changeTeams', { ns: 'selection' })}</span>
           </DropdownMenuItem>
         )}
 
         {showChangeDifficulty && (
-          <DropdownMenuItem onSelect={() => navigate(`/settings/difficulty/${gameType}`)}>
+          <DropdownMenuItem onSelect={() => router.push(`/settings/difficulty/${gameType}`)}>
             <BarChart3 className="mr-2 h-4 w-4" />
             <span>{t('changeLevel', { ns: 'selection' })}</span>
           </DropdownMenuItem>
         )}
 
         {showChangeCategory && (
-          <DropdownMenuItem onSelect={() => navigate(`/settings/category/${gameType}`)}>
+          <DropdownMenuItem onSelect={() => router.push(`/settings/category/${gameType}`)}>
             <Layers className="mr-2 h-4 w-4" />
             <span>{t('changeCategory', { ns: 'selection' })}</span>
           </DropdownMenuItem>
