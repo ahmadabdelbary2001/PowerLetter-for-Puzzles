@@ -17,10 +17,10 @@
     "noUnusedParameters": false,
     "jsx": "react-jsx",
     "jsxImportSource": "react",
-    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "types": ["node"]
   },
   "include": ["src/**/*"]
 }

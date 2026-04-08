@@ -34,8 +34,8 @@ export const GameModeSelector: React.FC<GameModeSelectorProps> = ({ gameType: pr
   const { gameType: paramGameType } = useAppParams<{ gameType: string }>();
   const gameType = propGameType || paramGameType;
 
-  const metadata = GAME_METADATA.find(g => g.id === gameType);
-  const supported = metadata?.supportedSettings || [];
+  // const metadata = GAME_METADATA.find(g => g.id === gameType);
+  // const supported = metadata?.supportedSettings || [];
 
   const isOutsideStory = gameType === 'outside-the-story';
   const skipModeStep = isOutsideStory;

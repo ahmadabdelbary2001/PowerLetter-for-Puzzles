@@ -1,6 +1,6 @@
 [package]
 name = "powerletter-app"
-version = "0.1.0"
+version = "1.0.0-beta"
 description = "PowerLetter for Puzzles - Desktop & Mobile App"
 authors = ["Ahmad Abdelbary"]
 edition = "2021"

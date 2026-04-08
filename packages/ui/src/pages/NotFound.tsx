@@ -4,7 +4,7 @@
  * @description A fallback page component for 404 errors.
  * Shared across monorepo apps.
  */
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useAppLocation } from "../contexts/RouterContext";
 import { Link } from "../atoms/Link";
 

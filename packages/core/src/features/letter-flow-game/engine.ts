@@ -5,41 +5,36 @@
  * --- It now extends the BaseGameEngine for architectural consistency,
  * but overrides the `loadLevels` method to handle its unique, non-category-based loading logic. ---
  */
-import type { Language, Difficulty, GameCategory, GameLevel } from '@powerletter/core';
+import type { Language, Difficulty, GameCategory, BoardCell, LetterFlowLevel } from '../../types/game';
+export type { BoardCell, LetterFlowLevel };
 import { shuffleArray } from '../../lib/gameUtils';
 import { BaseGameEngine } from '../../games/engine/BaseGameEngine';
 
 /**
- * Represents a single cell on the game board
+ * WASM Imports with Fallback.
+ * This pattern allows the engine to benefit from Rust performance if available,
+ * while remaining fully functional in environments where WASM is not present.
  */
-export interface BoardCell {
-  x: number;           // X coordinate on the board
-  y: number;           // Y coordinate on the board
-  letter: string;      // Letter displayed in this cell
-  isUsed: boolean;     // Whether this cell has been used in a word path
-  color?: string;      // CSS color for visual distinction
-}
+let wasmEngine: any = null;
+const loadWasm = async () => {
+    if (wasmEngine) return wasmEngine;
+    try {
+        // @ts-ignore - The WASM module is generated during build
+        wasmEngine = await import(/* @vite-ignore */ '../../wasm/power-engine');
+        return wasmEngine;
+    } catch (e) {
+        return null;
+    }
+};
 
 /**
- * --- This interface is now correctly exported. ---
- * Represents a path that forms a word on the game board
+ * Represents a path that forms a word on the game board.
+ * Specific to LetterFlow but uses centralized BoardCell.
  */
 export interface WordPath {
   word: string;        // The word formed by this path
   cells: BoardCell[]; // Array of cells that make up this path
   startIndex: number;  // Starting index of the word in the solution
-}
-
-/**
- * Represents a complete level in the Letter Flow game
- */
-export interface LetterFlowLevel extends GameLevel {
-  id: string;
-  difficulty: Difficulty;
-  words: string[];
-  board: BoardCell[];
-  solution: string;
-  endpoints: { x: number; y: number; letter: string; color?: string }[];
 }
 
 import type { LevelModule } from '../../games/engine/BaseGameEngine';
@@ -99,6 +94,7 @@ class LetterFlowGameEngine extends BaseGameEngine<LetterFlowLevel> {
       lvl && typeof lvl === 'object' &&
       'id' in lvl && 'solutionWord' in lvl && 'gridSize' in lvl && 'endpoints' in lvl
     ) {
+      // Future: Delegate full validation to Rust via letter_flow_validate(JSON.stringify(lvl))
       const { width, height } = (lvl as { gridSize: { width: number; height: number } }).gridSize;
       const board: BoardCell[] = Array.from({ length: width * height }, (_, i) => ({
         x: i % width, y: Math.floor(i / width), letter: '', isUsed: false
@@ -143,19 +139,27 @@ class LetterFlowGameEngine extends BaseGameEngine<LetterFlowLevel> {
   }
 
   /**
-   * --- This public method is now correctly restored to the class. ---
-   * Generate a game board from a string of letters. This is used as a fallback.
+   * --- Restored public method with WASM optimization ---
+   * Generate a game board from a string of letters.
    */
   public generateBoard(_s: string, _d: Difficulty, _l: Language, baseLetters?: string): BoardCell[] {
     if (!baseLetters) return [];
 
-    // Shuffle the letters for random placement
+    // 1. Attempt to use the Rust Engine for performance
+    // Note: Since this is a synchronous call in UI, we check if wasm is ALREADY loaded.
+    if (wasmEngine?.letter_flow_generate_board) {
+        try {
+            return wasmEngine.letter_flow_generate_board(baseLetters) as BoardCell[];
+        } catch (e) {
+            console.warn("WASM Board generation failed, falling back to JS", e);
+        }
+    }
+
+    // 2. Fallback to TypeScript implementation
     const letters = shuffleArray(baseLetters.split(''));
-    // Calculate board size (square root of letter count, rounded up)
     const size = Math.ceil(Math.sqrt(letters.length));
     const board: BoardCell[] = [];
 
-    // Create board cells for each position
     for (let y = 0; y < size; y++) {
       for (let x = 0; x < size; x++) {
         const index = y * size + x;
@@ -171,6 +175,13 @@ class LetterFlowGameEngine extends BaseGameEngine<LetterFlowLevel> {
     }
 
     return board;
+  }
+
+  /**
+   * Proactively trigger WASM loading when the engine is initialized.
+   */
+  public async init() {
+    await loadWasm();
   }
 }
 

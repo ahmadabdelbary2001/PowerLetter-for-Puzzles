@@ -5,7 +5,7 @@
  * with consistent styling from KidsGameSelector and GameTypeSelector pages.
  * Shared version for all monorepo apps.
  */
-import React from 'react';
+// import React from 'react';
 import { Button } from "../atoms/Button";
 import { Badge } from "../atoms/Badge";
 import { useTranslation } from "@powerletter/core";

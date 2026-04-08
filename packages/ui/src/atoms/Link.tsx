@@ -1,6 +1,6 @@
 "use client";
 
-import React, { forwardRef } from 'react';
+import { forwardRef } from 'react';
 import { useLinkComponent } from '../contexts/LinkContext';
 import type { LinkProps } from '../contexts/LinkContext';
 

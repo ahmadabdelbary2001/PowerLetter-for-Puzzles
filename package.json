@@ -12,14 +12,19 @@
     "tauri:build": "pnpm --filter @powerletter/desktop-mobile tauri:build",
     "android:dev": "pnpm --filter @powerletter/desktop-mobile android:dev",
     "android:build": "pnpm --filter @powerletter/desktop-mobile android:build",
-    "lint": "turbo run lint"
+    "lint": "turbo run lint",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "changeset publish"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.27.10",
     "turbo": "^2.1.2",
     "typescript": "~5.8.3"
   },
   "packageManager": "pnpm@9.0.0",
   "engines": {
     "node": ">=18"
-  }
+  },
+  "version": "1.0.0-beta"
 }

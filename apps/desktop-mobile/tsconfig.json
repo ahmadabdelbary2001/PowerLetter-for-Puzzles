@@ -7,7 +7,10 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@powerletter/core": ["../../packages/core/src/index.ts"],
+      "@powerletter/ui": ["../../packages/ui/src/index.ts"],
+      "@powerletter/api-bindings": ["../../packages/api-bindings/src/index.ts"]
     },
     "noImplicitAny": false,
     "noUnusedParameters": false,

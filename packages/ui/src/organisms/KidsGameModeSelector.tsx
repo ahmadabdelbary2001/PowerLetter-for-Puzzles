@@ -3,7 +3,7 @@
  * KidsGameModeSelector component - A simplified version of GameModeSelector for kids.
  * --- This component now uses the shared GameSelectionLayout to render its UI. ---
  */
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Button } from '../atoms/Button';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
 import { useGameMode, useTranslation, KIDS_CATEGORIES, GAME_METADATA } from "@powerletter/core";
@@ -25,9 +25,9 @@ export const KidsGameModeSelector: React.FC<KidsGameModeSelectorProps> = ({ game
   const { gameType: paramGameType } = useAppParams<{ gameType: string }>();
   const gameType = propGameType || paramGameType;
 
-  const metadata = GAME_METADATA.find(g => g.id === gameType);
-  const supported = metadata?.supportedSettings || [];
-  const skipCategoryStep = !supported.includes('category');
+  // const metadata = GAME_METADATA.find(g => g.id === gameType);
+  // const supported = metadata?.supportedSettings || [];
+  // const skipCategoryStep = !supported.includes('category');
 
   const [step, setStep] = useState(1);
   const [selectedCategories, setSelectedCategories] = useState<GameCategory[]>([]);

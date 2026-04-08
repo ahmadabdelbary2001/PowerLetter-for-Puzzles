@@ -5,7 +5,7 @@
  * Framework-agnostic version that works in both Next.js and Vite shell.
  * Restored to original styling from PowerLetter-for-Puzzles-old.
  */
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useGameMode, useTranslation } from "@powerletter/core";
 import { Header } from "../organisms/Header";
 import { Footer } from "../organisms/Footer";

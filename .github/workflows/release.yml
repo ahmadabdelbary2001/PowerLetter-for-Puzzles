@@ -1,0 +1,148 @@
+name: "Release"
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., 1.2.3)'
+        required: false
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  release:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [macos-latest, ubuntu-22.04, windows-latest]
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: install dependencies (ubuntu only)
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.1-dev libsoup-3.0-dev libappindicator3-dev librsvg2-dev patchelf
+
+      - name: install frontend dependencies
+        run: pnpm install
+
+      - name: Version and build packages
+        run: |
+          pnpm version-packages
+          pnpm build
+
+      - name: Build Desktop (Windows/macOS/Linux)
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: "PowerLetter v${{ github.ref_name }}"
+          releaseBody: "Official Release of PowerLetter Puzzle Game"
+          releaseDraft: true
+          prerelease: false
+          includeUpdaterJson: true
+          distPath: ../dist
+          projectPath: ./apps/desktop-mobile
+
+  android:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: install NDK
+        run: sdkmanager "ndk;28.2.13676358"
+
+      - name: install frontend dependencies
+        run: pnpm install
+
+      - name: Decode Android Key
+        run: |
+          mkdir -p apps/desktop-mobile/src-tauri/gen/android/
+          echo "${{ secrets.ANDROID_SIGNING_KEY }}" | base64 --decode > apps/desktop-mobile/src-tauri/gen/android/release.keystore
+
+      - name: Inject Mobile Crate Types
+        run: |
+          sed -i 's/crate-type = \["lib"\]/crate-type = \["staticlib", "cdylib", "lib"\]/' apps/desktop-mobile/src-tauri/Cargo.toml
+
+      - name: Build Android APK
+        run: pnpm tauri android build --apk --target aarch64-linux-android --target armv7-linux-androideabi --target i686-linux-android --target x86_64-linux-android
+        working-directory: ./apps/desktop-mobile
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_STORE_FILE: ../release.keystore
+          RELEASE_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
+          RELEASE_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+
+      - name: Rename APKs
+        run: |
+          VERSION="${{ github.ref_name }}"
+          mkdir -p apps/desktop-mobile/src-tauri/gen/android/app/build/outputs/apk/release-unified
+          find apps/desktop-mobile/src-tauri/gen/android/app/build/outputs/apk -name "*-release.apk" -type f | while read -r apk; do
+            filename=$(basename "$apk")
+            if [[ "$filename" == "app-universal-release.apk" ]]; then
+              ABI="universal"
+            else
+              ABI=$(echo "$filename" | sed 's/app-//' | sed 's/-release.apk//')
+            fi
+            NEW_NAME="PowerLetter-$VERSION-$ABI.apk"
+            mv "$apk" "apps/desktop-mobile/src-tauri/gen/android/app/build/outputs/apk/release-unified/$NEW_NAME"
+          done
+
+      - name: Upload Android APK to Action Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: PowerLetter-Android-APKs
+          path: apps/desktop-mobile/src-tauri/gen/android/app/build/outputs/apk/release-unified/*.apk
+
+      - name: Upload APKs to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: apps/desktop-mobile/src-tauri/gen/android/app/build/outputs/apk/release-unified/*.apk
+          draft: true
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

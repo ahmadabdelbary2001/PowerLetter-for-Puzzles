@@ -16,9 +16,30 @@ out/
 # Rust & Tauri
 target/
 src-tauri/target/
-src-tauri/gen/
 Cargo.lock
 WebView2Loader.dll
+
+# Tauri Generated Files (gen directory) - Selective ignoring
+# Ignore all generated schemas (regenerated from config)
+src-tauri/gen/schemas/
+
+# Android generated files
+src-tauri/gen/android/.gradle/
+src-tauri/gen/android/app/build/
+src-tauri/gen/android/build/
+src-tauri/gen/android/captures/
+src-tauri/gen/android/*.iml
+src-tauri/gen/android/local.properties
+
+# Keep important Android files:
+# - build.gradle.kts (project config)
+# - settings.gradle (project settings)
+# - gradle.properties (gradle config)
+# - gradlew & gradlew.bat (wrapper scripts)
+# - .editorconfig (editor settings)
+# - buildSrc/ (build logic)
+# - gradle/wrapper/ (wrapper files)
+# - app/src/ (source code)
 
 # IDEs & System
 .vscode/
@@ -32,6 +53,8 @@ WebView2Loader.dll
 .DS_Store
 Thumbs.db
 desktop.ini
+docs/
+scripts/
 
 # Environment Variables
 .env

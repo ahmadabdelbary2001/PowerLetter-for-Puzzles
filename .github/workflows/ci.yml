@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  lint-and-typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+      
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+      
+      - name: Install dependencies
+        run: pnpm install
+      
+      - name: Lint
+        run: pnpm lint
+      
+      - name: Type Check
+        run: pnpm turbo run typecheck --continue
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+      
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+      
+      - name: Install dependencies
+        run: pnpm install
+      
+      - name: Run tests
+        run: pnpm turbo run test --continue

@@ -105,6 +105,29 @@ export interface GameLevel {
   data?: unknown;
 }
 
+/**
+ * Represents a single cell on any game board.
+ */
+export interface BoardCell {
+  x: number;
+  y: number;
+  letter: string;
+  isUsed: boolean;
+  color?: string;
+}
+
+/**
+ * Represents a complete level in the Letter Flow game.
+ */
+export interface LetterFlowLevel extends GameLevel {
+  id: string;
+  difficulty: Difficulty;
+  words: string[];
+  board: BoardCell[];
+  solution: string;
+  endpoints: { x: number; y: number; letter: string; color?: string }[];
+}
+
 export interface IGameEngine<T extends GameLevel> {
   loadLevels: (options: {
     language: Language;

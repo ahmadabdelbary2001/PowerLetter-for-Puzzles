@@ -18,6 +18,7 @@
     "paths": {
       "@powerletter/core": ["../core/src/index.ts"]
     },
+    "types": ["node"],
     "noUnusedLocals": false,
     "noUnusedParameters": false
   },

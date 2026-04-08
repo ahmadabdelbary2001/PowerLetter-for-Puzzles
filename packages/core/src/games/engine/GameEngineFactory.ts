@@ -1,34 +1,33 @@
 // src/games/engine/GameEngineFactory.ts
-import { phraseClueGameEngine } from '../../features/phrase-clue-game/engine';
-import { formationGameEngine } from '../../features/formation-game/engine';
-import { imgClueGameEngine } from '../../features/img-clue-game/engine';
-import { letterFlowGameEngine } from '../../features/letter-flow-game/engine';
-import { outsideStoryGameEngine } from '../../features/outside-story-game/engine';
-import { imgChoiceGameEngine } from '../../features/img-choice-game/engine';
-import { wordChoiceGameEngine } from '../../features/word-choice-game/engine';
+/**
+ * @description A factory for game engines that follows the Open-Closed Principle.
+ * Engines can be registered dynamically, avoiding the need for a large switch statement.
+ * This pattern ensures that adding a new game type does not require modifying this file.
+ */
 import type { GameType } from '@powerletter/core';
 
-export function getGameEngine(gameId: GameType) {
-  switch (gameId) {
-    case 'phrase-clue':
-      return phraseClueGameEngine;
-    case 'formation':
-      return formationGameEngine;
-    case 'image-clue':
-      return imgClueGameEngine;
-    case 'letter-flow':
-      return letterFlowGameEngine;
-    case 'img-choice':
-      return imgChoiceGameEngine;
-    case 'outside-the-story':
-      return outsideStoryGameEngine;
-    case 'word-choice':
-      return wordChoiceGameEngine;
-    case 'category':
-      throw new Error(`Engine for game 'category' is not yet implemented.`);
-    default: {
-      const exhaustiveCheck: never = gameId;
-      throw new Error(`Unhandled game engine for game: ${exhaustiveCheck}`);
-    }
-  }
+// A private registry of game engines.
+const engineRegistry: Map<GameType, any> = new Map();
+
+/**
+ * Registers an engine for a specific game type.
+ */
+export function registerGameEngine(gameId: GameType, engine: any) {
+  engineRegistry.set(gameId, engine);
 }
+
+/**
+ * Retrieves an engine for a specific game type.
+ */
+export function getGameEngine(gameId: GameType) {
+  const engine = engineRegistry.get(gameId);
+  
+  if (!engine) {
+    throw new Error(`Engine for game '${gameId}' is not registered. Ensure it is imported before use.`);
+  }
+
+  return engine;
+}
+
+// Note: Initialization of existing engines should be moved to a centralized bootstrapper 
+// or handled via static imports in their feature directories.

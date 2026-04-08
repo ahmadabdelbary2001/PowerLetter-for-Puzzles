@@ -14,6 +14,14 @@ export * from './hooks/useNotification';
 // Config & Constants
 export * from './config/gameCategories';
 
+// Engine Factory & Discovery
+export { getGameEngine, registerGameEngine } from './games/engine/GameEngineFactory';
+export { bootstrapEngines } from './games/engine/bootstrap';
+
+// Auto-bootstrap standard engines
+import { bootstrapEngines as initEngines } from './games/engine/bootstrap';
+initEngines();
+
 // Feature Hooks
 export { useFormationGame } from './features/formation-game/hooks/useFormationGame';
 export { useImgChoiceGame } from './features/img-choice-game/hooks/useImgChoiceGame';

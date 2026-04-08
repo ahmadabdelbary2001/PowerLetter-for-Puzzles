@@ -1,5 +1,6 @@
 [workspace]
 members = [
   "apps/desktop-mobile/src-tauri",
+  "crates/power-engine",
 ]
 resolver = "2"

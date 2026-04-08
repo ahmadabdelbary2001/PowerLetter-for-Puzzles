@@ -17,6 +17,10 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      // Workspace packages - resolve to source for development
+      "@powerletter/core": path.resolve(__dirname, "../../packages/core/src/index.ts"),
+      "@powerletter/ui": path.resolve(__dirname, "../../packages/ui/src/index.ts"),
+      "@powerletter/api-bindings": path.resolve(__dirname, "../../packages/api-bindings/src/index.ts"),
     },
   },
   server: {
@@ -34,4 +38,8 @@ export default defineConfig({
   envPrefix: ['VITE_', 'TAURI_ENV_*'],
   // base is '/' for desktop/mobile, GitHub Pages deploy handled separately
   base: '/',
+  optimizeDeps: {
+    // Exclude workspace packages - let Vite resolve them as source files
+    exclude: ['@powerletter/core', '@powerletter/ui', '@powerletter/api-bindings'],
+  },
 })

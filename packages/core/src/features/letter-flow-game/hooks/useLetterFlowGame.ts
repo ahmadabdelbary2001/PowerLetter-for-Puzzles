@@ -24,9 +24,16 @@ export function useLetterFlowGame() {
   const [activeLetter, setActiveLetter] = useState<string | null>(null);
   const [gameState, setGameState] = useState<'playing' | 'won'>('playing');
 
+  // Initialize the engine (e.g. load WASM)
+  useEffect(() => {
+    letterFlowGameEngine.init().catch(err => {
+        console.error("Failed to initialize LetterFlow WASM engine:", err);
+    });
+  }, []);
+
   useEffect(() => {
     if (currentLevel) {
-      setBoard(currentLevel.board.map(c => ({ ...c })));
+      setBoard(currentLevel.board.map((c: BoardCell) => ({ ...c })));
       setFoundWords([]);
       setSelectedPath([]);
       setActiveLetter(null);
@@ -34,10 +41,10 @@ export function useLetterFlowGame() {
     }
   }, [currentLevel]);
 
-  const allLetters = useMemo(() => [...new Set(currentLevel?.endpoints.map(e => e.letter) || [])], [currentLevel]);
+  const allLetters = useMemo(() => [...new Set(currentLevel?.endpoints.map((e: any) => e.letter) || [])] as string[], [currentLevel]);
   const endpointColorMap = useMemo(() => {
     const m = new Map<string, string | undefined>();
-    currentLevel?.endpoints.forEach(e => m.set(`${e.x}-${e.y}`, e.color));
+    currentLevel?.endpoints.forEach((e: any) => m.set(`${e.x}-${e.y}`, e.color));
     return m;
   }, [currentLevel]);
   const colorForLetter = useCallback((letter: string | undefined | null) => {
@@ -45,7 +52,7 @@ export function useLetterFlowGame() {
     return colorForString(letter);
   }, []);
   const isEndpoint = useCallback((cell: BoardCell) => {
-    return currentLevel?.endpoints.some(ep => ep.x === cell.x && ep.y === cell.y && ep.letter === cell.letter) ?? false;
+    return currentLevel?.endpoints.some((ep: any) => ep.x === cell.x && ep.y === cell.y && ep.letter === cell.letter) ?? false;
   }, [currentLevel]);
   const findOverlappingConnections = useCallback((newPath: BoardCell[]) => {
     return foundWords.filter(path => path.cells.some(pc => newPath.some(nc => nc.x === pc.x && nc.y === pc.y)));
@@ -117,8 +124,8 @@ export function useLetterFlowGame() {
       setSelectedPath([]);
       
       const connected = [...foundWords.map(f => f.word), activeLetter].filter(Boolean) as string[];
-      const uniqueConnected = Array.from(new Set(connected));
-      if (allLetters.every(letter => uniqueConnected.includes(letter))) {
+      const uniqueConnected = Array.from(new Set(connected)) as string[];
+      if (allLetters.every((letter: string) => uniqueConnected.includes(letter))) {
         setNotification({ messageKey: 'levelComplete', type: 'success', duration: 2000 });
         if (gameMode === 'competitive') {
           setTimeout(() => nextLevel(), 2000);

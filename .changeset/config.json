@@ -1,0 +1,13 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@3.0.0/schema.json",
+  "changelog": "@changesets/cli/changelog",
+  "commit": false,
+  "fixed": [
+    ["@powerletter/core", "@powerletter/ui", "@powerletter/api-bindings"]
+  ],
+  "linked": [],
+  "access": "restricted",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "ignore": ["@powerletter/web", "@powerletter/desktop-mobile"]
+}
