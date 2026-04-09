@@ -2,38 +2,19 @@
 /**
  * @description Game engine for the Word Formation (Crossword) Challenge.
  * This engine handles loading levels and generating letter sets for the game.
- * --- It now extends the BaseGameEngine for architectural consistency,
- * but overrides the `loadLevels` method to handle its unique, non-category-based loading logic. ---
+ * --- Refactored to use Domain Services from FSD architecture ---
  */
 import type { Language, Difficulty, GameCategory } from '@powerletter/core';
-import { shuffleArray } from '../../lib/gameUtils';
+// Re-export types from domain for backward compatibility
+export type { GridCell, FormationLevel } from '../../domain/formation';
+import type { GridCell, FormationLevel } from '../../domain/formation';
+
 import { BaseGameEngine } from '../../games/engine/BaseGameEngine';
-
-/**
- * Represents a single cell in the crossword grid.
- * Each cell has a position (x, y), a letter, and a list of word indices it belongs to.
- */
-export interface GridCell {
-  x: number;             // X coordinate in the grid
-  y: number;             // Y coordinate in the grid
-  letter: string;        // The letter displayed in this cell
-  words: number[];       // Array of word indices that this cell is part of
-}
-
-/**
- * Represents a complete level in the Word Formation game.
- * Contains all the information needed to play a level.
- */
-export interface FormationLevel {
-  id: string;           // Unique identifier for the level
-  difficulty: Difficulty; // Difficulty level (easy, medium, hard)
-  words: string[];      // Array of words that can be formed in this level
-  grid: GridCell[];     // Array of grid cells that make up the crossword
-  baseLetters: string;  // The base set of letters available for forming words
-  solution: string;     // First word in the words array (to satisfy useGame constraint)
-}
-
 import type { LevelModule } from '../../games/engine/BaseGameEngine';
+
+// Import domain services
+import { levelRepository } from '../../domain/formation/repository';
+import { wordService, validationService } from '../../domain/formation/service';
 
 /**
  * Implements the game engine for the Word Formation (Crossword) Challenge.
@@ -41,9 +22,7 @@ import type { LevelModule } from '../../games/engine/BaseGameEngine';
  */
 class FormationGameEngine extends BaseGameEngine<FormationLevel> {
   /**
-   * --- OVERRIDE: This engine has simpler loading logic that doesn't use categories. ---
-   * We override the base `loadLevels` method to implement this specific logic directly,
-   * while preserving all original functionality.
+   * Override base `loadLevels` to use domain repository
    * @param options - Configuration options for loading levels
    * @returns Promise<FormationLevel[]> - Array of loaded levels
    */
@@ -53,30 +32,25 @@ class FormationGameEngine extends BaseGameEngine<FormationLevel> {
     difficulty?: Difficulty;
   }): Promise<FormationLevel[]> {
     const { language, difficulty } = options;
-    // This game requires a difficulty to load levels.
-    if (!difficulty) return []; // Return empty array if no difficulty specified
+    if (!difficulty) return [];
 
     try {
-      // Load the module and extract levels using a portable dynamic import via the safe base helper.
-      const module = await this.safeLoadModule(language, '' as GameCategory, difficulty);
-      const levels = module.default?.levels || [];
+      // Use domain repository for loading
+      const levels = await levelRepository.loadLevels({ 
+        language: language as string, 
+        difficulty 
+      });
 
-      // Transform and validate each level using the validateLevel helper method.
+      // Transform and validate each level
       const validatedLevels = levels
         .map(lvl => this.validateLevel(lvl, difficulty))
-        .filter((l): l is FormationLevel => l !== null); // Filter out null values
+        .filter((l): l is FormationLevel => l !== null);
 
-      // If validation results in an empty array, return it (original behavior).
-      if (validatedLevels.length === 0) {
-        return [];
-      }
-      
-      return validatedLevels;
+      return validatedLevels.length > 0 ? validatedLevels : [];
 
     } catch (err) {
-      // Log error and return an error level if loading fails (original behavior).
       console.error(`FormationGameEngine: Failed to load levels for ${language}/${difficulty}.`, err);
-      return [this.getErrorLevel()];
+      return [validationService.createErrorLevel()];
     }
   }
 
@@ -87,7 +61,8 @@ class FormationGameEngine extends BaseGameEngine<FormationLevel> {
   }
 
   protected loadModule(language: Language, _: GameCategory, difficulty?: Difficulty): Promise<LevelModule> {
-    return import(`../../data/${language}/formation/${difficulty}.json`);
+    // Delegate to domain repository
+    return levelRepository.loadModule(language, difficulty) as Promise<LevelModule>;
   }
 
   protected validateLevel(levelData: unknown, difficulty?: Difficulty): FormationLevel | null {
@@ -111,19 +86,19 @@ class FormationGameEngine extends BaseGameEngine<FormationLevel> {
   }
 
   protected getErrorLevel(): FormationLevel {
-    // Returns a default error level object to prevent crashes, matching original behavior.
-    return { id: 'error', difficulty: 'easy', words: [], grid: [], baseLetters: 'ERROR', solution: '' };
+    return validationService.createErrorLevel();
   }
 
   /**
    * Generates a shuffled array of letters from the base letters.
-   * --- The signature is now corrected to only accept the argument it actually uses. ---
+   * Delegates to domain wordService.
    * @param baseLetters - The base set of letters to shuffle
    * @returns string[] - Shuffled array of letters
    */
   public generateLetters(baseLetters: string): string[] {
-    if (!baseLetters) return []; // Return empty array if no base letters provided
-    return shuffleArray(baseLetters.split('')); // Split base letters into array and shuffle
+    if (!baseLetters) return [];
+    // Delegate to domain service
+    return wordService.generateLetters(baseLetters);
   }
 }
 

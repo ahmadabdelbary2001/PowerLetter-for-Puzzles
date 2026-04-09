@@ -2,6 +2,8 @@
 members = [
   "apps/desktop-mobile/src-tauri",
   "crates/power-engine",
-  "crates/power-game-letterflow", "crates/power-wasm",
+  "crates/power-game-letterflow",
+  "crates/power-game-formation",
+  "crates/power-wasm",
 ]
 resolver = "2"

@@ -5,3 +5,4 @@
  */
 
 export * as letterFlow from './letter-flow';
+export * as formation from './formation';

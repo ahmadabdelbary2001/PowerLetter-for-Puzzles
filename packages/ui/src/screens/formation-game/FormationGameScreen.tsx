@@ -12,6 +12,7 @@ import { LetterCircle } from '../../molecules/LetterCircle';
 import { GameButton } from '../../atoms/GameButton';
 import { WordFormationLayout } from '../../templates/WordFormationLayout';
 import { GameScreen } from '../../organisms/GameScreen';
+import { useAppRouter, useAppParams } from '../../contexts/RouterContext';
 
 // 1. Define the pure UI component. It receives all props from the hook.
 const FormationGame: React.FC<ReturnType<typeof useFormationGame>> = ({
@@ -23,7 +24,7 @@ const FormationGame: React.FC<ReturnType<typeof useFormationGame>> = ({
   notification,
   onClearNotification,
   usedLetterIndices,
-  handleBack,
+  handleBackWith,
   onLetterSelect,
   onRemoveLast,
   onShuffle,
@@ -32,6 +33,12 @@ const FormationGame: React.FC<ReturnType<typeof useFormationGame>> = ({
   t,
   instructions,
 }) => {
+  const router = useAppRouter();
+  const params = useAppParams<{ gameType?: string }>();
+  const gameType = params.gameType ?? 'formation';
+
+  const handleBack = () => handleBackWith(router.push, gameType);
+
   return (
     <WordFormationLayout
       title={t('formationTitle', { ns: 'games' })}

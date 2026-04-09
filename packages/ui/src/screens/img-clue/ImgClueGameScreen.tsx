@@ -14,6 +14,7 @@ import { GameControls } from "../../organisms/GameControls";
 import { ArrowLeft, ArrowRight, Volume2 } from "lucide-react";
 import { ClueGameLayout } from "../../templates/ClueGameLayout";
 import { GameScreen } from "../../organisms/GameScreen";
+import { useAppRouter, useAppParams } from "../../contexts/RouterContext";
 
 // 1. Define the pure UI component.
 const ImgClueGame: React.FC<ReturnType<typeof useImageClueGame>> = ({
@@ -34,7 +35,7 @@ const ImgClueGame: React.FC<ReturnType<typeof useImageClueGame>> = ({
   onClear,
   nextLevel,
   prevLevel,
-  handleBack,
+  handleBackWith,
   resetLevel,
   canRemove,
   canClear,
@@ -44,6 +45,12 @@ const ImgClueGame: React.FC<ReturnType<typeof useImageClueGame>> = ({
   i18n,
   instructions,
 }) => {
+  const router = useAppRouter();
+  const { gameType: paramGameType } = useAppParams<{ gameType: string }>();
+  const gameType = paramGameType || 'img-clue';
+
+  const handleBack = () => handleBackWith(router.push, gameType);
+
   const dir = i18n.dir();
   const { answerSlots, slotIndices, hintIndices } = gameState;
 

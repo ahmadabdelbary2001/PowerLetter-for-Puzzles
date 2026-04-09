@@ -8,6 +8,7 @@ import React from 'react';
 import { useOutsideStory } from '@powerletter/core';
 import { OutsideStoryLayout } from '../../templates/OutsideStoryLayout';
 import { GameScreen } from '../../organisms/GameScreen';
+import { useAppRouter, useAppParams } from '../../contexts/RouterContext';
 
 // Import all the sub-screen components
 import { RoleRevealHandoffScreen } from './components/RoleRevealHandoffScreen';
@@ -24,10 +25,16 @@ const OutsideStoryGame: React.FC<ReturnType<typeof useOutsideStory>> = (game) =>
   const {
     notification,
     onClearNotification,
-    handleBack,
+    handleBackWith,
     t,
     instructions,
   } = game;
+
+  const router = useAppRouter();
+  const { gameType: paramGameType } = useAppParams<{ gameType: string }>();
+  const gameType = paramGameType || 'outside-the-story';
+
+  const handleBack = () => handleBackWith(router.push, gameType);
 
   // This internal router decides which sub-screen to show.
   const renderScreen = () => {

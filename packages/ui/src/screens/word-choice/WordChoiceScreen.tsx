@@ -11,6 +11,7 @@ import { Button } from "../../atoms/Button";
 import { cn } from "../../lib/utils";
 import { MultipleChoiceLayout } from "../../templates/MultipleChoiceLayout";
 import { GameScreen } from "../../organisms/GameScreen";
+import { useAppRouter, useAppParams } from "../../contexts/RouterContext";
 
 // 1. Define the pure UI component.
 const WordChoiceGame: React.FC<ReturnType<typeof useWordChoiceGame>> = ({
@@ -25,11 +26,17 @@ const WordChoiceGame: React.FC<ReturnType<typeof useWordChoiceGame>> = ({
   playSound,
   handleOptionClick,
   nextLevel,
-  handleBack,
+  handleBackWith,
   t,
   i18n,
   instructions,
 }) => {
+  const router = useAppRouter();
+  const { gameType: paramGameType } = useAppParams<{ gameType: string }>();
+  const gameType = paramGameType || 'word-choice';
+
+  const handleBack = () => handleBackWith(router.push, gameType);
+
   const dir = i18n.dir();
 
   return (

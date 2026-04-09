@@ -12,6 +12,7 @@ import { LetterGrid } from "../../molecules/LetterGrid";
 import { GameControls } from "../../organisms/GameControls";
 import { ClueGameLayout } from "../../templates/ClueGameLayout";
 import { GameScreen } from "../../organisms/GameScreen";
+import { useAppRouter, useAppParams } from "../../contexts/RouterContext";
 
 // 1. Define the pure UI component.
 const PhraseClueGame: React.FC<ReturnType<typeof usePhraseClueGame>> = ({
@@ -31,7 +32,7 @@ const PhraseClueGame: React.FC<ReturnType<typeof usePhraseClueGame>> = ({
   onHint,
   nextLevel,
   prevLevel,
-  handleBack,
+  handleBackWith,
   resetLevel,
   canRemove,
   canClear,
@@ -41,6 +42,12 @@ const PhraseClueGame: React.FC<ReturnType<typeof usePhraseClueGame>> = ({
   t,
   instructions,
 }) => {
+  const router = useAppRouter();
+  const { gameType: paramGameType } = useAppParams<{ gameType: string }>();
+  const gameType = paramGameType || 'phrase-clue';
+
+  const handleBack = () => handleBackWith(router.push, gameType);
+
   const { answerSlots, slotIndices, hintIndices } = gameState;
 
   return (

@@ -1,0 +1,18 @@
+[package]
+name = "power-game-formation"
+version = "1.0.0-beta"
+edition = "2021"
+authors = ["Ahmad Abdelbary"]
+description = "Formation (Word Crossword) game engine for PowerLetter"
+license = "MIT"
+
+[lib]
+crate-type = ["rlib"]
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "1.0"
+rand = "0.8"
+
+[dev-dependencies]
