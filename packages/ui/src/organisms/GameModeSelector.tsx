@@ -7,7 +7,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '../atoms/Button';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
-import { useGameMode, useTranslation, CATEGORIES_BY_GAME, GAME_METADATA } from '@powerletter/core';
+import { useGameMode, useTranslation, CATEGORIES_BY_GAME } from '@powerletter/core';
 import { ModeSelector } from '../molecules/ModeSelector';
 import { CategorySelector } from '../molecules/CategorySelector';
 import { DifficultySelector } from '../molecules/DifficultySelector';

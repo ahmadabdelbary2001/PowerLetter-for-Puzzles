@@ -108,7 +108,7 @@ jobs:
           sed -i 's/crate-type = \["lib"\]/crate-type = \["staticlib", "cdylib", "lib"\]/' apps/desktop-mobile/src-tauri/Cargo.toml
 
       - name: Build Android APK
-        run: pnpm tauri android build --apk --target aarch64-linux-android --target armv7-linux-androideabi --target i686-linux-android --target x86_64-linux-android
+        run: pnpm tauri android build --apk --target aarch64 --target armv7 --target i686 --target x86_64
         working-directory: ./apps/desktop-mobile
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

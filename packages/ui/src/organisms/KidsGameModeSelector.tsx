@@ -6,7 +6,7 @@
 import { useState } from 'react';
 import { Button } from '../atoms/Button';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
-import { useGameMode, useTranslation, KIDS_CATEGORIES, GAME_METADATA } from "@powerletter/core";
+import { useGameMode, useTranslation, KIDS_CATEGORIES } from "@powerletter/core";
 import { ModeSelector } from '../molecules/ModeSelector';
 import { CategorySelector } from '../molecules/CategorySelector';
 import { useAppRouter, useAppParams } from '../contexts/RouterContext';

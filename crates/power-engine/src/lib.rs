@@ -1,11 +1,8 @@
 use wasm_bindgen::prelude::*;
+use crate::models::GameType;
 
 pub mod error;
 pub mod models;
-pub mod letter_flow;
-
-use crate::error::EngineResult;
-use crate::models::{GameType};
 
 /// Basic trait that defines the interface for any game logic provider.
 pub trait GameEngine {
