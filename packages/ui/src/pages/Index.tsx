@@ -37,7 +37,11 @@ const Index = () => {
   }, [language, setLanguage]);
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-background via-background to-muted/20 flex flex-col" dir={i18n.dir()}>
+    <div
+      className="min-h-screen bg-linear-to-br from-background via-background to-muted/20 flex flex-col"
+      dir={i18n.dir()}
+      suppressHydrationWarning
+    >
       {/* Header component */}
       <Header currentView={currentView as any} />
 
