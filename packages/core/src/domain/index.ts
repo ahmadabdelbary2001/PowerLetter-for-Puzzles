@@ -5,3 +5,5 @@
 export * as LetterFlow from './letter-flow';
 export * as Formation from './formation';
 export * as OutsideStory from './outside-story';
+export * as ImgClue from './img-clue';
+export * as PhraseClue from './phrase-clue';

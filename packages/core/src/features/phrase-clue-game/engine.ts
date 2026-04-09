@@ -1,12 +1,13 @@
 // src/features/phrase-clue-game/engine.ts
 /**
  * @description The game engine for the Phrase Clue game.
- * It extends the shared ClueGameEngine to inherit all common level-loading logic,
- * and only needs to provide its unique, game-specific implementation details.
+ * It extends the shared ClueGameEngine and delegates to domain services.
  */
 import type { Language, GameCategory, Difficulty } from '@powerletter/core';
 import { ClueGameEngine, type ClueLevel } from '../../games/engine/ClueGameEngine';
 import type { LevelModule } from '../../games/engine/BaseGameEngine';
+// Import domain services
+import { levelRepository, validationService } from '../../domain/phrase-clue';
 
 /**
  * @interface PhraseLevel
@@ -23,30 +24,40 @@ class PhraseClueGameEngine extends ClueGameEngine<PhraseLevel> {
     return 'phrase-clue';
   }
 
+  // --- Delegate to domain repository for loading ---
+  public async loadLevels(options: {
+    language: Language;
+    categories: GameCategory[];
+    difficulty?: Difficulty;
+  }): Promise<PhraseLevel[]> {
+    const category = options.categories[0];
+    if (!category || !options.difficulty) return [];
+    return levelRepository.loadLevels({
+      language: options.language,
+      category,
+      difficulty: options.difficulty,
+    });
+  }
+
   protected loadModule(language: Language, category: GameCategory, difficulty?: Difficulty): Promise<LevelModule> {
+    // Still provide the dynamic import for base class compatibility
     return import(`../../data/${language}/phrase-clue/${category}/${difficulty}.json`);
   }
 
+  // --- Delegate to domain validation service ---
   protected validateLevel(levelData: unknown, difficulty?: Difficulty): PhraseLevel | null {
-    const lvl = levelData as Record<string, unknown>;
-    if (lvl && typeof lvl === 'object' && 'id' in lvl && 'clue' in lvl && 'solution' in lvl) {
-      return {
-        id: String(lvl.id),
-        clue: String(lvl.clue),
-        solution: String(lvl.solution),
-        difficulty: difficulty ?? 'easy',
-      };
+    if (validationService.isValidLevel(levelData)) {
+      // Ensure difficulty is set
+      if (difficulty && levelData && typeof levelData === 'object') {
+        (levelData as PhraseLevel).difficulty = difficulty;
+      }
+      return levelData as PhraseLevel;
     }
     return null;
   }
 
   protected getErrorLevel(): PhraseLevel {
-    return {
-      id: 'error-level',
-      difficulty: 'easy',
-      clue: 'Could not load levels for the selected categories.',
-      solution: 'ERROR',
-    };
+    return validationService.createErrorLevel();
   }
 
   protected isKidsMode(): boolean {

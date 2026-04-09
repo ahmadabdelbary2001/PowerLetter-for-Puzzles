@@ -5,6 +5,8 @@ members = [
   "crates/power-game-letterflow",
   "crates/power-game-formation",
   "crates/power-game-outsider",
+  "crates/power-game-img-clue",
+  "crates/power-game-phrase-clue",
   "crates/power-wasm",
 ]
 resolver = "2"

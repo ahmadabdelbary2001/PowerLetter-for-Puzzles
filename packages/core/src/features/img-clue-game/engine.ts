@@ -1,12 +1,13 @@
 // src/features/img-clue-game/engine.ts
 /**
  * @description The game engine for the Image Clue game.
- * It extends the shared ClueGameEngine to inherit all common level-loading logic,
- * and only needs to provide its unique, game-specific implementation details.
+ * It extends the shared ClueGameEngine and delegates to domain services.
  */
 import type { Language, GameCategory } from '@powerletter/core';
 import { ClueGameEngine, type ClueLevel } from '../../games/engine/ClueGameEngine';
 import type { LevelModule } from '../../games/engine/BaseGameEngine';
+// Import domain services
+import { levelRepository, validationService } from '../../domain/img-clue';
 
 /**
  * @interface ImageLevel
@@ -23,30 +24,32 @@ class ImgClueGameEngine extends ClueGameEngine<ImageLevel> {
     return 'image-clue';
   }
 
+  // --- Delegate to domain repository for loading ---
+  public async loadLevels(options: {
+    language: Language;
+    categories: GameCategory[];
+  }): Promise<ImageLevel[]> {
+    // Load from first category (img-clue typically has single category)
+    const category = options.categories[0];
+    if (!category) return [];
+    return levelRepository.loadLevels({ language: options.language, category });
+  }
+
   protected loadModule(language: Language, category: GameCategory): Promise<LevelModule> {
+    // Still provide the dynamic import for base class compatibility
     return import(`../../data/${language}/img-clue/${category}/data.json`);
   }
 
+  // --- Delegate to domain validation service ---
   protected validateLevel(levelData: unknown): ImageLevel | null {
-    const lvl = levelData as Record<string, unknown>;
-    if (lvl && typeof lvl === 'object' && 'id' in lvl && 'image' in lvl && 'sound' in lvl && 'solution' in lvl) {
-      return {
-        id: String(lvl.id),
-        image: String(lvl.image),
-        sound: String(lvl.sound),
-        solution: String(lvl.solution),
-      };
+    if (validationService.isValidLevel(levelData)) {
+      return levelData;
     }
     return null;
   }
 
   protected getErrorLevel(): ImageLevel {
-    return {
-      id: 'error-level',
-      image: '/assets/images/error.png',
-      sound: '',
-      solution: 'ERROR',
-    };
+    return validationService.createErrorLevel();
   }
 
   protected isKidsMode(): boolean {
