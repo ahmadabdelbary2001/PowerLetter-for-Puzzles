@@ -1,0 +1,30 @@
+{
+  "levels": [
+    {
+      "id": "en-medium-001",
+      "gridSize": { "width": 5, "height": 5 },
+      "endpoints": [
+        { "letter": "C", "x": 0, "y": 0 },
+        { "letter": "C", "x": 4, "y": 4 },
+        { "letter": "A", "x": 2, "y": 0 },
+        { "letter": "A", "x": 3, "y": 3 },
+        { "letter": "T", "x": 4, "y": 0 },
+        { "letter": "T", "x": 0, "y": 4 }
+      ],
+      "solutionWord": "CAT"
+    },
+    {
+      "id": "en-medium-002",
+      "gridSize": { "width": 5, "height": 5 },
+      "endpoints": [
+        { "letter": "D", "x": 0, "y": 0 },
+        { "letter": "D", "x": 4, "y": 4 },
+        { "letter": "O", "x": 2, "y": 1 },
+        { "letter": "O", "x": 3, "y": 3 },
+        { "letter": "G", "x": 4, "y": 0 },
+        { "letter": "G", "x": 0, "y": 3 }
+      ],
+      "solutionWord": "DOG"
+    }
+  ]
+}

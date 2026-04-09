@@ -34,7 +34,8 @@ export function useGameController<T extends GameLevel & { solution: string; diff
   });
 
   // 2. Get standardized back navigation.
-  const { handleBack } = useGameNavigation();
+  //    handleBackWith(navigate, gameType) is the deferred version for use in UI layer.
+  const { handleBackWith } = useGameNavigation();
 
   // 3. Get all UI text and instruction content.
   const content = useGameContent(options.gameId);
@@ -60,12 +61,14 @@ export function useGameController<T extends GameLevel & { solution: string; diff
     }
   }, []);
 
-  
   // 5. Return a single, unified object with all core functionalities.
+  //    NOTE: handleBack requires a `navigate` function from the UI layer.
+  //    Use handleBackWith(navigate, gameType) in your screen components.
   return {
     ...game,
     ...content,
-    handleBack,
+    handleBack: () => console.warn('useGameController: call handleBackWith(navigate, gameType) instead.'),
+    handleBackWith,
     gameModeState,
     audioRef,
     getAssetPath,

@@ -6,16 +6,17 @@
  */
 import { Button } from '../atoms/Button';
 import { useTranslation } from '@powerletter/core';
+import { useAppRouter, useAppParams } from '../contexts/RouterContext';
 
 // Define the minimum shape that any game hook MUST return.
 interface BaseGameProps {
   loading: boolean;
   currentLevel: { solution: string } | null;
   handleBack: () => void;
+  handleBackWith: (navigate: (path: string) => void, gameType?: string) => void;
 }
 
 // Define a generic type for any game hook that extends the base shape.
-// `T` will be the full return type of a specific game hook.
 type UseGameHook<T extends BaseGameProps> = () => T;
 
 // The props for our HOC. It accepts a hook and a component that can handle the hook's return type.
@@ -26,7 +27,18 @@ interface GameScreenWrapperProps<T extends BaseGameProps> {
 
 export function GameScreen<T extends BaseGameProps>({ useGameHook, GameComponent }: GameScreenWrapperProps<T>) {
   const { t } = useTranslation();
-  const gameProps = useGameHook(); // gameProps is now correctly and fully typed as T
+  const router = useAppRouter();
+  const { gameType } = useAppParams<{ gameType?: string }>();
+  const gameProps = useGameHook();
+
+  // Error state back handler — goes back using gameType for correct routing
+  const handleErrorBack = () => {
+    if (gameProps.handleBackWith) {
+      gameProps.handleBackWith(router.push, gameType);
+    } else {
+      router.push('/games');
+    }
+  };
 
   // 1. Handle the initial loading state.
   if (gameProps.loading) {
@@ -42,13 +54,12 @@ export function GameScreen<T extends BaseGameProps>({ useGameHook, GameComponent
     return (
       <div className="flex flex-col justify-center items-center h-screen gap-4 p-4 text-center">
         <p className="text-xl font-semibold">{t('noLevelsFound')}</p>
-        <Button onClick={gameProps.handleBack}>{t('back')}</Button>
+        <Button onClick={handleErrorBack}>{t('back')}</Button>
       </div>
     );
   }
 
-  // 3. If loading is complete and there are no errors, render the main game layout
-  //    and pass the specific GameComponent into it.
+  // 3. If loading is complete and there are no errors, render the main game layout.
   return (
     <GameComponent {...gameProps} />
   );

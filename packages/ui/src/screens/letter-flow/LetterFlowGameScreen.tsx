@@ -13,6 +13,7 @@ import { GameControls } from '../../organisms/GameControls';
 import { GameProgress } from '../../molecules/GameProgress';
 import { FlowGameLayout } from '../../templates/FlowGameLayout';
 import { GameScreen } from '../../organisms/GameScreen';
+import { useAppRouter, useAppParams } from '../../contexts/RouterContext';
 
 // 1. Define the pure UI component.
 const LetterFlowGame: React.FC<ReturnType<typeof useLetterFlowGame>> = ({
@@ -24,7 +25,7 @@ const LetterFlowGame: React.FC<ReturnType<typeof useLetterFlowGame>> = ({
   onClearNotification,
   gameState,
   activeLetter,
-  handleBack,
+  handleBackWith,
   handleMouseDown,
   handleMouseEnter,
   handleMouseUp,
@@ -39,6 +40,12 @@ const LetterFlowGame: React.FC<ReturnType<typeof useLetterFlowGame>> = ({
   gameModeState,
 }) => {
   usePassiveTouchFix();
+
+  const router = useAppRouter();
+  const params = useAppParams<{ gameType?: string }>();
+  const gameType = params.gameType ?? 'letter-flow';
+
+  const handleBack = () => handleBackWith(router.push, gameType);
 
   const totalWords = Math.floor(((currentLevel as LetterFlowLevel)?.endpoints.length ?? 0) / 2);
 

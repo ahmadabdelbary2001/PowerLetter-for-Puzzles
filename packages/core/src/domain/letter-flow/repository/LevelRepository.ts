@@ -1,12 +1,34 @@
 // src/domain/letter-flow/repository/LevelRepository.ts
 /**
- * Repository for loading Letter Flow levels
- * Handles data access with caching and fallback logic
+ * Repository for loading Letter Flow levels.
+ * Uses static imports to support both Vite and Webpack (Next.js) bundlers.
+ * Dynamic import() with string templates breaks in Webpack — this is the fix.
  */
 
 import type { Language, Difficulty, GameCategory } from '../../../types/game';
 import type { LetterFlowLevel, LevelModule } from '../model';
-import { DEFAULT_ERROR_LEVEL } from '../model';
+
+// ── Static imports: Webpack requires fully-static import paths ───────────────
+import arEasy   from '../../../data/ar/letter-flow/easy.json';
+import arMedium from '../../../data/ar/letter-flow/medium.json';
+import enEasy   from '../../../data/en/letter-flow/easy.json';
+import enMedium from '../../../data/en/letter-flow/medium.json';
+
+type LevelFile = { levels: unknown[] };
+
+// ── Level lookup map ─────────────────────────────────────────────────────────
+const LEVEL_MAP: Partial<Record<Language, Partial<Record<Difficulty, LevelFile>>>> = {
+  ar: {
+    easy:   arEasy   as LevelFile,
+    medium: arMedium as LevelFile,
+    hard:   arMedium as LevelFile, // fallback to medium until hard exists
+  },
+  en: {
+    easy:   enEasy   as LevelFile,
+    medium: enMedium as LevelFile,
+    hard:   enMedium as LevelFile, // fallback to medium until hard exists
+  },
+};
 
 export interface LoadOptions {
   language: Language;
@@ -14,63 +36,45 @@ export interface LoadOptions {
   difficulty?: Difficulty;
 }
 
-/** Cache for loaded level modules */
-const levelCache = new Map<string, LevelModule>();
-
 export class LevelRepository {
-  private getCacheKey(language: Language, difficulty: Difficulty): string {
-    return `letter-flow:${language}:${difficulty}`;
+  /**
+   * Synchronously resolve a level file from the static map.
+   * Falls back: hard → medium → easy → empty.
+   */
+  private resolve(language: Language, difficulty: Difficulty = 'easy'): LevelFile {
+    const langMap = LEVEL_MAP[language] ?? LEVEL_MAP['ar']!;
+    return langMap[difficulty] ?? langMap['easy'] ?? { levels: [] };
   }
 
   /**
-   * Load level module for specific language and difficulty
-   * Falls back to 'easy' if requested difficulty not found
+   * Load level module for specific language and difficulty.
+   * Returns a promise for backward compatibility.
    */
   async loadModule(
     language: Language,
     difficulty: Difficulty = 'easy'
   ): Promise<LevelModule> {
-    const cacheKey = this.getCacheKey(language, difficulty);
-    
-    // Check cache
-    if (levelCache.has(cacheKey)) {
-      return levelCache.get(cacheKey)!;
-    }
-
-    try {
-      // Dynamic import of JSON level data
-      const module = await import(`../../../data/${language}/letter-flow/${difficulty}.json`);
-      levelCache.set(cacheKey, module);
-      return module;
-    } catch (error) {
-      // Fallback to easy difficulty
-      if (difficulty !== 'easy') {
-        console.warn(`Failed to load ${difficulty} difficulty, falling back to easy`);
-        return this.loadModule(language, 'easy');
-      }
-      throw error;
-    }
+    const file = this.resolve(language, difficulty);
+    return file as unknown as LevelModule;
   }
 
   /**
-   * Load all levels for given options
+   * Load all levels for given options.
    */
   async loadLevels(options: LoadOptions): Promise<unknown[]> {
-    const { language, difficulty } = options;
-    
-    try {
-      const module = await this.loadModule(language, difficulty);
-      return module.default?.levels || module.levels || [];
-    } catch (error) {
-      console.error(`Failed to load levels for ${language}/${difficulty}:`, error);
+    const { language, difficulty = 'easy' } = options;
+    const file = this.resolve(language, difficulty);
+
+    if (!file.levels || file.levels.length === 0) {
+      console.warn(`LevelRepository: No levels found for ${language}/${difficulty}.`);
       return [];
     }
+
+    return file.levels;
   }
 
-  /** Clear cache */
-  clearCache(): void {
-    levelCache.clear();
-  }
+  /** No-op: static imports need no cache management */
+  clearCache(): void {}
 }
 
 // Singleton instance
