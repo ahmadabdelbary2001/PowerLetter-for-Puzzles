@@ -1,5 +1,5 @@
 // src/screens/outside-story/components/VotingScreen.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '../../../atoms/Button';
 import type { useOutsideStory } from '@powerletter/core';
 
@@ -13,9 +13,14 @@ export const VotingScreen: React.FC<Props> = ({ game }) => {
   const currentVoter = players[votingPlayerIndex];
 
   // --- If all players have voted, finish the voting process ---
-  // This guard clause prevents the out-of-bounds error.
+  // Use useEffect to avoid setState during render warning
+  useEffect(() => {
+    if (!currentVoter) {
+      finishVoting();
+    }
+  }, [currentVoter, finishVoting]);
+
   if (!currentVoter) {
-    finishVoting();
     return <p>{t('loading')}</p>; // Show loading while results are calculated
   }
 

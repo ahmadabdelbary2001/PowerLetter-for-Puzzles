@@ -4,6 +4,7 @@ members = [
   "crates/power-engine",
   "crates/power-game-letterflow",
   "crates/power-game-formation",
+  "crates/power-game-outsider",
   "crates/power-wasm",
 ]
 resolver = "2"

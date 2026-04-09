@@ -4,7 +4,7 @@
  * Handles board generation, color assignment, and level building
  */
 
-import type { BoardCell, PathPoint, LetterFlowLevel } from '../model';
+import type { BoardCell, PathPoint } from '../model';
 import { COLOR_PALETTE_COUNT, DEFAULT_SATURATION, DEFAULT_LIGHTNESS } from '../model';
 import { shuffleArray } from '../../../lib/gameUtils';
 
@@ -123,7 +123,8 @@ export class BoardService {
 
     // Place endpoints
     const coloredEndpoints = this.assignEndpointColors(endpoints);
-    const endpointMap = new Map(
+    // Build endpoint position map for efficient lookup
+    const _endpointMap = new Map(
       coloredEndpoints.map(ep => [`${ep.x}-${ep.y}`, ep])
     );
 

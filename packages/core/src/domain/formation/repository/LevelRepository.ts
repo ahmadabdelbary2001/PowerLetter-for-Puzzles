@@ -5,7 +5,7 @@
  */
 
 import type { Language, Difficulty } from '../../../types/game';
-import type { FormationLevel, LevelLoadOptions } from '../model';
+import type { LevelLoadOptions } from '../model';
 
 // ── Static imports for Webpack compatibility ─────────────────────────────────
 import arEasy from '../../../data/ar/formation/easy.json';

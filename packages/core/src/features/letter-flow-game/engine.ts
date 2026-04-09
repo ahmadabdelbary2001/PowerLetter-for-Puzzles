@@ -30,17 +30,6 @@ const initWasm = async () => {
 };
 
 /**
- * Generates an HSL color with evenly distributed hues for visual distinction.
- * @deprecated Use boardService.colorForString instead
- */
-function hslForIndex(index: number, total: number, saturation = 72, lightness = 48): string {
-    if (total <= 0) return `hsl(0, ${saturation}%, ${lightness}%)`;
-    const hue = Math.round((index * 360) / total) % 360;
-    const adjustedLightness = lightness > 50 ? lightness * 0.9 : lightness * 1.1;
-    return `hsl(${hue}, ${saturation}%, ${adjustedLightness}%)`;
-}
-
-/**
  * Main game engine class for the Letter Flow game.
  * --- Now extends BaseGameEngine and delegates to domain services. ---
  */

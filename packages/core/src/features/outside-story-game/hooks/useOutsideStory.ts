@@ -1,47 +1,43 @@
 // src/features/outside-story-game/hooks/useOutsideStoryGame.ts
 /**
  * @description The single, all-in-one hook for the Outside Story game.
- * --- It now follows the standard architectural pattern. ---
- * It uses the `useGameController` to fetch global state and content,
- * and then implements the unique round-based logic for this game.
+ * --- Refactored to use Domain Services from FSD architecture ---
  */
 import { useCallback, useEffect, useState } from 'react';
 import { useGameController } from '../../../hooks/game/useGameController';
-import { outsideStoryGameEngine, type OutsideStoryLevel } from '../../../features/outside-story-game/engine';
+import { outsideStoryGameEngine } from '../../../features/outside-story-game/engine';
 import type { Team } from '@powerletter/core';
 
-// Type definitions for the game's internal state
-export type GameState =
-  | 'role_reveal_handoff' | 'role_reveal_player' | 'question_intro' | 'question_turn'
-  | 'voting' | 'outsider_guess' | 'results' | 'round_end';
+// Import domain services
+import {
+  roundService,
+  validationService,
+  type OutsiderLevel,
+  type GameState,
+  type RoundInfo,
+  POINTS_CORRECT,
+} from '../../../domain/outside-story';
 
+// Re-export types for backward compatibility
+export type { GameState, RoundInfo } from '../../../domain/outside-story';
+export type { OutsiderLevel as OutsideStoryLevel } from '../../../domain/outside-story';
 export type QuestionPair = { asker: Team; askee: Team; };
-
-export type RoundInfo = {
-  id: string; category: string; secret: string; words: string[];
-  outsiderId: number; insiders: number[]; votes: Record<number, number>;
-  revealed: boolean;
-  roundResult?: {
-    votedPlayerId?: number;
-    outsiderGuessedCorrectly?: boolean;
-    pointsAwarded: Record<number, number>;
-  };
-};
 
 export function useOutsideStory() {
   // --- 1. CONTROLLER LAYER ---
   // --- Use the central game controller ---
-  const controller = useGameController<OutsideStoryLevel>({
+  const controller = useGameController<OutsiderLevel>({
     engine: outsideStoryGameEngine,
     gameId: 'outsideStory',
   });
 
   // --- Destructure everything from the controller ---
   const {
-    levels: loadedLevels, // Rename to avoid conflict
-    loading: loadingLevels, // Rename to avoid conflict
+    levels: loadedLevels,
+    loading: loadingLevels,
     gameModeState,
-    setNotification, // Get the setter for local notifications
+    setNotification,
+    handleBackWith,
   } = controller;
 
   const { teams, resetScores, setGameMode } = gameModeState;
@@ -55,24 +51,49 @@ export function useOutsideStory() {
 
   const startRound = useCallback((category: string) => {
     const level = loadedLevels.find(l => l.category === category);
-    if (!level || level.words.length < 8) {
-      setNotification({ messageKey: 'notEnoughWords', type: 'error' });
+    if (!level) {
+      console.warn('[useOutsideStory] Level not found for category:', category);
+      setNotification({ messageKey: 'categoryNotFound', type: 'error' });
       return;
     }
-    if (teams.length < 3) {
-      setNotification({ messageKey: 'min3Players', type: 'error' });
+
+    // Check if level has words
+    if (!level.words || level.words.length === 0) {
+      console.warn('[useOutsideStory] Level has no words:', category, level);
+      setNotification({ messageKey: 'categoryNotFound', type: 'error' });
       return;
     }
-    const shuffled = [...level.words].sort(() => 0.5 - Math.random());
-    const roundWords = shuffled.slice(0, 8);
-    const secret = roundWords[0];
-    const outsiderIndex = Math.floor(Math.random() * teams.length);
-    const outsiderId = teams[outsiderIndex].id;
-    const insiders = teams.map(p => p.id).filter(id => id !== outsiderId);
+
+    // Use domain validation service
+    const validation = validationService.canStartRound(level, teams.length);
+    if (!validation.valid) {
+      console.warn('[useOutsideStory] Validation failed:', validation.reason);
+      setNotification({ messageKey: validation.reason ?? 'unknownError', type: 'error' });
+      return;
+    }
+
+    // Use domain round service
+    const playerIds = teams.map(p => p.id);
+    console.log('[useOutsideStory] Creating round with', playerIds.length, 'players, words:', level.words.length);
+    const roundConfig = roundService.createRoundConfig(category, level.words, playerIds);
+
+    if (!roundConfig) {
+      console.warn('[useOutsideStory] Failed to create round config');
+      setNotification({ messageKey: 'failedToStartRound', type: 'error' });
+      return;
+    }
+
     const round: RoundInfo = {
-      id: `${Date.now()}`, category, secret, words: roundWords.sort(),
-      outsiderId, insiders, votes: {}, revealed: false,
+      id: `${Date.now()}`,
+      category: roundConfig.category,
+      secret: roundConfig.secret,
+      words: roundConfig.words,
+      outsiderId: roundConfig.outsiderId,
+      insiders: playerIds.filter(id => id !== roundConfig.outsiderId),
+      votes: {},
+      revealed: false,
     };
+
     setCurrentRound(round);
     setCurrentPlayerTurn(0);
     setGameState('role_reveal_handoff');
@@ -88,54 +109,72 @@ export function useOutsideStory() {
 
   const setupQuestionTurns = useCallback(() => {
     if (teams.length < 2) return;
-    const shuffledPlayers = [...teams].sort(() => Math.random() - 0.5);
-    const pairs: QuestionPair[] = [];
-    for (let i = 0; i < shuffledPlayers.length; i++) {
-      pairs.push({ asker: shuffledPlayers[i], askee: shuffledPlayers[(i + 1) % shuffledPlayers.length] });
-    }
-    setQuestionPairs(pairs);
+
+    // Use domain round service
+    const playerIds = teams.map(p => p.id);
+    const pairs = roundService.createQuestionPairs(playerIds);
+
+    // Map back to Team objects
+    const teamMap = new Map(teams.map(t => [t.id, t]));
+    const questionPairs: QuestionPair[] = pairs.map(({ asker, askee }) => ({
+      asker: teamMap.get(asker)!,
+      askee: teamMap.get(askee)!,
+    }));
+
+    setQuestionPairs(questionPairs);
     setCurrentPlayerTurn(0);
     setGameState('question_turn');
   }, [teams]);
 
   const finishVoting = useCallback(() => {
     if (!currentRound) return;
-    const tally: Record<number, number> = {};
-    for (const voterId in currentRound.votes) {
-      if (parseInt(voterId, 10) !== currentRound.outsiderId) {
-        const votedForId = currentRound.votes[voterId];
-        tally[votedForId] = (tally[votedForId] || 0) + 1;
-      }
-    }
-    let maxVotes = 0;
-    let votedPlayerId = -1;
-    for (const playerId in tally) {
-      if (tally[playerId] > maxVotes) {
-        maxVotes = tally[playerId];
-        votedPlayerId = parseInt(playerId, 10);
-      }
-    }
-    setCurrentRound(prev => prev ? { ...prev, roundResult: { votedPlayerId, pointsAwarded: {} } } : null);
+
+    // Convert votes to entries for domain service
+    const voteEntries = Object.entries(currentRound.votes).map(([voterId, votedForId]) => ({
+      voterId: parseInt(voterId, 10),
+      votedForId,
+    }));
+
+    // Use domain round service
+    const votedPlayerId = roundService.determineVotedPlayer(
+      voteEntries,
+      currentRound.outsiderId
+    );
+
+    setCurrentRound(prev => prev ? { ...prev, roundResult: { votedPlayerId: votedPlayerId ?? undefined, pointsAwarded: {} } } : null);
     setGameState('outsider_guess');
   }, [currentRound]);
 
   const handleOutsiderGuess = useCallback((guess: string) => {
     if (!currentRound) return;
-    const outsiderGuessedCorrectly = guess === currentRound.secret;
-    const pointsAwarded: Record<number, number> = {};
-    teams.forEach(p => pointsAwarded[p.id] = 0);
-    if (outsiderGuessedCorrectly) {
-      pointsAwarded[currentRound.outsiderId] = 10;
-    }
-    for (const voterId in currentRound.votes) {
-      if (parseInt(voterId, 10) !== currentRound.outsiderId && currentRound.votes[voterId] === currentRound.outsiderId) {
-        pointsAwarded[parseInt(voterId, 10)] = (pointsAwarded[parseInt(voterId, 10)] || 0) + 10;
-      }
-    }
+
+    // Convert votes to entries for domain service
+    const voteEntries = Object.entries(currentRound.votes).map(([voterId, votedForId]) => ({
+      voterId: parseInt(voterId, 10),
+      votedForId,
+    }));
+
+    const playerIds = teams.map(p => p.id);
+
+    // Use domain round service
+    const scores = roundService.calculateScores(
+      voteEntries,
+      currentRound.outsiderId,
+      guess,
+      currentRound.secret
+    );
+    const pointsAwarded = roundService.scoresToRecord(scores);
+    const outsiderGuessedCorrectly = roundService.checkOutsiderGuess(guess, currentRound.secret);
+
     resetScores(pointsAwarded);
-    const finalRound = {
-      ...currentRound, revealed: true,
-      roundResult: { ...currentRound.roundResult, outsiderGuessedCorrectly, pointsAwarded }
+    const finalRound: RoundInfo = {
+      ...currentRound,
+      revealed: true,
+      roundResult: {
+        ...currentRound.roundResult,
+        outsiderGuessedCorrectly,
+        pointsAwarded,
+      }
     };
     setCurrentRound(finalRound);
     setHistory(prev => [finalRound, ...prev]);
@@ -155,9 +194,9 @@ export function useOutsideStory() {
   }, [setGameMode, resetScores]);
 
   // --- 3. RETURN THE FINAL OBJECT FOR THE UI ---
-  // --- Return the properties from the controller ---
   return {
-    ...controller, // Spread the controller to include notification, onClearNotification, etc.
+    ...controller,
+    handleBackWith,
     players: teams,
     levels: loadedLevels,
     loadingLevels,

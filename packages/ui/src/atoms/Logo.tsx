@@ -50,12 +50,12 @@ export function Logo({ showText = true, showBadge = true, className }: LogoProps
             PowerLetter
           </h1>
           {/* --- Use translation for the tagline --- */}
-          <p className="text-xs text-muted-foreground -mt-1">{t('tagline', { ns: 'landing' })}</p>
+          <p className="text-xs text-muted-foreground -mt-1" suppressHydrationWarning>{t('tagline', { ns: 'landing' })}</p>
         </div>
       )}
       {/* Beta badge - hidden on small screens */}
       {showBadge && (
-        <Badge variant="outline" className="ml-2 text-xs bg-linear-to-r from-primary/10 to-secondary/10 hidden sm:inline">
+        <Badge variant="outline" className="ml-2 text-xs bg-linear-to-r from-primary/10 to-secondary/10 hidden sm:inline" suppressHydrationWarning>
           {/* --- Use translation for the badge text --- */}
           {t('beta', { ns: 'landing' })}
         </Badge>

@@ -6,7 +6,7 @@
  */
 
 import type { Language, Difficulty, GameCategory } from '../../../types/game';
-import type { LetterFlowLevel, LevelModule } from '../model';
+import type { LevelModule } from '../model';
 
 // ── Static imports: Webpack requires fully-static import paths ───────────────
 import arEasy   from '../../../data/ar/letter-flow/easy.json';
