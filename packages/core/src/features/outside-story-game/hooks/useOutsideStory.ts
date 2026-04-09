@@ -15,7 +15,6 @@ import {
   type OutsiderLevel,
   type GameState,
   type RoundInfo,
-  POINTS_CORRECT,
 } from '../../../domain/outside-story';
 
 // Re-export types for backward compatibility
@@ -153,8 +152,6 @@ export function useOutsideStory() {
       voterId: parseInt(voterId, 10),
       votedForId,
     }));
-
-    const playerIds = teams.map(p => p.id);
 
     // Use domain round service
     const scores = roundService.calculateScores(

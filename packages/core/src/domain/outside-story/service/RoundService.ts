@@ -3,7 +3,7 @@
  * @description Service for round management and game logic.
  */
 
-import type { RoundConfig, RoundInfo, RoundResult, VoteEntry } from '../model';
+import type { RoundConfig, VoteEntry } from '../model';
 import { DEFAULT_WORD_COUNT, POINTS_CORRECT, MIN_PLAYERS } from '../model';
 
 /**

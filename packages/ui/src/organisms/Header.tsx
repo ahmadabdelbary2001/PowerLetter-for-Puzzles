@@ -86,6 +86,7 @@ export function Header({ currentView, showLanguage = true }: HeaderProps) {
                 variant={currentView === link.view ? "secondary" : "ghost"}
                 size="sm"
                 className="flex items-center gap-2"
+                suppressHydrationWarning
               >
                 {link.view === 'kids' && <ToyBrick className="h-4 w-4 text-green-500" />}
                 {t(link.labelKey)}

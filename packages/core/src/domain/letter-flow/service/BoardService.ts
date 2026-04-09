@@ -123,10 +123,6 @@ export class BoardService {
 
     // Place endpoints
     const coloredEndpoints = this.assignEndpointColors(endpoints);
-    // Build endpoint position map for efficient lookup
-    const _endpointMap = new Map(
-      coloredEndpoints.map(ep => [`${ep.x}-${ep.y}`, ep])
-    );
 
     coloredEndpoints.forEach(ep => {
       const index = ep.y * width + ep.x;

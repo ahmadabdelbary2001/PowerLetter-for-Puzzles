@@ -3,7 +3,7 @@
  * @description Game engine for the "Outside the Story" game.
  * --- Refactored to use Domain Services from FSD architecture ---
  */
-import type { Language, GameCategory, GameLevel } from '@powerletter/core';
+import type { Language, GameCategory } from '@powerletter/core';
 // Re-export types from domain for backward compatibility
 export type { OutsiderLevel as OutsideStoryLevel } from '../../domain/outside-story';
 

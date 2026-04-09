@@ -44,7 +44,7 @@ export function GameScreen<T extends BaseGameProps>({ useGameHook, GameComponent
   if (gameProps.loading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <p className="text-2xl animate-pulse">{t('loading')}...</p>
+        <p className="text-2xl animate-pulse" suppressHydrationWarning>{t('loading')}...</p>
       </div>
     );
   }
