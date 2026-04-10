@@ -1,0 +1,8 @@
+{
+  "levels": [
+    { "id": "science-en-easy-1", "clue": "What is H₂O commonly known as?", "solution": "WATER" },
+    { "id": "science-en-easy-2", "clue": "The gas humans breathe in to survive", "solution": "OXYGEN" },
+    { "id": "science-en-easy-3", "clue": "The planet we live on", "solution": "EARTH" },
+    { "id": "science-en-easy-4", "clue": "The star at the center of our solar system", "solution": "SUN" }
+  ]
+}

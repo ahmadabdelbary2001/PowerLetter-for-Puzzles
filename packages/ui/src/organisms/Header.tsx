@@ -116,6 +116,7 @@ export function Header({ currentView, showLanguage = true }: HeaderProps) {
               aria-label={mobileOpen ? t("closeMenu") : t("openMenu")}
               onClick={() => setMobileOpen((s) => !s)}
               className="rounded-md p-2 hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              suppressHydrationWarning
             >
               <Menu className="h-5 w-5" />
             </button>

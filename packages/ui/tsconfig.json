@@ -3,7 +3,7 @@
     "target": "ES2022",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "module": "ESNext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "jsx": "react-jsx",
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
@@ -16,7 +16,16 @@
     "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "paths": {
-      "@powerletter/core": ["../core/src/index.ts"]
+      "@powerletter/core": ["../core/src/index.ts"],
+      "@/domain/*": ["../core/src/domain/*"],
+      "@/data/*": ["../../data/*"],
+      "@/features/*": ["../core/src/features/*"],
+      "@/games/*": ["../core/src/games/*"],
+      "@/lib/*": ["../core/src/lib/*"],
+      "@/hooks/*": ["../core/src/hooks/*"],
+      "@/types/*": ["../core/src/types/*"],
+      "@/i18n/*": ["../core/src/i18n/*"],
+      "@/wasm/*": ["../core/src/wasm/*"]
     },
     "types": ["node"],
     "noUnusedLocals": false,

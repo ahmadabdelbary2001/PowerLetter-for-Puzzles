@@ -24,15 +24,15 @@ export default function RootLayout({
         <I18nProvider>
           <ThemeProvider>
             <TooltipProvider>
-              <NextRouterAdapter>
-                <div className="relative flex min-h-screen flex-col">
-                  <Suspense fallback={<div className="flex h-screen items-center justify-center">Loading...</div>}>
+              <Suspense fallback={<div className="flex h-screen items-center justify-center">Loading...</div>}>
+                <NextRouterAdapter>
+                  <div className="relative flex min-h-screen flex-col">
                     {children}
-                  </Suspense>
-                </div>
-                <Toaster />
-                <Sonner />
-              </NextRouterAdapter>
+                  </div>
+                  <Toaster />
+                  <Sonner />
+                </NextRouterAdapter>
+              </Suspense>
             </TooltipProvider>
           </ThemeProvider>
         </I18nProvider>

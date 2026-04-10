@@ -15,18 +15,29 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   clearScreen: false,
   resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-      // Workspace packages - resolve to source for development
-      "@powerletter/core": path.resolve(__dirname, "../../packages/core/src/index.ts"),
-      "@powerletter/ui": path.resolve(__dirname, "../../packages/ui/src/index.ts"),
-      "@powerletter/api-bindings": path.resolve(__dirname, "../../packages/api-bindings/src/index.ts"),
-    },
+    alias: [
+      { find: "@powerletter/core", replacement: path.resolve(__dirname, "../../packages/core/src/index.ts") },
+      { find: "@powerletter/ui", replacement: path.resolve(__dirname, "../../packages/ui/src/index.ts") },
+      { find: "@powerletter/api-bindings", replacement: path.resolve(__dirname, "../../packages/api-bindings/src/index.ts") },
+      
+      // Resolve @/ within core package to core's src
+      { find: "@/domain", replacement: path.resolve(__dirname, "../../packages/core/src/domain") },
+      { find: "@/data", replacement: path.resolve(__dirname, "../../data") },
+      { find: "@/features", replacement: path.resolve(__dirname, "../../packages/core/src/features") },
+      { find: "@/games", replacement: path.resolve(__dirname, "../../packages/core/src/games") },
+      { find: "@/lib", replacement: path.resolve(__dirname, "../../packages/core/src/lib") },
+      { find: "@/hooks", replacement: path.resolve(__dirname, "../../packages/core/src/hooks") },
+      { find: "@/types", replacement: path.resolve(__dirname, "../../packages/core/src/types") },
+      { find: "@/i18n", replacement: path.resolve(__dirname, "../../packages/core/src/i18n") },
+      { find: "@/wasm", replacement: path.resolve(__dirname, "../../packages/core/src/wasm") },
+      // Must come last to prevent shadowing more specific aliases!
+      { find: "@", replacement: path.resolve(__dirname, "./src") }
+    ],
   },
   server: {
     fs: {
-      // Allow serving files from the monorepo packages
-      allow: ['..', '../../packages'],
+      // Allow serving files from the monorepo packages and data
+      allow: ['..', '../../packages', '../../data'],
     },
     port: 5173,
     strictPort: false,
@@ -41,5 +52,10 @@ export default defineConfig({
   optimizeDeps: {
     // Exclude workspace packages - let Vite resolve them as source files
     exclude: ['@powerletter/core', '@powerletter/ui', '@powerletter/api-bindings'],
+    // Include monorepo paths for proper alias resolution
+    include: ['../../packages/core/src/**/*', '../../data/**/*'],
+    esbuildOptions: {
+      target: 'es2022',
+    },
   },
 })

@@ -1,0 +1,10 @@
+{
+    "levels": [
+        { "id": "animals-ar-easy-1", "clue": "حيوان أليف يقول 'مواء'", "solution": "قطة" },
+        { "id": "animals-ar-easy-2", "clue": "ما هو الحيوان الذي يلقب بـ 'ملك الغابة'؟", "solution": "أسد" },
+        { "id": "animals-ar-easy-3", "clue": "ما هو أسرع حيوان بري في العالم؟", "solution": "فهد" },
+        { "id": "animals-ar-easy-4", "clue": "ماذا يغطي جسم الطائر؟", "solution": "ريش" },
+        { "id": "animals-ar-easy-5", "clue": "حيوان ضخم له خرطوم", "solution": "فيل" },
+        { "id": "animals-ar-easy-6", "clue": "طائر يقلد الكلام", "solution": "ببغاء" }
+    ]
+}

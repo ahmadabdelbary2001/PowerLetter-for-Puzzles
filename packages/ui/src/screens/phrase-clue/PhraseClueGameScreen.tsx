@@ -75,7 +75,7 @@ const PhraseClueGame: React.FC<ReturnType<typeof usePhraseClueGame>> = ({
           <div className="mt-2">
             <p className="text-sm text-muted-foreground mb-1">{t('wrongAttempts')}:</p>
             <div className="flex flex-wrap gap-1 justify-center">
-              {wrongAnswers.map((answer, index) => <Badge key={index} variant="destructive">{answer}</Badge>)}
+              {wrongAnswers.map((answer: string, index: number) => <Badge key={index} variant="destructive">{answer}</Badge>)}
             </div>
           </div>
         )

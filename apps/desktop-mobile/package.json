@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "predev": "node ../../scripts/copy-assets.js desktop-mobile",
     "dev": "vite",
+    "prebuild": "node ../../scripts/copy-assets.js desktop-mobile",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",

@@ -57,7 +57,7 @@ const WordChoiceGame: React.FC<ReturnType<typeof useWordChoiceGame>> = ({
         </div>
       }
       optionsContent={
-        shuffledOptions.map((option) => {
+        shuffledOptions.map((option: string) => {
           const isSelected = selectedOption === option;
           const isCorrectSolution = option === currentLevel.solution;
           return (

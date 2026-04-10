@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '../../../atoms/Button';
 import type { useOutsideStory } from '@powerletter/core';
+import type { Team } from '@powerletter/core';
 
 type Props = { game: ReturnType<typeof useOutsideStory> };
 
@@ -25,7 +26,7 @@ export const VotingScreen: React.FC<Props> = ({ game }) => {
   }
 
   // Logic for handling votes and continuing
-  const voteOptions = players.filter(p => p.id !== currentVoter.id);
+  const voteOptions = players.filter((p: Team) => p.id !== currentVoter.id);
 
   const handleVote = (votedForId: number) => {
     submitVote(currentVoter.id, votedForId);
@@ -61,7 +62,7 @@ export const VotingScreen: React.FC<Props> = ({ game }) => {
         {t('yourTurnToVote', { ns: 'outside_the_story' })?.replace('{player}', currentVoter.name)}
       </h2>
       <div className="flex flex-col gap-3 w-full">
-        {voteOptions.map(p => (
+        {voteOptions.map((p: Team) => (
           <Button
             key={p.id}
             onClick={() => handleVote(p.id)}

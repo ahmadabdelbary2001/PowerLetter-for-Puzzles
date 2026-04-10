@@ -7,7 +7,7 @@ edition = "2021"
 
 [lib]
 name = "powerletter_app_lib"
-crate-type = ["rlib"]
+crate-type = ["staticlib", "rlib"]
 
 [[bin]]
 name = "powerletter-app"
@@ -27,6 +27,8 @@ incremental = false
 opt-level = 1
 lto = true
 codegen-units = 1
+strip = "debuginfo"
+panic = 'abort'
 
 [profile.release]
 lto = true

@@ -40,7 +40,7 @@ export default function HeroSection(): JSX.Element {
         <div className="absolute top-40 left-1/4 w-80 h-80 bg-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000 dark:bg-indigo-900/50"></div>
       </div>
 
-      <div className="container relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 md:py-24" dir={dir}>
+      <div className="container relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 md:py-24" dir={dir} suppressHydrationWarning>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Left Side: Enhanced Content */}
           <div className="space-y-8">
@@ -49,9 +49,10 @@ export default function HeroSection(): JSX.Element {
               <Badge
                 variant="outline"
                 className="bg-linear-to-r from-primary/10 to-secondary/10 border-primary/20 text-primary px-4 py-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 animate-fade-in-up"
+                suppressHydrationWarning
               >
                 <Sparkles className="w-4 h-4 mr-2" />
-                {t('betaStatus', { ns: 'landing' })}
+                <span suppressHydrationWarning>{t('betaStatus', { ns: 'landing' })}</span>
               </Badge>
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">
@@ -59,16 +60,16 @@ export default function HeroSection(): JSX.Element {
                   PowerLetter
                 </span>
                 <br />
-                <span className="text-slate-800 dark:text-white">
+                <span className="text-slate-800 dark:text-white" suppressHydrationWarning>
                   {t('wordPuzzles', { ns: 'landing' })}
                 </span>
               </h1>
 
-              <div className="space-y-4 max-w-xl mx-auto lg:mx-0">
-                <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-300 leading-relaxed">
+              <div className="space-y-4 max-w-xl mx-auto lg:mx-0" suppressHydrationWarning>
+                <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-300 leading-relaxed" suppressHydrationWarning>
                   {t('heroDescription', { ns: 'landing' })}
                 </p>
-                <p className="text-base text-muted-foreground leading-relaxed">
+                <p className="text-base text-muted-foreground leading-relaxed" suppressHydrationWarning>
                   {t('heroAdditionalDescription', { ns: 'landing' })}
                 </p>
               </div>
@@ -85,11 +86,11 @@ export default function HeroSection(): JSX.Element {
                   <div className="shrink-0 w-10 h-10 bg-linear-to-r from-primary to-secondary rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-md">
                     <span className="text-white text-lg">{feature.icon}</span>
                   </div>
-                  <div className="flex-1 min-w-0 text-left">
-                    <h3 className="font-semibold text-slate-800 dark:text-white text-sm mb-1">
+                  <div className="flex-1 min-w-0 text-left" suppressHydrationWarning>
+                    <h3 className="font-semibold text-slate-800 dark:text-white text-sm mb-1" suppressHydrationWarning>
                       {feature.title}
                     </h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
+                    <p className="text-xs text-muted-foreground leading-relaxed" suppressHydrationWarning>
                       {feature.description}
                     </p>
                   </div>
@@ -103,27 +104,30 @@ export default function HeroSection(): JSX.Element {
                 onClick={handleStartPlaying}
                 size="lg"
                 className="w-full sm:w-auto bg-linear-to-r from-primary to-primary/80 hover:from-primary/80 hover:to-primary text-white text-lg px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group"
+                suppressHydrationWarning
               >
                 <Gamepad2 className="w-5 h-5 mr-3 group-hover:scale-110 transition-transform duration-300" />
-                {t('startPlaying', { ns: 'landing' })}
+                <span suppressHydrationWarning>{t('startPlaying', { ns: 'landing' })}</span>
               </Button>
               <Button
                 onClick={handleKidsGames}
                 size="lg"
                 variant="outline"
                 className="w-full sm:w-auto text-lg px-8 py-3 rounded-xl border-2 border-green-500 text-green-600 hover:bg-green-50 dark:hover:bg-green-950/20 transition-all duration-300 transform hover:scale-105 group"
+                suppressHydrationWarning
               >
                 <ToyBrick className="w-5 h-5 mr-3 group-hover:scale-110 transition-transform duration-300" />
-                {t('kidsGames', { ns: 'landing' })}
+                <span suppressHydrationWarning>{t('kidsGames', { ns: 'landing' })}</span>
               </Button>
               <Button
                 onClick={handleHowToPlay}
                 size="lg"
                 variant="ghost"
                 className="w-full sm:w-auto text-lg px-8 py-3 rounded-xl text-muted-foreground hover:text-slate-800 dark:hover:text-slate-200 transition-all duration-300 group"
+                suppressHydrationWarning
               >
                 <Lightbulb className="w-5 h-5 mr-3 group-hover:scale-110 transition-transform duration-300" />
-                {t('howToPlay', { ns: 'landing' })}
+                <span suppressHydrationWarning>{t('howToPlay', { ns: 'landing' })}</span>
               </Button>
             </div>
 
@@ -140,8 +144,8 @@ export default function HeroSection(): JSX.Element {
                     {stat.icon === 'languages' && <Languages className="w-6 h-6 text-secondary group-hover:scale-110 transition-transform duration-300" />}
                     {stat.icon === 'users' && <Users className="w-6 h-6 text-indigo-500 group-hover:scale-110 transition-transform duration-300" />}
                   </div>
-                  <div className="text-2xl font-bold text-slate-800 dark:text-white">{stat.value}</div>
-                  <div className="text-sm text-muted-foreground font-medium">{stat.label}</div>
+                  <div className="text-2xl font-bold text-slate-800 dark:text-white" suppressHydrationWarning>{stat.value}</div>
+                  <div className="text-sm text-muted-foreground font-medium" suppressHydrationWarning>{stat.label}</div>
                 </div>
               ))}
             </div>

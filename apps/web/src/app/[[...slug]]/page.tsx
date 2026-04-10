@@ -15,11 +15,9 @@ import { useAppLocation } from "@powerletter/ui";
 import { Suspense } from "react";
 
 /**
- * Universal Catch-All Page — mirrors the desktop-mobile App.tsx routing logic.
- * Next.js [[...slug]] catches every URL and delegates to the right UI component
- * based on the current pathname (parsed by NextRouterAdapter → useAppLocation).
+ * Inner component that uses client-side hooks
  */
-export default function UniversalPage() {
+function PageContent() {
   const location = useAppLocation();
   const path = location.pathname;
 
@@ -93,4 +91,22 @@ export default function UniversalPage() {
 
   // 8. Fallback
   return <NotFound />;
+}
+
+/**
+ * Universal Catch-All Page — mirrors the desktop-mobile App.tsx routing logic.
+ * Next.js [[...slug]] catches every URL and delegates to the right UI component
+ * based on the current pathname (parsed by NextRouterAdapter → useAppLocation).
+ * Wrapped in Suspense for SSR compatibility.
+ */
+export default function UniversalPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex h-screen items-center justify-center">
+        Loading...
+      </div>
+    }>
+      <PageContent />
+    </Suspense>
+  );
 }

@@ -3,7 +3,9 @@
   "version": "1.0.0-beta",
   "private": true,
   "scripts": {
+    "predev": "node ../../scripts/copy-assets.js web",
     "dev": "next dev --port 3000",
+    "prebuild": "node ../../scripts/copy-assets.js web",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
