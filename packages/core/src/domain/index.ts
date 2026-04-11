@@ -2,10 +2,10 @@
 /**
  * Domain layer exports (FSD Architecture)
  */
-export * as LetterFlow from './letter-flow';
-export * as Formation from './formation';
-export * as OutsideStory from './outside-story';
-export * as ImgClue from './img-clue';
-export * as PhraseClue from './phrase-clue';
-export * as ImgChoice from './img-choice';
-export * as WordChoice from './word-choice';
+
+export * as Game from './game';
+
+// Future domain types
+// export * as Lesson from './lesson';
+// export * as Path from './path';
+// export * as User from './user';
