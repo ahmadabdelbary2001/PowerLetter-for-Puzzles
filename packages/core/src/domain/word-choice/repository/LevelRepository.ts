@@ -8,19 +8,8 @@ import type { Language, GameCategory } from '@/types/game';
 import type { WordChoiceLevel, LevelData, LevelModule } from '../model';
 import { ERROR_LEVEL_ID, ensureSolutionInOptions } from '../model';
 
-// ── Static imports: Webpack requires fully-static import paths ───────────────
-import arAnimals from "@/data/levels/ar/word-choice/animals/data.json";
-
 /** Cache for loaded levels */
 const levelCache = new Map<string, WordChoiceLevel[]>();
-
-/** Level lookup map by language-category */
-const levelMap: Record<string, Record<string, LevelModule>> = {
-  ar: {
-    animals: arAnimals as LevelModule,
-    general: arAnimals as LevelModule, // fallback
-  },
-};
 
 /**
  * Repository for Word Choice level operations
@@ -38,38 +27,45 @@ export class LevelRepository {
       return levelCache.get(cacheKey)!;
     }
 
-    // Get levels for the language
-    const langLevels = levelMap[language] || levelMap['ar'];
-    if (!langLevels) return [];
+    try {
+      const basePath = typeof window !== 'undefined' ? window.location.origin : '';
+      const dataUrl = `${basePath}/levels/${language}/word-choice/${category}/data.json`;
+      
+      const response = await fetch(dataUrl);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch levels from ${dataUrl}`);
+      }
+      
+      const module: LevelModule = await response.json();
 
-    // Resolve category with fallback
-    const module = langLevels[category] || langLevels['general'] || Object.values(langLevels)[0];
-    if (!module) {
-      console.warn(`[LevelRepository] No levels found for ${language}/${category}`);
+      // Convert to WordChoiceLevel array (ensure solution is in options)
+      const levels = module.levels.map((data: LevelData): WordChoiceLevel => ({
+        id: data.id,
+        image: data.image,
+        sound: data.sound,
+        solution: data.solution,
+        options: ensureSolutionInOptions(data.solution, data.options),
+      }));
+
+      // Cache and return
+      levelCache.set(cacheKey, levels);
+      return levels;
+    } catch (error) {
+      console.error(`[LevelRepository] Error loading levels:`, error);
+      
+      // Fallback logic
+      if (category !== 'animals') {
+        return this.loadLevels({ ...options, category: 'animals' });
+      }
       return [];
     }
-
-    // Convert to WordChoiceLevel array (ensure solution is in options)
-    const levels = module.levels.map((data: LevelData): WordChoiceLevel => ({
-      id: data.id,
-      image: data.image,
-      sound: data.sound,
-      solution: data.solution,
-      options: ensureSolutionInOptions(data.solution, data.options),
-    }));
-
-    // Cache and return
-    levelCache.set(cacheKey, levels);
-    return levels;
   }
 
   /**
    * Get all categories for a language
    */
   getCategories(language: Language): string[] {
-    const langLevels = levelMap[language];
-    if (!langLevels) return [];
-    return Object.keys(langLevels);
+    return ['animals', 'general'];
   }
 
   /**

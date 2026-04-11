@@ -8,45 +8,8 @@ import type { Language, GameCategory, Difficulty } from '@/types/game';
 import type { PhraseLevel, LevelData, LevelModule } from '../model';
 import { ERROR_LEVEL_ID, DEFAULT_DIFFICULTY } from '../model';
 
-// ── Static imports: Webpack requires fully-static import paths ───────────────
-import arAnimalsEasy from "@/data/levels/ar/phrase-clue/animals/easy.json";
-import arAnimalsMedium from "@/data/levels/ar/phrase-clue/animals/medium.json";
-import arAnimalsHard from "@/data/levels/ar/phrase-clue/animals/hard.json";
-import arGeographyEasy from "@/data/levels/ar/phrase-clue/geography/easy.json";
-import arGeographyMedium from "@/data/levels/ar/phrase-clue/geography/medium.json";
-import arGeographyHard from "@/data/levels/ar/phrase-clue/geography/hard.json";
-import arScienceEasy from "@/data/levels/ar/phrase-clue/science/easy.json";
-import arScienceMedium from "@/data/levels/ar/phrase-clue/science/medium.json";
-import arScienceHard from "@/data/levels/ar/phrase-clue/science/hard.json";
-
 /** Cache for loaded levels */
 const levelCache = new Map<string, PhraseLevel[]>();
-
-/** Level lookup map by language-category-difficulty */
-const levelMap: Record<string, Record<string, Record<string, LevelModule>>> = {
-  ar: {
-    animals: {
-      easy: arAnimalsEasy as LevelModule,
-      medium: arAnimalsMedium as LevelModule,
-      hard: arAnimalsHard as LevelModule,
-    },
-    geography: {
-      easy: arGeographyEasy as LevelModule,
-      medium: arGeographyMedium as LevelModule,
-      hard: arGeographyHard as LevelModule,
-    },
-    science: {
-      easy: arScienceEasy as LevelModule,
-      medium: arScienceMedium as LevelModule,
-      hard: arScienceHard as LevelModule,
-    },
-    general: {
-      easy: arAnimalsEasy as LevelModule,
-      medium: arAnimalsMedium as LevelModule,
-      hard: arAnimalsHard as LevelModule,
-    },
-  },
-};
 
 /**
  * Repository for Phrase Clue level operations
@@ -68,55 +31,58 @@ export class LevelRepository {
       return levelCache.get(cacheKey)!;
     }
 
-    // Get levels for the language
-    const langLevels = levelMap[language] || levelMap['ar'];
-    if (!langLevels) return [];
+    try {
+      // Construction of path for dynamic fetching
+      // This works in both dev (Vite) and prod (Tauri/Web) 
+      // because copy-assets.js ensures data is in public/levels
+      const basePath = typeof window !== 'undefined' ? window.location.origin : '';
+      const dataUrl = `${basePath}/levels/${language}/phrase-clue/${category}/${difficulty}.json`;
+      
+      const response = await fetch(dataUrl);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch levels from ${dataUrl}`);
+      }
+      
+      const module: LevelModule = await response.json();
 
-    // Resolve category with fallback
-    const catLevels = langLevels[category] || langLevels['general'] || Object.values(langLevels)[0];
-    if (!catLevels) {
-      console.warn(`[LevelRepository] No levels found for category: ${category}`);
+      // Convert to PhraseLevel array
+      const levels = module.levels.map((data: LevelData): PhraseLevel => ({
+        id: data.id,
+        clue: data.clue,
+        solution: data.solution,
+        difficulty: data.difficulty ?? DEFAULT_DIFFICULTY,
+      }));
+
+      // Cache and return
+      levelCache.set(cacheKey, levels);
+      return levels;
+    } catch (error) {
+      console.error(`[LevelRepository] Error loading levels:`, error);
+      
+      // Fallback logic if primary fetch fails (e.g. category 'general' not mapped to file)
+      if (category !== 'animals') {
+        console.warn(`[LevelRepository] Attempting fallback to 'animals' category`);
+        return this.loadLevels({ ...options, category: 'animals' });
+      }
+      
       return [];
     }
-
-    // Resolve difficulty with fallback
-    const module = catLevels[difficulty] || catLevels['easy'] || Object.values(catLevels)[0];
-    if (!module) {
-      console.warn(`[LevelRepository] No levels found for difficulty: ${difficulty}`);
-      return [];
-    }
-
-    // Convert to PhraseLevel array
-    const levels = module.levels.map((data: LevelData): PhraseLevel => ({
-      id: data.id,
-      clue: data.clue,
-      solution: data.solution,
-      difficulty: data.difficulty ?? DEFAULT_DIFFICULTY,
-    }));
-
-    // Cache and return
-    levelCache.set(cacheKey, levels);
-    return levels;
   }
 
   /**
    * Get all categories for a language
    */
   getCategories(language: Language): string[] {
-    const langLevels = levelMap[language];
-    if (!langLevels) return [];
-    return Object.keys(langLevels);
+    // Return known categories for this game
+    return ['animals', 'geography', 'science', 'general'];
   }
 
   /**
    * Get all difficulties for a language and category
    */
   getDifficulties(language: Language, category: GameCategory): string[] {
-    const langLevels = levelMap[language];
-    if (!langLevels) return [];
-    const catLevels = langLevels[category];
-    if (!catLevels) return [];
-    return Object.keys(catLevels);
+    // Return known difficulties
+    return ['easy', 'medium', 'hard'];
   }
 
   /**

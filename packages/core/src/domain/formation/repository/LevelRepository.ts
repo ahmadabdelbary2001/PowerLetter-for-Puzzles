@@ -7,56 +7,42 @@
 import type { Language, Difficulty } from '@/types/game';
 import type { LevelLoadOptions } from '../model';
 
-// ── Static imports for Webpack compatibility ─────────────────────────────────
-import arEasy from "@/data/levels/ar/formation/easy.json";
-import arHard from "@/data/levels/ar/formation/hard.json";
-import enEasy from "@/data/levels/en/formation/easy.json";
-
 type LevelFile = { levels: unknown[] };
-
-const LEVEL_MAP: Partial<Record<Language, Partial<Record<Difficulty, LevelFile>>>> = {
-  ar: {
-    easy: arEasy as LevelFile,
-    medium: arHard as LevelFile, // fallback to hard
-    hard: arHard as LevelFile,
-  },
-  en: {
-    easy: enEasy as LevelFile,
-    medium: enEasy as LevelFile, // fallback to easy until created
-    hard: enEasy as LevelFile, // fallback to easy until created
-  },
-};
 
 export class LevelRepository {
   /**
-   * Synchronously resolve level file
-   * Falls back: hard → medium → easy → empty
+   * Load all levels for given options
    */
-  private resolve(language: Language, difficulty: Difficulty = 'easy'): LevelFile {
-    const langMap = LEVEL_MAP[language] ?? LEVEL_MAP['ar']!;
-    return langMap[difficulty] ?? langMap['easy'] ?? { levels: [] };
+  async loadLevels(options: LevelLoadOptions): Promise<unknown[]> {
+    const { language, difficulty = 'easy' } = options;
+    
+    try {
+      const basePath = typeof window !== 'undefined' ? window.location.origin : '';
+      const dataUrl = `${basePath}/levels/${language}/formation/${difficulty}.json`;
+      
+      const response = await fetch(dataUrl);
+      if (!response.ok) {
+        // Fallback to easy if specific difficulty fails
+        if (difficulty !== 'easy') {
+          return this.loadLevels({ ...options, difficulty: 'easy' });
+        }
+        throw new Error(`Failed to fetch ${dataUrl}`);
+      }
+      
+      const file: LevelFile = await response.json();
+      return file.levels || [];
+    } catch (error) {
+      console.error(`[LevelRepository] Error loading formation levels:`, error);
+      return [];
+    }
   }
 
   /**
    * Load level module (async for compatibility)
    */
   async loadModule(language: Language, difficulty: Difficulty = 'easy'): Promise<LevelFile> {
-    return this.resolve(language, difficulty);
-  }
-
-  /**
-   * Load all levels for given options
-   */
-  async loadLevels(options: LevelLoadOptions): Promise<unknown[]> {
-    const { language, difficulty = 'easy' } = options;
-    const file = this.resolve(language as Language, difficulty);
-
-    if (!file.levels || file.levels.length === 0) {
-      console.warn(`LevelRepository: No levels found for ${language}/${difficulty}.`);
-      return [];
-    }
-
-    return file.levels;
+    const levels = await this.loadLevels({ language, difficulty });
+    return { levels };
   }
 
   /** No-op: static imports need no cache */

@@ -8,23 +8,8 @@ import type { Language, GameCategory } from '@/types/game';
 import type { ImageLevel, LevelData, LevelModule } from '../model';
 import { ERROR_LEVEL_ID, ERROR_IMAGE_PATH } from '../model';
 
-// ── Static imports: Webpack requires fully-static import paths ───────────────
-import arAnimals from "@/data/levels/ar/img-clue/animals/data.json";
-import arFruits from "@/data/levels/ar/img-clue/fruits-and-vegetables/data.json";
-import arShapes from "@/data/levels/ar/img-clue/shapes/data.json";
-
 /** Cache for loaded levels */
 const levelCache = new Map<string, ImageLevel[]>();
-
-/** Level lookup map by language-category */
-const levelMap: Record<string, Record<string, LevelModule>> = {
-  ar: {
-    animals: arAnimals as LevelModule,
-    'fruits-and-vegetables': arFruits as LevelModule,
-    shapes: arShapes as LevelModule,
-    general: arAnimals as LevelModule, // fallback
-  },
-};
 
 /**
  * Repository for Image Clue level operations
@@ -42,37 +27,50 @@ export class LevelRepository {
       return levelCache.get(cacheKey)!;
     }
 
-    // Get levels for the language
-    const langLevels = levelMap[language] || levelMap['ar'];
-    if (!langLevels) return [];
+    try {
+      const basePath = typeof window !== 'undefined' ? window.location.origin : '';
+      
+      // Determine directory name for the category
+      // Mapping categories to their folder names in data/levels/...
+      let folderName = category as string;
+      if (category === 'fruits-and-vegetables') folderName = 'fruits-and-vegetables';
+      
+      const dataUrl = `${basePath}/levels/${language}/img-clue/${folderName}/data.json`;
+      
+      const response = await fetch(dataUrl);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch levels from ${dataUrl}`);
+      }
+      
+      const module: LevelModule = await response.json();
 
-    // Resolve category with fallback
-    const module = langLevels[category] || langLevels['general'] || Object.values(langLevels)[0];
-    if (!module) {
-      console.warn(`[LevelRepository] No levels found for ${language}/${category}`);
+      // Convert to ImageLevel array
+      const levels = module.levels.map((data: LevelData): ImageLevel => ({
+        id: data.id,
+        image: data.image,
+        sound: data.sound,
+        solution: data.solution,
+      }));
+
+      // Cache and return
+      levelCache.set(cacheKey, levels);
+      return levels;
+    } catch (error) {
+      console.error(`[LevelRepository] Error loading levels:`, error);
+      
+      // Fallback logic
+      if (category !== 'animals') {
+        return this.loadLevels({ ...options, category: 'animals' });
+      }
       return [];
     }
-
-    // Convert to ImageLevel array
-    const levels = module.levels.map((data: LevelData): ImageLevel => ({
-      id: data.id,
-      image: data.image,
-      sound: data.sound,
-      solution: data.solution,
-    }));
-
-    // Cache and return
-    levelCache.set(cacheKey, levels);
-    return levels;
   }
 
   /**
    * Get all categories for a language
    */
   getCategories(language: Language): string[] {
-    const langLevels = levelMap[language];
-    if (!langLevels) return [];
-    return Object.keys(langLevels);
+    return ['animals', 'fruits-and-vegetables', 'shapes', 'general'];
   }
 
   /**
