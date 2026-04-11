@@ -4,7 +4,7 @@
  * --- It now uses the centralized notification system with translatable messageKeys. ---
  */
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { useGameController } from '../../../hooks/game/useGameController';
+import { useGameController } from '@/hooks/game/useGameController';
 import { letterFlowGameEngine, type LetterFlowLevel, type BoardCell, type WordPath } from '../engine';
 import { colorForString } from '../utils/colors';
 

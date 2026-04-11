@@ -1,6 +1,6 @@
 // src/screens/outside-story/components/RoundEndScreen.tsx
 import React from 'react';
-import { Button } from '../../../atoms/Button';
+import { Button } from '@/atoms/Button';
 import { useAppRouter } from '../../../contexts/RouterContext';
 import type { useOutsideStory } from '@powerletter/core';
 

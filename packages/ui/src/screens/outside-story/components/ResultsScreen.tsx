@@ -1,6 +1,6 @@
 // src/screens/outside-story/components/ResultsScreen.tsx
 import React from 'react';
-import { Button } from '../../../atoms/Button';
+import { Button } from '@/atoms/Button';
 import type { useOutsideStory, Team } from '@powerletter/core';
 
 type Props = { game: ReturnType<typeof useOutsideStory> };

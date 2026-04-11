@@ -5,9 +5,9 @@
  * dedicated notification messages from the `useNotification` hook, and game
  * instructions from the `useInstructions` hook.
  */
-import { useTranslation } from '../../hooks/useTranslation';
-import { useInstructions, type InstructionKey } from '../../hooks/useInstructions';
-import { useNotification } from '../../hooks/useNotification';
+import { useTranslation } from '@/hooks/useTranslation';
+import { useInstructions, type InstructionKey } from '@/hooks/useInstructions';
+import { useNotification } from '@/hooks/useNotification';
 
 export function useGameContent(gameId: InstructionKey) {
   // 1. Get all translation context: `t`, `i18n`, and `dir`.

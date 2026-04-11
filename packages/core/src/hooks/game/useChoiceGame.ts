@@ -6,7 +6,7 @@
  * It now uses a useEffect to trigger notifications based on answerStatus.
  */
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { shuffleArray } from '../../lib/gameUtils';
+import { shuffleArray } from '@/lib/gameUtils';
 import type { GameLevel, Difficulty } from '@powerletter/core';
 import type { useGameController } from './useGameController';
 

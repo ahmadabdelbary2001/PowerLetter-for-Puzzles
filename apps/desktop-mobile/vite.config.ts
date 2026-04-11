@@ -30,6 +30,12 @@ export default defineConfig({
       { find: "@/types", replacement: path.resolve(__dirname, "../../packages/core/src/types") },
       { find: "@/i18n", replacement: path.resolve(__dirname, "../../packages/core/src/i18n") },
       { find: "@/wasm", replacement: path.resolve(__dirname, "../../packages/core/src/wasm") },
+      { find: "@/atoms", replacement: path.resolve(__dirname, "../../packages/ui/src/atoms") },
+      { find: "@/molecules", replacement: path.resolve(__dirname, "../../packages/ui/src/molecules") },
+      { find: "@/organisms", replacement: path.resolve(__dirname, "../../packages/ui/src/organisms") },
+      { find: "@/templates", replacement: path.resolve(__dirname, "../../packages/ui/src/templates") },
+      { find: "@/screens", replacement: path.resolve(__dirname, "../../packages/ui/src/screens") },
+      { find: "@/pages", replacement: path.resolve(__dirname, "../../packages/ui/src/pages") },
       // Must come last to prevent shadowing more specific aliases!
       { find: "@", replacement: path.resolve(__dirname, "./src") }
     ],

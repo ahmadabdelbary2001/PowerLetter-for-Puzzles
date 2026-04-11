@@ -1,6 +1,6 @@
 //! Core engine logic for Formation game
 
-use crate::models::{FormationLevel, GridCell};
+use crate::models::GridCell;
 use rand::seq::SliceRandom;
 use rand::thread_rng;
 

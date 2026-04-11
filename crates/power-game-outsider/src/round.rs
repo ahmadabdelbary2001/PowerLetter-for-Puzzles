@@ -74,7 +74,7 @@ impl RoundManager {
     }
     
     /// Calculate final scores
-    pub fn calculate_scores(&self, voted_player_id: Option<u32>, outsider_guess: &str) -> Vec<(u32, i32)> {
+    pub fn calculate_scores(&self, _voted_player_id: Option<u32>, outsider_guess: &str) -> Vec<(u32, i32)> {
         let mut scores: Vec<(u32, i32)> = Vec::new();
         let outsider_guessed_correctly = self.check_outsider_guess(outsider_guess);
         
@@ -200,7 +200,7 @@ mod tests {
     #[test]
     fn test_calculate_scores_outsider_wins() {
         let config = create_test_config();
-        let mut manager = RoundManager::new(config);
+        let manager = RoundManager::new(config);
         
         // Outsider (3) guessed correctly
         let scores = manager.calculate_scores(Some(3), "lion");

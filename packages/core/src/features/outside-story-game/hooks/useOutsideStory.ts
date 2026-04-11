@@ -4,8 +4,8 @@
  * --- Refactored to use Domain Services from FSD architecture ---
  */
 import { useCallback, useEffect, useState } from 'react';
-import { useGameController } from '../../../hooks/game/useGameController';
-import { outsideStoryGameEngine } from '../../../features/outside-story-game/engine';
+import { useGameController } from '@/hooks/game/useGameController';
+import { outsideStoryGameEngine } from '@/features/outside-story-game/engine';
 import type { Team } from '@powerletter/core';
 
 // Import domain services
@@ -15,11 +15,11 @@ import {
   type OutsiderLevel,
   type GameState,
   type RoundInfo,
-} from '../../../domain/outside-story';
+} from '@/domain/outside-story';
 
 // Re-export types for backward compatibility
-export type { GameState, RoundInfo } from '../../../domain/outside-story';
-export type { OutsiderLevel as OutsideStoryLevel } from '../../../domain/outside-story';
+export type { GameState, RoundInfo } from '@/domain/outside-story';
+export type { OutsiderLevel as OutsideStoryLevel } from '@/domain/outside-story';
 export type QuestionPair = { asker: Team; askee: Team; };
 
 export function useOutsideStory() {

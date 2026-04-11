@@ -6,7 +6,7 @@
  * It's used throughout the application to provide consistent branding.
  * The logo is responsive and adapts its display based on screen size.
  */
-import { Link } from "../atoms/Link";
+import { Link } from '@/atoms/Link';
 import { Badge, cn } from "../index";
 import { useTranslation } from "@powerletter/core";
 

@@ -4,7 +4,7 @@
  * This file is kept for backward compatibility during migration
  */
 
-import { boardService } from '../../../domain/letter-flow/service';
+import { boardService } from '@/domain/letter-flow/service';
 
 /**
  * @deprecated Use boardService.colorForString instead

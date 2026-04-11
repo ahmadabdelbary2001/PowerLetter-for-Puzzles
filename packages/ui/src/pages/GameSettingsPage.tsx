@@ -7,11 +7,11 @@ import {
   ArrowLeft, ArrowRight, BrainCircuit, FlaskConical, Globe, Shapes, Apple, Palette, 
   Music, Car, Clapperboard, Utensils, GlassWater, Heart, Swords, Cake, Shirt, Tv, Gamepad, User
 } from 'lucide-react';
-import { Button } from '../atoms/Button';
-import { Card, CardContent, CardHeader, CardTitle } from '../atoms/Card';
-import { DifficultySelector } from '../molecules/DifficultySelector';
-import { CategorySelector } from '../molecules/CategorySelector';
-import { Header } from '../organisms/Header';
+import { Button } from '@/atoms/Button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/atoms/Card';
+import { DifficultySelector } from '@/molecules/DifficultySelector';
+import { CategorySelector } from '@/molecules/CategorySelector';
+import { Header } from '@/organisms/Header';
 import { useAppParams, useAppRouter } from '../contexts/RouterContext';
 import type { GameCategory } from '@powerletter/core';
 

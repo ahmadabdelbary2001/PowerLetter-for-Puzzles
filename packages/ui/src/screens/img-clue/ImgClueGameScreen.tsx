@@ -6,14 +6,14 @@
  */
 import React from "react";
 import { useImageClueGame } from "@powerletter/core";
-import { Button } from "../../atoms/Button";
-import { Badge } from "../../atoms/Badge";
-import { SolutionBoxes } from "../../molecules/SolutionBoxes";
-import { LetterGrid } from "../../molecules/LetterGrid";
-import { GameControls } from "../../organisms/GameControls";
+import { Button } from '@/atoms/Button';
+import { Badge } from '@/atoms/Badge';
+import { SolutionBoxes } from '@/molecules/SolutionBoxes';
+import { LetterGrid } from '@/molecules/LetterGrid';
+import { GameControls } from '@/organisms/GameControls';
 import { ArrowLeft, ArrowRight, Volume2 } from "lucide-react";
-import { ClueGameLayout } from "../../templates/ClueGameLayout";
-import { GameScreen } from "../../organisms/GameScreen";
+import { ClueGameLayout } from '@/templates/ClueGameLayout';
+import { GameScreen } from '@/organisms/GameScreen';
 import { useAppRouter, useAppParams } from "../../contexts/RouterContext";
 
 // 1. Define the pure UI component.

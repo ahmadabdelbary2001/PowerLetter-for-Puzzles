@@ -53,8 +53,6 @@ src-tauri/gen/android/local.properties
 .DS_Store
 Thumbs.db
 desktop.ini
-docs/
-scripts/
 
 # Environment Variables
 .env

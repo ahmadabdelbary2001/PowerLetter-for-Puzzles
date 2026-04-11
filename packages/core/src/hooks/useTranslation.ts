@@ -9,7 +9,7 @@
 
 import { useEffect, useMemo } from 'react';
 import { useTranslation as useI18nextHook } from 'react-i18next';
-import { useGameMode } from '../hooks/useGameMode';
+import { useGameMode } from '@/hooks/useGameMode';
 
 // --- Define all available namespaces for type safety ---
 const namespaces = ['common', 'games', 'landing', 'outside_the_story', 'selection', 'team', 'notification'] as const;

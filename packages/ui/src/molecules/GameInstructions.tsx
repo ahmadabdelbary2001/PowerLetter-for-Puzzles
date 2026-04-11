@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react';
 import { useTranslation } from "@powerletter/core";
-import { Button } from '../atoms/Button';
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from '../atoms/Dialog';
+import { Button } from '@/atoms/Button';
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from '@/atoms/Dialog';
 
 interface GameInstructionsProps {
   instructions: {

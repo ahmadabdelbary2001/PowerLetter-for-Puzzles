@@ -3,7 +3,7 @@
  * Constants for Phrase Clue game.
  */
 
-import type { Difficulty } from '../../../types/game';
+import type { Difficulty } from '@/types/game';
 
 /** Default error level ID */
 export const ERROR_LEVEL_ID = 'error';

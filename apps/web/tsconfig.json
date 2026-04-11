@@ -24,7 +24,13 @@
       "@/games/*": ["../../packages/core/src/games/*"],
       "@/hooks/*": ["../../packages/core/src/hooks/*"],
       "@/i18n/*": ["../../packages/core/src/i18n/*"],
-      "@/wasm/*": ["../../packages/core/src/wasm/*"]
+      "@/wasm/*": ["../../packages/core/src/wasm/*"],
+      "@/atoms/*": ["../../packages/ui/src/atoms/*"],
+      "@/molecules/*": ["../../packages/ui/src/molecules/*"],
+      "@/organisms/*": ["../../packages/ui/src/organisms/*"],
+      "@/templates/*": ["../../packages/ui/src/templates/*"],
+      "@/screens/*": ["../../packages/ui/src/screens/*"],
+      "@/pages/*": ["../../packages/ui/src/pages/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "../../data/**/*", "../../packages/core/src/types/**/*"],

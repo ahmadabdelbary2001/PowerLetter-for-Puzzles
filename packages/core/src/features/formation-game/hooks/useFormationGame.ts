@@ -6,7 +6,7 @@
  * --- It now uses the centralized notification system correctly. ---
  */
 import { useState, useEffect, useCallback } from 'react';
-import { useGameController } from '../../../hooks/game/useGameController';
+import { useGameController } from '@/hooks/game/useGameController';
 import { formationGameEngine, type FormationLevel } from '../engine';
 
 export function useFormationGame() {

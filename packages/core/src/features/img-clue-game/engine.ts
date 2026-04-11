@@ -4,10 +4,10 @@
  * It extends the shared ClueGameEngine and delegates to domain services.
  */
 import type { Language, GameCategory } from '@powerletter/core';
-import { ClueGameEngine, type ClueLevel } from '../../games/engine/ClueGameEngine';
-import type { LevelModule } from '../../games/engine/BaseGameEngine';
+import { ClueGameEngine, type ClueLevel } from '@/games/engine/ClueGameEngine';
+import type { LevelModule } from '@/games/engine/BaseGameEngine';
 // Import domain services
-import { levelRepository, validationService } from '../../domain/img-clue';
+import { levelRepository, validationService } from '@/domain/img-clue';
 
 /**
  * @interface ImageLevel
@@ -35,9 +35,10 @@ class ImgClueGameEngine extends ClueGameEngine<ImageLevel> {
     return levelRepository.loadLevels({ language: options.language, category });
   }
 
-  protected loadModule(language: Language, category: GameCategory): Promise<LevelModule> {
-    // Still provide the dynamic import for base class compatibility
-    return import(`../../data/${language}/img-clue/${category}/data.json`);
+  protected async loadModule(language: Language, category: GameCategory): Promise<LevelModule> {
+    // Use the static repository to avoid template literal dynamic imports failing at build time
+    const levels = await levelRepository.loadLevels({ language, category });
+    return { levels };
   }
 
   // --- Delegate to domain validation service ---

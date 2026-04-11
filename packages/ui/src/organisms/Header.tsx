@@ -7,13 +7,13 @@
  */
 
 import { useEffect, useRef, useState } from "react";
-import { Link } from "../atoms/Link";
-import { Button } from "../atoms/Button";
+import { Link } from '@/atoms/Link';
+import { Button } from '@/atoms/Button';
 import { cn } from "../lib/utils";
-import { LanguageSelector } from '../molecules/LanguageSelector';
-import { ModeToggler } from '../molecules/ModeToggler';
+import { LanguageSelector } from '@/molecules/LanguageSelector';
+import { ModeToggler } from '@/molecules/ModeToggler';
 import { useGameMode, useTranslation } from '@powerletter/core';
-import { Logo } from '../atoms/Logo';
+import { Logo } from '@/atoms/Logo';
 import { Menu, ToyBrick, Home, Gamepad2, HelpCircle } from "lucide-react";
 
 interface HeaderProps {

@@ -7,8 +7,8 @@
  */
 import React from 'react';
 import { useGameMode, useTranslation } from '@powerletter/core';
-import { GameSelectionPageLayout } from '../templates/GameSelectionPageLayout';
-import { GameSelectionCard } from '../molecules/GameSelectionCard';
+import { GameSelectionPageLayout } from '@/templates/GameSelectionPageLayout';
+import { GameSelectionCard } from '@/molecules/GameSelectionCard';
 import { GAME_REGISTRY, type GameConfig } from '../registry/GameRegistry';
 import { useAppRouter } from '../contexts/RouterContext';
 

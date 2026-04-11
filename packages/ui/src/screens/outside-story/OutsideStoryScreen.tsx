@@ -6,8 +6,8 @@
  */
 import React from 'react';
 import { useOutsideStory } from '@powerletter/core';
-import { OutsideStoryLayout } from '../../templates/OutsideStoryLayout';
-import { GameScreen } from '../../organisms/GameScreen';
+import { OutsideStoryLayout } from '@/templates/OutsideStoryLayout';
+import { GameScreen } from '@/organisms/GameScreen';
 import { useAppRouter, useAppParams } from '../../contexts/RouterContext';
 
 // Import all the sub-screen components

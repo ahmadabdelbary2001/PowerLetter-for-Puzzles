@@ -1,6 +1,6 @@
 // src/components/organisms/GameControls.tsx
 import React from 'react';
-import { GameButton } from '../atoms/GameButton';
+import { GameButton } from '@/atoms/GameButton';
 import {
   Lightbulb,
   RotateCcw,

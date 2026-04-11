@@ -6,12 +6,12 @@
  */
 import React from "react";
 import { usePhraseClueGame } from "@powerletter/core";
-import { Badge } from "../../atoms/Badge";
-import { SolutionBoxes } from "../../molecules/SolutionBoxes";
-import { LetterGrid } from "../../molecules/LetterGrid";
-import { GameControls } from "../../organisms/GameControls";
-import { ClueGameLayout } from "../../templates/ClueGameLayout";
-import { GameScreen } from "../../organisms/GameScreen";
+import { Badge } from '@/atoms/Badge';
+import { SolutionBoxes } from '@/molecules/SolutionBoxes';
+import { LetterGrid } from '@/molecules/LetterGrid';
+import { GameControls } from '@/organisms/GameControls';
+import { ClueGameLayout } from '@/templates/ClueGameLayout';
+import { GameScreen } from '@/organisms/GameScreen';
 import { useAppRouter, useAppParams } from "../../contexts/RouterContext";
 
 // 1. Define the pure UI component.

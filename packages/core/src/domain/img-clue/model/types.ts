@@ -3,7 +3,7 @@
  * TypeScript domain types for Image Clue game following FSD architecture.
  */
 
-import type { GameLevel, Language, GameCategory } from '../../../types/game';
+import type { GameLevel, Language, GameCategory } from '@/types/game';
 
 /** Image level extends GameLevel with image and sound */
 export interface ImageLevel extends GameLevel {

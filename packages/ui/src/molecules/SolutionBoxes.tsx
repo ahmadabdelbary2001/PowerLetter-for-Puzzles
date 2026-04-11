@@ -5,7 +5,7 @@
  * The component adapts its size based on the device type (mobile, tablet, or desktop).
  */
 import { useState, useEffect } from "react"
-import { SolutionBox } from "../atoms/SolutionBox"
+import { SolutionBox } from '@/atoms/SolutionBox'
 import { cn } from "../lib/utils"
 
 /**

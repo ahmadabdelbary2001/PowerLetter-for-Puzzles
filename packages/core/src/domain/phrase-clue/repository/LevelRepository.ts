@@ -4,14 +4,20 @@
  * Uses static imports to support both Vite and Webpack (Next.js) bundlers.
  */
 
-import type { Language, GameCategory, Difficulty } from '../../../types/game';
+import type { Language, GameCategory, Difficulty } from '@/types/game';
 import type { PhraseLevel, LevelData, LevelModule } from '../model';
 import { ERROR_LEVEL_ID, DEFAULT_DIFFICULTY } from '../model';
 
 // ── Static imports: Webpack requires fully-static import paths ───────────────
-import arAnimalsEasy from '../../../data/ar/phrase-clue/animals/easy.json';
-import arAnimalsMedium from '../../../data/ar/phrase-clue/animals/medium.json';
-import arAnimalsHard from '../../../data/ar/phrase-clue/animals/hard.json';
+import arAnimalsEasy from "@/data/levels/ar/phrase-clue/animals/easy.json";
+import arAnimalsMedium from "@/data/levels/ar/phrase-clue/animals/medium.json";
+import arAnimalsHard from "@/data/levels/ar/phrase-clue/animals/hard.json";
+import arGeographyEasy from "@/data/levels/ar/phrase-clue/geography/easy.json";
+import arGeographyMedium from "@/data/levels/ar/phrase-clue/geography/medium.json";
+import arGeographyHard from "@/data/levels/ar/phrase-clue/geography/hard.json";
+import arScienceEasy from "@/data/levels/ar/phrase-clue/science/easy.json";
+import arScienceMedium from "@/data/levels/ar/phrase-clue/science/medium.json";
+import arScienceHard from "@/data/levels/ar/phrase-clue/science/hard.json";
 
 /** Cache for loaded levels */
 const levelCache = new Map<string, PhraseLevel[]>();
@@ -20,6 +26,21 @@ const levelCache = new Map<string, PhraseLevel[]>();
 const levelMap: Record<string, Record<string, Record<string, LevelModule>>> = {
   ar: {
     animals: {
+      easy: arAnimalsEasy as LevelModule,
+      medium: arAnimalsMedium as LevelModule,
+      hard: arAnimalsHard as LevelModule,
+    },
+    geography: {
+      easy: arGeographyEasy as LevelModule,
+      medium: arGeographyMedium as LevelModule,
+      hard: arGeographyHard as LevelModule,
+    },
+    science: {
+      easy: arScienceEasy as LevelModule,
+      medium: arScienceMedium as LevelModule,
+      hard: arScienceHard as LevelModule,
+    },
+    general: {
       easy: arAnimalsEasy as LevelModule,
       medium: arAnimalsMedium as LevelModule,
       hard: arAnimalsHard as LevelModule,
@@ -47,22 +68,21 @@ export class LevelRepository {
       return levelCache.get(cacheKey)!;
     }
 
-    // Get level module
-    const langLevels = levelMap[language];
-    if (!langLevels) {
-      console.warn(`[LevelRepository] No levels for language: ${language}`);
-      return [];
-    }
+    // Get levels for the language
+    const langLevels = levelMap[language] || levelMap['ar'];
+    if (!langLevels) return [];
 
-    const catLevels = langLevels[category];
+    // Resolve category with fallback
+    const catLevels = langLevels[category] || langLevels['general'] || Object.values(langLevels)[0];
     if (!catLevels) {
-      console.warn(`[LevelRepository] No levels for category: ${category}`);
+      console.warn(`[LevelRepository] No levels found for category: ${category}`);
       return [];
     }
 
-    const module = catLevels[difficulty];
+    // Resolve difficulty with fallback
+    const module = catLevels[difficulty] || catLevels['easy'] || Object.values(catLevels)[0];
     if (!module) {
-      console.warn(`[LevelRepository] No levels for difficulty: ${difficulty}`);
+      console.warn(`[LevelRepository] No levels found for difficulty: ${difficulty}`);
       return [];
     }
 

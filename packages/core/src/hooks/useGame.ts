@@ -4,8 +4,8 @@
  * It handles loading levels, managing the current level index, and providing navigation.
  */
 import { useState, useEffect, useCallback, useReducer } from 'react';
-import { gameReducer } from '../lib/gameReducer';
-import type { IGameEngine } from '../games/engine/types';
+import { gameReducer } from '@/lib/gameReducer';
+import type { IGameEngine } from '@/games/engine/types';
 import type { Language, Difficulty, GameCategory, NotificationData } from '@powerletter/core';
 
 export function useGame<T extends { solution: string; difficulty?: Difficulty }>(

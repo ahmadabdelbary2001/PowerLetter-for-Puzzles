@@ -4,26 +4,26 @@
  * Uses static imports for Webpack/Vite compatibility.
  */
 
-import type { Language, GameCategory } from '../../../types/game';
+import type { Language, GameCategory } from '@/types/game';
 import type { OutsiderLevel, OutsiderLevelData } from '../model';
 import { ERROR_LEVEL } from '../model';
 
 // Static imports for all supported categories
-import animalsData from '../../../data/ar/outside-the-story/animals.json';
-import animeData from '../../../data/ar/outside-the-story/anime.json';
-import carsData from '../../../data/ar/outside-the-story/cars.json';
-import cartoonsData from '../../../data/ar/outside-the-story/cartoons.json';
-import charactersData from '../../../data/ar/outside-the-story/characters.json';
-import clothesData from '../../../data/ar/outside-the-story/clothes.json';
-import drinksData from '../../../data/ar/outside-the-story/drinks.json';
-import foodsData from '../../../data/ar/outside-the-story/foods.json';
-import footballData from '../../../data/ar/outside-the-story/football.json';
-import fruitsVegData from '../../../data/ar/outside-the-story/fruits-and-vegetables.json';
-import geographyData from '../../../data/ar/outside-the-story/geography.json';
-import kpopData from '../../../data/ar/outside-the-story/k-pop.json';
-import scienceData from '../../../data/ar/outside-the-story/science.json';
-import spyData from '../../../data/ar/outside-the-story/spy.json';
-import sweetsData from '../../../data/ar/outside-the-story/sweets.json';
+import animalsData from "@/data/levels/ar/outside-the-story/animals.json";
+import animeData from "@/data/levels/ar/outside-the-story/anime.json";
+import carsData from "@/data/levels/ar/outside-the-story/cars.json";
+import cartoonsData from "@/data/levels/ar/outside-the-story/cartoons.json";
+import charactersData from "@/data/levels/ar/outside-the-story/characters.json";
+import clothesData from "@/data/levels/ar/outside-the-story/clothes.json";
+import drinksData from "@/data/levels/ar/outside-the-story/drinks.json";
+import foodsData from "@/data/levels/ar/outside-the-story/foods.json";
+import footballData from "@/data/levels/ar/outside-the-story/football.json";
+import fruitsVegData from "@/data/levels/ar/outside-the-story/fruits-and-vegetables.json";
+import geographyData from "@/data/levels/ar/outside-the-story/geography.json";
+import kpopData from "@/data/levels/ar/outside-the-story/k-pop.json";
+import scienceData from "@/data/levels/ar/outside-the-story/science.json";
+import spyData from "@/data/levels/ar/outside-the-story/spy.json";
+import sweetsData from "@/data/levels/ar/outside-the-story/sweets.json";
 
 const levelMap: Record<string, OutsiderLevelData> = {
   animals: animalsData as OutsiderLevelData,
@@ -88,9 +88,19 @@ export class LevelRepository {
       console.warn(`Language ${language} not supported for outside-the-story, falling back to Arabic`);
     }
 
-    const data = levelMap[category];
+    let data = levelMap[category];
     if (!data) {
-      console.warn(`Category ${category} not found for outside-the-story`);
+      console.warn(`Category ${category} not found for outside-the-story, falling back to 'animals'`);
+      data = levelMap['animals'];
+    }
+
+    if (!data) {
+      // Final fallback if animals is also missing
+      data = Object.values(levelMap)[0];
+    }
+
+    if (!data) {
+      console.warn(`No categories found for outside-the-story`);
       return null;
     }
 

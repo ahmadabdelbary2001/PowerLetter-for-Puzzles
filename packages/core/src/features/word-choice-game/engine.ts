@@ -3,11 +3,11 @@
  * @description The game engine for the Word Choice game.
  * It extends the shared ChoiceGameEngine and delegates to domain services.
  */
-import { ChoiceGameEngine, type ChoiceLevel } from '../../games/engine/ChoiceGameEngine';
+import { ChoiceGameEngine, type ChoiceLevel } from '@/games/engine/ChoiceGameEngine';
 import type { Language, GameCategory } from '@powerletter/core';
-import type { LevelModule } from '../../games/engine/BaseGameEngine';
+import type { LevelModule } from '@/games/engine/BaseGameEngine';
 // Import domain services
-import { levelRepository, validationService } from '../../domain/word-choice';
+import { levelRepository, validationService } from '@/domain/word-choice';
 
 /**
  * @interface WordChoiceLevel
@@ -36,9 +36,10 @@ class WordChoiceGameEngine extends ChoiceGameEngine<WordChoiceLevel> {
     return levelRepository.loadLevels({ language: options.language, category });
   }
 
-  protected loadModule(language: Language, category: GameCategory): Promise<LevelModule> {
-    // Still provide the dynamic import for base class compatibility
-    return import(`../../data/${language}/word-choice/${category}/data.json`);
+  protected async loadModule(language: Language, category: GameCategory): Promise<LevelModule> {
+    // Use the static repository to avoid template literal dynamic imports failing at build time
+    const levels = await levelRepository.loadLevels({ language, category });
+    return { levels };
   }
 
   // --- Delegate to domain validation service ---

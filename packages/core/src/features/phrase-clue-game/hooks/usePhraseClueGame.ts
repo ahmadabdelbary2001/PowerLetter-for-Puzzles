@@ -1,6 +1,6 @@
 // src/features/phrase-clue-game/hooks/usePhraseClueGame.ts
-import { useGameController } from '../../../hooks/game/useGameController';
-import { useClueGame } from '../../../hooks/game/useClueGame';
+import { useGameController } from '@/hooks/game/useGameController';
+import { useClueGame } from '@/hooks/game/useClueGame';
 import { phraseClueGameEngine, type PhraseLevel } from '../engine';
 
 export function usePhraseClueGame() {

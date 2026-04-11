@@ -1,6 +1,6 @@
 {
   "name": "@powerletter/desktop-mobile",
-  "version": "1.0.0-beta",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "scripts": {

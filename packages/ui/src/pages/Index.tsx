@@ -7,8 +7,8 @@
  */
 import { useEffect } from "react";
 import { useGameMode, useTranslation } from "@powerletter/core";
-import { Header } from "../organisms/Header";
-import { Footer } from "../organisms/Footer";
+import { Header } from '@/organisms/Header';
+import { Footer } from '@/organisms/Footer';
 import { useAppParams, useAppLocation } from "../contexts/RouterContext";
 import HeroSection from "./HeroSection";
 import GameTypeSelector from "./GameTypeSelector";

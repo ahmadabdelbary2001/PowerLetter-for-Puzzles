@@ -7,7 +7,7 @@
  */
 import type { Language, GameCategory, Difficulty, GameLevel } from '@powerletter/core';
 import { GAME_METADATA } from '@powerletter/core';
-import { shuffleArray } from '../../lib/gameUtils';
+import { shuffleArray } from '@/lib/gameUtils';
 import type { IGameEngine } from './types';
 
 // A generic interface for the structure of dynamically imported level modules.

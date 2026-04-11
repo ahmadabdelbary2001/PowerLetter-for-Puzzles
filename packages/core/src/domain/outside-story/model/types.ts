@@ -3,7 +3,7 @@
  * @description Core domain types for Outside the Story game following FSD architecture.
  */
 
-import type { Language, GameCategory, GameLevel } from '../../../types/game';
+import type { Language, GameCategory, GameLevel } from '@/types/game';
 
 /**
  * Represents a level/category in the Outside the Story game

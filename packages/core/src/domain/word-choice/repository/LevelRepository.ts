@@ -4,12 +4,12 @@
  * Uses static imports to support both Vite and Webpack (Next.js) bundlers.
  */
 
-import type { Language, GameCategory } from '../../../types/game';
+import type { Language, GameCategory } from '@/types/game';
 import type { WordChoiceLevel, LevelData, LevelModule } from '../model';
 import { ERROR_LEVEL_ID, ensureSolutionInOptions } from '../model';
 
 // ── Static imports: Webpack requires fully-static import paths ───────────────
-import arAnimals from '../../../data/ar/word-choice/animals/data.json';
+import arAnimals from "@/data/levels/ar/word-choice/animals/data.json";
 
 /** Cache for loaded levels */
 const levelCache = new Map<string, WordChoiceLevel[]>();
@@ -18,6 +18,7 @@ const levelCache = new Map<string, WordChoiceLevel[]>();
 const levelMap: Record<string, Record<string, LevelModule>> = {
   ar: {
     animals: arAnimals as LevelModule,
+    general: arAnimals as LevelModule, // fallback
   },
 };
 
@@ -37,16 +38,14 @@ export class LevelRepository {
       return levelCache.get(cacheKey)!;
     }
 
-    // Get level module
-    const langLevels = levelMap[language];
-    if (!langLevels) {
-      console.warn(`[LevelRepository] No levels for language: ${language}`);
-      return [];
-    }
+    // Get levels for the language
+    const langLevels = levelMap[language] || levelMap['ar'];
+    if (!langLevels) return [];
 
-    const module = langLevels[category];
+    // Resolve category with fallback
+    const module = langLevels[category] || langLevels['general'] || Object.values(langLevels)[0];
     if (!module) {
-      console.warn(`[LevelRepository] No levels for category: ${category}`);
+      console.warn(`[LevelRepository] No levels found for ${language}/${category}`);
       return [];
     }
 

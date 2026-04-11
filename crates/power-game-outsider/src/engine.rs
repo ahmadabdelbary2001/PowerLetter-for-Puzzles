@@ -2,7 +2,6 @@
 
 use crate::models::{OutsiderLevel, RoundConfig};
 use rand::seq::SliceRandom;
-use rand::Rng;
 
 /// Main engine for the Outsider game
 #[derive(Debug, Clone, Default)]

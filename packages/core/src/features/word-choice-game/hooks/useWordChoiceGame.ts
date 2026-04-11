@@ -1,6 +1,6 @@
 // src/features/word-choice-game/hooks/useWordChoiceGame.ts
-import { useGameController } from '../../../hooks/game/useGameController';
-import { useChoiceGame } from '../../../hooks/game/useChoiceGame';
+import { useGameController } from '@/hooks/game/useGameController';
+import { useChoiceGame } from '@/hooks/game/useChoiceGame';
 import { wordChoiceGameEngine, type WordChoiceLevel } from '../engine';
 
 export function useWordChoiceGame() {

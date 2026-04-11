@@ -8,7 +8,7 @@
  *     — used by useGameController so core stays router-independent.
  */
 import { useCallback } from 'react';
-import { useGameMode } from '../../hooks/useGameMode';
+import { useGameMode } from '@/hooks/useGameMode';
 
 interface UseGameNavigationOptions {
   navigate?: (path: string) => void;

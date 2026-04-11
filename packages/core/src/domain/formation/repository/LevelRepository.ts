@@ -4,13 +4,13 @@
  * Uses static imports to support both Vite and Webpack (Next.js)
  */
 
-import type { Language, Difficulty } from '../../../types/game';
+import type { Language, Difficulty } from '@/types/game';
 import type { LevelLoadOptions } from '../model';
 
 // ── Static imports for Webpack compatibility ─────────────────────────────────
-import arEasy from '../../../data/ar/formation/easy.json';
-import arHard from '../../../data/ar/formation/hard.json';
-import enEasy from '../../../data/en/formation/easy.json';
+import arEasy from "@/data/levels/ar/formation/easy.json";
+import arHard from "@/data/levels/ar/formation/hard.json";
+import enEasy from "@/data/levels/en/formation/easy.json";
 
 type LevelFile = { levels: unknown[] };
 

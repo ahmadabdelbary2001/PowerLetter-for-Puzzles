@@ -25,7 +25,13 @@
       "@/hooks/*": ["../core/src/hooks/*"],
       "@/types/*": ["../core/src/types/*"],
       "@/i18n/*": ["../core/src/i18n/*"],
-      "@/wasm/*": ["../core/src/wasm/*"]
+      "@/wasm/*": ["../core/src/wasm/*"],
+      "@/atoms/*": ["./src/atoms/*"],
+      "@/molecules/*": ["./src/molecules/*"],
+      "@/organisms/*": ["./src/organisms/*"],
+      "@/templates/*": ["./src/templates/*"],
+      "@/screens/*": ["./src/screens/*"],
+      "@/pages/*": ["./src/pages/*"]
     },
     "types": ["node"],
     "noUnusedLocals": false,

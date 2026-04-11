@@ -3,7 +3,7 @@
  * TypeScript domain types for Image Choice game following FSD architecture.
  */
 
-import type { GameLevel, Language, GameCategory } from '../../../types/game';
+import type { GameLevel, Language, GameCategory } from '@/types/game';
 
 /** Image choice level extends GameLevel with word prompt and image options */
 export interface ImgChoiceLevel extends GameLevel {

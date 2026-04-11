@@ -4,7 +4,7 @@
  * Following FSD (Feature-Sliced Design) architecture
  */
 
-import type { GameLevel, Difficulty } from '../../../types/game';
+import type { GameLevel, Difficulty } from '@/types/game';
 
 /** A single cell in the crossword grid */
 export interface GridCell {

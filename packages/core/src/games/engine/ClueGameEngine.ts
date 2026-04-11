@@ -5,7 +5,7 @@
  * to clue games, such as letter generation.
  */
 import type { Language, Difficulty, GameLevel } from '@powerletter/core';
-import { generateLetters } from '../../lib/gameUtils';
+import { generateLetters } from '@/lib/gameUtils';
 import { BaseGameEngine } from './BaseGameEngine';
 
 export interface ClueLevel extends GameLevel {

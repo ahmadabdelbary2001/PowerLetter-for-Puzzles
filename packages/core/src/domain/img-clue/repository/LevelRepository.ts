@@ -4,12 +4,14 @@
  * Uses static imports to support both Vite and Webpack (Next.js) bundlers.
  */
 
-import type { Language, GameCategory } from '../../../types/game';
+import type { Language, GameCategory } from '@/types/game';
 import type { ImageLevel, LevelData, LevelModule } from '../model';
 import { ERROR_LEVEL_ID, ERROR_IMAGE_PATH } from '../model';
 
 // ── Static imports: Webpack requires fully-static import paths ───────────────
-import arAnimals from '../../../data/ar/img-clue/animals/data.json';
+import arAnimals from "@/data/levels/ar/img-clue/animals/data.json";
+import arFruits from "@/data/levels/ar/img-clue/fruits-and-vegetables/data.json";
+import arShapes from "@/data/levels/ar/img-clue/shapes/data.json";
 
 /** Cache for loaded levels */
 const levelCache = new Map<string, ImageLevel[]>();
@@ -18,6 +20,9 @@ const levelCache = new Map<string, ImageLevel[]>();
 const levelMap: Record<string, Record<string, LevelModule>> = {
   ar: {
     animals: arAnimals as LevelModule,
+    'fruits-and-vegetables': arFruits as LevelModule,
+    shapes: arShapes as LevelModule,
+    general: arAnimals as LevelModule, // fallback
   },
 };
 
@@ -37,16 +42,14 @@ export class LevelRepository {
       return levelCache.get(cacheKey)!;
     }
 
-    // Get level module
-    const langLevels = levelMap[language];
-    if (!langLevels) {
-      console.warn(`[LevelRepository] No levels for language: ${language}`);
-      return [];
-    }
+    // Get levels for the language
+    const langLevels = levelMap[language] || levelMap['ar'];
+    if (!langLevels) return [];
 
-    const module = langLevels[category];
+    // Resolve category with fallback
+    const module = langLevels[category] || langLevels['general'] || Object.values(langLevels)[0];
     if (!module) {
-      console.warn(`[LevelRepository] No levels for category: ${category}`);
+      console.warn(`[LevelRepository] No levels found for ${language}/${category}`);
       return [];
     }
 

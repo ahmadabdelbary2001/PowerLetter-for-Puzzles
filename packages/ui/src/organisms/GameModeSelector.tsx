@@ -5,15 +5,15 @@
  * It contains the complex, game-specific logic for skipping steps and selecting categories.
  */
 import React, { useState, useEffect } from 'react';
-import { Button } from '../atoms/Button';
+import { Button } from '@/atoms/Button';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
 import { useGameMode, useTranslation, CATEGORIES_BY_GAME } from '@powerletter/core';
-import { ModeSelector } from '../molecules/ModeSelector';
-import { CategorySelector } from '../molecules/CategorySelector';
-import { DifficultySelector } from '../molecules/DifficultySelector';
+import { ModeSelector } from '@/molecules/ModeSelector';
+import { CategorySelector } from '@/molecules/CategorySelector';
+import { DifficultySelector } from '@/molecules/DifficultySelector';
 import { useAppRouter, useAppParams } from '../contexts/RouterContext';
 import type { GameCategory, Difficulty } from '@powerletter/core';
-import { GameSelectionLayout } from '../templates/GameSelectionLayout';
+import { GameSelectionLayout } from '@/templates/GameSelectionLayout';
 
 const difficulties = [
     { id: 'easy' as const, labelKey: 'easy', color: 'bg-green-500' },

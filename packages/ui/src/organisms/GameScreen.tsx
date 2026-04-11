@@ -4,7 +4,7 @@
  * It manages loading and error states, and injects game state and handlers into the provided GameComponent.
  * This pattern centralizes repetitive logic, keeping individual game screens clean and focused on their unique UI.
  */
-import { Button } from '../atoms/Button';
+import { Button } from '@/atoms/Button';
 import { useTranslation } from '@powerletter/core';
 import { useAppRouter, useAppParams } from '../contexts/RouterContext';
 

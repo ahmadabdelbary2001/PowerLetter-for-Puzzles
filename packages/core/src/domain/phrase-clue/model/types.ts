@@ -3,7 +3,7 @@
  * TypeScript domain types for Phrase Clue game following FSD architecture.
  */
 
-import type { GameLevel, Language, GameCategory, Difficulty } from '../../../types/game';
+import type { GameLevel, Language, GameCategory, Difficulty } from '@/types/game';
 
 /** Phrase level extends GameLevel with clue and difficulty */
 export interface PhraseLevel extends GameLevel {

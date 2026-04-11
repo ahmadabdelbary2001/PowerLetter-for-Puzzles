@@ -4,7 +4,7 @@
  * This component represents a single cell in the crossword grid and handles its display state.
  */
 import React from 'react';
-import { cn } from '../lib/utils';
+import { cn } from "../lib/utils";
 
 interface GridCellProps {
   letter?: string;

@@ -4,7 +4,7 @@
  * Following FSD (Feature-Sliced Design) architecture
  */
 
-import type { GameLevel, Difficulty, Language } from '../../../types/game';
+import type { GameLevel, Difficulty, Language } from '@/types/game';
 
 /** Represents a single cell on the game board */
 export interface BoardCell {

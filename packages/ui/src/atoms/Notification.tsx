@@ -4,7 +4,7 @@
  * It receives a messageKey and interpolation options, and translates them.
  */
 import { useEffect, useState } from 'react';
-import { cn } from '../lib/utils';
+import { cn } from "../lib/utils";
 import { useNotification, type NotificationData } from '@powerletter/core';
 import { CheckCircle, XCircle, Info, AlertTriangle, X } from 'lucide-react';
 

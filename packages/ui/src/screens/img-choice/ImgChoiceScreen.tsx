@@ -7,10 +7,10 @@
 import React from "react";
 import { useImgChoiceGame } from "@powerletter/core";
 import { ArrowLeft, ArrowRight, Volume2, CheckCircle, XCircle } from "lucide-react";
-import { Button } from "../../atoms/Button";
+import { Button } from '@/atoms/Button';
 import { cn } from "../../lib/utils";
-import { MultipleChoiceLayout } from "../../templates/MultipleChoiceLayout";
-import { GameScreen } from "../../organisms/GameScreen";
+import { MultipleChoiceLayout } from '@/templates/MultipleChoiceLayout';
+import { GameScreen } from '@/organisms/GameScreen';
 import { useAppRouter, useAppParams } from "../../contexts/RouterContext";
 
 // 1. Define the pure UI component. It receives all props from the hook.

@@ -3,7 +3,7 @@
  * TypeScript domain types for Word Choice game following FSD architecture.
  */
 
-import type { GameLevel, Language, GameCategory } from '../../../types/game';
+import type { GameLevel, Language, GameCategory } from '@/types/game';
 
 /** Word choice level extends GameLevel with image and word options */
 export interface WordChoiceLevel extends GameLevel {

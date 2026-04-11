@@ -6,15 +6,15 @@
  */
 import type { Language, Difficulty, GameCategory } from '@powerletter/core';
 // Re-export types from domain for backward compatibility
-export type { GridCell, FormationLevel } from '../../domain/formation';
-import type { GridCell, FormationLevel } from '../../domain/formation';
+export type { GridCell, FormationLevel } from '@/domain/formation';
+import type { GridCell, FormationLevel } from '@/domain/formation';
 
-import { BaseGameEngine } from '../../games/engine/BaseGameEngine';
-import type { LevelModule } from '../../games/engine/BaseGameEngine';
+import { BaseGameEngine } from '@/games/engine/BaseGameEngine';
+import type { LevelModule } from '@/games/engine/BaseGameEngine';
 
 // Import domain services
-import { levelRepository } from '../../domain/formation/repository';
-import { wordService, validationService } from '../../domain/formation/service';
+import { levelRepository } from '@/domain/formation/repository';
+import { wordService, validationService } from '@/domain/formation/service';
 
 /**
  * Implements the game engine for the Word Formation (Crossword) Challenge.
