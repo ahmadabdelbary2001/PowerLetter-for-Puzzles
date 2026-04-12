@@ -53,9 +53,21 @@ updateJson('apps/desktop-mobile/src-tauri/tauri.conf.json');
 updateJson('apps/web/package.json');
 updateJson('packages/core/package.json');
 updateJson('packages/ui/package.json');
+updateJson('packages/config/package.json');
+updateJson('packages/api-bindings/package.json');
 
 // ── TOML files ───────────────────────────────────────────────────────────────
 updateToml('apps/desktop-mobile/src-tauri/Cargo.toml');
 updateToml('crates/power-engine/Cargo.toml');
+updateToml('crates/power-core/Cargo.toml');
+updateToml('crates/power-math/Cargo.toml');
+updateToml('crates/power-wasm/Cargo.toml');
+updateToml('crates/power-game-letterflow/Cargo.toml');
+updateToml('crates/power-game-formation/Cargo.toml');
+updateToml('crates/power-game-outsidestory/Cargo.toml');
+updateToml('crates/power-game-imageclue/Cargo.toml');
+updateToml('crates/power-game-phraseclue/Cargo.toml');
+updateToml('crates/power-game-imgchoice/Cargo.toml');
+updateToml('crates/power-game-wordchoice/Cargo.toml');
 
 console.log('\nDone.');

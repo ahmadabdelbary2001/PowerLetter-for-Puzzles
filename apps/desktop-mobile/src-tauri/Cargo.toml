@@ -1,13 +1,13 @@
 [package]
 name = "powerletter-app"
-version = "1.0.0"
+version = "1.0.1"
 description = "PowerLetter for Puzzles - Desktop & Mobile App"
 authors = ["Ahmad Abdelbary"]
 edition = "2021"
 
 [lib]
 name = "powerletter_app_lib"
-crate-type = ["staticlib", "rlib"]
+crate-type = ["staticlib", "cdylib", "rlib"]
 
 [[bin]]
 name = "powerletter-app"

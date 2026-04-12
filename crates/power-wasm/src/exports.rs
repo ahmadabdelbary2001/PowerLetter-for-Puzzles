@@ -2,7 +2,7 @@ use wasm_bindgen::prelude::*;
 use power_game_letterflow::{
     generate_board, validate_path, validate_level, check_solution,
 };
-use power_game_img_clue::{
+use power_game_imageclue::{
     img_clue_parse_levels, img_clue_validate_level, img_clue_solution_length,
     img_clue_error_level, img_clue_get_valid_levels, img_clue_get_level_by_id,
 };

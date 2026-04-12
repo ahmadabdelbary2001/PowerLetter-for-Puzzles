@@ -1,6 +1,6 @@
 [package]
-name = "power-game-img-choice"
-version = "0.1.0"
+name = "power-game-imgchoice"
+version = "1.0.1"
 edition = "2021"
 authors = ["PowerLetter Team"]
 description = "Image Choice game logic for PowerLetter"

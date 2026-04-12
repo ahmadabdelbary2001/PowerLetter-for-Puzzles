@@ -1,3 +1,2 @@
-// @powerletter/api-bindings - API adapters for Gemini, OpenAI, Pexels, Open Trivia DB
-
-export {}; // Phase 7 will populate this with actual API adapters
+// API Bindings Entry Point
+export const API_VERSION = "1.0.0";

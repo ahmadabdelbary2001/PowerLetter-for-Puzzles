@@ -4,11 +4,13 @@ members = [
   "crates/power-engine",
   "crates/power-game-letterflow",
   "crates/power-game-formation",
-  "crates/power-game-outsider",
-  "crates/power-game-img-clue",
-  "crates/power-game-phrase-clue",
-  "crates/power-game-img-choice",
-  "crates/power-game-word-choice",
+  "crates/power-game-outsidestory",
+  "crates/power-game-imageclue",
+  "crates/power-game-phraseclue",
+  "crates/power-game-imgchoice",
+  "crates/power-game-wordchoice",
   "crates/power-wasm",
+  "crates/power-core",
+  "crates/power-math",
 ]
 resolver = "2"

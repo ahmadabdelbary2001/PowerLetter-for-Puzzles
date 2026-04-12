@@ -1,9 +1,9 @@
 [package]
-name = "power-game-phrase-clue"
-version = "0.1.0"
+name = "power-game-wordchoice"
+version = "1.0.1"
 edition = "2021"
 authors = ["PowerLetter Team"]
-description = "Phrase Clue game logic for PowerLetter"
+description = "Word Choice game logic for PowerLetter"
 license = "MIT"
 
 [dependencies]

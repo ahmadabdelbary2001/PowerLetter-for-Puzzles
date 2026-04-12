@@ -1,6 +1,6 @@
 {
   "name": "@powerletter/ui",
-  "version": "1.0.0-beta",
+  "version": "1.0.1",
   "private": true,
   "type": "module",
   "main": "./src/index.ts",

@@ -1,16 +1,11 @@
 {
   "name": "@powerletter/config",
-  "version": "0.1.0",
+  "version": "1.0.1",
   "private": true,
-  "type": "module",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "description": "Shared configurations for ESLint, TypeScript, and Tailwind",
   "exports": {
-    ".": "./src/index.ts",
-    "./*": "./src/*"
-  },
-  "scripts": {},
-  "devDependencies": {
-    "typescript": "~5.8.3"
+    "./eslint": "./src/eslint/index.js",
+    "./typescript": "./src/typescript/base.json",
+    "./tailwind": "./src/tailwind/preset.ts"
   }
 }
