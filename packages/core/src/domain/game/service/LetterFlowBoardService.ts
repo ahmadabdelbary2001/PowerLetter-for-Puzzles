@@ -5,7 +5,7 @@
 
 import type { BoardCell, PathPoint } from '../model/LetterFlow';
 import { COLOR_PALETTE_COUNT, DEFAULT_SATURATION, DEFAULT_LIGHTNESS } from '../model/LetterFlow';
-import { shuffleArray } from '@core/lib/gameUtils';
+import { shuffleArray } from '@core/utils/gameUtils';
 
 let wasmEngine: {
   letter_flow_generate_board?: (letters: string) => BoardCell[];

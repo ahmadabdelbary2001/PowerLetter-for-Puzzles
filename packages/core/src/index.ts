@@ -1,8 +1,8 @@
 "use client";
 
 export * from './types/game';
-export * from './stores/useGameSettingsStore';
-export * from './stores/useTeamStore';
+export * from './store/slices/gameSettingsStore';
+export * from './store/slices/teamStore';
 export * from './i18n/resources';
 export { setupI18n, default as i18n } from './i18n/config';
 
@@ -15,25 +15,25 @@ export * from './hooks/useNotification';
 export * from './config/gameCategories';
 
 // Engine Factory & Discovery
-export { getGameEngine, registerGameEngine } from './games/engine/GameEngineFactory';
-export { bootstrapEngines } from './games/engine/bootstrap';
+export { getGameEngine, registerGameEngine } from './engine/GameEngineFactory';
+export { bootstrapEngines } from './engine/bootstrap';
 
 // Auto-bootstrap standard engines
-import { bootstrapEngines as initEngines } from './games/engine/bootstrap';
+import { bootstrapEngines as initEngines } from './engine/bootstrap';
 initEngines();
 
 // Feature Hooks
-export { useFormationGame } from './features/formation-game/hooks/useFormationGame';
-export { useImgChoiceGame } from './features/img-choice-game/hooks/useImgChoiceGame';
-export { useImageClueGame } from './features/img-clue-game/hooks/useImageClueGame';
-export { useLetterFlowGame } from './features/letter-flow-game/hooks/useLetterFlowGame';
-export { usePassiveTouchFix } from './features/letter-flow-game/hooks/usePassiveTouchFix';
-export { useOutsideStory } from './features/outside-story-game/hooks/useOutsideStory';
-export { usePhraseClueGame } from './features/phrase-clue-game/hooks/usePhraseClueGame';
-export { useWordChoiceGame } from './features/word-choice-game/hooks/useWordChoiceGame';
-export type { LetterFlowLevel, WordPath, BoardCell } from './features/letter-flow-game/engine';
-export type { GridCell, FormationLevel } from './features/formation-game/engine';
-export { colorForString } from './features/letter-flow-game/utils/colors';
+export { useFormationGame } from './hooks/game/useFormationGame';
+export { useImgChoiceGame } from './hooks/game/useImgChoiceGame';
+export { useImageClueGame } from './hooks/game/useImageClueGame';
+export { useLetterFlowGame } from './hooks/game/useLetterFlowGame';
+export { usePassiveTouchFix } from './hooks/game/usePassiveTouchFix';
+export { useOutsideStory } from './hooks/game/useOutsideStory';
+export { usePhraseClueGame } from './hooks/game/usePhraseClueGame';
+export { useWordChoiceGame } from './hooks/game/useWordChoiceGame';
+export type { LetterFlowLevel, WordPath, BoardCell } from './engine/letter-flow-gameEngine';
+export type { GridCell, FormationLevel } from './engine/formation-gameEngine';
+export { colorForString } from './utils/colors';
 
 
 // Note: UI Components and Contexts have been moved to @powerletter/ui

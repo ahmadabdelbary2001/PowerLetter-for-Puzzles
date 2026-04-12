@@ -10,7 +10,7 @@ import { useGame } from '../useGame';
 import { useGameMode } from '../useGameMode';
 import { useGameNavigation } from './useGameNavigation';
 import { useGameContent } from './useGameContent';
-import type { IGameEngine } from '@core/games/engine/types';
+import type { IGameEngine } from '../../engine/types';
 import type { GameLevel, Difficulty } from '@powerletter/core';
 import { useRef, useCallback } from 'react';
 import { type InstructionKey } from '../useInstructions';
