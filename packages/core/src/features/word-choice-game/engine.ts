@@ -7,7 +7,10 @@ import { ChoiceGameEngine, type ChoiceLevel } from '@/games/engine/ChoiceGameEng
 import type { Language, GameCategory } from '@powerletter/core';
 import type { LevelModule } from '@/games/engine/BaseGameEngine';
 // Import domain services
-import { levelRepository, validationService } from '@/domain/word-choice';
+import { 
+  wordChoiceRepository as levelRepository, 
+  wordChoiceValidationService as validationService 
+} from '@/domain/game';
 
 /**
  * @interface WordChoiceLevel

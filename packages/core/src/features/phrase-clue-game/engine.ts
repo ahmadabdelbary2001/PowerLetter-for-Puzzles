@@ -7,7 +7,10 @@ import type { Language, GameCategory, Difficulty } from '@powerletter/core';
 import { ClueGameEngine, type ClueLevel } from '@/games/engine/ClueGameEngine';
 import type { LevelModule } from '@/games/engine/BaseGameEngine';
 // Import domain services
-import { levelRepository, validationService } from '@/domain/phrase-clue';
+import { 
+  phraseClueRepository as levelRepository, 
+  phraseClueValidationService as validationService 
+} from '@/domain/game';
 
 /**
  * @interface PhraseLevel

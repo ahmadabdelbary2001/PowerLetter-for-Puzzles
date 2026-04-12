@@ -10,16 +10,16 @@ import type { Team } from '@powerletter/core';
 
 // Import domain services
 import {
-  roundService,
-  validationService,
+  outsideStoryRoundService as roundService,
+  outsideStoryValidationService as validationService,
   type OutsiderLevel,
   type GameState,
   type RoundInfo,
-} from '@/domain/outside-story';
+} from '@/domain/game';
 
 // Re-export types for backward compatibility
-export type { GameState, RoundInfo } from '@/domain/outside-story';
-export type { OutsiderLevel as OutsideStoryLevel } from '@/domain/outside-story';
+export type { GameState, RoundInfo } from '@/domain/game';
+export type { OutsiderLevel as OutsideStoryLevel } from '@/domain/game';
 export type QuestionPair = { asker: Team; askee: Team; };
 
 export function useOutsideStory() {

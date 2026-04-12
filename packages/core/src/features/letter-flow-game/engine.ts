@@ -6,16 +6,18 @@
  */
 import type { Language, Difficulty, GameCategory } from '@/types/game';
 // Re-export types from domain for backward compatibility
-export type { BoardCell, LetterFlowLevel, WordPath } from '@/domain/letter-flow';
-import type { BoardCell, LetterFlowLevel, PathPoint } from '@/domain/letter-flow';
+export type { BoardCell, LetterFlowLevel, WordPath } from '@/domain/game';
+import type { BoardCell, LetterFlowLevel, PathPoint } from '@/domain/game';
 
 import { BaseGameEngine } from '@/games/engine/BaseGameEngine';
 import type { LevelModule } from '@/games/engine/BaseGameEngine';
 
-// Import domain services
-import { levelRepository } from '@/domain/letter-flow/repository';
-import { boardService, validationService } from '@/domain/letter-flow/service';
-import { initWasmEngine } from '@/domain/letter-flow/service/BoardService';
+import { 
+  letterFlowRepository as levelRepository,
+  letterFlowBoardService as boardService, 
+  letterFlowValidationService as validationService,
+  initWasmEngine
+} from '@/domain/game';
 
 /**
  * WASM Initialization

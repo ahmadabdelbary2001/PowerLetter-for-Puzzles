@@ -5,14 +5,14 @@
  */
 import type { Language, GameCategory } from '@powerletter/core';
 // Re-export types from domain for backward compatibility
-export type { OutsiderLevel as OutsideStoryLevel } from '@/domain/outside-story';
+export type { OutsiderLevel as OutsideStoryLevel } from '@/domain/game';
 
 import { BaseGameEngine } from '@/games/engine/BaseGameEngine';
 import type { LevelModule } from '@/games/engine/BaseGameEngine';
 
 // Import domain services
-import { levelRepository, ERROR_LEVEL } from '@/domain/outside-story';
-import type { OutsiderLevel } from '@/domain/outside-story';
+import { outsideStoryRepository as levelRepository, OUTSIDE_STORY_ERROR_LEVEL as ERROR_LEVEL } from '@/domain/game';
+import type { OutsiderLevel } from '@/domain/game';
 
 /**
  * Implements the game engine for the Outside the Story game.

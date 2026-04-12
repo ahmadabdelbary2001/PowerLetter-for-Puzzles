@@ -1,0 +1,12 @@
+{
+  "levels": [
+    { "id": "geography-ar-medium-1", "clue": "أعلى جبل من سطح البحر", "solution": "إيفرست" },
+    { "id": "geography-ar-medium-2", "clue": "عاصمة اليابان", "solution": "طوكيو" },
+    { "id": "geography-ar-medium-3", "clue": "البحر بين أفريقيا وشبه الجزيرة العربية", "solution": "البحر الأحمر" },
+    { "id": "geography-ar-medium-4", "clue": "أكبر صحراء حارة في العالم", "solution": "الصحراء الكبرى" },
+    { "id": "geography-ar-medium-5", "clue": "المحيط الذي يفصل بين أوروبا وأمريكا", "solution": "الأطلسي" },
+    { "id": "geography-ar-medium-6", "clue": "سلسلة جبال شهيرة في أوروبا", "solution": "الألب" },
+    { "id": "geography-ar-medium-7", "clue": "الخط الوهمي الذي يقسم الأرض إلى شرق وغرب", "solution": "جرينتش" },
+    { "id": "geography-ar-medium-8", "clue": "أكبر دولة في العالم من حيث المساحة", "solution": "روسيا" }
+  ]
+}

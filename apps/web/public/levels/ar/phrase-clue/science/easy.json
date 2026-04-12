@@ -1,0 +1,10 @@
+{
+    "levels": [
+        { "id": "science-ar-easy-1", "clue": "ما هو الاسم الشائع للمركب الكيميائي H2O؟", "solution": "ماء" },
+        { "id": "science-ar-easy-2", "clue": "الغاز الذي يتنفسه الإنسان للبقاء حياً", "solution": "أكسجين" },
+        { "id": "science-ar-easy-3", "clue": "الكوكب الذي نعيش عليه", "solution": "الأرض" },
+        { "id": "science-ar-easy-4", "clue": "النجم في مركز نظامنا الشمسي", "solution": "الشمس" },
+        { "id": "science-ar-easy-5", "clue": "مصدر الضوء والحرارة في نظامنا الشمسي", "solution": "الشمس" },
+        { "id": "science-ar-easy-6", "clue": "أداة لتكبير الأشياء الصغيرة جداً", "solution": "مجهر" }
+  ]
+}
