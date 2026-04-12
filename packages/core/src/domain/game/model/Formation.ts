@@ -5,7 +5,6 @@
 
 import type { GameLevel, Difficulty } from '@core/types/game';
 import { ERROR_LEVEL_ID } from './shared';
-import type { LevelLoadOptions, LevelModule } from './shared';
 
 /** A single cell in the crossword grid */
 export interface GridCell {

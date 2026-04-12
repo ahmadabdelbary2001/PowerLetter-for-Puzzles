@@ -15,7 +15,6 @@ import {
   type GameState,
   type RoundInfo,
 } from '@core/domain/game';
-import { useTranslation } from '@powerletter/core';
 
 // Re-export types for backward compatibility
 export type { GameState, RoundInfo, OutsiderLevel as OutsideStoryLevel } from '@core/domain/game';

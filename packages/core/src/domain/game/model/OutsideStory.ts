@@ -5,7 +5,6 @@
 
 import type { Language, GameCategory, GameLevel } from '@core/types/game';
 import { ERROR_LEVEL_ID } from './shared';
-import type { LevelLoadOptions, LevelModule } from './shared';
 
 /** Represents a level/category in the Outside the Story game */
 export interface OutsiderLevel extends GameLevel {

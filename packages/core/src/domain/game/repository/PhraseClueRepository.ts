@@ -54,11 +54,11 @@ export class PhraseClueRepository {
     }
   }
 
-  getCategories(language: Language): string[] {
+  getCategories(_language: Language): string[] {
     return ['animals', 'geography', 'science', 'general'];
   }
 
-  getDifficulties(language: Language, category: GameCategory): string[] {
+  getDifficulties(_language: Language, _category: GameCategory): string[] {
     return ['easy', 'medium', 'hard'];
   }
 

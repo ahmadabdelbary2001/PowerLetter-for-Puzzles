@@ -3,9 +3,7 @@
  * Core domain types and constants for Image Choice game
  */
 
-import type { GameLevel, Language, GameCategory } from '@core/types/game';
-import { ERROR_LEVEL_ID } from './shared';
-import type { LevelLoadOptions } from './shared';
+import type { GameLevel } from '@core/types/game';
 
 /** Image choice level extends GameLevel with word prompt and image options */
 export interface ImgChoiceLevel extends GameLevel {

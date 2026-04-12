@@ -3,9 +3,8 @@
  * Core domain types and constants for Letter Flow game
  */
 
-import type { GameLevel, Difficulty, Language } from '@core/types/game';
+import type { GameLevel, Difficulty } from '@core/types/game';
 import { ERROR_LEVEL_ID } from './shared';
-import type { LevelLoadOptions, LevelModule } from './shared';
 
 /** Represents a single cell on the game board */
 export interface BoardCell {

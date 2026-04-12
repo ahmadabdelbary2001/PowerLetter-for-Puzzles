@@ -3,9 +3,7 @@
  * Core domain types and constants for Phrase Clue game
  */
 
-import type { GameLevel, Language, GameCategory, Difficulty } from '@core/types/game';
-import { ERROR_LEVEL_ID } from './shared';
-import type { LevelLoadOptions } from './shared';
+import type { GameLevel, Difficulty } from '@core/types/game';
 
 /** Phrase level extends GameLevel with clue and difficulty */
 export interface PhraseLevel extends GameLevel {

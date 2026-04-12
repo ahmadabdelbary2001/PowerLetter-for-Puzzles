@@ -3,9 +3,7 @@
  * Core domain types and constants for Word Choice game
  */
 
-import type { GameLevel, Language, GameCategory } from '@core/types/game';
-import { ERROR_LEVEL_ID } from './shared';
-import type { LevelLoadOptions } from './shared';
+import type { GameLevel } from '@core/types/game';
 
 /** Word choice level extends GameLevel with image and word options */
 export interface WordChoiceLevel extends GameLevel {

@@ -6,7 +6,6 @@
  */
 import { Link } from '@ui/atoms/Link';
 import { Logo } from '@ui/atoms/Logo';
-import { Github, Twitter, Mail } from "lucide-react";
 import { useTranslation } from "@powerletter/core";
 import { Badge } from '@ui/atoms/Badge';
 

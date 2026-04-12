@@ -52,7 +52,7 @@ export class ImgClueRepository {
     }
   }
 
-  getCategories(language: Language): string[] {
+  getCategories(_language: Language): string[] {
     return ['animals', 'fruits-and-vegetables', 'shapes', 'general'];
   }
 
