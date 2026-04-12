@@ -3,7 +3,7 @@
  * Core domain types and constants for Outside the Story game
  */
 
-import type { Language, GameCategory, GameLevel } from '@/types/game';
+import type { Language, GameCategory, GameLevel } from '@core/types/game';
 import { ERROR_LEVEL_ID } from './shared';
 import type { LevelLoadOptions, LevelModule } from './shared';
 

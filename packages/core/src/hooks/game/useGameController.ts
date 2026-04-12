@@ -6,14 +6,14 @@
  * It acts as a controller, handling all universal game logic and data fetching,
  * including levels, navigation, global settings, assets, and UI content.
  */
-import { useGame } from '@/hooks/useGame';
-import { useGameMode } from '@/hooks/useGameMode';
-import { useGameNavigation } from '@/hooks/game/useGameNavigation';
-import { useGameContent } from '@/hooks/game/useGameContent';
-import type { IGameEngine } from '@/games/engine/types';
+import { useGame } from '../useGame';
+import { useGameMode } from '../useGameMode';
+import { useGameNavigation } from './useGameNavigation';
+import { useGameContent } from './useGameContent';
+import type { IGameEngine } from '@core/games/engine/types';
 import type { GameLevel, Difficulty } from '@powerletter/core';
 import { useRef, useCallback } from 'react';
-import { type InstructionKey } from '@/hooks/useInstructions';
+import { type InstructionKey } from '../useInstructions';
 
 interface GameControllerOptions<T extends GameLevel> {
   engine: IGameEngine<T>;
@@ -44,10 +44,10 @@ export function useGameController<T extends GameLevel & { solution: string; diff
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const getAssetPath = (path: string) => {
     if (!path) return '';
-    const baseUrl = (typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL
-      ? import.meta.env.BASE_URL
-      : (process.env.NEXT_PUBLIC_BASE_URL ?? '/')
-    ).replace(/\/$/, '');
+    // Use indexing to avoid compiler errors in different environments (Vite vs Webpack)
+    const metaEnv = (import.meta as any).env;
+    const baseUrl = (metaEnv?.BASE_URL || process.env.NEXT_PUBLIC_BASE_URL || '/')
+      .replace(/\/$/, '');
     const cleanPath = path.replace(/^\//, '');
     // URL encode the path to handle Arabic/non-ASCII filenames correctly on Tauri
     // We split by '/' to encode each segment, preserving the slashes

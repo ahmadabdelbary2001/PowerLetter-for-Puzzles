@@ -7,13 +7,13 @@
 import React from 'react';
 import { useLetterFlowGame, usePassiveTouchFix } from '@powerletter/core';
 import type { LetterFlowLevel } from '@powerletter/core';
-import { LetterFlowBoard } from '@/molecules/LetterFlowBoard';
-import { FoundWords } from '@/molecules/FoundWords';
-import { GameControls } from '@/organisms/GameControls';
-import { GameProgress } from '@/molecules/GameProgress';
-import { FlowGameLayout } from '@/templates/FlowGameLayout';
-import { GameScreen } from '@/organisms/GameScreen';
-import { useAppRouter, useAppParams } from '../../contexts/RouterContext';
+import { LetterFlowBoard } from '@ui/molecules/LetterFlowBoard';
+import { FoundWords } from '@ui/molecules/FoundWords';
+import { GameControls } from '@ui/organisms/GameControls';
+import { GameProgress } from '@ui/molecules/GameProgress';
+import { FlowGameLayout } from '@ui/templates/FlowGameLayout';
+import { GameScreen } from '@ui/organisms/GameScreen';
+import { useAppRouter, useAppParams } from '@ui/contexts/RouterContext';
 
 // 1. Define the pure UI component.
 const LetterFlowGame: React.FC<ReturnType<typeof useLetterFlowGame>> = ({

@@ -4,7 +4,7 @@
  * This component displays letters in a circular pattern with a shuffle button in the center.
  */
 import React, { useState, useEffect } from 'react';
-import { Button } from '@/atoms/Button';
+import { Button } from '../atoms/Button';
 import { cn } from "../lib/utils";
 import { RefreshCw } from 'lucide-react';
 

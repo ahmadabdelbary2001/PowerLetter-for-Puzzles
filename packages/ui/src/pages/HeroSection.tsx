@@ -6,11 +6,11 @@
  * Shared version for all monorepo apps.
  */
 // import React from 'react';
-import { Button } from '@/atoms/Button';
-import { Badge } from '@/atoms/Badge';
+import { Button } from '@ui/atoms/Button';
+import { Badge } from '@ui/atoms/Badge';
 import { useTranslation } from "@powerletter/core";
 import { Sparkles, Trophy, Lightbulb, Brain, Languages, Users, Gamepad2, ToyBrick } from "lucide-react";
-import { useAppRouter } from "../contexts/RouterContext";
+import { useAppRouter } from "@ui/contexts/RouterContext";
 
 interface HeroFeature {
   icon: string;

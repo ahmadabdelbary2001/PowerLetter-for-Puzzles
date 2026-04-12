@@ -3,14 +3,14 @@
  * @description The game engine for the Word Choice game.
  * It extends the shared ChoiceGameEngine and delegates to domain services.
  */
-import { ChoiceGameEngine, type ChoiceLevel } from '@/games/engine/ChoiceGameEngine';
+import { ChoiceGameEngine, type ChoiceLevel } from '@core/games/engine/ChoiceGameEngine';
 import type { Language, GameCategory } from '@powerletter/core';
-import type { LevelModule } from '@/games/engine/BaseGameEngine';
+import type { LevelModule } from '@core/games/engine/BaseGameEngine';
 // Import domain services
 import { 
   wordChoiceRepository as levelRepository, 
   wordChoiceValidationService as validationService 
-} from '@/domain/game';
+} from '@core/domain/game';
 
 /**
  * @interface WordChoiceLevel
@@ -48,7 +48,7 @@ class WordChoiceGameEngine extends ChoiceGameEngine<WordChoiceLevel> {
   // --- Delegate to domain validation service ---
   protected validateLevel(levelData: unknown): WordChoiceLevel | null {
     if (validationService.isValidLevel(levelData)) {
-      return levelData;
+      return levelData as WordChoiceLevel;
     }
     return null;
   }

@@ -3,7 +3,7 @@
  * Repository for loading Letter Flow levels with Fetch strategy.
  */
 
-import type { Language, Difficulty, GameCategory } from '@/types/game';
+import type { Language, Difficulty, GameCategory } from '@core/types/game';
 import type { LevelModule } from '../model/shared';
 
 export interface LoadOptions {

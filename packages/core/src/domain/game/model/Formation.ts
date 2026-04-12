@@ -3,7 +3,7 @@
  * Core domain types and constants for Formation (Word Crossword) game
  */
 
-import type { GameLevel, Difficulty } from '@/types/game';
+import type { GameLevel, Difficulty } from '@core/types/game';
 import { ERROR_LEVEL_ID } from './shared';
 import type { LevelLoadOptions, LevelModule } from './shared';
 

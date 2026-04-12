@@ -3,13 +3,13 @@ import { Puzzle, Search, Image as ImageIcon, CheckSquare, SpellCheck, Share2, Us
 import { type GameCategory, GAME_METADATA } from '@powerletter/core';
 
 // --- Lazy-loaded Screen Components (Moved from features to screens) ---
-const PhraseClueGameScreen = React.lazy(() => import('@/screens/phrase-clue/PhraseClueGameScreen').then(m => ({ default: m.PhraseClueGameScreen })));
-const ImgClueGameScreen = React.lazy(() => import('@/screens/img-clue/ImgClueGameScreen').then(m => ({ default: m.ImgClueGameScreen })));
-const WordChoiceScreen = React.lazy(() => import('@/screens/word-choice/WordChoiceScreen').then(m => ({ default: m.WordChoiceScreen })));
-const FormationGameScreen = React.lazy(() => import('@/screens/formation-game/FormationGameScreen').then(m => ({ default: m.FormationGameScreen })));
-const LetterFlowGameScreen = React.lazy(() => import('@/screens/letter-flow/LetterFlowGameScreen').then(m => ({ default: m.LetterFlowGameScreen })));
-const ImgChoiceScreen = React.lazy(() => import('@/screens/img-choice/ImgChoiceScreen').then(m => ({ default: m.ImgChoiceScreen })));
-const OutsideStoryScreen = React.lazy(() => import('@/screens/outside-story/OutsideStoryScreen').then(m => ({ default: m.OutsideStoryScreen })));
+const PhraseClueGameScreen = React.lazy(() => import('../screens/phrase-clue/PhraseClueGameScreen').then(m => ({ default: m.PhraseClueGameScreen })));
+const ImgClueGameScreen = React.lazy(() => import('../screens/img-clue/ImgClueGameScreen').then(m => ({ default: m.ImgClueGameScreen })));
+const WordChoiceScreen = React.lazy(() => import('../screens/word-choice/WordChoiceScreen').then(m => ({ default: m.WordChoiceScreen })));
+const FormationGameScreen = React.lazy(() => import('../screens/formation-game/FormationGameScreen').then(m => ({ default: m.FormationGameScreen })));
+const LetterFlowGameScreen = React.lazy(() => import('../screens/letter-flow/LetterFlowGameScreen').then(m => ({ default: m.LetterFlowGameScreen })));
+const ImgChoiceScreen = React.lazy(() => import('../screens/img-choice/ImgChoiceScreen').then(m => ({ default: m.ImgChoiceScreen })));
+const OutsideStoryScreen = React.lazy(() => import('../screens/outside-story/OutsideStoryScreen').then(m => ({ default: m.OutsideStoryScreen })));
 
 type TranslationKeys = string;
 type SupportedSetting = 'teams' | 'difficulty' | 'category';

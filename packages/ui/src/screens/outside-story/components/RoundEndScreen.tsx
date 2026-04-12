@@ -1,7 +1,7 @@
 // src/screens/outside-story/components/RoundEndScreen.tsx
 import React from 'react';
-import { Button } from '@/atoms/Button';
-import { useAppRouter } from '../../../contexts/RouterContext';
+import { Button } from '@ui/atoms/Button';
+import { useAppRouter } from '@ui/contexts/RouterContext';
 import type { useOutsideStory } from '@powerletter/core';
 
 type Props = { game: ReturnType<typeof useOutsideStory> };

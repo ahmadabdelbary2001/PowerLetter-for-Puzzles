@@ -3,7 +3,7 @@
  * Repository for loading Image Clue levels with Fetch strategy.
  */
 
-import type { Language, GameCategory } from '@/types/game';
+import type { Language, GameCategory } from '@core/types/game';
 import type { ImageLevel, ImgClueLevelData, ImgClueLevelModule } from '../model/ImgClue';
 import { ERROR_LEVEL_ID } from '../model/shared';
 import { IMG_CLUE_ERROR_IMAGE } from '../model/ImgClue';

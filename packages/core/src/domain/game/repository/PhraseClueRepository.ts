@@ -3,7 +3,7 @@
  * Repository for loading Phrase Clue levels with Fetch strategy.
  */
 
-import type { Language, GameCategory, Difficulty } from '@/types/game';
+import type { Language, GameCategory, Difficulty } from '@core/types/game';
 import type { PhraseLevel, PhraseLevelData, PhraseLevelModule } from '../model/PhraseClue';
 import { PHRASE_CLUE_DEFAULT_DIFFICULTY } from '../model/PhraseClue';
 import { ERROR_LEVEL_ID } from '../model/shared';

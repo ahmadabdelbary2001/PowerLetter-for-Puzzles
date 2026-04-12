@@ -1,6 +1,6 @@
 // src/screens/outside-story/components/RoleRevealPlayerScreen.tsx
 import React from 'react';
-import { Button } from '@/atoms/Button';
+import { Button } from '@ui/atoms/Button';
 import type { useOutsideStory } from '@powerletter/core';
 
 type Props = { game: ReturnType<typeof useOutsideStory> };

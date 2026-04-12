@@ -4,10 +4,11 @@
  * Displays company information, quick links, contact details, and copyright information
  * Includes social media links and support status indicator
  */
-import { Link } from '@/atoms/Link';
-import { Logo } from '@/atoms/Logo';
+import { Link } from '@ui/atoms/Link';
+import { Logo } from '@ui/atoms/Logo';
+import { Github, Twitter, Mail } from "lucide-react";
 import { useTranslation } from "@powerletter/core";
-import { Badge } from '@/atoms/Badge';
+import { Badge } from '@ui/atoms/Badge';
 
 export function Footer() {
   const { t } = useTranslation();

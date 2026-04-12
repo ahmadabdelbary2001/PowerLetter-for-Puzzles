@@ -16,27 +16,15 @@ export default defineConfig({
   clearScreen: false,
   resolve: {
     alias: [
+      // Package Aliases
+      { find: "@core", replacement: path.resolve(__dirname, "../../packages/core/src") },
+      { find: "@ui", replacement: path.resolve(__dirname, "../../packages/ui/src") },
       { find: "@powerletter/core", replacement: path.resolve(__dirname, "../../packages/core/src/index.ts") },
       { find: "@powerletter/ui", replacement: path.resolve(__dirname, "../../packages/ui/src/index.ts") },
       { find: "@powerletter/api-bindings", replacement: path.resolve(__dirname, "../../packages/api-bindings/src/index.ts") },
-      
-      // Resolve @/ within core package to core's src
-      { find: "@/domain", replacement: path.resolve(__dirname, "../../packages/core/src/domain") },
-      { find: "@/data", replacement: path.resolve(__dirname, "../../data") },
-      { find: "@/features", replacement: path.resolve(__dirname, "../../packages/core/src/features") },
-      { find: "@/games", replacement: path.resolve(__dirname, "../../packages/core/src/games") },
-      { find: "@/lib", replacement: path.resolve(__dirname, "../../packages/core/src/lib") },
-      { find: "@/hooks", replacement: path.resolve(__dirname, "../../packages/core/src/hooks") },
-      { find: "@/types", replacement: path.resolve(__dirname, "../../packages/core/src/types") },
-      { find: "@/i18n", replacement: path.resolve(__dirname, "../../packages/core/src/i18n") },
-      { find: "@/wasm", replacement: path.resolve(__dirname, "../../packages/core/src/wasm") },
-      { find: "@/atoms", replacement: path.resolve(__dirname, "../../packages/ui/src/atoms") },
-      { find: "@/molecules", replacement: path.resolve(__dirname, "../../packages/ui/src/molecules") },
-      { find: "@/organisms", replacement: path.resolve(__dirname, "../../packages/ui/src/organisms") },
-      { find: "@/templates", replacement: path.resolve(__dirname, "../../packages/ui/src/templates") },
-      { find: "@/screens", replacement: path.resolve(__dirname, "../../packages/ui/src/screens") },
-      { find: "@/pages", replacement: path.resolve(__dirname, "../../packages/ui/src/pages") },
-      // Must come last to prevent shadowing more specific aliases!
+      { find: "@data", replacement: path.resolve(__dirname, "../../data") },
+
+      // Local App Alias
       { find: "@", replacement: path.resolve(__dirname, "./src") }
     ],
   },

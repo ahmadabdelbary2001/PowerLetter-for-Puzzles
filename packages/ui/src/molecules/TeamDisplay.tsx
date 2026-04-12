@@ -4,7 +4,7 @@
  * It shows team names, scores, and remaining hints. The current team is highlighted to indicate
  * whose turn it is. The component is flexible and can show or hide hints and scores based on props.
  */
-import { Badge, cn } from "../index";
+import { Badge, cn } from "@ui/index";
 import { Lightbulb } from "lucide-react";
 import { useTranslation } from "@powerletter/core";
 import type { Team } from "@powerletter/core";

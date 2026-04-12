@@ -3,7 +3,7 @@
  * Shared domain types and constants used across multiple games
  */
 
-import type { Difficulty, Language } from '@/types/game';
+import type { Difficulty, Language } from '@core/types/game';
 
 /** Level loading options */
 export interface LevelLoadOptions {

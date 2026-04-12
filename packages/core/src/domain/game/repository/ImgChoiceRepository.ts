@@ -3,7 +3,7 @@
  * Repository for loading Image Choice levels with Fetch strategy.
  */
 
-import type { Language, GameCategory } from '@/types/game';
+import type { Language, GameCategory } from '@core/types/game';
 import type { ImgChoiceLevel, ImgChoiceLevelData, ImgChoiceLevelModule } from '../model/ImgChoice';
 import { ERROR_LEVEL_ID, ensureSolutionInOptions } from '../model/shared';
 

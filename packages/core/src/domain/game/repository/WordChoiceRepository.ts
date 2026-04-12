@@ -3,7 +3,7 @@
  * Repository for loading Word Choice levels with Fetch strategy.
  */
 
-import type { Language, GameCategory } from '@/types/game';
+import type { Language, GameCategory } from '@core/types/game';
 import type { WordChoiceLevel, WordChoiceLevelData, WordChoiceLevelModule } from '../model/WordChoice';
 import { ERROR_LEVEL_ID, ensureSolutionInOptions } from '../model/shared';
 

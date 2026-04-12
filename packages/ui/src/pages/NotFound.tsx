@@ -5,7 +5,7 @@
  * Shared across monorepo apps.
  */
 import { useEffect } from "react";
-import { Link } from '@/atoms/Link';
+import { Link } from '@ui/atoms/Link';
 const NotFound = () => {
   useEffect(() => {
     // Log 404 for debugging - use warn instead of error to avoid triggering error overlays

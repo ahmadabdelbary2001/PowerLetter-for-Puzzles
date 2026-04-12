@@ -17,11 +17,11 @@
     "noUnusedParameters": false,
     "jsx": "react-jsx",
     "jsxImportSource": "react",
+    "types": ["node"],
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@/data/*": ["../../data/*"]
-    },
-    "types": ["node"]
+      "@core/*": ["./src/*"]
+    }
   },
   "include": ["src/**/*", "../../data/**/*"]
 }

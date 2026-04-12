@@ -3,7 +3,7 @@
  * Core domain types and constants for Image Choice game
  */
 
-import type { GameLevel, Language, GameCategory } from '@/types/game';
+import type { GameLevel, Language, GameCategory } from '@core/types/game';
 import { ERROR_LEVEL_ID } from './shared';
 import type { LevelLoadOptions } from './shared';
 

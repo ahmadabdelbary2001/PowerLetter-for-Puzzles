@@ -26,6 +26,8 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
+      "@core/*": ["../../packages/core/src/*"],
+      "@ui/*": ["../../packages/ui/src/*"],
       "@powerletter/core": ["../../packages/core/src/index.ts"],
       "@powerletter/ui": ["../../packages/ui/src/index.ts"],
       "@powerletter/api-bindings": ["../../packages/api-bindings/src/index.ts"]

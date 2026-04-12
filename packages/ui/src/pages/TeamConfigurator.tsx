@@ -1,14 +1,14 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Button } from '@/atoms/Button';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/atoms/Card';
-import { Input } from '@/atoms/Input';
-import { Label } from '@/atoms/Label';
-import { Header } from '@/organisms/Header';
+import { Button } from '@ui/atoms/Button';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@ui/atoms/Card';
+import { Input } from '@ui/atoms/Input';
+import { Label } from '@ui/atoms/Label';
+import { Header } from '@ui/organisms/Header';
 import { Users, Plus, Minus, ArrowRight, ArrowLeft } from 'lucide-react';
 import { useGameMode, useTranslation } from '@powerletter/core';
-import { useAppParams, useAppLocation, useAppRouter } from '../contexts/RouterContext';
+import { useAppParams, useAppLocation, useAppRouter } from '@ui/contexts/RouterContext';
 
 export interface TeamConfiguratorProps {
   gameType?: string;

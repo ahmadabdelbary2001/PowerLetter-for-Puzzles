@@ -4,7 +4,7 @@
  * --- It now uses the centralized notification system with translatable messageKeys. ---
  */
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { useGameController } from '@/hooks/game/useGameController';
+import { useGameController } from '@core/hooks/game/useGameController';
 import { letterFlowGameEngine, type LetterFlowLevel, type BoardCell, type WordPath } from '../engine';
 import { colorForString } from '../utils/colors';
 
@@ -55,7 +55,7 @@ export function useLetterFlowGame() {
     return currentLevel?.endpoints.some((ep: any) => ep.x === cell.x && ep.y === cell.y && ep.letter === cell.letter) ?? false;
   }, [currentLevel]);
   const findOverlappingConnections = useCallback((newPath: BoardCell[]) => {
-    return foundWords.filter(path => path.cells.some(pc => newPath.some(nc => nc.x === pc.x && nc.y === pc.y)));
+    return foundWords.filter(path => path.cells.some((pc: any) => newPath.some(nc => nc.x === pc.x && nc.y === pc.y)));
   }, [foundWords]);
 
   const handleMouseDown = useCallback((cell: BoardCell) => {
@@ -64,7 +64,7 @@ export function useLetterFlowGame() {
     if (existingConnection) {
       setFoundWords(prev => prev.filter(path => path.word !== cell.letter));
       setBoard(prev => prev.map(c => {
-        const used = existingConnection.cells.some(cc => cc.x === c.x && cc.y === c.y);
+        const used = existingConnection.cells.some((cc: any) => cc.x === c.x && cc.y === c.y);
         return used ? { ...c, isUsed: false, color: endpointColorMap.get(`${c.x}-${c.y}`) ?? undefined } : c;
       }));
       // --- Use the new `connectionRemoved` messageKey with interpolation. ---
@@ -104,7 +104,7 @@ export function useLetterFlowGame() {
         });
         setFoundWords(prev => prev.filter(p => !overlapping.includes(p)));
         setBoard(prev => prev.map(c => {
-          const overlapped = overlapping.some(op => op.cells.some(cc => cc.x === c.x && cc.y === c.y));
+          const overlapped = overlapping.some(op => op.cells.some((cc: any) => cc.x === c.x && cc.y === c.y));
           return overlapped ? { ...c, isUsed: false, color: endpointColorMap.get(`${c.x}-${c.y}`) ?? undefined } : c;
         }));
       } else {
@@ -167,7 +167,7 @@ export function useLetterFlowGame() {
     const lastConnection = foundWords[foundWords.length - 1];
     setFoundWords(prev => prev.slice(0, -1));
     setBoard(prev => prev.map(c => {
-      const wasUsed = lastConnection.cells.some(cell => cell.x === c.x && cell.y === c.y);
+      const wasUsed = lastConnection.cells.some((cell: any) => cell.x === c.x && cell.y === c.y);
       return wasUsed ? { ...c, isUsed: false, color: endpointColorMap.get(`${c.x}-${c.y}`) ?? undefined } : c;
     }));
     setSelectedPath([]);

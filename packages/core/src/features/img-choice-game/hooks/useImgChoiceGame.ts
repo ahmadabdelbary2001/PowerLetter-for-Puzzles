@@ -2,9 +2,9 @@
 /**
  * @description Final "assembler" hook for the Image Choice Game.
  */
-import { useGameController } from '@/hooks/game/useGameController';
-import { useChoiceGame } from '@/hooks/game/useChoiceGame';
-import { imgChoiceGameEngine, type ImgChoiceLevel } from '@/features/img-choice-game/engine';
+import { useGameController } from '@core/hooks/game/useGameController';
+import { useChoiceGame } from '@core/hooks/game/useChoiceGame';
+import { imgChoiceGameEngine, type ImgChoiceLevel } from '../engine';
 
 export function useImgChoiceGame() {
   // 1. Get the fully-equipped controller.

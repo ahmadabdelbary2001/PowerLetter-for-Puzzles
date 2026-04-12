@@ -4,13 +4,13 @@
  * It extends the shared ClueGameEngine and delegates to domain services.
  */
 import type { Language, GameCategory, Difficulty } from '@powerletter/core';
-import { ClueGameEngine, type ClueLevel } from '@/games/engine/ClueGameEngine';
-import type { LevelModule } from '@/games/engine/BaseGameEngine';
+import { ClueGameEngine, type ClueLevel } from '@core/games/engine/ClueGameEngine';
+import type { LevelModule } from '@core/games/engine/BaseGameEngine';
 // Import domain services
 import { 
   phraseClueRepository as levelRepository, 
   phraseClueValidationService as validationService 
-} from '@/domain/game';
+} from '@core/domain/game';
 
 /**
  * @interface PhraseLevel

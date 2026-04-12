@@ -3,7 +3,7 @@
  * Repository for loading Formation levels with Fetch strategy.
  */
 
-import type { Language, Difficulty } from '@/types/game';
+import type { Language, Difficulty } from '@core/types/game';
 import type { LevelLoadOptions } from '../model/shared';
 
 type LevelFile = { levels: unknown[] };

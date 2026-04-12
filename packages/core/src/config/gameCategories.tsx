@@ -9,7 +9,7 @@ import {
   PawPrint, FlaskConical, Globe, BrainCircuit, Apple, Music, Car, 
   Clapperboard, Utensils, GlassWater, Heart, Swords, Cake, Shirt, Tv, Gamepad, User, Shapes
 } from 'lucide-react';
-import type { GameCategory } from '@/types/game';
+import type { GameCategory } from '../types/game';
 
 // Define a reusable type for category data
 export type CategoryConfig = {

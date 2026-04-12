@@ -6,15 +6,15 @@
  */
 import React from "react";
 import { useImageClueGame } from "@powerletter/core";
-import { Button } from '@/atoms/Button';
-import { Badge } from '@/atoms/Badge';
-import { SolutionBoxes } from '@/molecules/SolutionBoxes';
-import { LetterGrid } from '@/molecules/LetterGrid';
-import { GameControls } from '@/organisms/GameControls';
+import { Button } from '@ui/atoms/Button';
+import { Badge } from '@ui/atoms/Badge';
+import { SolutionBoxes } from '@ui/molecules/SolutionBoxes';
+import { LetterGrid } from '@ui/molecules/LetterGrid';
+import { GameControls } from '@ui/organisms/GameControls';
 import { ArrowLeft, ArrowRight, Volume2 } from "lucide-react";
-import { ClueGameLayout } from '@/templates/ClueGameLayout';
-import { GameScreen } from '@/organisms/GameScreen';
-import { useAppRouter, useAppParams } from "../../contexts/RouterContext";
+import { ClueGameLayout } from '@ui/templates/ClueGameLayout';
+import { GameScreen } from '@ui/organisms/GameScreen';
+import { useAppRouter, useAppParams } from "@ui/contexts/RouterContext";
 
 // 1. Define the pure UI component.
 const ImgClueGame: React.FC<ReturnType<typeof useImageClueGame>> = ({

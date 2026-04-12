@@ -7,9 +7,9 @@
  */
 import { useEffect } from "react";
 import { useGameMode, useTranslation } from "@powerletter/core";
-import { Header } from '@/organisms/Header';
-import { Footer } from '@/organisms/Footer';
-import { useAppParams, useAppLocation } from "../contexts/RouterContext";
+import { Header } from '@ui/organisms/Header';
+import { Footer } from '@ui/organisms/Footer';
+import { useAppParams, useAppLocation } from "@ui/contexts/RouterContext";
 import HeroSection from "./HeroSection";
 import GameTypeSelector from "./GameTypeSelector";
 import type { Language } from "@powerletter/core";

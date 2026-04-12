@@ -4,13 +4,13 @@
  * It extends the shared ClueGameEngine and delegates to domain services.
  */
 import type { Language, GameCategory } from '@powerletter/core';
-import { ClueGameEngine, type ClueLevel } from '@/games/engine/ClueGameEngine';
-import type { LevelModule } from '@/games/engine/BaseGameEngine';
+import { ClueGameEngine, type ClueLevel } from '@core/games/engine/ClueGameEngine';
+import type { LevelModule } from '@core/games/engine/BaseGameEngine';
 // Import domain services
 import { 
   imgClueRepository as levelRepository, 
   imgClueValidationService as validationService 
-} from '@/domain/game';
+} from '@core/domain/game';
 
 /**
  * @interface ImageLevel
@@ -47,7 +47,7 @@ class ImgClueGameEngine extends ClueGameEngine<ImageLevel> {
   // --- Delegate to domain validation service ---
   protected validateLevel(levelData: unknown): ImageLevel | null {
     if (validationService.isValidLevel(levelData)) {
-      return levelData;
+      return levelData as ImageLevel;
     }
     return null;
   }

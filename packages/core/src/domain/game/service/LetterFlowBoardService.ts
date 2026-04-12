@@ -5,7 +5,7 @@
 
 import type { BoardCell, PathPoint } from '../model/LetterFlow';
 import { COLOR_PALETTE_COUNT, DEFAULT_SATURATION, DEFAULT_LIGHTNESS } from '../model/LetterFlow';
-import { shuffleArray } from '@/lib/gameUtils';
+import { shuffleArray } from '@core/lib/gameUtils';
 
 let wasmEngine: {
   letter_flow_generate_board?: (letters: string) => BoardCell[];
@@ -18,7 +18,7 @@ export async function initWasmEngine(): Promise<void> {
   try {
     // Note: We need to adjust this path later if the wasm structure changes
     // @ts-ignore - WASM module loaded dynamically
-    const module = await import(/* @vite-ignore */ '../../../wasm/power-engine');
+    const module = await import(/* @vite-ignore */ '@core/wasm/power-engine');
     wasmEngine = module;
   } catch {
     wasmEngine = null;

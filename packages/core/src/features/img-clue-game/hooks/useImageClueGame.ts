@@ -2,8 +2,8 @@
 /**
  * @description Final "assembler" hook for the Image Clue Game.
  */
-import { useGameController } from '@/hooks/game/useGameController';
-import { useClueGame } from '@/hooks/game/useClueGame';
+import { useGameController } from '@core/hooks/game/useGameController';
+import { useClueGame } from '@core/hooks/game/useClueGame';
 import { imgClueGameEngine, type ImageLevel } from '../engine';
 
 export function useImageClueGame() {

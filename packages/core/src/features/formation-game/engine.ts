@@ -6,17 +6,17 @@
  */
 import type { Language, Difficulty, GameCategory } from '@powerletter/core';
 // Re-export types from domain for backward compatibility
-export type { GridCell, FormationLevel } from '@/domain/game';
-import type { GridCell, FormationLevel } from '@/domain/game';
+export type { GridCell, FormationLevel } from '@core/domain/game';
+import type { GridCell, FormationLevel } from '@core/domain/game';
 
-import { BaseGameEngine } from '@/games/engine/BaseGameEngine';
-import type { LevelModule } from '@/games/engine/BaseGameEngine';
+import { BaseGameEngine } from '@core/games/engine/BaseGameEngine';
+import type { LevelModule } from '@core/games/engine/BaseGameEngine';
 
 import { 
   formationRepository as levelRepository,
   formationWordService as wordService,
   formationValidationService as validationService 
-} from '@/domain/game';
+} from '@core/domain/game';
 
 /**
  * Implements the game engine for the Word Formation (Crossword) Challenge.
@@ -45,8 +45,8 @@ class FormationGameEngine extends BaseGameEngine<FormationLevel> {
 
       // Transform and validate each level
       const validatedLevels = levels
-        .map(lvl => this.validateLevel(lvl, difficulty))
-        .filter((l): l is FormationLevel => l !== null);
+        .map((lvl: unknown) => this.validateLevel(lvl, difficulty))
+        .filter((l: FormationLevel | null): l is FormationLevel => l !== null);
 
       return validatedLevels.length > 0 ? validatedLevels : [];
 

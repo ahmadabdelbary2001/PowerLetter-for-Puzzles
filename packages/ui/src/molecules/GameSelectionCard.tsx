@@ -10,9 +10,9 @@
  * Optimized for a premium feel with hover animations and specific theme coloring.
  */
 import React from 'react';
-import { Button } from '@/atoms/Button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/atoms/Card';
-import { Badge } from '@/atoms/Badge';
+import { Button } from '../atoms/Button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../atoms/Card';
+import { Badge } from '../atoms/Badge';
 import { Lock, Search, CheckCircle, Star } from 'lucide-react';
 import { cn } from "../lib/utils";
 import type { GameConfig } from '../registry/GameRegistry';

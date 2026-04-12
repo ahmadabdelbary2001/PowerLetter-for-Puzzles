@@ -6,7 +6,7 @@
  * --- It now uses the centralized notification system correctly. ---
  */
 import { useState, useEffect, useCallback } from 'react';
-import { useGameController } from '@/hooks/game/useGameController';
+import { useGameController } from '@core/hooks/game/useGameController';
 import { formationGameEngine, type FormationLevel } from '../engine';
 
 export function useFormationGame() {
@@ -59,7 +59,7 @@ export function useFormationGame() {
       setFoundWords(currentFoundWords);
       const wordIndex = currentLevel.words.indexOf(currentInput);
       const newRevealed = new Set(revealedCells);
-      currentLevel.grid.forEach(cell => {
+      currentLevel.grid.forEach((cell: any) => {
         if (cell.words.includes(wordIndex)) newRevealed.add(`${cell.x},${cell.y}`);
       });
       setRevealedCells(newRevealed);
@@ -83,15 +83,17 @@ export function useFormationGame() {
         return;
       }
     }
-    const unrevealedCells = currentLevel.grid.filter(cell => !revealedCells.has(`${cell.x},${cell.y}`));
+    const unrevealedCells = currentLevel.grid.filter((cell: any) => !revealedCells.has(`${cell.x},${cell.y}`));
     if (unrevealedCells.length === 0) return;
     const randomCell = unrevealedCells[Math.floor(Math.random() * unrevealedCells.length)];
     const newRevealed = new Set(revealedCells).add(`${randomCell.x},${randomCell.y}`);
     setRevealedCells(newRevealed);
     const newlyFoundWords: string[] = [];
-    currentLevel.words.forEach((word, wordIndex) => {
+    currentLevel.words.forEach((word: string, wordIndex: number) => {
       if (foundWords.has(word)) return;
-      const allCellsRevealed = currentLevel.grid.filter(cell => cell.words.includes(wordIndex)).every(cell => newRevealed.has(`${cell.x},${cell.y}`));
+      const allCellsRevealed = currentLevel.grid
+        .filter((cell: any) => cell.words.includes(wordIndex))
+        .every((cell: any) => newRevealed.has(`${cell.x},${cell.y}`));
       if (allCellsRevealed) newlyFoundWords.push(word);
     });
     if (newlyFoundWords.length > 0) {

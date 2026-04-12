@@ -1,7 +1,7 @@
 // src/screens/outside-story/components/OutsiderGuessScreen.tsx
 import React, { useState } from 'react';
-import { Button } from '@/atoms/Button';
-import { cn } from "../../../lib/utils";
+import { Button } from '@ui/atoms/Button';
+import { cn } from "@ui/lib/utils";
 import type { Team, useOutsideStory } from '@powerletter/core';
 
 type Props = { game: ReturnType<typeof useOutsideStory> };

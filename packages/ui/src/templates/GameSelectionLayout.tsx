@@ -6,11 +6,11 @@
  * passed in as children.
  */
 import React from 'react';
-import { Button } from '@/atoms/Button';
-import { Card } from '@/atoms/Card';
+import { Button } from '@ui/atoms/Button';
+import { Card } from '@ui/atoms/Card';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
-import { Header } from '@/organisms/Header';
-import { StepIndicator } from '@/atoms/StepIndicator';
+import { Header } from '@ui/organisms/Header';
+import { StepIndicator } from '@ui/atoms/StepIndicator';
 import { useTranslation } from "@powerletter/core";
 
 interface GameSelectionLayoutProps {

@@ -3,7 +3,7 @@
  * Repository for loading Outside the Story levels with Fetch strategy.
  */
 
-import type { Language, GameCategory } from '@/types/game';
+import type { Language, GameCategory } from '@core/types/game';
 import type { OutsiderLevel, OutsiderLevelData } from '../model/OutsideStory';
 import { OUTSIDE_STORY_ERROR_LEVEL } from '../model/OutsideStory';
 

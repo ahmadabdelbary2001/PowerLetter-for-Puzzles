@@ -2,17 +2,17 @@
 
 import React from 'react';
 import { useGameMode, useTranslation } from "@powerletter/core";
-import { getGameConfig } from "../registry/GameRegistry";
+import { getGameConfig } from "@ui/registry/GameRegistry";
 import { 
   ArrowLeft, ArrowRight, BrainCircuit, FlaskConical, Globe, Shapes, Apple, Palette, 
   Music, Car, Clapperboard, Utensils, GlassWater, Heart, Swords, Cake, Shirt, Tv, Gamepad, User
 } from 'lucide-react';
-import { Button } from '@/atoms/Button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/atoms/Card';
-import { DifficultySelector } from '@/molecules/DifficultySelector';
-import { CategorySelector } from '@/molecules/CategorySelector';
-import { Header } from '@/organisms/Header';
-import { useAppParams, useAppRouter } from '../contexts/RouterContext';
+import { Button } from '@ui/atoms/Button';
+import { Card, CardContent, CardHeader, CardTitle } from '@ui/atoms/Card';
+import { DifficultySelector } from '@ui/molecules/DifficultySelector';
+import { CategorySelector } from '@ui/molecules/CategorySelector';
+import { Header } from '@ui/organisms/Header';
+import { useAppParams, useAppRouter } from '@ui/contexts/RouterContext';
 import type { GameCategory } from '@powerletter/core';
 
 const difficultyOptions = [

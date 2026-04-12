@@ -7,8 +7,8 @@
  * - Visual state (selected / found / active)
  * - Connection directions & colors (use endpoint/path colors first)
  */
-import { LetterFlowCell } from '@/atoms/LetterFlowCell';
-import { cn } from "../lib/utils";
+import { LetterFlowCell } from '@ui/atoms/LetterFlowCell';
+import { cn } from "@ui/lib/utils";
 import { type BoardCell, colorForString } from "@powerletter/core";
 
 interface LetterFlowBoardProps {

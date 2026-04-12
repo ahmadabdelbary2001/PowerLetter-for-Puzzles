@@ -1,6 +1,6 @@
 // src/features/phrase-clue-game/hooks/usePhraseClueGame.ts
-import { useGameController } from '@/hooks/game/useGameController';
-import { useClueGame } from '@/hooks/game/useClueGame';
+import { useGameController } from '@core/hooks/game/useGameController';
+import { useClueGame } from '@core/hooks/game/useClueGame';
 import { phraseClueGameEngine, type PhraseLevel } from '../engine';
 
 export function usePhraseClueGame() {
@@ -12,7 +12,7 @@ export function usePhraseClueGame() {
 
   // 2. Enhance with clue-game logic and return the final object for the UI.
   return useClueGame(controller, {
-    getPoints: (level) => {
+    getPoints: (level: PhraseLevel) => {
       switch (level.difficulty) {
         case 'hard': return 30;
         case 'medium': return 20;

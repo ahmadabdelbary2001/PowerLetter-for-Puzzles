@@ -1,6 +1,6 @@
 // src/screens/outside-story/components/VotingScreen.tsx
 import React, { useState, useEffect } from 'react';
-import { Button } from '@/atoms/Button';
+import { Button } from '@ui/atoms/Button';
 import type { useOutsideStory } from '@powerletter/core';
 import type { Team } from '@powerletter/core';
 

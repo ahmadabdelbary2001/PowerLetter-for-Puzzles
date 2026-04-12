@@ -7,12 +7,12 @@
 import React from 'react';
 import { useFormationGame } from '@powerletter/core';
 import { RotateCcw, Check, Lightbulb } from 'lucide-react';
-import { CrosswordGrid } from '@/molecules/CrosswordGrid';
-import { LetterCircle } from '@/molecules/LetterCircle';
-import { GameButton } from '@/atoms/GameButton';
-import { WordFormationLayout } from '@/templates/WordFormationLayout';
-import { GameScreen } from '@/organisms/GameScreen';
-import { useAppRouter, useAppParams } from '../../contexts/RouterContext';
+import { CrosswordGrid } from '@ui/molecules/CrosswordGrid';
+import { LetterCircle } from '@ui/molecules/LetterCircle';
+import { GameButton } from '@ui/atoms/GameButton';
+import { WordFormationLayout } from '@ui/templates/WordFormationLayout';
+import { GameScreen } from '@ui/organisms/GameScreen';
+import { useAppRouter, useAppParams } from '@ui/contexts/RouterContext';
 
 // 1. Define the pure UI component. It receives all props from the hook.
 const FormationGame: React.FC<ReturnType<typeof useFormationGame>> = ({

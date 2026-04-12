@@ -1,6 +1,6 @@
 // src/components/molecules/ModeToggler.tsx
 import styled from 'styled-components';
-import { useTheme } from '../contexts/ThemeContext';
+import { useTheme } from '@ui/contexts/ThemeContext';
 import type { FC } from 'react';
 
 // ModeToggler - Animated toggle switch for light/dark theme

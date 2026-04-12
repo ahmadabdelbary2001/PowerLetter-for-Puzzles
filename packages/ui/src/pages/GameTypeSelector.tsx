@@ -7,10 +7,10 @@
  */
 import React from 'react';
 import { useGameMode, useTranslation } from '@powerletter/core';
-import { GameSelectionPageLayout } from '@/templates/GameSelectionPageLayout';
-import { GameSelectionCard } from '@/molecules/GameSelectionCard';
-import { GAME_REGISTRY, type GameConfig } from '../registry/GameRegistry';
-import { useAppRouter } from '../contexts/RouterContext';
+import { GameSelectionPageLayout } from '@ui/templates/GameSelectionPageLayout';
+import { GameSelectionCard } from '@ui/molecules/GameSelectionCard';
+import { GAME_REGISTRY, type GameConfig } from '@ui/registry/GameRegistry';
+import { useAppRouter } from '@ui/contexts/RouterContext';
 
 const GameTypeSelector: React.FC = () => {
   const { gameType, setGameType } = useGameMode();

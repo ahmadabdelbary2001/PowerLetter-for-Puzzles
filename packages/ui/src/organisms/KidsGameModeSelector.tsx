@@ -4,14 +4,14 @@
  * --- This component now uses the shared GameSelectionLayout to render its UI. ---
  */
 import { useState } from 'react';
-import { Button } from '@/atoms/Button';
+import { Button } from '@ui/atoms/Button';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
 import { useGameMode, useTranslation, KIDS_CATEGORIES } from "@powerletter/core";
-import { ModeSelector } from '@/molecules/ModeSelector';
-import { CategorySelector } from '@/molecules/CategorySelector';
-import { useAppRouter, useAppParams } from '../contexts/RouterContext';
+import { ModeSelector } from '@ui/molecules/ModeSelector';
+import { CategorySelector } from '@ui/molecules/CategorySelector';
+import { useAppRouter, useAppParams } from '@ui/contexts/RouterContext';
 import type { GameCategory } from '@powerletter/core';
-import { GameSelectionLayout } from '@/templates/GameSelectionLayout';
+import { GameSelectionLayout } from '@ui/templates/GameSelectionLayout';
 
 export interface KidsGameModeSelectorProps {
   gameType?: string;

@@ -4,20 +4,20 @@
  * This engine handles loading game levels, generating game boards, and assigning colors.
  * --- Refactored to use Domain Services from FSD architecture ---
  */
-import type { Language, Difficulty, GameCategory } from '@/types/game';
+import type { Language, Difficulty, GameCategory } from '@core/types/game';
 // Re-export types from domain for backward compatibility
-export type { BoardCell, LetterFlowLevel, WordPath } from '@/domain/game';
-import type { BoardCell, LetterFlowLevel, PathPoint } from '@/domain/game';
+export type { BoardCell, LetterFlowLevel, WordPath } from '@core/domain/game';
+import type { BoardCell, LetterFlowLevel, PathPoint } from '@core/domain/game';
 
-import { BaseGameEngine } from '@/games/engine/BaseGameEngine';
-import type { LevelModule } from '@/games/engine/BaseGameEngine';
+import { BaseGameEngine } from '@core/games/engine/BaseGameEngine';
+import type { LevelModule } from '@core/games/engine/BaseGameEngine';
 
 import { 
   letterFlowRepository as levelRepository,
   letterFlowBoardService as boardService, 
   letterFlowValidationService as validationService,
   initWasmEngine
-} from '@/domain/game';
+} from '@core/domain/game';
 
 /**
  * WASM Initialization
@@ -52,7 +52,7 @@ class LetterFlowGameEngine extends BaseGameEngine<LetterFlowLevel> {
 
       return levels
         .map((lvl: unknown): LetterFlowLevel | null => this.validateLevel(lvl, difficulty))
-        .filter((l): l is LetterFlowLevel => l !== null);
+        .filter((l: LetterFlowLevel | null): l is LetterFlowLevel => l !== null);
     } catch (err) {
       console.error(`LetterFlowGameEngine: Failed to load levels for ${language}/${difficulty}.`, err);
       return [validationService.createErrorLevel()];
