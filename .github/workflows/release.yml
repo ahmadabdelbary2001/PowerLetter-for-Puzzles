@@ -60,6 +60,7 @@ jobs:
           projectPath: ./apps/desktop-mobile
 
   android:
+    needs: release
     permissions:
       contents: write
     runs-on: ubuntu-latest
@@ -76,6 +77,9 @@ jobs:
 
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
+
+      - name: install Rust Android targets
+        run: rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android
 
       - name: setup Java
         uses: actions/setup-java@v4
@@ -94,15 +98,13 @@ jobs:
 
       - name: Decode Android Key
         run: |
-          echo "${{ secrets.ANDROID_SIGNING_KEY }}" | base64 --decode > apps/desktop-mobile/src-tauri/gen/android/release.keystore
+          echo "${{ secrets.ANDROID_SIGNING_KEY }}" | base64 --decode > apps/desktop-mobile/src-tauri/gen/android/module/release.keystore
 
       - name: Inject Mobile Crate Types
         run: |
           sed -i 's/crate-type = \["lib"\]/crate-type = \["staticlib", "cdylib", "lib"\]/' apps/desktop-mobile/src-tauri/Cargo.toml
 
       - name: Build Android APK
-        # We build for all 4 targets + create a universal APK if configured in Gradle or by combining.
-        # Tauri's default android build for multiple targets produces multiple APKs.
         run: pnpm tauri android build --apk --target aarch64 --target armv7 --target i686 --target x86_64
         working-directory: ./apps/desktop-mobile
         env:
@@ -115,36 +117,42 @@ jobs:
       - name: Rename and Prepare APKs
         run: |
           VERSION="${{ github.ref_name }}"
-          OUTPUT_DIR="apps/desktop-mobile/src-tauri/gen/android/app/build/outputs/apk/release"
+          # Tauri 2.0 output is usually in gen/android/app/build/outputs/apk/
+          # We search recursively to collect all release APKs regardless of ABI folder structure
+          BASE_DIR="apps/desktop-mobile/src-tauri/gen/android/app/build/outputs/apk"
           TARGET_DIR="release-artifacts"
           mkdir -p $TARGET_DIR
 
-          # Mappings for the requested names
-          # Note: app-universal-release.apk is generated if splits are configured correctly
-          
-          find $OUTPUT_DIR -name "*.apk" -type f | while read -r apk; do
+          echo "Searching for APKs in $BASE_DIR..."
+          find $BASE_DIR -name "*.apk" -type f | while read -r apk; do
             filename=$(basename "$apk")
-            if [[ "$filename" == *"arm64-v8a"* ]]; then
-              NEW_NAME="universal-arm64-v8a.apk"
-            elif [[ "$filename" == *"armeabi-v7a"* ]]; then
-              NEW_NAME="universal-armeabi-v7a.apk"
+            echo "Processing $filename..."
+            
+            # Identify the build target from the filename or path
+            if [[ "$filename" == *"arm64-v8a"* ]] || [[ "$apk" == *"aarch64"* ]]; then
+              ABI="arm64-v8a"
+            elif [[ "$filename" == *"armeabi-v7a"* ]] || [[ "$apk" == *"armv7"* ]]; then
+              ABI="armeabi-v7a"
             elif [[ "$filename" == *"x86_64"* ]]; then
-              NEW_NAME="universal-x86_64.apk"
-            elif [[ "$filename" == *"x86"* ]]; then
-              NEW_NAME="universal-x86.apk"
+              ABI="x86_64"
+            elif [[ "$filename" == *"x86"* ]] || [[ "$apk" == *"i686"* ]]; then
+              ABI="x86"
             elif [[ "$filename" == *"universal"* ]]; then
-              NEW_NAME="universal-universal.apk"
+              ABI="universal"
             else
-              NEW_NAME="PowerLetter-$filename"
+              ABI="unknown"
             fi
+            
+            NEW_NAME="universal-$ABI.apk"
             cp "$apk" "$TARGET_DIR/$NEW_NAME"
-            echo "Prepared $NEW_NAME"
+            echo "  ✓ Copied to $NEW_NAME"
           done
 
       - name: Upload APKs to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: release-artifacts/*.apk
+          tag_name: ${{ github.ref_name }}
           draft: true
           prerelease: false
         env:
