@@ -1,6 +1,6 @@
 [package]
 name = "power-game-imageclue"
-version = "1.0.1"
+version = "1.0.2"
 edition = "2021"
 authors = ["PowerLetter Team"]
 description = "Image Clue game logic for PowerLetter"

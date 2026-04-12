@@ -1,14 +1,9 @@
-name: "Release"
+name: "Release 1.0.2"
 
 on:
   push:
-    branches:
-      - main
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version to release (e.g., 1.2.3)'
-        required: false
+    tags:
+      - 'v*'
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -46,10 +41,9 @@ jobs:
       - name: install frontend dependencies
         run: pnpm install
 
-      - name: Version and build packages
-        run: |
-          pnpm version-packages
-          pnpm build
+      - name: Set version from tag
+        shell: bash
+        run: node scripts/set-version.mjs "$GITHUB_REF_NAME"
 
       - name: Build Desktop (Windows/macOS/Linux)
         uses: tauri-apps/tauri-action@v0
@@ -57,8 +51,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tagName: ${{ github.ref_name }}
-          releaseName: "PowerLetter v${{ github.ref_name }}"
-          releaseBody: "Official Release of PowerLetter Puzzle Game"
+          releaseName: "PowerLetter ${{ github.ref_name }}"
+          releaseBody: "Official Release of PowerLetter-for-Puzzles"
           releaseDraft: true
           prerelease: false
           includeUpdaterJson: true
@@ -100,7 +94,6 @@ jobs:
 
       - name: Decode Android Key
         run: |
-          mkdir -p apps/desktop-mobile/src-tauri/gen/android/
           echo "${{ secrets.ANDROID_SIGNING_KEY }}" | base64 --decode > apps/desktop-mobile/src-tauri/gen/android/release.keystore
 
       - name: Inject Mobile Crate Types
@@ -108,6 +101,8 @@ jobs:
           sed -i 's/crate-type = \["lib"\]/crate-type = \["staticlib", "cdylib", "lib"\]/' apps/desktop-mobile/src-tauri/Cargo.toml
 
       - name: Build Android APK
+        # We build for all 4 targets + create a universal APK if configured in Gradle or by combining.
+        # Tauri's default android build for multiple targets produces multiple APKs.
         run: pnpm tauri android build --apk --target aarch64 --target armv7 --target i686 --target x86_64
         working-directory: ./apps/desktop-mobile
         env:
@@ -117,31 +112,39 @@ jobs:
           RELEASE_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           RELEASE_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
 
-      - name: Rename APKs
+      - name: Rename and Prepare APKs
         run: |
           VERSION="${{ github.ref_name }}"
-          mkdir -p apps/desktop-mobile/src-tauri/gen/android/app/build/outputs/apk/release-unified
-          find apps/desktop-mobile/src-tauri/gen/android/app/build/outputs/apk -name "*-release.apk" -type f | while read -r apk; do
-            filename=$(basename "$apk")
-            if [[ "$filename" == "app-universal-release.apk" ]]; then
-              ABI="universal"
-            else
-              ABI=$(echo "$filename" | sed 's/app-//' | sed 's/-release.apk//')
-            fi
-            NEW_NAME="PowerLetter-$VERSION-$ABI.apk"
-            mv "$apk" "apps/desktop-mobile/src-tauri/gen/android/app/build/outputs/apk/release-unified/$NEW_NAME"
-          done
+          OUTPUT_DIR="apps/desktop-mobile/src-tauri/gen/android/app/build/outputs/apk/release"
+          TARGET_DIR="release-artifacts"
+          mkdir -p $TARGET_DIR
 
-      - name: Upload Android APK to Action Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: PowerLetter-Android-APKs
-          path: apps/desktop-mobile/src-tauri/gen/android/app/build/outputs/apk/release-unified/*.apk
+          # Mappings for the requested names
+          # Note: app-universal-release.apk is generated if splits are configured correctly
+          
+          find $OUTPUT_DIR -name "*.apk" -type f | while read -r apk; do
+            filename=$(basename "$apk")
+            if [[ "$filename" == *"arm64-v8a"* ]]; then
+              NEW_NAME="universal-arm64-v8a.apk"
+            elif [[ "$filename" == *"armeabi-v7a"* ]]; then
+              NEW_NAME="universal-armeabi-v7a.apk"
+            elif [[ "$filename" == *"x86_64"* ]]; then
+              NEW_NAME="universal-x86_64.apk"
+            elif [[ "$filename" == *"x86"* ]]; then
+              NEW_NAME="universal-x86.apk"
+            elif [[ "$filename" == *"universal"* ]]; then
+              NEW_NAME="universal-universal.apk"
+            else
+              NEW_NAME="PowerLetter-$filename"
+            fi
+            cp "$apk" "$TARGET_DIR/$NEW_NAME"
+            echo "Prepared $NEW_NAME"
+          done
 
       - name: Upload APKs to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: apps/desktop-mobile/src-tauri/gen/android/app/build/outputs/apk/release-unified/*.apk
+          files: release-artifacts/*.apk
           draft: true
           prerelease: false
         env:

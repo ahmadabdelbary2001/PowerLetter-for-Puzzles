@@ -1,6 +1,6 @@
 [package]
 name = "power-game-letterflow"
-version = "1.0.1"
+version = "1.0.2"
 edition = "2021"
 authors = ["Ahmad Abdelbary"]
 description = "Letter Flow game engine implementation for PowerLetter"
