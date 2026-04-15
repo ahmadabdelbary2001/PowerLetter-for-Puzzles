@@ -1,6 +1,6 @@
 {
   "name": "@powerletter/config",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "private": true,
   "type": "module",
   "description": "Shared configurations for ESLint, TypeScript, and Tailwind",

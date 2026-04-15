@@ -1,6 +1,6 @@
 [package]
 name = "power-game-wordchoice"
-version = "1.0.3"
+version = "1.0.4"
 edition = "2021"
 authors = ["PowerLetter Team"]
 description = "Word Choice game logic for PowerLetter"

@@ -1,6 +1,6 @@
 [package]
 name = "power-game-outsidestory"
-version = "1.0.3"
+version = "1.0.4"
 edition = "2021"
 authors = ["Ahmad Abdelbary"]
 description = "Outside the Story (Outsider) game engine for PowerLetter"
