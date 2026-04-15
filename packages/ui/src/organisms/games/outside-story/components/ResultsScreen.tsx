@@ -19,38 +19,65 @@ export const ResultsScreen: React.FC<Props> = ({ game }) => {
     );
   }
 
-  const { votedPlayerId, outsiderGuessedCorrectly } = currentRound.roundResult;
+  const { votedPlayerId, outsiderGuessedCorrectly, pointsAwarded } = currentRound.roundResult;
   const outsider = players.find((p: Team) => p.id === currentRound.outsiderId);
+  const isOutsiderCaught = votedPlayerId === currentRound.outsiderId;
+  const insidersWin = isOutsiderCaught && !outsiderGuessedCorrectly;
+  
+  let outcomeTitle = '';
   let outcomeMessage = '';
   
-  if (votedPlayerId === currentRound.outsiderId) {
-    if (outsiderGuessedCorrectly) {
-      outcomeMessage = t('outsiderCaughtButGuessed', { ns: 'outside_the_story' })?.replace('{secret}', currentRound.secret);
-    } else {
-      outcomeMessage = t('insidersWin', { ns: 'outside_the_story' })?.replace('{secret}', currentRound.secret);
-    }
+  if (insidersWin) {
+    outcomeTitle = t('insidersWinTitle', { ns: 'outside_the_story' }) || 'محققون فازوا!';
+    outcomeMessage = t('insidersWin', { ns: 'outside_the_story' })?.replace('{secret}', currentRound.secret);
+  } else if (isOutsiderCaught && outsiderGuessedCorrectly) {
+    outcomeTitle = t('outsiderWinsTitle', { ns: 'outside_the_story' }) || 'الغريب فاز!';
+    outcomeMessage = t('outsiderCaughtButGuessed', { ns: 'outside_the_story' })?.replace('{secret}', currentRound.secret);
   } else {
+    outcomeTitle = t('outsiderWinsTitle', { ns: 'outside_the_story' }) || 'الغريب فاز!';
     outcomeMessage = t('outsiderWins', { ns: 'outside_the_story' })?.replace('{player}', outsider?.name ?? '');
   }
 
   // Main results screen UI
   return (
-    <div className="text-center max-w-md">
-      <h2 className="text-4xl font-bold mb-6">{t('results', { ns: 'outside_the_story' })}</h2>
+    <div className="flex flex-col items-center justify-center w-full max-w-lg mx-auto p-4">
+      <div className={`w-full p-6 text-center rounded-2xl mb-8 border-2 ${insidersWin ? 'bg-success/10 border-success' : 'bg-primary/10 border-primary'}`}>
+        <h2 className="text-4xl font-black mb-2 uppercase tracking-tight italic">
+          {outcomeTitle}
+        </h2>
+        <p className="text-xl opacity-90">{outcomeMessage}</p>
+      </div>
       
-      <div className="space-y-2 my-4 w-full text-2xl">
+      <div className="w-full space-y-3 mb-8">
+        <h3 className="text-sm font-bold uppercase tracking-widest opacity-60 px-2">
+          {t('scoreTable', { ns: 'outside_the_story' }) || 'نتائج الجولة'}
+        </h3>
         {players.map((p: Team) => (
-          <div key={p.id} className="flex items-center justify-between">
-            <span>{p.name}</span>
-            <span>{p.score}</span>
+          <div 
+            key={p.id} 
+            className={`flex items-center justify-between p-4 rounded-xl bg-card border border-border shadow-sm ${p.id === currentRound.outsiderId ? 'ring-2 ring-primary/30' : ''}`}
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center font-bold">
+                {p.name.charAt(0)}
+              </div>
+              <span className="font-bold text-lg">{p.name} {p.id === currentRound.outsiderId && '(🕵️)'}</span>
+            </div>
+            <div className="text-right">
+              <div className="text-2xl font-black">{p.score}</div>
+              {pointsAwarded && pointsAwarded[p.id] > 0 && (
+                <div className="text-xs font-bold text-success">+{pointsAwarded[p.id]}</div>
+              )}
+            </div>
           </div>
         ))}
       </div>
 
-      <p className="text-xl my-6">{outcomeMessage}</p>
-
-      {/* --- Go to round_end on next --- */}
-      <Button onClick={() => setGameState('round_end')} className="mt-8 w-full">
+      <Button 
+        onClick={() => setGameState('round_end')} 
+        size="lg"
+        className="w-full h-16 text-xl rounded-2xl shadow-xl hover:scale-[1.02] transition-transform"
+      >
         {t('next')}
       </Button>
     </div>

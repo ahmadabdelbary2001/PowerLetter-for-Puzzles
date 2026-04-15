@@ -1,7 +1,7 @@
 "use client";
 
 // src/screens/outside-story/components/VotingScreen.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@ui/atoms/Button';
 import type { useOutsideStory } from '@powerletter/core';
 import type { Team } from '@powerletter/core';
@@ -9,26 +9,20 @@ import type { Team } from '@powerletter/core';
 type Props = { game: ReturnType<typeof useOutsideStory> };
 
 export const VotingScreen: React.FC<Props> = ({ game }) => {
-  const { t, players, submitVote, finishVoting, votingPlayerIndex, nextVoter } = game;
+  const { t, players, submitVote, votingPlayerIndex, nextVoter } = game;
   const [voteCasted, setVoteCasted] = useState(false);
 
   // --- Determine the current voter ---
   const currentVoter = players[votingPlayerIndex];
 
-  // --- If all players have voted, finish the voting process ---
-  // Use useEffect to avoid setState during render warning
-  useEffect(() => {
-    if (!currentVoter) {
-      finishVoting();
-    }
-  }, [currentVoter, finishVoting]);
-
-  if (!currentVoter) {
-    return <p>{t('loading')}</p>; // Show loading while results are calculated
+  if (!currentVoter && !voteCasted) {
+    return <p>{t('loading')}</p>;
   }
 
   // Logic for handling votes and continuing
-  const voteOptions = players.filter((p: Team) => p.id !== currentVoter.id);
+  const voteOptions = currentVoter 
+    ? players.filter((p: Team) => p.id !== currentVoter.id)
+    : [];
 
   const handleVote = (votedForId: number) => {
     submitVote(currentVoter.id, votedForId);

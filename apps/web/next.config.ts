@@ -3,6 +3,7 @@ import path from "path";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+
   // Support Arabic/English with proper RTL
   i18n: undefined, // We use i18next client-side for flexibility
   // Allow importing from monorepo packages

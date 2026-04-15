@@ -9,13 +9,13 @@
  */
 
 import { useEffect, useRef, useState } from "react";
-import { Link } from '@ui/atoms/Link';
-import { Button } from '@ui/atoms/Button';
+import { Link } from "@ui/atoms/Link";
+import { Button } from "@ui/atoms/Button";
 import { cn } from "@ui/lib/utils";
-import { LanguageSelector } from '@ui/molecules/LanguageSelector';
-import { ModeToggler } from '@ui/molecules/ModeToggler';
-import { useGameMode, useTranslation } from '@powerletter/core';
-import { Logo } from '@ui/atoms/Logo';
+import { LanguageSelector } from "@ui/molecules/LanguageSelector";
+import { ModeToggler } from "@ui/molecules/ModeToggler";
+import { useGameMode, useTranslation } from "@powerletter/core";
+import { Logo } from "@ui/atoms/Logo";
 import { useAppLocation } from "@ui/contexts/RouterContext";
 import { Menu, ToyBrick, Home, Gamepad2, HelpCircle } from "lucide-react";
 
@@ -33,14 +33,15 @@ const navLinks = [
 ];
 
 export function Header({ currentView, showLanguage = true }: HeaderProps) {
-  const { language: currentLanguage, setLanguage: onLanguageChange } = useGameMode();
+  const { language: currentLanguage, setLanguage: onLanguageChange } =
+    useGameMode();
   const { t } = useTranslation();
   const location = useAppLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
   // Auto-hide language selector in game pages
-  const isGameRoute = location.pathname?.includes('/game/');
+  const isGameRoute = location.pathname?.includes("/game/");
   const effectiveShowLanguage = showLanguage && !isGameRoute;
 
   const mobilePanelRef = useRef<HTMLDivElement | null>(null);
@@ -87,7 +88,11 @@ export function Header({ currentView, showLanguage = true }: HeaderProps) {
         <Logo />
 
         {/* Desktop Navigation */}
-        <nav className="hidden sm:flex items-center gap-1" role="navigation" aria-label="Main">
+        <nav
+          className="hidden sm:flex items-center gap-1"
+          role="navigation"
+          aria-label="Main"
+        >
           {navLinks.map((link) => (
             <Link key={link.href} to={link.href}>
               <Button
@@ -96,8 +101,10 @@ export function Header({ currentView, showLanguage = true }: HeaderProps) {
                 className="flex items-center gap-2"
                 suppressHydrationWarning
               >
-                {link.view === 'kids' && <ToyBrick className="h-4 w-4 text-green-500" />}
-                {t(link.labelKey)}
+                {link.view === "kids" && (
+                  <ToyBrick className="h-4 w-4 text-green-500" />
+                )}
+                <span suppressHydrationWarning>{t(link.labelKey)}</span>
               </Button>
             </Link>
           ))}
@@ -108,10 +115,17 @@ export function Header({ currentView, showLanguage = true }: HeaderProps) {
           {effectiveShowLanguage && (
             <>
               <div className="hidden sm:block">
-                <LanguageSelector currentLanguage={currentLanguage} onLanguageChange={onLanguageChange} />
+                <LanguageSelector
+                  currentLanguage={currentLanguage}
+                  onLanguageChange={onLanguageChange}
+                />
               </div>
               <div className="sm:hidden">
-                <LanguageSelector currentLanguage={currentLanguage} onLanguageChange={onLanguageChange} compact />
+                <LanguageSelector
+                  currentLanguage={currentLanguage}
+                  onLanguageChange={onLanguageChange}
+                  compact
+                />
               </div>
             </>
           )}
@@ -122,9 +136,9 @@ export function Header({ currentView, showLanguage = true }: HeaderProps) {
               aria-controls="mobile-navigation"
               aria-expanded={mobileOpen}
               aria-label={mobileOpen ? t("closeMenu") : t("openMenu")}
+              suppressHydrationWarning
               onClick={() => setMobileOpen((s) => !s)}
               className="rounded-md p-2 hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              suppressHydrationWarning
             >
               <Menu className="h-5 w-5" />
             </button>
@@ -146,14 +160,24 @@ export function Header({ currentView, showLanguage = true }: HeaderProps) {
           >
             <div className="p-2 space-y-1">
               {navLinks.map((link) => (
-                <Link key={link.href} to={link.href} onClick={() => setMobileOpen(false)} className="block">
+                <Link
+                  key={link.href}
+                  to={link.href}
+                  onClick={() => setMobileOpen(false)}
+                  className="block"
+                >
                   <Button
                     variant={currentView === link.view ? "secondary" : "ghost"}
                     size="sm"
                     className="w-full justify-start gap-3"
                   >
-                    <link.Icon className={cn("h-4 w-4", link.view === 'kids' && 'text-green-500')} />
-                    {t(link.labelKey)}
+                    <link.Icon
+                      className={cn(
+                        "h-4 w-4",
+                        link.view === "kids" && "text-green-500"
+                      )}
+                    />
+                    <span suppressHydrationWarning>{t(link.labelKey)}</span>
                   </Button>
                 </Link>
               ))}

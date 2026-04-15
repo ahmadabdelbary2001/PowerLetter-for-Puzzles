@@ -6,10 +6,10 @@
  * Displays company information, quick links, contact details, and copyright information
  * Includes social media links and support status indicator
  */
-import { Link } from '@ui/atoms/Link';
-import { Logo } from '@ui/atoms/Logo';
+import { Link } from "@ui/atoms/Link";
+import { Logo } from "@ui/atoms/Logo";
 import { useTranslation } from "@powerletter/core";
-import { Badge } from '@ui/atoms/Badge';
+import { Badge } from "@ui/atoms/Badge";
 import { useAppLocation } from "@ui/contexts/RouterContext";
 
 export function Footer() {
@@ -17,7 +17,7 @@ export function Footer() {
   const location = useAppLocation();
 
   // Hide footer in game routes to avoid cluttering the game board
-  if (location.pathname?.includes('/game/')) {
+  if (location.pathname?.includes("/game/")) {
     return null;
   }
 
@@ -42,7 +42,10 @@ export function Footer() {
             {/* Brand */}
             <div className="space-y-4">
               <Logo showText showBadge={false} />
-              <p className="text-sm text-muted-foreground max-w-xs">
+              <p
+                className="text-sm text-muted-foreground max-w-xs"
+                suppressHydrationWarning
+              >
                 {t("description", { ns: "footer" })}
               </p>
 
@@ -63,7 +66,12 @@ export function Footer() {
 
             {/* Quick links */}
             <div>
-              <h4 className="text-sm font-semibold mb-4">{t("quickLinks", { ns: "footer" })}</h4>
+              <h4
+                className="text-sm font-semibold mb-4"
+                suppressHydrationWarning
+              >
+                {t("quickLinks", { ns: "footer" })}
+              </h4>
               <ul className="space-y-3 text-sm">
                 {quickLinks.map((link, i) => (
                   <li key={i}>
@@ -71,7 +79,7 @@ export function Footer() {
                       href={link.href}
                       className="text-muted-foreground hover:text-indigo-600 dark:hover:text-indigo-300 transition-colors"
                     >
-                      {link.name}
+                      <span suppressHydrationWarning>{link.name}</span>
                     </a>
                   </li>
                 ))}
@@ -80,15 +88,27 @@ export function Footer() {
 
             {/* Contact & support */}
             <div>
-              <h4 className="text-sm font-semibold mb-4">{t("contact", { ns: "footer" })}</h4>
+              <h4
+                className="text-sm font-semibold mb-4"
+                suppressHydrationWarning
+              >
+                {t("contact", { ns: "footer" })}
+              </h4>
               <ul className="space-y-3 text-sm">
                 <li className="flex items-start gap-3">
                   <div className="w-9 h-9 flex items-center justify-center rounded-lg bg-indigo-50 dark:bg-indigo-700/20">
                     <div className="w-2.5 h-2.5 bg-indigo-500 rounded-full" />
                   </div>
                   <div>
-                    <div className="text-muted-foreground">support@powerletter.com</div>
-                    <div className="text-xs text-muted-foreground/80">24/7 support</div>
+                    <div className="text-muted-foreground">
+                      support@powerletter.com
+                    </div>
+                    <div
+                      className="text-xs text-muted-foreground/80"
+                      suppressHydrationWarning
+                    >
+                      24/7 support
+                    </div>
                   </div>
                 </li>
 
@@ -97,15 +117,27 @@ export function Footer() {
                     <div className="w-2.5 h-2.5 bg-indigo-500 rounded-full" />
                   </div>
                   <div>
-                    <div className="text-muted-foreground">+1 (123) 456-7890</div>
-                    <div className="text-xs text-muted-foreground/80">{t("availableForSupport", { ns: "footer" })}</div>
+                    <div className="text-muted-foreground">
+                      +1 (123) 456-7890
+                    </div>
+                    <div
+                      className="text-xs text-muted-foreground/80"
+                      suppressHydrationWarning
+                    >
+                      {t("availableForSupport", { ns: "footer" })}
+                    </div>
                   </div>
                 </li>
 
                 <li className="pt-2">
-                  <Badge variant="outline" className="inline-flex items-center gap-2">
+                  <Badge
+                    variant="outline"
+                    className="inline-flex items-center gap-2"
+                  >
                     <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse inline-block" />
-                    <span className="text-xs">{t("availableForSupport", { ns: "footer" })}</span>
+                    <span className="text-xs" suppressHydrationWarning>
+                      {t("availableForSupport", { ns: "footer" })}
+                    </span>
                   </Badge>
                 </li>
               </ul>
@@ -114,22 +146,32 @@ export function Footer() {
 
           <div className="mt-8 pt-6 border-t border-slate-200/40 dark:border-slate-700/40 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
             <div>
-              {t("copyright", {
-                ns: "footer",
-                year: new Date().getFullYear(),
-              })}
+              <span suppressHydrationWarning>
+                {t("copyright", {
+                  ns: "footer",
+                  year: new Date().getFullYear(),
+                })}
+              </span>
             </div>
 
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-2 text-xs">
-                <span>{t("version", { ns: "footer" })}</span>
+                <span suppressHydrationWarning>
+                  {t("version", { ns: "footer" })}
+                </span>
                 <span className="font-mono text-xs">1.0.0</span>
               </div>
 
               <div className="flex items-center gap-2 text-xs">
-                <span>{t("madeWith", { ns: "footer" })}</span>
-                <span aria-hidden className="text-rose-500">♥</span>
-                <span>{t("byTeam", { ns: "footer" })}</span>
+                <span suppressHydrationWarning>
+                  {t("madeWith", { ns: "footer" })}
+                </span>
+                <span aria-hidden className="text-rose-500">
+                  ♥
+                </span>
+                <span suppressHydrationWarning>
+                  {t("byTeam", { ns: "footer" })}
+                </span>
               </div>
             </div>
           </div>

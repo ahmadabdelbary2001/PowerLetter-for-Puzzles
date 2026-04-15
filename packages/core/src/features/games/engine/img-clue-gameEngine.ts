@@ -3,32 +3,24 @@
  * @description The game engine for the Image Clue game.
  * It extends the shared ClueGameEngine and delegates to domain services.
  */
-import type { Language, GameCategory } from '@powerletter/core';
-import { ClueGameEngine } from './ClueGameEngine';
-import type { LevelModule } from './BaseGameEngine';
+import type { Language, GameCategory } from "@powerletter/core";
+import { ClueGameEngine } from "./ClueGameEngine";
+import type { LevelModule } from "./BaseGameEngine";
 // Import FSD entities
-import { imgClueRepository as levelRepository } from '@core/entities/repository/ImgClueRepository';
-import { imgClueValidationService as validationService } from '@core/entities/service/ImgClueValidationService';
-import type { ImageLevel } from '@core/entities/model/ImgClue';
+import { imgClueRepository as levelRepository } from "@core/entities/repository/ImgClueRepository";
+import { imgClueValidationService as validationService } from "@core/entities/service/ImgClueValidationService";
+import type { ImageLevel } from "@core/entities/model/ImgClue";
 
 // The engine class extends the base and implements the required abstract methods.
 class ImgClueGameEngine extends ClueGameEngine<ImageLevel> {
-  protected getGameId(): 'image-clue' {
-    return 'image-clue';
+  protected getGameId(): "image-clue" {
+    return "image-clue";
   }
 
-  // --- Delegate to domain repository for loading ---
-  public async loadLevels(options: {
-    language: Language;
-    categories: GameCategory[];
-  }): Promise<ImageLevel[]> {
-    // Load from first category (img-clue typically has single category)
-    const category = options.categories[0];
-    if (!category) return [];
-    return levelRepository.loadLevels({ language: options.language, category });
-  }
-
-  protected async loadModule(language: Language, category: GameCategory): Promise<LevelModule> {
+  protected async loadModule(
+    language: Language,
+    category: GameCategory
+  ): Promise<LevelModule> {
     // Use the static repository to avoid template literal dynamic imports failing at build time
     const levels = await levelRepository.loadLevels({ language, category });
     return { levels };

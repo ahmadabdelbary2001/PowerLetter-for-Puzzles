@@ -4,7 +4,16 @@
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["src/**", "tsconfig*.json", "vite.config.*", "next.config.*"],
-      "outputs": ["dist/**", "build/**", ".next/**", "src-tauri/target/**"]
+      "outputs": [
+        "dist/**",
+        "build/**",
+        ".next/**",
+        "src-tauri/target/**",
+        "packages/core/**/*.js",
+        "packages/core/**/*.d.ts",
+        "packages/ui/**/*.js",
+        "packages/ui/**/*.d.ts"
+      ]
     },
     "lint": {
       "dependsOn": ["^lint"],
@@ -20,4 +29,3 @@
     }
   }
 }
-

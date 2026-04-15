@@ -3,16 +3,19 @@
  * @description Game engine for the "Outside the Story" game.
  * --- Refactored to use Domain Services from FSD architecture ---
  */
-import type { Language, GameCategory } from '@powerletter/core';
+import type { Language, GameCategory } from "@powerletter/core";
 // Re-export types from model for backward compatibility
-export type { OutsiderLevel as OutsideStoryLevel } from '@core/entities/model/OutsideStory';
-import { type OutsiderLevel, OUTSIDE_STORY_ERROR_LEVEL as ERROR_LEVEL } from '@core/entities/model/OutsideStory';
+export type { OutsiderLevel as OutsideStoryLevel } from "@core/entities/model/OutsideStory";
+import {
+  type OutsiderLevel,
+  OUTSIDE_STORY_ERROR_LEVEL as ERROR_LEVEL,
+} from "@core/entities/model/OutsideStory";
 
-import { BaseGameEngine } from './BaseGameEngine';
-import type { LevelModule } from './BaseGameEngine';
+import { BaseGameEngine } from "./BaseGameEngine";
+import type { LevelModule } from "./BaseGameEngine";
 
 // Import FSD entities
-import { outsideStoryRepository as levelRepository } from '@core/entities/repository/OutsideStoryRepository';
+import { outsideStoryRepository as levelRepository } from "@core/entities/repository/OutsideStoryRepository";
 
 /**
  * Implements the game engine for the Outside the Story game.
@@ -20,38 +23,36 @@ import { outsideStoryRepository as levelRepository } from '@core/entities/reposi
  */
 class OutsideStoryGameEngine extends BaseGameEngine<OutsiderLevel> {
   protected getGameId(): string {
-    return 'outside-the-story';
+    return "outside-the-story";
   }
 
-  protected async loadModule(language: Language, category: GameCategory): Promise<LevelModule> {
-    // Handled by the repository - return empty to avoid dynamic imports in production build
+  protected async loadModule(
+    language: Language,
+    category: GameCategory
+  ): Promise<LevelModule> {
+    // Load one level object per category via repository.
     const [level] = await levelRepository.loadLevels(language, [category]);
     return { levels: level ? [level] : [] };
   }
 
-  protected validateLevel(): OutsiderLevel | null {
-    // Delegated to domain ValidationService
-    return null;
-  }
+  protected validateLevel(levelData: unknown): OutsiderLevel | null {
+    // Validation is handled mostly by repository shape; keep a strict guard here.
+    const level = levelData as OutsiderLevel;
 
-  /**
-   * Override base `loadLevels` to use domain repository
-   */
-  public async loadLevels(options: {
-    language: Language;
-    categories: GameCategory[];
-  }): Promise<OutsiderLevel[]> {
-    const { language, categories } = options;
-    
-    // Use domain repository for loading
-    const results = await levelRepository.loadLevels(language, categories);
-    
-    // Return error level if nothing loaded
-    if (results.length === 0 || (results.length === 1 && results[0].id === 'error')) {
-      return [this.getErrorLevel()];
+    if (
+      !level ||
+      !Array.isArray(level.words) ||
+      level.words.length === 0 ||
+      typeof level.id !== "string"
+    ) {
+      return null;
     }
 
-    return results;
+    // Pick random solution from selected category words (matches old behavior expectation).
+    const randomIndex = Math.floor(Math.random() * level.words.length);
+    level.solution = level.words[randomIndex];
+
+    return level;
   }
 
   protected getErrorLevel(): OutsiderLevel {

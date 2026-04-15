@@ -32,7 +32,7 @@ export const GameSelectionPageLayout: React.FC<GameSelectionPageLayoutProps> = (
   return (
     <div className={`min-h-screen ${backgroundClass}`}>
       <main className="min-h-[calc(100vh-8rem)]">
-        <div className="container mx-auto px-4 py-6 max-w-6xl" dir={dir}>
+        <div className="container mx-auto px-4 py-6 max-w-6xl" dir={dir} suppressHydrationWarning>
           {/* Page Header */}
           <div className="text-center mb-6 md:mb-8">
             {pageTitle}

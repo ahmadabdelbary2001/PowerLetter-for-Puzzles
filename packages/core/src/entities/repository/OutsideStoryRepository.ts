@@ -3,9 +3,9 @@
  * Repository for loading Outside the Story levels with Fetch strategy.
  */
 
-import type { Language, GameCategory } from '@core/shared/types/game';
-import type { OutsiderLevel, OutsiderLevelData } from '../model/OutsideStory';
-import { OUTSIDE_STORY_ERROR_LEVEL } from '../model/OutsideStory';
+import type { Language, GameCategory } from "@core/shared/types/game";
+import type { OutsiderLevel, OutsiderLevelData } from "../model/OutsideStory";
+import { OUTSIDE_STORY_ERROR_LEVEL } from "../model/OutsideStory";
 
 export class OutsideStoryRepository {
   private cache: Map<string, OutsiderLevel[]> = new Map();
@@ -14,8 +14,8 @@ export class OutsideStoryRepository {
     language: Language,
     categories: GameCategory[]
   ): Promise<OutsiderLevel[]> {
-    const cacheKey = `${language}-${categories.join(',')}`;
-    
+    const cacheKey = `${language}-${categories.join(",")}`;
+
     if (this.cache.has(cacheKey)) {
       return this.cache.get(cacheKey)!;
     }
@@ -37,16 +37,20 @@ export class OutsideStoryRepository {
     return results;
   }
 
-  private async loadCategory(language: Language, category: GameCategory): Promise<OutsiderLevel | null> {
+  private async loadCategory(
+    language: Language,
+    category: GameCategory
+  ): Promise<OutsiderLevel | null> {
     try {
-      const basePath = typeof window !== 'undefined' ? window.location.origin : '';
+      const basePath =
+        typeof window !== "undefined" ? window.location.origin : "";
       const dataUrl = `${basePath}/levels/${language}/outside-the-story/${category}.json`;
-      
+
       const response = await fetch(dataUrl);
       if (!response.ok) {
         throw new Error(`Failed to fetch ${dataUrl}`);
       }
-      
+
       const data: OutsiderLevelData = await response.json();
 
       if (!data.words || data.words.length === 0) {
@@ -62,12 +66,15 @@ export class OutsideStoryRepository {
         meta: data.meta ?? {},
       };
     } catch (error) {
-      console.error(`[OutsideStoryRepository] Error loading category ${category}:`, error);
-      
-      if (category !== 'animals') {
-        return this.loadCategory(language, 'animals');
+      console.error(
+        `[OutsideStoryRepository] Error loading category ${category}:`,
+        error
+      );
+
+      if (category !== "animals") {
+        return this.loadCategory(language, "animals");
       }
-      
+
       return null;
     }
   }

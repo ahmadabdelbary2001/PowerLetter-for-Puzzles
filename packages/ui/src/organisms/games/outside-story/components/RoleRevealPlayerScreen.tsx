@@ -8,13 +8,12 @@ import type { useOutsideStory } from '@powerletter/core';
 type Props = { game: ReturnType<typeof useOutsideStory> };
 
 export const RoleRevealPlayerScreen: React.FC<Props> = ({ game }) => {
-  const { t, players, currentRound, currentPlayerTurn, nextTurn, setGameState } = game;
+  const { t, players, currentRound, currentPlayerTurn, nextTurn } = game;
   const player = players[currentPlayerTurn];
   const isOutsider = player.id === currentRound?.outsiderId;
 
   const handleContinue = () => {
-    nextTurn(); // Increment the turn counter
-    setGameState('role_reveal_handoff'); // Go back to the handoff screen for the next player
+    nextTurn(); // The hook now handles whether to go to handoff or question_intro
   };
 
   // --- Get the category name from the current round ---

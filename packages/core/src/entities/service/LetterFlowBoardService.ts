@@ -19,7 +19,8 @@ export async function initWasmEngine(): Promise<void> {
   
   try {
     // Note: We need to adjust this path later if the wasm structure changes
-    // @ts-expect-error - WASM module loaded dynamically
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore - WASM module loaded dynamically, path resolved at runtime
     const module = await import(/* @vite-ignore */ '@core/wasm/power-engine');
     wasmEngine = module;
   } catch {

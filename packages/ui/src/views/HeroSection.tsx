@@ -6,10 +6,19 @@
  * Shared version for all monorepo apps.
  */
 // import React from 'react';
-import { Button } from '@ui/atoms/Button';
-import { Badge } from '@ui/atoms/Badge';
+import { Button } from "@ui/atoms/Button";
+import { Badge } from "@ui/atoms/Badge";
 import { useTranslation } from "@powerletter/core";
-import { Sparkles, Trophy, Lightbulb, Brain, Languages, Users, Gamepad2, ToyBrick } from "lucide-react";
+import {
+  Sparkles,
+  Trophy,
+  Lightbulb,
+  Brain,
+  Languages,
+  Users,
+  Gamepad2,
+  ToyBrick,
+} from "lucide-react";
 import { useAppRouter } from "@ui/contexts/RouterContext";
 
 interface HeroFeature {
@@ -18,14 +27,18 @@ interface HeroFeature {
   description: string;
 }
 
-export default function HeroSection(): JSX.Element {
+export default function HeroSection() {
   const { t, i18n } = useTranslation();
   const dir = i18n.dir();
   const router = useAppRouter();
 
   // Load translations with specific namespaces
-  const heroFeatures = (t('herofeatures', { ns: 'landing', returnObjects: true }) || []) as HeroFeature[];
-  const stats = (t('stats', { ns: 'landing', returnObjects: true }) || []) as Array<{ value: string; label: string; icon: string }>;
+  const heroFeatures = (t("herofeatures", {
+    ns: "landing",
+    returnObjects: true,
+  }) || []) as HeroFeature[];
+  const stats = (t("stats", { ns: "landing", returnObjects: true }) ||
+    []) as Array<{ value: string; label: string; icon: string }>;
 
   const handleStartPlaying = () => router.push("/games");
   const handleKidsGames = () => router.push("/kids-games");
@@ -40,7 +53,11 @@ export default function HeroSection(): JSX.Element {
         <div className="absolute top-40 left-1/4 w-80 h-80 bg-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000 dark:bg-indigo-900/50"></div>
       </div>
 
-      <div className="container relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 md:py-24" dir={dir} suppressHydrationWarning>
+      <div
+        className="container relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 md:py-24"
+        dir={dir}
+        suppressHydrationWarning
+      >
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Left Side: Enhanced Content */}
           <div className="space-y-8">
@@ -52,7 +69,9 @@ export default function HeroSection(): JSX.Element {
                 suppressHydrationWarning
               >
                 <Sparkles className="w-4 h-4 mr-2" />
-                <span suppressHydrationWarning>{t('betaStatus', { ns: 'landing' })}</span>
+                <span suppressHydrationWarning>
+                  {t("betaStatus", { ns: "landing" })}
+                </span>
               </Badge>
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">
@@ -60,42 +79,64 @@ export default function HeroSection(): JSX.Element {
                   PowerLetter
                 </span>
                 <br />
-                <span className="text-slate-800 dark:text-white" suppressHydrationWarning>
-                  {t('wordPuzzles', { ns: 'landing' })}
+                <span
+                  className="text-slate-800 dark:text-white"
+                  suppressHydrationWarning
+                >
+                  {t("wordPuzzles", { ns: "landing" })}
                 </span>
               </h1>
 
-              <div className="space-y-4 max-w-xl mx-auto lg:mx-0" suppressHydrationWarning>
-                <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-300 leading-relaxed" suppressHydrationWarning>
-                  {t('heroDescription', { ns: 'landing' })}
+              <div
+                className="space-y-4 max-w-xl mx-auto lg:mx-0"
+                suppressHydrationWarning
+              >
+                <p
+                  className="text-lg sm:text-xl text-slate-600 dark:text-slate-300 leading-relaxed"
+                  suppressHydrationWarning
+                >
+                  {t("heroDescription", { ns: "landing" })}
                 </p>
-                <p className="text-base text-muted-foreground leading-relaxed" suppressHydrationWarning>
-                  {t('heroAdditionalDescription', { ns: 'landing' })}
+                <p
+                  className="text-base text-muted-foreground leading-relaxed"
+                  suppressHydrationWarning
+                >
+                  {t("heroAdditionalDescription", { ns: "landing" })}
                 </p>
               </div>
             </div>
 
             {/* Enhanced Features Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {Array.isArray(heroFeatures) && heroFeatures.map((feature, index) => (
-                <div
-                  key={feature.title}
-                  className="flex items-start gap-3 p-4 rounded-2xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border border-slate-200 dark:border-slate-700 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group"
-                  style={{ animationDelay: `${index * 100}ms` }}
-                >
-                  <div className="shrink-0 w-10 h-10 bg-linear-to-r from-primary to-secondary rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-md">
-                    <span className="text-white text-lg">{feature.icon}</span>
+              {Array.isArray(heroFeatures) &&
+                heroFeatures.map((feature, index) => (
+                  <div
+                    key={feature.title}
+                    className="flex items-start gap-3 p-4 rounded-2xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border border-slate-200 dark:border-slate-700 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group"
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
+                    <div className="shrink-0 w-10 h-10 bg-linear-to-r from-primary to-secondary rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-md">
+                      <span className="text-white text-lg">{feature.icon}</span>
+                    </div>
+                    <div
+                      className="flex-1 min-w-0 text-left"
+                      suppressHydrationWarning
+                    >
+                      <h3
+                        className="font-semibold text-slate-800 dark:text-white text-sm mb-1"
+                        suppressHydrationWarning
+                      >
+                        {feature.title}
+                      </h3>
+                      <p
+                        className="text-xs text-muted-foreground leading-relaxed"
+                        suppressHydrationWarning
+                      >
+                        {feature.description}
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0 text-left" suppressHydrationWarning>
-                    <h3 className="font-semibold text-slate-800 dark:text-white text-sm mb-1" suppressHydrationWarning>
-                      {feature.title}
-                    </h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed" suppressHydrationWarning>
-                      {feature.description}
-                    </p>
-                  </div>
-                </div>
-              ))}
+                ))}
             </div>
 
             {/* Action Buttons */}
@@ -107,7 +148,9 @@ export default function HeroSection(): JSX.Element {
                 suppressHydrationWarning
               >
                 <Gamepad2 className="w-5 h-5 mr-3 group-hover:scale-110 transition-transform duration-300" />
-                <span suppressHydrationWarning>{t('startPlaying', { ns: 'landing' })}</span>
+                <span suppressHydrationWarning>
+                  {t("startPlaying", { ns: "landing" })}
+                </span>
               </Button>
               <Button
                 onClick={handleKidsGames}
@@ -117,7 +160,9 @@ export default function HeroSection(): JSX.Element {
                 suppressHydrationWarning
               >
                 <ToyBrick className="w-5 h-5 mr-3 group-hover:scale-110 transition-transform duration-300" />
-                <span suppressHydrationWarning>{t('kidsGames', { ns: 'landing' })}</span>
+                <span suppressHydrationWarning>
+                  {t("kidsGames", { ns: "landing" })}
+                </span>
               </Button>
               <Button
                 onClick={handleHowToPlay}
@@ -127,27 +172,46 @@ export default function HeroSection(): JSX.Element {
                 suppressHydrationWarning
               >
                 <Lightbulb className="w-5 h-5 mr-3 group-hover:scale-110 transition-transform duration-300" />
-                <span suppressHydrationWarning>{t('howToPlay', { ns: 'landing' })}</span>
+                <span suppressHydrationWarning>
+                  {t("howToPlay", { ns: "landing" })}
+                </span>
               </Button>
             </div>
 
             {/* Statistics */}
             <div className="grid grid-cols-3 gap-6 pt-8 border-t border-slate-200 dark:border-slate-700">
-              {Array.isArray(stats) && stats.map((stat, index) => (
-                <div
-                  key={stat.label}
-                  className="text-center group hover:scale-105 transition-transform duration-300"
-                  style={{ animationDelay: `${index * 150}ms` }}
-                >
-                  <div className="flex justify-center mb-2">
-                    {stat.icon === 'brain' && <Brain className="w-6 h-6 text-primary group-hover:scale-110 transition-transform duration-300" />}
-                    {stat.icon === 'languages' && <Languages className="w-6 h-6 text-secondary group-hover:scale-110 transition-transform duration-300" />}
-                    {stat.icon === 'users' && <Users className="w-6 h-6 text-indigo-500 group-hover:scale-110 transition-transform duration-300" />}
+              {Array.isArray(stats) &&
+                stats.map((stat, index) => (
+                  <div
+                    key={stat.label}
+                    className="text-center group hover:scale-105 transition-transform duration-300"
+                    style={{ animationDelay: `${index * 150}ms` }}
+                  >
+                    <div className="flex justify-center mb-2">
+                      {stat.icon === "brain" && (
+                        <Brain className="w-6 h-6 text-primary group-hover:scale-110 transition-transform duration-300" />
+                      )}
+                      {stat.icon === "languages" && (
+                        <Languages className="w-6 h-6 text-secondary group-hover:scale-110 transition-transform duration-300" />
+                      )}
+                      {stat.icon === "users" && (
+                        <Users className="w-6 h-6 text-indigo-500 group-hover:scale-110 transition-transform duration-300" />
+                      )}
+                    </div>
+                    <div
+                      className="text-2xl font-bold text-slate-800 dark:text-white"
+                      suppressHydrationWarning
+                    >
+                      {stat.value}
+                    </div>
+                    <div
+                      className="text-sm text-muted-foreground font-medium"
+                      suppressHydrationWarning
+                    >
+                      {stat.label}
+                    </div>
                   </div>
-                  <div className="text-2xl font-bold text-slate-800 dark:text-white" suppressHydrationWarning>{stat.value}</div>
-                  <div className="text-sm text-muted-foreground font-medium" suppressHydrationWarning>{stat.label}</div>
-                </div>
-              ))}
+                ))}
             </div>
           </div>
 
@@ -157,16 +221,24 @@ export default function HeroSection(): JSX.Element {
               <div className="w-full h-64 sm:h-80 bg-linear-to-br from-primary/10 to-secondary/10 rounded-2xl flex items-center justify-center relative overflow-hidden">
                 {/* Floating Game Elements */}
                 <div className="absolute top-4 left-4 w-10 h-10 sm:w-14 sm:h-14 bg-blue-500 rounded-lg animate-bounce shadow-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-base sm:text-lg">A</span>
+                  <span className="text-white font-bold text-base sm:text-lg">
+                    A
+                  </span>
                 </div>
                 <div className="absolute top-4 right-4 w-10 h-10 sm:w-14 sm:h-14 bg-green-500 rounded-lg animate-bounce shadow-lg animation-delay-1000 flex items-center justify-center">
-                  <span className="text-white font-bold text-base sm:text-lg">ب</span>
+                  <span className="text-white font-bold text-base sm:text-lg">
+                    ب
+                  </span>
                 </div>
                 <div className="absolute bottom-4 left-4 w-10 h-10 sm:w-14 sm:h-14 bg-amber-500 rounded-lg animate-bounce shadow-lg animation-delay-2000 flex items-center justify-center">
-                  <span className="text-white font-bold text-base sm:text-lg">Z</span>
+                  <span className="text-white font-bold text-base sm:text-lg">
+                    Z
+                  </span>
                 </div>
                 <div className="absolute bottom-4 right-4 w-10 h-10 sm:w-14 sm:h-14 bg-purple-500 rounded-lg animate-bounce shadow-lg animation-delay-1500 flex items-center justify-center">
-                  <span className="text-white font-bold text-base sm:text-lg">ك</span>
+                  <span className="text-white font-bold text-base sm:text-lg">
+                    ك
+                  </span>
                 </div>
 
                 {/* Central PowerLetter Icon */}
@@ -174,26 +246,51 @@ export default function HeroSection(): JSX.Element {
                   <div className="w-16 h-16 sm:w-20 sm:h-20 bg-linear-to-r from-primary to-secondary rounded-2xl flex items-center justify-center shadow-2xl mx-auto mb-4 animate-pulse-slow">
                     <span className="text-2xl sm:text-3xl text-white">⚡</span>
                   </div>
-                  <h3 className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-white mb-2">PowerLetter</h3>
-                  <p className="text-sm sm:text-base text-muted-foreground">{t('tagline', { ns: 'landing' })}</p>
+                  <h3
+                    className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-white mb-2"
+                    suppressHydrationWarning
+                  >
+                    PowerLetter
+                  </h3>
+                  <p
+                    className="text-sm sm:text-base text-muted-foreground"
+                    suppressHydrationWarning
+                  >
+                    {t("tagline", { ns: "landing" })}
+                  </p>
                 </div>
               </div>
 
               {/* Floating Achievement Badges */}
-              <div className="absolute -top-2 -right-2 sm:-top-3 sm:-right-3 bg-linear-to-r from-primary to-secondary text-white p-2 sm:p-3 rounded-full shadow-2xl flex items-center justify-center">
+              <div
+                className="absolute -top-2 -right-2 sm:-top-3 sm:-right-3 bg-linear-to-r from-primary to-secondary text-white p-2 sm:p-3 rounded-full shadow-2xl flex items-center justify-center"
+                suppressHydrationWarning
+              >
                 <Trophy className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
-              <div className="absolute -bottom-2 -left-2 sm:-bottom-3 sm:-left-3 bg-linear-to-r from-purple-500 to-purple-600 text-white p-2 sm:p-3 rounded-full shadow-2xl flex items-center justify-center">
+              <div
+                className="absolute -bottom-2 -left-2 sm:-bottom-3 sm:-left-3 bg-linear-to-r from-purple-500 to-purple-600 text-white p-2 sm:p-3 rounded-full shadow-2xl flex items-center justify-center"
+                suppressHydrationWarning
+              >
                 <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
 
               {/* Platform Badges */}
-              <div className="absolute -bottom-3 right-4 sm:right-8 flex gap-2">
-                <div className="bg-white dark:bg-slate-800 px-2 py-1 sm:px-3 rounded-full shadow-lg border border-slate-200 dark:border-slate-700 text-xs font-medium text-muted-foreground">
-                  🎯 {t('educational', { ns: 'landing' })}
+              <div
+                className="absolute -bottom-3 right-4 sm:right-8 flex gap-2"
+                suppressHydrationWarning
+              >
+                <div
+                  className="bg-white dark:bg-slate-800 px-2 py-1 sm:px-3 rounded-full shadow-lg border border-slate-200 dark:border-slate-700 text-xs font-medium text-muted-foreground"
+                  suppressHydrationWarning
+                >
+                  🎯 {t("educational", { ns: "landing" })}
                 </div>
-                <div className="bg-white dark:bg-slate-800 px-2 py-1 sm:px-3 rounded-full shadow-lg border border-slate-200 dark:border-slate-700 text-xs font-medium text-muted-foreground">
-                  🌍 {t('bilingual', { ns: 'landing' })}
+                <div
+                  className="bg-white dark:bg-slate-800 px-2 py-1 sm:px-3 rounded-full shadow-lg border border-slate-200 dark:border-slate-700 text-xs font-medium text-muted-foreground"
+                  suppressHydrationWarning
+                >
+                  🌍 {t("bilingual", { ns: "landing" })}
                 </div>
               </div>
             </div>

@@ -3,12 +3,12 @@
  * @description The game engine for the Image Choice game.
  * It extends the shared ChoiceGameEngine and delegates to domain services.
  */
-import { ChoiceGameEngine, type ChoiceLevel } from './ChoiceGameEngine';
-import type { Language, GameCategory } from '@powerletter/core';
-import type { LevelModule } from './BaseGameEngine';
+import { ChoiceGameEngine, type ChoiceLevel } from "./ChoiceGameEngine";
+import type { Language, GameCategory } from "@powerletter/core";
+import type { LevelModule } from "./BaseGameEngine";
 // Import FSD entities
-import { imgChoiceRepository as levelRepository } from '@core/entities/repository/ImgChoiceRepository';
-import { imgChoiceValidationService as validationService } from '@core/entities/service/ImgChoiceValidationService';
+import { imgChoiceRepository as levelRepository } from "@core/entities/repository/ImgChoiceRepository";
+import { imgChoiceValidationService as validationService } from "@core/entities/service/ImgChoiceValidationService";
 
 /**
  * @interface ImgChoiceLevel
@@ -22,22 +22,14 @@ export interface ImgChoiceLevel extends ChoiceLevel {
 
 // The engine class extends the base and delegates to domain services.
 class ImageChoiceGameEngine extends ChoiceGameEngine<ImgChoiceLevel> {
-  protected getGameId(): 'img-choice' {
-    return 'img-choice';
+  protected getGameId(): "img-choice" {
+    return "img-choice";
   }
 
-  // --- Delegate to domain repository for loading ---
-  public async loadLevels(options: {
-    language: Language;
-    categories: GameCategory[];
-  }): Promise<ImgChoiceLevel[]> {
-    // Load from first category (img-choice typically has single category)
-    const category = options.categories[0];
-    if (!category) return [];
-    return levelRepository.loadLevels({ language: options.language, category });
-  }
-
-  protected async loadModule(language: Language, category: GameCategory): Promise<LevelModule> {
+  protected async loadModule(
+    language: Language,
+    category: GameCategory
+  ): Promise<LevelModule> {
     // Use the static repository to avoid template literal dynamic imports failing at build time
     const levels = await levelRepository.loadLevels({ language, category });
     return { levels };

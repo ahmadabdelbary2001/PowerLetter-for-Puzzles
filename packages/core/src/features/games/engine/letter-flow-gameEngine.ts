@@ -4,17 +4,32 @@
  * This engine handles loading game levels, generating game boards, and assigning colors.
  * --- Refactored to use Domain Services from FSD architecture ---
  */
-import type { Language, Difficulty, GameCategory } from '@core/shared/types/game';
+import type {
+  Language,
+  Difficulty,
+  GameCategory,
+} from "@core/shared/types/game";
 // Re-export types from model for backward compatibility
-export type { BoardCell, LetterFlowLevel, WordPath } from '@core/entities/model/LetterFlow';
-import type { BoardCell, LetterFlowLevel, PathPoint } from '@core/entities/model/LetterFlow';
+export type {
+  BoardCell,
+  LetterFlowLevel,
+  WordPath,
+} from "@core/entities/model/LetterFlow";
+import type {
+  BoardCell,
+  LetterFlowLevel,
+  PathPoint,
+} from "@core/entities/model/LetterFlow";
 
-import { BaseGameEngine } from './BaseGameEngine';
-import type { LevelModule } from './BaseGameEngine';
+import { BaseGameEngine } from "./BaseGameEngine";
+import type { LevelModule } from "./BaseGameEngine";
 
-import { letterFlowRepository as levelRepository } from '@core/entities/repository/LetterFlowRepository';
-import { letterFlowBoardService as boardService, initWasmEngine } from '@core/entities/service/LetterFlowBoardService';
-import { letterFlowValidationService as validationService } from '@core/entities/service/LetterFlowValidationService';
+import { letterFlowRepository as levelRepository } from "@core/entities/repository/LetterFlowRepository";
+import {
+  letterFlowBoardService as boardService,
+  initWasmEngine,
+} from "@core/entities/service/LetterFlowBoardService";
+import { letterFlowValidationService as validationService } from "@core/entities/service/LetterFlowValidationService";
 
 /**
  * WASM Initialization
@@ -22,10 +37,10 @@ import { letterFlowValidationService as validationService } from '@core/entities
  */
 let wasmInitialized = false;
 const initWasm = async () => {
-    if (!wasmInitialized) {
-        await initWasmEngine();
-        wasmInitialized = true;
-    }
+  if (!wasmInitialized) {
+    await initWasmEngine();
+    wasmInitialized = true;
+  }
 };
 
 /**
@@ -33,51 +48,45 @@ const initWasm = async () => {
  * --- Now extends BaseGameEngine and delegates to domain services. ---
  */
 class LetterFlowGameEngine extends BaseGameEngine<LetterFlowLevel> {
-  /**
-   * Override base `loadLevels` to handle Letter Flow's unique loading logic.
-   */
-  public async loadLevels(options: {
-    language: Language;
-    difficulty?: Difficulty;
-  }): Promise<LetterFlowLevel[]> {
-    const { language, difficulty } = options;
-    if (!difficulty) return [];
-
-    try {
-      // Use domain repository for loading
-      const levels = await levelRepository.loadLevels({ language, difficulty });
-
-      return levels
-        .map((lvl: unknown): LetterFlowLevel | null => this.validateLevel(lvl, difficulty))
-        .filter((l: LetterFlowLevel | null): l is LetterFlowLevel => l !== null);
-    } catch (err) {
-      console.error(`LetterFlowGameEngine: Failed to load levels for ${language}/${difficulty}.`, err);
-      return [validationService.createErrorLevel()];
-    }
-  }
-
   // --- Implementation of abstract methods from BaseGameEngine ---
 
   protected getGameId(): string {
-    return 'letter-flow';
+    return "letter-flow";
   }
 
-  protected loadModule(language: Language, _: GameCategory, difficulty?: Difficulty): Promise<LevelModule> {
+  protected loadModule(
+    language: Language,
+    _: GameCategory,
+    difficulty?: Difficulty
+  ): Promise<LevelModule> {
     // Delegate to domain repository
-    return levelRepository.loadModule(language, difficulty) as Promise<LevelModule>;
+    return levelRepository.loadModule(
+      language,
+      difficulty
+    ) as Promise<LevelModule>;
   }
 
-  protected validateLevel(levelData: unknown, difficulty?: Difficulty): LetterFlowLevel | null {
+  protected validateLevel(
+    levelData: unknown,
+    difficulty?: Difficulty
+  ): LetterFlowLevel | null {
     const lvl = levelData as Record<string, unknown>;
     if (
-      lvl && typeof lvl === 'object' &&
-      'id' in lvl && 'solutionWord' in lvl && 'gridSize' in lvl && 'endpoints' in lvl
+      lvl &&
+      typeof lvl === "object" &&
+      "id" in lvl &&
+      "solutionWord" in lvl &&
+      "gridSize" in lvl &&
+      "endpoints" in lvl
     ) {
       // Use domain boardService for building board
-      const gridSize = (lvl as { gridSize: { width: number; height: number } }).gridSize;
-      const rawEndpoints = (lvl as { endpoints: { x: number; y: number; letter: string }[] }).endpoints;
-      
-      const endpoints: PathPoint[] = rawEndpoints.map(e => ({
+      const gridSize = (lvl as { gridSize: { width: number; height: number } })
+        .gridSize;
+      const rawEndpoints = (
+        lvl as { endpoints: { x: number; y: number; letter: string }[] }
+      ).endpoints;
+
+      const endpoints: PathPoint[] = rawEndpoints.map((e) => ({
         x: e.x,
         y: e.y,
         letter: e.letter,
@@ -92,7 +101,7 @@ class LetterFlowGameEngine extends BaseGameEngine<LetterFlowLevel> {
       const typedLvl = lvl as { id: string | number; solutionWord: string };
       return {
         id: String(typedLvl.id),
-        difficulty: difficulty ?? 'easy',
+        difficulty: difficulty ?? "easy",
         words: [typedLvl.solutionWord],
         board,
         solution: typedLvl.solutionWord,
@@ -110,7 +119,12 @@ class LetterFlowGameEngine extends BaseGameEngine<LetterFlowLevel> {
    * Generate a game board from a string of letters.
    * Delegates to boardService for WASM + JS fallback.
    */
-  public generateBoard(_s: string, _d: Difficulty, _l: Language, baseLetters?: string): BoardCell[] {
+  public generateBoard(
+    _s: string,
+    _d: Difficulty,
+    _l: Language,
+    baseLetters?: string
+  ): BoardCell[] {
     if (!baseLetters) return [];
     // Delegate to domain service
     return boardService.generateBoard(baseLetters);
