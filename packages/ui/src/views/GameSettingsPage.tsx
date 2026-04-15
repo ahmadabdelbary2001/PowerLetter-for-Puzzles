@@ -11,7 +11,6 @@ import { Button } from '../atoms/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '../atoms/Card';
 import { DifficultySelector } from '../molecules/DifficultySelector';
 import { CategorySelector } from '../molecules/CategorySelector';
-import { Header } from '../organisms/Header';
 import { useAppParams, useAppRouter } from '../contexts/RouterContext';
 import type { GameCategory } from '@core/shared/types/game';
 
@@ -92,7 +91,6 @@ const GameSettingsPage: React.FC<GameSettingsPageProps> = ({ settingType: propSe
   return (
     <div className="min-h-screen relative">
       <div className="fixed inset-0 bg-linear-to-br from-background via-muted/20 to-background -z-10" />
-      <Header currentView="play" />
       <main className="min-h-[calc(100vh-8rem)] flex items-center justify-center">
         <div className="container mx-auto px-4 py-8 max-w-4xl" dir={dir}>
           <Card className="w-full">

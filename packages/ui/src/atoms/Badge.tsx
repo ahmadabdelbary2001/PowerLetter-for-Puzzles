@@ -11,18 +11,13 @@ export interface BadgeProps
 }
 
 function Badge({ as: Component = "div", className, variant, size, style, ...props }: BadgeProps) {
-  const gradientStyle =
-    variant === "default"
-      ? {
-          backgroundImage:
-            "linear-gradient(90deg, var(--brand-primary) 0%, var(--brand-secondary) 60%, var(--brand-accent) 100%)",
-        }
-      : undefined;
-
-  const mergedStyle = { ...(style || {}), ...(gradientStyle || {}) };
-
-  return <Component className={cn(badgeVariants({ variant, size }), className)} style={mergedStyle} {...props} />;
+  return (
+    <Component 
+      className={cn(badgeVariants({ variant, size }), className)} 
+      style={style} 
+      {...props} 
+    />
+  );
 }
 
-export { Badge, badgeVariants };
-
+export { Badge };

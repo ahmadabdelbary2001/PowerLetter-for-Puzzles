@@ -5,7 +5,7 @@
  * KidsGameModeSelector component - A simplified version of GameModeSelector for kids.
  * --- This component now uses the shared GameSelectionLayout to render its UI. ---
  */
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@ui/atoms/Button';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
 import { useGameMode, useTranslation, KIDS_CATEGORIES } from "@powerletter/core";

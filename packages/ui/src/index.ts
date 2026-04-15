@@ -9,8 +9,10 @@ export { default as TeamConfigurator } from './views/TeamConfigurator';
 export { default as NotFound } from './views/NotFound';
 
 // --- Atoms ---
-export { Badge, badgeVariants } from './atoms/Badge';
-export { Button, buttonVariants } from './atoms/Button';
+export { Badge } from './atoms/Badge';
+export { badgeVariants } from './atoms/badge-variants';
+export { Button } from './atoms/Button';
+export { buttonVariants } from './atoms/button-variants';
 export { 
   Card, 
   CardHeader, 

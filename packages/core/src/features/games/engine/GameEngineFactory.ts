@@ -7,11 +7,13 @@
 import type { GameType } from '@powerletter/core';
 
 // A private registry of game engines.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const engineRegistry: Map<GameType, any> = new Map();
 
 /**
  * Registers an engine for a specific game type.
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function registerGameEngine(gameId: GameType, engine: any) {
   engineRegistry.set(gameId, engine);
 }

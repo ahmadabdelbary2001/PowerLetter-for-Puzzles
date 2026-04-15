@@ -19,20 +19,21 @@ interface UseGameNavigationOptions {
 
 export function useGameNavigation(options?: UseGameNavigationOptions) {
   const { gameMode } = useGameMode();
+  const { navigate, gameType } = options || {};
 
   /**
    * Immediate handleBack — only works when navigate + gameType are provided.
    */
   const handleBack = useCallback(() => {
-    if (!options?.navigate) {
+    if (!navigate) {
       console.warn('useGameNavigation: no navigate function provided');
       return;
     }
     const backPath = gameMode === 'competitive'
-      ? `/team-config/${options.gameType}`
+      ? `/team-config/${gameType}`
       : '/games';
-    options.navigate(backPath);
-  }, [options?.navigate, options?.gameType, gameMode]);
+    navigate(backPath);
+  }, [navigate, gameType, gameMode]);
 
   /**
    * Deferred handleBack — accepts navigate + gameType at call time.

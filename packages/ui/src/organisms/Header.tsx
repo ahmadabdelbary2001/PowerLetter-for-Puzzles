@@ -16,6 +16,7 @@ import { LanguageSelector } from '@ui/molecules/LanguageSelector';
 import { ModeToggler } from '@ui/molecules/ModeToggler';
 import { useGameMode, useTranslation } from '@powerletter/core';
 import { Logo } from '@ui/atoms/Logo';
+import { useAppLocation } from "@ui/contexts/RouterContext";
 import { Menu, ToyBrick, Home, Gamepad2, HelpCircle } from "lucide-react";
 
 interface HeaderProps {
@@ -34,8 +35,13 @@ const navLinks = [
 export function Header({ currentView, showLanguage = true }: HeaderProps) {
   const { language: currentLanguage, setLanguage: onLanguageChange } = useGameMode();
   const { t } = useTranslation();
+  const location = useAppLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+
+  // Auto-hide language selector in game pages
+  const isGameRoute = location.pathname?.includes('/game/');
+  const effectiveShowLanguage = showLanguage && !isGameRoute;
 
   const mobilePanelRef = useRef<HTMLDivElement | null>(null);
   const toggleButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -99,7 +105,7 @@ export function Header({ currentView, showLanguage = true }: HeaderProps) {
 
         {/* Right-side Actions */}
         <div className="flex items-center gap-3">
-          {showLanguage && (
+          {effectiveShowLanguage && (
             <>
               <div className="hidden sm:block">
                 <LanguageSelector currentLanguage={currentLanguage} onLanguageChange={onLanguageChange} />

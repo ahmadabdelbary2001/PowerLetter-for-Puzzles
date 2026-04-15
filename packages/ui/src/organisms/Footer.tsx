@@ -10,9 +10,16 @@ import { Link } from '@ui/atoms/Link';
 import { Logo } from '@ui/atoms/Logo';
 import { useTranslation } from "@powerletter/core";
 import { Badge } from '@ui/atoms/Badge';
+import { useAppLocation } from "@ui/contexts/RouterContext";
 
 export function Footer() {
   const { t } = useTranslation();
+  const location = useAppLocation();
+
+  // Hide footer in game routes to avoid cluttering the game board
+  if (location.pathname?.includes('/game/')) {
+    return null;
+  }
 
   const quickLinks = [
     { name: t("aboutUs", { ns: "footer" }), href: "#" },

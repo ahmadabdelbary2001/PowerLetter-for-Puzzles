@@ -5,7 +5,6 @@ import { Button } from '../atoms/Button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../atoms/Card';
 import { Input } from '../atoms/Input';
 import { Label } from '../atoms/Label';
-import { Header } from '../organisms/Header';
 import { Users, Plus, Minus, ArrowRight, ArrowLeft } from 'lucide-react';
 import { useGameMode, useTranslation } from '@powerletter/core';
 import { useAppParams, useAppLocation, useAppRouter } from '../contexts/RouterContext';
@@ -67,7 +66,6 @@ export const TeamConfigurator: React.FC<TeamConfiguratorProps> = ({ gameType: pr
 
   return (
     <div className="min-h-screen bg-linear-to-br from-background via-background to-muted/20">
-      <Header />
       <main className="min-h-[calc(100vh-8rem)] flex items-center justify-center">
         <div className="container mx-auto px-4 py-8 max-w-2xl" dir={dir}>
           <Card className="w-full">

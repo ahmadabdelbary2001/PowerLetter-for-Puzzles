@@ -5,7 +5,7 @@
  * @description A specialized "mixin" hook for "clue-style" games.
  * --- It is now a PURE mixin that does not call any global state hooks directly. ---
  */
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import type { GameLevel, Difficulty } from '@powerletter/core';
 import type { useGameController } from '@core/shared/hooks/game/useGameController';
 import type { Action as GameAction } from '@core/shared/lib/gameReducer';

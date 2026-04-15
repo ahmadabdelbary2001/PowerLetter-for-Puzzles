@@ -8,6 +8,7 @@
  * It's used in the game setup process to allow players to choose which categories
  * of questions they want to play with.
  */
+import React from 'react';
 import { Card, cn } from "../index";
 import { Check } from "lucide-react";
 import { useTranslation } from "@powerletter/core";

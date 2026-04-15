@@ -6,15 +6,15 @@ export const badgeVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-linear-to-r from-indigo-500 via-violet-500 to-pink-500 text-white shadow-sm ring-1 ring-indigo-200/20",
+          "bg-linear-to-br from-primary via-primary-light to-secondary text-primary-foreground shadow-sm ring-1 ring-white/10",
         secondary:
-          "bg-white/60 text-indigo-700 border border-indigo-100 shadow-sm dark:bg-gray-800/60 dark:text-indigo-200 dark:border-gray-700",
+          "bg-secondary/10 text-secondary-foreground border border-secondary/20 backdrop-blur-md shadow-sm",
         destructive:
-          "bg-red-50 text-red-700 border border-red-100 shadow-sm dark:bg-red-900/60 dark:text-red-200",
+          "bg-destructive/10 text-destructive border border-destructive/20 shadow-sm font-bold",
         outline:
-          "bg-transparent text-foreground border border-border/60 ring-1 ring-inset ring-transparent hover:ring-primary/20",
+          "bg-transparent text-foreground border border-border/60 hover:border-primary/40 hover:bg-primary/5 transition-all",
         subtle:
-          "bg-slate-100 text-slate-800 dark:bg-slate-800/60 dark:text-slate-100",
+          "bg-muted/50 text-muted-foreground border border-border/30 backdrop-blur-sm",
       },
       size: {
         sm: "px-2 py-0.5 text-xs",

@@ -5,7 +5,7 @@
  * Restored to original styling from PowerLetter-for-Puzzles-old.
  */
 import React from 'react';
-import { useGameMode, useTranslation } from '@powerletter/core';
+import { useGameMode, useTranslation, type GameType } from '@powerletter/core';
 import { GameSelectionPageLayout } from '../templates/GameSelectionPageLayout';
 import { GameSelectionCard } from '../molecules/GameSelectionCard';
 import { useAppRouter } from '../contexts/RouterContext';
@@ -17,7 +17,7 @@ const KidsGameSelector: React.FC = () => {
   const router = useAppRouter();
 
   const handleGameSelect = (id: string) => {
-    setGameType(id as any);
+    setGameType(id as GameType);
     router.push(`/game-mode/${id}`);
   };
 
@@ -25,9 +25,13 @@ const KidsGameSelector: React.FC = () => {
 
   return (
     <GameSelectionPageLayout
-      pageTitle={<h1 className="text-3xl md:text-4xl font-extrabold text-green-600 mb-3">{t('kidsGames', { ns: 'selection' })}</h1>}
+      pageTitle={
+        <h1 className="text-4xl md:text-5xl font-black tracking-tighter bg-linear-to-r from-green-500 via-emerald-400 to-teal-500 bg-clip-text text-transparent mb-4 leading-tight">
+          {t('kidsGames', { ns: 'selection' })}
+        </h1>
+      }
       pageDescription={t('kidsSelectionDesc', { ns: 'selection' })}
-      backgroundClass="bg-linear-to-br from-green-50 via-background to-green-50/30"
+      backgroundClass="bg-mesh"
       headerView="kids"
     >
       {games.map((game) => (

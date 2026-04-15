@@ -8,7 +8,6 @@ import { Badge } from '@ui/atoms/Badge';
 import { cn } from "@ui/lib/utils";
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useGameMode, useTranslation } from '@powerletter/core';
-import { Header } from '@ui/organisms/Header';
 import { Scoreboard } from '@ui/molecules/Scoreboard';
 import { TeamDisplay } from '@ui/molecules/TeamDisplay';
 import { GameInstructions } from '@ui/molecules/GameInstructions';
@@ -49,8 +48,6 @@ export const GameLayout: React.FC<GameLayoutProps> = ({
 
   return (
     <>
-      <Header currentView="play" showLanguage={false} />
-
       {/* Render notification as a fixed, viewport-anchored element so it floats at a fixed height */}
       {notification && (
         <Notification

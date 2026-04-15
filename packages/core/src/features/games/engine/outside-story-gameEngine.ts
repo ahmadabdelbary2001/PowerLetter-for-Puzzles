@@ -6,7 +6,7 @@
 import type { Language, GameCategory } from '@powerletter/core';
 // Re-export types from model for backward compatibility
 export type { OutsiderLevel as OutsideStoryLevel } from '@core/entities/model/OutsideStory';
-import { OutsiderLevel, OUTSIDE_STORY_ERROR_LEVEL as ERROR_LEVEL } from '@core/entities/model/OutsideStory';
+import { type OutsiderLevel, OUTSIDE_STORY_ERROR_LEVEL as ERROR_LEVEL } from '@core/entities/model/OutsideStory';
 
 import { BaseGameEngine } from './BaseGameEngine';
 import type { LevelModule } from './BaseGameEngine';

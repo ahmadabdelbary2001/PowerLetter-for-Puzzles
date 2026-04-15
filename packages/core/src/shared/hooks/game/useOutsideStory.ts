@@ -1,191 +1,173 @@
 "use client";
 
-// src/features/outside-story-game/hooks/useOutsideStory.ts
+// src/hooks/game/useOutsideStory.ts
 /**
- * @description The single, all-in-one hook for the Outside Story game.
+ * @description The main logic hook for the "Outside the Story" game.
+ * It manages the complex state machine (role reveal, questions, voting, guessing).
  */
-import { useCallback, useEffect, useState } from 'react';
-import { useGameController } from '@core/shared/hooks/game/useGameController';
-import { outsideStoryGameEngine } from '@core/features/games/engine/outside-story-gameEngine';
-import type { Team } from '@core/shared/types/game';
-
-// Import domain services
-import {
-  outsideStoryRoundService as roundService,
-  outsideStoryValidationService as validationService,
-} from '@core/entities/service/index';
-
-// Import types
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import type { 
-  OutsiderLevel,
-  GameState,
-  RoundInfo,
+  OutsiderLevel, 
+  GameState, 
+  QuestionPair, 
+  RoundInfo
 } from '@core/entities/model/OutsideStory';
-
-// Re-export types for backward compatibility
-export type { GameState, RoundInfo, OutsiderLevel as OutsideStoryLevel } from '@core/entities/model/OutsideStory';
-export type QuestionPair = { asker: Team; askee: Team; };
+import { POINTS_CORRECT } from '@core/entities/model/OutsideStory';
+import { outsideStoryGameEngine as engine } from '@core/features/games/engine/outside-story-gameEngine';
+import { useGameController } from '@core/shared/hooks/game/useGameController';
+import { shuffleArray } from '@core/shared/lib/gameUtils';
 
 export function useOutsideStory() {
-  // --- 1. CONTROLLER LAYER ---
+  // 1. Initialize the base game controller.
   const controller = useGameController<OutsiderLevel>({
-    engine: outsideStoryGameEngine,
+    engine,
     gameId: 'outsideStory',
   });
 
   const {
-    levels: loadedLevels,
-    loading: loadingLevels,
+    currentLevel,
     gameModeState,
-    setNotification,
-    handleBackWith,
   } = controller;
 
-  const { teams, resetScores, setGameMode } = gameModeState;
+  const { teams, updateScore } = gameModeState;
 
+  // 2. Local game state
   const [gameState, setGameState] = useState<GameState>('role_reveal_handoff');
-  const [currentRound, setCurrentRound] = useState<RoundInfo | null>(null);
-  const [history, setHistory] = useState<RoundInfo[]>([]);
-  const [currentPlayerTurn, setCurrentPlayerTurn] = useState<number>(0);
-  const [questionPairs, setQuestionPairs] = useState<QuestionPair[]>([]);
-  const [votingPlayerIndex, setVotingPlayerIndex] = useState<number>(0);
+  const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
+  const [roundInfo, setRoundInfo] = useState<RoundInfo | null>(null);
+  const [questions, setQuestions] = useState<QuestionPair[]>([]);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [votes, setVotes] = useState<Record<number, number>>({});
+  const [votersCount, setVotersCount] = useState(0);
 
-  const startRound = useCallback((category: string) => {
-    const level = loadedLevels.find((l: any) => l.category === category);
-    if (!level) {
-      console.warn('[useOutsideStory] Level not found for category:', category);
-      setNotification({ messageKey: 'categoryNotFound', type: 'error' });
-      return;
-    }
+  // 3. Initialize a new round when the level changes
+  useEffect(() => {
+    if (!currentLevel || currentLevel.id === 'error' || teams.length < 3) return;
 
-    if (!level.words || level.words.length === 0) {
-      console.warn('[useOutsideStory] Level has no words:', category, level);
-      setNotification({ messageKey: 'categoryNotFound', type: 'error' });
-      return;
-    }
+    // Reset local state
+    setGameState('role_reveal_handoff');
+    setCurrentPlayerIndex(0);
+    setVotes({});
+    setVotersCount(0);
 
-    const validation = validationService.canStartRound(level, teams.length);
-    if (!validation.valid) {
-      console.warn('[useOutsideStory] Validation failed:', validation.reason);
-      setNotification({ messageKey: validation.reason ?? 'unknownError', type: 'error' });
-      return;
-    }
+    // Prepare round info
+    const playerIds = teams.map(t => t.id);
+    const outsiderIndex = Math.floor(Math.random() * playerIds.length);
+    const outsiderId = playerIds[outsiderIndex];
+    const insiders = playerIds.filter(id => id !== outsiderId);
 
-    const playerIds = teams.map((p: any) => p.id);
-    const roundConfig = roundService.createRoundConfig(category, level.words, playerIds);
+    // Prepare questions (everyone asks the person to their right)
+    const shuffledPlayers = shuffleArray([...teams]);
+    const questionPairs: QuestionPair[] = shuffledPlayers.map((player, i) => {
+      const nextPlayer = shuffledPlayers[(i + 1) % shuffledPlayers.length];
+      return {
+        asker: { id: player.id, name: player.name, color: '' }, // Colors are handled in mapping below
+        askee: { id: nextPlayer.id, name: nextPlayer.name, color: '' },
+      };
+    });
 
-    if (!roundConfig) {
-      setNotification({ messageKey: 'failedToStartRound', type: 'error' });
-      return;
-    }
-
-    const round: RoundInfo = {
-      id: `${Date.now()}`,
-      category: roundConfig.category,
-      secret: roundConfig.secret,
-      words: roundConfig.words,
-      outsiderId: roundConfig.outsiderId,
-      insiders: playerIds.filter((id: any) => id !== roundConfig.outsiderId),
+    setQuestions(questionPairs);
+    setRoundInfo({
+      id: currentLevel.id,
+      category: currentLevel.category,
+      secret: currentLevel.solution,
+      words: currentLevel.words,
+      outsiderId,
+      insiders,
       votes: {},
       revealed: false,
-    };
+    });
+  }, [currentLevel, teams]);
 
-    setCurrentRound(round);
-    setCurrentPlayerTurn(0);
-    setGameState('role_reveal_handoff');
-  }, [loadedLevels, teams, setNotification]);
+  // 4. Transitions
+  const handleNextPlayer = useCallback(() => {
+    if (gameState === 'role_reveal_player') {
+      if (currentPlayerIndex < teams.length - 1) {
+        setCurrentPlayerIndex(prev => prev + 1);
+        setGameState('role_reveal_handoff');
+      } else {
+        setGameState('question_intro');
+      }
+    }
+  }, [gameState, currentPlayerIndex, teams.length]);
 
-  useEffect(() => {
-    if (loadingLevels || loadedLevels.length === 0 || currentRound) return;
-    startRound(loadedLevels[0].category);
-  }, [loadingLevels, loadedLevels, currentRound, startRound]);
-
-  const setupQuestionTurns = useCallback(() => {
-    if (teams.length < 2) return;
-    const playerIds = teams.map((p: any) => p.id);
-    const pairs = roundService.createQuestionPairs(playerIds);
-    const teamMap = new Map(teams.map((t: any) => [t.id, t]));
-    const questionPairs: QuestionPair[] = pairs.map(({ asker, askee }: any) => ({
-      asker: teamMap.get(asker)!,
-      askee: teamMap.get(askee)!,
-    }));
-
-    setQuestionPairs(questionPairs);
-    setCurrentPlayerTurn(0);
+  const handleStartQuestions = useCallback(() => {
     setGameState('question_turn');
-  }, [teams]);
+    setCurrentQuestionIndex(0);
+  }, []);
 
-  const finishVoting = useCallback(() => {
-    if (!currentRound) return;
-    const voteEntries = Object.entries(currentRound.votes).map(([voterId, votedForId]) => ({
-      voterId: parseInt(voterId, 10),
-      votedForId,
+  const handleNextQuestion = useCallback(() => {
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(prev => prev + 1);
+    } else {
+      setGameState('voting');
+    }
+  }, [currentQuestionIndex, questions.length]);
+
+  const handleVote = useCallback((votedForId: number) => {
+    setVotes(prev => ({
+      ...prev,
+      [votedForId]: (prev[votedForId] || 0) + 1,
     }));
-    const votedPlayerId = roundService.determineVotedPlayer(voteEntries, currentRound.outsiderId);
-    setCurrentRound((prev: any) => prev ? { ...prev, roundResult: { votedPlayerId: votedPlayerId ?? undefined, pointsAwarded: {} } } : null);
-    setGameState('outsider_guess');
-  }, [currentRound]);
+    
+    setVotersCount(prev => {
+      const newCount = prev + 1;
+      if (newCount >= teams.length) {
+        // Calculate the winner of the vote
+        setGameState('results');
+      }
+      return newCount;
+    });
+  }, [teams.length]);
 
   const handleOutsiderGuess = useCallback((guess: string) => {
-    if (!currentRound) return;
-    const voteEntries = Object.entries(currentRound.votes).map(([voterId, votedForId]) => ({
-      voterId: parseInt(voterId, 10),
-      votedForId,
-    }));
-    const scores = roundService.calculateScores(voteEntries, currentRound.outsiderId, guess, currentRound.secret);
-    const pointsAwarded = roundService.scoresToRecord(scores);
-    const outsiderGuessedCorrectly = roundService.checkOutsiderGuess(guess, currentRound.secret);
+    if (!roundInfo) return;
+    
+    const isCorrect = guess.toLowerCase().trim() === roundInfo.secret.toLowerCase().trim();
+    
+    // Calculate points
+    const pointsAwarded: Record<number, number> = {};
+    if (isCorrect) {
+      pointsAwarded[roundInfo.outsiderId] = POINTS_CORRECT;
+      updateScore(roundInfo.outsiderId, POINTS_CORRECT);
+    } else {
+      roundInfo.insiders.forEach(id => {
+        pointsAwarded[id] = POINTS_CORRECT / 2;
+        updateScore(id, POINTS_CORRECT / 2);
+      });
+    }
 
-    resetScores(pointsAwarded);
-    const finalRound: RoundInfo = {
-      ...currentRound,
-      revealed: true,
+    setRoundInfo(prev => prev ? {
+      ...prev,
       roundResult: {
-        ...currentRound.roundResult,
-        outsiderGuessedCorrectly,
+        outsiderGuessedCorrectly: isCorrect,
         pointsAwarded,
       }
-    };
-    setCurrentRound(finalRound);
-    setHistory(prev => [finalRound, ...prev]);
-    setGameState('results');
-  }, [currentRound, teams, resetScores]);
+    } : null);
 
-  const nextTurn = () => setCurrentPlayerTurn(prev => prev + 1);
-  const nextVoter = () => setVotingPlayerIndex(prev => prev + 1);
-  const playAgain = useCallback(() => {
-    setCurrentPlayerTurn(0);
-    setVotingPlayerIndex(0);
-    setCurrentRound(null);
-  }, []);
-  const changePlayersAndReset = useCallback(() => {
-    setGameMode('competitive');
-    resetScores({});
-  }, [setGameMode, resetScores]);
+    setGameState('round_end');
+  }, [roundInfo, updateScore]);
+
+  // 5. Computed
+  const currentPlayer = useMemo(() => teams[currentPlayerIndex], [teams, currentPlayerIndex]);
+  const currentQuestion = useMemo(() => questions[currentQuestionIndex], [questions, currentQuestionIndex]);
 
   return {
     ...controller,
-    handleBackWith,
-    players: teams,
-    levels: loadedLevels,
-    loadingLevels,
-    currentRound,
-    history,
-    startRound,
-    playAgain,
-    changePlayersAndReset,
     gameState,
     setGameState,
-    currentPlayerTurn,
-    nextTurn,
-    finishVoting,
+    currentPlayer,
+    currentPlayerIndex,
+    roundInfo,
+    questions,
+    currentQuestion,
+    currentQuestionIndex,
+    votersCount,
+    votes,
+    handleNextPlayer,
+    handleStartQuestions,
+    handleNextQuestion,
+    handleVote,
     handleOutsiderGuess,
-    setupQuestionTurns,
-    questionPairs,
-    submitVote: (voterId: number, votedPlayerId: number) => {
-      setCurrentRound((prev: any) => prev ? { ...prev, votes: { ...prev.votes, [voterId]: votedPlayerId } } : null);
-    },
-    votingPlayerIndex,
-    nextVoter,
-  } as const;
+  };
 }

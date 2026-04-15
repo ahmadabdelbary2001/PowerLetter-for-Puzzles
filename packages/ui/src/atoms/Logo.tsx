@@ -1,62 +1,55 @@
 // src/components/atoms/Logo.tsx
-/**
- * Logo - The application logo component
- * 
- * This component renders the PowerLetter logo with optional text and badge.
- * It's used throughout the application to provide consistent branding.
- * The logo is responsive and adapts its display based on screen size.
- */
 import { Link } from './Link';
 import { Badge, cn } from "../index";
 import { useTranslation } from "@powerletter/core";
+import { motion } from "framer-motion";
 
-/**
- * Props for the Logo component
- */
 interface LogoProps {
-  /** Whether to show the text alongside the logo icon */
   showText?: boolean;
-  /** Whether to show the beta badge */
   showBadge?: boolean;
-  /** Additional CSS classes for custom styling */
   className?: string;
 }
 
-/**
- * Logo component - Renders the application logo
- * 
- * This component displays the PowerLetter logo consisting of a lightning bolt icon,
- * optional text, and an optional beta badge. It's a Link component that navigates
- * to the home page when clicked. The component is responsive and hides certain
- * elements on smaller screens.
- */
 export function Logo({ showText = true, showBadge = true, className }: LogoProps) {
-  const { t } = useTranslation(); // Get the translation function
+  const { t } = useTranslation();
 
   return (
-    <Link to="/" className={cn("flex items-center gap-3 hover:opacity-80 transition-opacity", className)}>
-      <div className="relative">
-        {/* Lightning bolt icon with gradient text */}
-        <div className="text-2xl sm:text-3xl font-bold bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
+    <Link to="/" className={cn("flex items-center gap-3 group px-1", className)}>
+      <motion.div 
+        className="relative"
+        whileHover={{ scale: 1.1, rotate: [0, -10, 10, 0] }}
+        transition={{ duration: 0.4 }}
+      >
+        {/* Lightning bolt icon with enhanced gradient */}
+        <div className="text-2xl sm:text-3xl font-bold bg-linear-to-br from-primary via-primary-light to-secondary bg-clip-text text-transparent filter drop-shadow-sm">
           ⚡
         </div>
-        {/* Animated pulse indicator */}
-        <div className="absolute -top-1 -right-1 w-2 h-2 bg-amber-400 rounded-full animate-pulse" />
-      </div>
-      {/* Logo text - hidden on small screens */}
+        {/* Animated pulse indicator with custom color */}
+        <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-secondary rounded-full animate-pulse border-2 border-background" />
+      </motion.div>
+
+      {/* Logo text - enhanced tracking and weight */}
       {showText && (
         <div className="hidden sm:block">
-          <h1 className="text-lg sm:text-xl font-bold bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
+          <motion.h1 
+            className="text-lg sm:text-xl font-black bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent leading-none tracking-tight"
+            whileHover={{ scale: 1.02 }}
+          >
             PowerLetter
-          </h1>
-          {/* --- Use translation for the tagline --- */}
-          <p className="text-xs text-muted-foreground -mt-1" suppressHydrationWarning>{t('tagline', { ns: 'landing' })}</p>
+          </motion.h1>
+          <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground/60 -mt-0.5" suppressHydrationWarning>
+            {t('tagline', { ns: 'landing' })}
+          </p>
         </div>
       )}
-      {/* Beta badge - hidden on small screens */}
+
+      {/* Beta badge - premium styling */}
       {showBadge && (
-        <Badge variant="outline" className="ml-2 text-xs bg-linear-to-r from-primary/10 to-secondary/10 hidden sm:inline" suppressHydrationWarning>
-          {/* --- Use translation for the badge text --- */}
+        <Badge 
+          variant="outline" 
+          className="ml-2 text-[10px] font-bold uppercase tracking-wider bg-primary/5 border-primary/20 hover:bg-primary/10 transition-colors hidden sm:inline-flex" 
+          suppressHydrationWarning
+        >
           {t('beta', { ns: 'landing' })}
         </Badge>
       )}
