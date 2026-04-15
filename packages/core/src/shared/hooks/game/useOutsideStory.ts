@@ -400,5 +400,7 @@ export function useOutsideStory() {
     handleStartQuestions: setupQuestionTurns,
     handleNextQuestion,
     handleVote: submitVote,
-  } as const;
+  };
 }
+
+export type UseOutsideStoryResult = ReturnType<typeof useOutsideStory>;

@@ -1,11 +1,11 @@
 "use client";
 
 // src/screens/outside-story/components/RoleRevealHandoffScreen.tsx
-import React, { useEffect } from 'react';
-import { Button } from '@ui/atoms/Button';
-import type { useOutsideStory } from '@powerletter/core';
+import React, { useEffect } from "react";
+import { Button } from "@ui/atoms/Button";
+import type { UseOutsideStoryResult } from "@powerletter/core";
 
-type Props = { game: ReturnType<typeof useOutsideStory> };
+type Props = { game: UseOutsideStoryResult };
 
 export const RoleRevealHandoffScreen: React.FC<Props> = ({ game }) => {
   const { t, players, currentPlayerTurn, setGameState } = game;
@@ -14,7 +14,7 @@ export const RoleRevealHandoffScreen: React.FC<Props> = ({ game }) => {
   useEffect(() => {
     // If the turn counter has gone past the last player, it's time to start the questions.
     if (currentPlayerTurn >= players.length) {
-      setGameState('question_intro');
+      setGameState("question_intro");
     }
   }, [currentPlayerTurn, players.length, setGameState]);
 
@@ -29,13 +29,19 @@ export const RoleRevealHandoffScreen: React.FC<Props> = ({ game }) => {
     <div className="text-center max-w-md">
       <h2 className="text-3xl font-bold mb-4">{player.name}</h2>
       <p className="text-xl">
-        {t('givePhoneToPlayer', { ns: 'outside_the_story' })?.replace('{player}', player.name)}
+        {t("givePhoneToPlayer", { ns: "outside_the_story" })?.replace(
+          "{player}",
+          player.name
+        )}
       </p>
       <p className="text-xl mt-2">
-        {t('pressNextToSeeRole', { ns: 'outside_the_story' })}
+        {t("pressNextToSeeRole", { ns: "outside_the_story" })}
       </p>
-      <Button onClick={() => setGameState('role_reveal_player')} className="mt-8 w-full">
-        {t('next')}
+      <Button
+        onClick={() => setGameState("role_reveal_player")}
+        className="mt-8 w-full"
+      >
+        {t("next")}
       </Button>
     </div>
   );

@@ -4,9 +4,9 @@
 import React from "react";
 import { Button } from "@ui/atoms/Button";
 import { useAppRouter } from "@ui/contexts/RouterContext";
-import type { useOutsideStory } from "@powerletter/core";
+import type { UseOutsideStoryResult } from "@powerletter/core";
 
-type Props = { game: ReturnType<typeof useOutsideStory> };
+type Props = { game: UseOutsideStoryResult };
 
 export const RoundEndScreen: React.FC<Props> = ({ game }) => {
   const { t, playAgain, changePlayersAndReset } = game;

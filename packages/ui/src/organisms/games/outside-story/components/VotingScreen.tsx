@@ -1,12 +1,11 @@
 "use client";
 
 // src/screens/outside-story/components/VotingScreen.tsx
-import React, { useState } from 'react';
-import { Button } from '@ui/atoms/Button';
-import type { useOutsideStory } from '@powerletter/core';
-import type { Team } from '@powerletter/core';
+import React, { useState } from "react";
+import { Button } from "@ui/atoms/Button";
+import type { Team, UseOutsideStoryResult } from "@powerletter/core";
 
-type Props = { game: ReturnType<typeof useOutsideStory> };
+type Props = { game: UseOutsideStoryResult };
 
 export const VotingScreen: React.FC<Props> = ({ game }) => {
   const { t, players, submitVote, votingPlayerIndex, nextVoter } = game;
@@ -16,11 +15,11 @@ export const VotingScreen: React.FC<Props> = ({ game }) => {
   const currentVoter = players[votingPlayerIndex];
 
   if (!currentVoter && !voteCasted) {
-    return <p>{t('loading')}</p>;
+    return <p>{t("loading")}</p>;
   }
 
   // Logic for handling votes and continuing
-  const voteOptions = currentVoter 
+  const voteOptions = currentVoter
     ? players.filter((p: Team) => p.id !== currentVoter.id)
     : [];
 
@@ -38,14 +37,17 @@ export const VotingScreen: React.FC<Props> = ({ game }) => {
   if (voteCasted) {
     const nextVoterPlayer = players[votingPlayerIndex + 1];
     const message = nextVoterPlayer
-      ? t('passDeviceAndVote', { ns: 'outside_the_story' })?.replace('{player}', nextVoterPlayer.name)
-      : t('submitVote', { ns: 'outside_the_story' });
+      ? t("passDeviceAndVote", { ns: "outside_the_story" })?.replace(
+          "{player}",
+          nextVoterPlayer.name
+        )
+      : t("submitVote", { ns: "outside_the_story" });
 
     return (
       <div className="text-center max-w-md">
         <h2 className="text-3xl font-bold mb-4">{message}</h2>
         <Button onClick={handleContinue} className="mt-8 w-full">
-          {t('next')}
+          {t("next")}
         </Button>
       </div>
     );
@@ -55,14 +57,17 @@ export const VotingScreen: React.FC<Props> = ({ game }) => {
   return (
     <div className="text-center max-w-md">
       <h2 className="text-3xl font-bold mb-4">
-        {t('yourTurnToVote', { ns: 'outside_the_story' })?.replace('{player}', currentVoter.name)}
+        {t("yourTurnToVote", { ns: "outside_the_story" })?.replace(
+          "{player}",
+          currentVoter.name
+        )}
       </h2>
       <div className="flex flex-col gap-3 w-full">
         {voteOptions.map((p: Team) => (
           <Button
             key={p.id}
             onClick={() => handleVote(p.id)}
-            variant='secondary'
+            variant="secondary"
             className="h-16 text-xl"
           >
             {p.name}

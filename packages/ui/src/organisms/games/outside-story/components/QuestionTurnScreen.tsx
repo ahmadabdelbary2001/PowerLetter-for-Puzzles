@@ -1,19 +1,23 @@
 "use client";
 
 // src/screens/outside-story/components/QuestionTurnScreen.tsx
-import React from 'react';
-import { Button } from '@ui/atoms/Button';
-import type { useOutsideStory } from '@powerletter/core';
+import React from "react";
+import { Button } from "@ui/atoms/Button";
+import type { UseOutsideStoryResult } from "@powerletter/core";
 
-type Props = { game: ReturnType<typeof useOutsideStory> };
+type Props = { game: UseOutsideStoryResult };
 
 export const QuestionTurnScreen: React.FC<Props> = ({ game }) => {
   // --- Get the pre-calculated pairs from the hook ---
   const { t, currentPlayerTurn, setGameState, nextTurn, questionPairs } = game;
 
   // --- Guard clause to prevent rendering before pairs are ready ---
-  if (!questionPairs || questionPairs.length === 0 || currentPlayerTurn >= questionPairs.length) {
-    return <p>{t('loading')}</p>;
+  if (
+    !questionPairs ||
+    questionPairs.length === 0 ||
+    currentPlayerTurn >= questionPairs.length
+  ) {
+    return <p>{t("loading")}</p>;
   }
 
   // --- Get the current pair from the stable array ---
@@ -23,7 +27,7 @@ export const QuestionTurnScreen: React.FC<Props> = ({ game }) => {
   // Logic to handle the next turn or move to voting
   const handleNext = () => {
     if (currentPlayerTurn >= questionPairs.length - 1) {
-      setGameState('voting');
+      setGameState("voting");
     } else {
       nextTurn();
     }
@@ -31,16 +35,17 @@ export const QuestionTurnScreen: React.FC<Props> = ({ game }) => {
 
   return (
     <div className="text-center max-w-md">
-      <h2 className="text-3xl font-bold mb-4">{t('questionTime', { ns: 'outside_the_story' })}</h2>
+      <h2 className="text-3xl font-bold mb-4">
+        {t("questionTime", { ns: "outside_the_story" })}
+      </h2>
       <p className="text-xl">
         {/* This message will now appear correctly for all players */}
-        {t('askerToAskeeInstruction', { ns: 'outside_the_story' })
-          ?.replace('{asker}', asker.name)
-          .replace('{askee}', askee.name) 
-        }
+        {t("askerToAskeeInstruction", { ns: "outside_the_story" })
+          ?.replace("{asker}", asker.name)
+          .replace("{askee}", askee.name)}
       </p>
       <Button onClick={handleNext} className="mt-8 w-full">
-        {t('next')}
+        {t("next")}
       </Button>
     </div>
   );
