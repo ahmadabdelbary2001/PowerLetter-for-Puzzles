@@ -12,7 +12,7 @@
  * - Stable voting progression with explicit `votingPlayerIndex`.
  * - Deterministic transitions without stale closure issues.
  */
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useState, useCallback, useMemo, useEffect, Dispatch, SetStateAction } from "react";
 import type {
   OutsiderLevel,
   GameState,
@@ -403,4 +403,52 @@ export function useOutsideStory() {
   };
 }
 
-export type UseOutsideStoryResult = ReturnType<typeof useOutsideStory>;
+import type { Team } from "@powerletter/core";
+
+export interface UseOutsideStoryResult
+  extends Omit<
+    ReturnType<typeof useGameController<OutsiderLevel>>,
+    "gameState" | "setGameState"
+  > {
+  // FSM
+  gameState: GameState;
+  setGameState: Dispatch<SetStateAction<GameState>>;
+
+  // Round data
+  currentRound: RoundInfo | null;
+  roundInfo: RoundInfo | null;
+
+  // players / turns
+  players: Team[];
+  currentPlayer: Team;
+  currentPlayerIndex: number;
+  currentPlayerTurn: number;
+
+  // question flow
+  questionPairs: QuestionPair[];
+  questions: QuestionPair[];
+  currentQuestion: QuestionPair | undefined;
+  currentQuestionIndex: number;
+  setupQuestionTurns: () => void;
+
+  // voting flow
+  submitVote: (voterId: number, votedForId: number) => void;
+  finishVoting: () => void;
+  votingPlayerIndex: number;
+  votersCount: number;
+  votes: Record<number, number>;
+  nextVoter: () => void;
+
+  // main actions
+  nextTurn: () => void;
+  handleOutsiderGuess: (guess: string) => void;
+  playAgain: () => void;
+  changePlayersAndReset: () => void;
+
+  // internal callbacks (compatibility)
+  handleNextPlayer: () => void;
+  handleStartQuestions: () => void;
+  handleNextQuestion: () => void;
+  handleVote: (voterId: number, votedForId: number) => void;
+}
+

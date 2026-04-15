@@ -1,3 +1,4 @@
+import React from "react";
 // src/components/atoms/GameButton.tsx
 /**
  * GameButton - A reusable button component for game controls

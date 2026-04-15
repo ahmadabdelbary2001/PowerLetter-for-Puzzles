@@ -103,6 +103,5 @@ const FormationGame: React.FC<ReturnType<typeof useFormationGame>> = ({
 
 // 2. Create the final export by wrapping the pure UI component with the GameScreen HOC.
 export const FormationGameScreen: React.FC = () => (
-  // @ts-ignore - useGameHook type mismatch due to @powerletter/core import in transition
   <GameScreen useGameHook={useFormationGame} GameComponent={FormationGame} />
 );

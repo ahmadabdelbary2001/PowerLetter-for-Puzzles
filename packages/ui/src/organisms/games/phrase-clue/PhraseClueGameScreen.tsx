@@ -119,6 +119,5 @@ const PhraseClueGame: React.FC<ReturnType<typeof usePhraseClueGame>> = ({
 
 // 2. Create the final export by wrapping the pure UI component with the GameScreen HOC.
 export const PhraseClueGameScreen: React.FC = () => (
-  // @ts-ignore - useGameHook type mismatch due to @powerletter/core import in transition
   <GameScreen useGameHook={usePhraseClueGame} GameComponent={PhraseClueGame} />
 );

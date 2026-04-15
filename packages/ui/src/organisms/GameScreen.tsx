@@ -1,5 +1,6 @@
 "use client";
 
+import React from 'react';
 // src/components/organisms/GameScreen.tsx
 /**
  * @description A higher-order component that handles the common boilerplate for rendering a game screen.
