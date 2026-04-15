@@ -60,7 +60,6 @@ jobs:
           projectPath: ./apps/desktop-mobile
 
   android:
-    needs: release
     permissions:
       contents: write
     runs-on: ubuntu-latest
@@ -74,6 +73,10 @@ jobs:
 
       - name: install pnpm
         uses: pnpm/action-setup@v4
+
+      - name: Set version from tag
+        shell: bash
+        run: node scripts/set-version.mjs "$GITHUB_REF_NAME"
 
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
@@ -103,7 +106,7 @@ jobs:
 
       - name: Inject Mobile Crate Types
         run: |
-          sed -i 's/crate-type = \["lib"\]/crate-type = \["staticlib", "cdylib", "lib"\]/' apps/desktop-mobile/src-tauri/Cargo.toml
+          sed -i 's/crate-type = .*/crate-type = ["staticlib", "cdylib", "rlib"]/' apps/desktop-mobile/src-tauri/Cargo.toml
 
       - name: Build Android APK
         run: pnpm tauri android build --apk --target aarch64 --target armv7 --target i686 --target x86_64
