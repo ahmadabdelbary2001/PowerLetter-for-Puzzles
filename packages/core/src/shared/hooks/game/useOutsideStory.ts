@@ -12,7 +12,7 @@
  * - Stable voting progression with explicit `votingPlayerIndex`.
  * - Deterministic transitions without stale closure issues.
  */
-import { useState, useCallback, useMemo, useEffect, Dispatch, SetStateAction } from "react";
+import { useState, useCallback, useMemo, useEffect, type Dispatch, type SetStateAction } from "react";
 import type {
   OutsiderLevel,
   GameState,
