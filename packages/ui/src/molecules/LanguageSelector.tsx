@@ -1,3 +1,5 @@
+"use client";
+
 // src/components/molecules/LanguageSelector.tsx
 /**
  * LanguageSelector - A dropdown component for selecting the application language

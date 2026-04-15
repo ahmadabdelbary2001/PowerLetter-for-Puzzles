@@ -1,6 +1,12 @@
-"use client";
-
-// src/index.ts entry point for @powerletter/ui package
+// --- Views (Shared Pages) ---
+export { default as HeroSection } from './views/HeroSection';
+export { default as IndexPage } from './views/Index';
+export { default as GameTypeSelector } from './views/GameTypeSelector';
+export { default as KidsGameSelector } from './views/KidsGameSelector';
+export { default as GameSettingsPage } from './views/GameSettingsPage';
+export type { GameSettingsPageProps } from './views/GameSettingsPage';
+export { default as TeamConfigurator } from './views/TeamConfigurator';
+export { default as NotFound } from './views/NotFound';
 
 // --- Atoms ---
 export { Badge, badgeVariants } from './atoms/Badge';
@@ -108,6 +114,19 @@ export { GameScreen } from './organisms/GameScreen';
 export { Header } from './organisms/Header';
 export { KidsGameModeSelector } from './organisms/KidsGameModeSelector';
 
+// --- Game Organisms (Previously Screens) ---
+export { FormationGameScreen } from './organisms/games/formation-game/FormationGameScreen';
+export { ImgChoiceScreen } from './organisms/games/img-choice/ImgChoiceScreen';
+export { ImgClueGameScreen } from './organisms/games/img-clue/ImgClueGameScreen';
+export { LetterFlowGameScreen } from './organisms/games/letter-flow/LetterFlowGameScreen';
+export { OutsideStoryScreen } from './organisms/games/outside-story/OutsideStoryScreen';
+export { PhraseClueGameScreen } from './organisms/games/phrase-clue/PhraseClueGameScreen';
+export { WordChoiceScreen } from './organisms/games/word-choice/WordChoiceScreen';
+
+// --- Registry ---
+export { GAME_REGISTRY, getGameConfig } from './registry/GameRegistry';
+export type { GameConfig } from './registry/GameRegistry';
+
 // --- Templates ---
 export { ClueGameLayout } from './templates/ClueGameLayout';
 export { FlowGameLayout } from './templates/FlowGameLayout';
@@ -117,23 +136,3 @@ export { GameSelectionPageLayout } from './templates/GameSelectionPageLayout';
 export { MultipleChoiceLayout } from './templates/MultipleChoiceLayout';
 export { OutsideStoryLayout } from './templates/OutsideStoryLayout';
 export { WordFormationLayout } from './templates/WordFormationLayout';
-
-// --- Pages ---
-export { default as HeroSection } from './pages/HeroSection';
-export { default as IndexPage } from './pages/Index';
-export { default as GameTypeSelector } from './pages/GameTypeSelector';
-export { default as KidsGameSelector } from './pages/KidsGameSelector';
-export { default as GameSettingsPage } from './pages/GameSettingsPage';
-export { TeamConfigurator } from './pages/TeamConfigurator';
-export { default as NotFound } from './pages/NotFound';
-export { GAME_REGISTRY, getGameConfig } from './registry/GameRegistry';
-export type { GameConfig } from './registry/GameRegistry';
-
-// --- Game Features (Screens) ---
-export { FormationGameScreen } from './screens/formation-game/FormationGameScreen';
-export { ImgChoiceScreen } from './screens/img-choice/ImgChoiceScreen';
-export { ImgClueGameScreen } from './screens/img-clue/ImgClueGameScreen';
-export { LetterFlowGameScreen } from './screens/letter-flow/LetterFlowGameScreen';
-export { OutsideStoryScreen } from './screens/outside-story/OutsideStoryScreen';
-export { PhraseClueGameScreen } from './screens/phrase-clue/PhraseClueGameScreen';
-export { WordChoiceScreen } from './screens/word-choice/WordChoiceScreen';

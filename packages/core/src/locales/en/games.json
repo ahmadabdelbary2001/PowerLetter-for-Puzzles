@@ -50,5 +50,9 @@
 
   "imgChoiceTitle": "Find the Picture",
   "imgChoiceDesc": "Read the word and choose the picture that matches it.",
-  "imgChoiceFeatures": ["Tests comprehension", "Visual recognition", "Fun and interactive"]
+  "imgChoiceFeatures": ["Tests comprehension", "Visual recognition", "Fun and interactive"],
+  "playNow": "Play Now",
+  "comingSoon": "Coming Soon",
+  "features": "Features",
+  "available": "Available"
 }

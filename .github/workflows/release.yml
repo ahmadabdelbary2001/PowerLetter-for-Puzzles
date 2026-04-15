@@ -117,41 +117,30 @@ jobs:
       - name: Rename and Prepare APKs
         run: |
           VERSION="${{ github.ref_name }}"
-          # Tauri 2.0 output is usually in gen/android/app/build/outputs/apk/
-          # We search recursively to collect all release APKs regardless of ABI folder structure
-          BASE_DIR="apps/desktop-mobile/src-tauri/gen/android/app/build/outputs/apk"
-          TARGET_DIR="release-artifacts"
-          mkdir -p $TARGET_DIR
-
-          echo "Searching for APKs in $BASE_DIR..."
-          find $BASE_DIR -name "*.apk" -type f | while read -r apk; do
+          # We'll use find to locate all release APKs and move them to a unified folder for upload
+          mkdir -p apps/desktop-mobile/src-tauri/gen/android/app/build/outputs/apk/release-unified
+          find apps/desktop-mobile/src-tauri/gen/android/app/build/outputs/apk -name "*-release.apk" -type f | while read -r apk; do
             filename=$(basename "$apk")
-            echo "Processing $filename..."
-            
-            # Identify the build target from the filename or path
-            if [[ "$filename" == *"arm64-v8a"* ]] || [[ "$apk" == *"aarch64"* ]]; then
-              ABI="arm64-v8a"
-            elif [[ "$filename" == *"armeabi-v7a"* ]] || [[ "$apk" == *"armv7"* ]]; then
-              ABI="armeabi-v7a"
-            elif [[ "$filename" == *"x86_64"* ]]; then
-              ABI="x86_64"
-            elif [[ "$filename" == *"x86"* ]] || [[ "$apk" == *"i686"* ]]; then
-              ABI="x86"
-            elif [[ "$filename" == *"universal"* ]]; then
+            if [[ "$filename" == "app-universal-release.apk" ]]; then
               ABI="universal"
             else
-              ABI="unknown"
+              ABI=$(echo "$filename" | sed 's/app-//' | sed 's/-release.apk//')
             fi
-            
             NEW_NAME="universal-$ABI.apk"
-            cp "$apk" "$TARGET_DIR/$NEW_NAME"
-            echo "  ✓ Copied to $NEW_NAME"
+            mv "$apk" "apps/desktop-mobile/src-tauri/gen/android/app/build/outputs/apk/release-unified/$NEW_NAME"
+            echo "Renamed $filename to $NEW_NAME"
           done
+
+      - name: Upload Android APK to Action Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: PowerLetter-Android-APKs
+          path: apps/desktop-mobile/src-tauri/gen/android/app/build/outputs/apk/release-unified/*.apk
 
       - name: Upload APKs to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: release-artifacts/*.apk
+          files: apps/desktop-mobile/src-tauri/gen/android/app/build/outputs/apk/release-unified/*.apk
           tag_name: ${{ github.ref_name }}
           draft: true
           prerelease: false

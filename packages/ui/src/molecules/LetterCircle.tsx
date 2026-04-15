@@ -1,3 +1,5 @@
+"use client";
+
 // src/components/molecules/LetterCircle.tsx
 /**
  * @description A responsive circular arrangement of letter buttons.

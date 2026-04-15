@@ -1,8 +1,5 @@
-// src/components/atoms/Notification.tsx
-/**
- * Notification - A standardized, self-translating notification component.
- * It receives a messageKey and interpolation options, and translates them.
- */
+"use client";
+
 import { useEffect, useState } from 'react';
 import { cn } from "../lib/utils";
 import { useNotification, type NotificationData } from '@powerletter/core';

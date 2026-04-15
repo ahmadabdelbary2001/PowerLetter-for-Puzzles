@@ -1,3 +1,5 @@
+"use client";
+
 // src/components/molecules/CrosswordGrid.tsx
 /**
  * @description A responsive crossword grid component.

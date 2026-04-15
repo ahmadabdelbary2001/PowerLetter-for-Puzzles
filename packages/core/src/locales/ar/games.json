@@ -50,5 +50,9 @@
 
   "imgChoiceTitle": "ابحث عن الصورة",
   "imgChoiceDesc": "اقرأ الكلمة واختر الصورة التي تطابقها.",
-  "imgChoiceFeatures": ["اختبار الفهم", "تمييز بصري", "ممتعة وتفاعلية"]
+  "imgChoiceFeatures": ["اختبار الفهم", "تمييز بصري", "ممتعة وتفاعلية"],
+  "playNow": "العب الآن",
+  "comingSoon": "قريباً",
+  "features": "المميزات",
+  "available": "متاح"
 }

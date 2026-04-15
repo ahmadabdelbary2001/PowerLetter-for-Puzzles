@@ -1,10 +1,10 @@
 {
   "selectMode": "اختر نمط اللعب",
-  "selectModeDesc": "كيف تريد أن تلعب اليوم؟",
+  "selectModeDesc": "كيف ترغب في اللعب اليوم؟",
   "singlePlayer": "لاعب واحد",
-  "singlePlayerDesc": "العب بمفردك وتحدى نفسك",
+  "singlePlayerDesc": "العب بمفردك وتحدَّ نفسك",
   "competitive": "تنافسي",
-  "competitiveDesc": "العب مع الأصدقاء في فرق",
+  "competitiveDesc": "العب مع أصدقائك في فرق",
   "singleFeatures": [
     "تقدم شخصي",
     "تحديات متدرجة",
@@ -13,36 +13,40 @@
   "competitiveFeatures": [
     "فرق متعددة",
     "نظام نقاط",
-    "دوران الأدوار"
+    "اللعب بنظام الأدوار"
   ],
 
-  "selectCategory": "اختر فئة",
+  "selectCategory": "اختر التصنيف",
   "selectDifficulty": "اختر الصعوبة",
-  "selectCategoryHint": "يمكنك اختيار موضوع واحد أو أكثر، أو اختيار 'عام' لتشمل جميع المواضيع.",
-  "selectSingleCategoryHint": "اختر موضوعًا واحدًا فقط للبدء.",
+  "selectCategoryHint": "يمكنك اختيار موضوع واحد أو أكثر، أو اختيار 'عام' ليشملهم جميعاً.",
+  "selectSingleCategoryHint": "اختر موضوعاً واحداً لبدء جولتك.",
   "animals": "حيوانات",
   "science": "علوم",
   "geography": "جغرافيا",
-  "generalKnowledge": "منوع",
-  "general": "منوع",
-  "fruits-and-vegetables": "فواكه وخضار",
+  "generalKnowledge": "عام",
+  "general": "عام",
+  "fruits-and-vegetables": "فواكه وخضروات",
   "anime": "أنمي",
   "cars": "سيارات",
-  "cartoons": "رسوم متحركة",
+  "cartoons": "كرتون",
   "characters": "شخصيات",
   "clothes": "ملابس",
   "drinks": "مشروبات",
   "foods": "أطعمة",
   "football": "كرة قدم",
-  "gamers": "لاعبين",
-  "k-pop": "كيبوب",
+  "gamers": "قيمرز",
+  "k-pop": "كي-بوب",
   "series": "مسلسلات",
-  "spy": "جاسوسية",
+  "spy": "جاسوس",
   "sweets": "حلويات",
   "shapes": "أشكال",
-
+  
   "gameSettings": "إعدادات اللعبة",
   "changeTeams": "تغيير الفرق",
   "changeLevel": "تغيير المستوى",
-  "changeCategory": "تغيير الفئة"
+  "changeCategory": "تغيير التصنيف",
+  "kidsGames": "ألغاز الأطفال",
+  "kidsSelectionDesc": "ألعاب ممتعة وتعليمية مصممة لأبطالنا الصغار.",
+  "adultGames": "تحديات الألعاب",
+  "gameSelectionDesc": "اختر نوع التحدي الذي تريد أن تلعبه اليوم."
 }

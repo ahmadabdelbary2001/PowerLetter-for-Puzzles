@@ -1,3 +1,5 @@
+"use client";
+
 // src/organisms/Header.tsx
 /**
  * Header component - The main navigation header for the PowerLetter application

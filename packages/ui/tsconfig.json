@@ -1,17 +1,7 @@
 {
+  "extends": "@powerletter/config/typescript",
   "compilerOptions": {
-    "target": "ES2022",
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "module": "ESNext",
-    "moduleResolution": "bundler",
     "jsx": "react-jsx",
-    "allowImportingTsExtensions": true,
-    "verbatimModuleSyntax": true,
-    "moduleDetection": "force",
-    "strict": true,
-    "noEmit": true,
-    "skipLibCheck": true,
-    "resolveJsonModule": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
@@ -20,9 +10,7 @@
       "@core/*": ["../core/src/*"],
       "@powerletter/core": ["../core/src/index.ts"]
     },
-    "types": ["node"],
-    "noUnusedLocals": false,
-    "noUnusedParameters": false
+    "types": ["node"]
   },
   "include": ["src/**/*"]
 }

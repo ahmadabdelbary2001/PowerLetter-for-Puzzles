@@ -1,0 +1,124 @@
+"use client";
+
+// src/screens/phrase-clue/PhraseClueGameScreen.tsx
+/**
+ * Main component for the Phrase Clue Game interface.
+ * This component is now wrapped by the `GameScreen` HOC, which handles all
+ * loading and error states, keeping this file focused on the game's specific UI.
+ */
+import React from "react";
+import { usePhraseClueGame } from "@powerletter/core";
+import { Badge } from '@ui/atoms/Badge';
+import { SolutionBoxes } from '@ui/molecules/SolutionBoxes';
+import { LetterGrid } from '@ui/molecules/LetterGrid';
+import { GameControls } from '@ui/organisms/GameControls';
+import { ClueGameLayout } from '@ui/templates/ClueGameLayout';
+import { GameScreen } from '@ui/organisms/GameScreen';
+import { useAppRouter, useAppParams } from "@ui/contexts/RouterContext";
+
+// 1. Define the pure UI component.
+const PhraseClueGame: React.FC<ReturnType<typeof usePhraseClueGame>> = ({
+  currentLevel,
+  solution,
+  notification,
+  onClearNotification,
+  wrongAnswers,
+  gameState,
+  currentLevelIndex,
+  levels,
+  onCheck,
+  onShow,
+  onLetterClick,
+  onRemove,
+  onClear,
+  onHint,
+  nextLevel,
+  prevLevel,
+  handleBackWith,
+  resetLevel,
+  canRemove,
+  canClear,
+  canCheck,
+  canHint,
+  gameMode,
+  t,
+  instructions,
+}) => {
+  const router = useAppRouter();
+  const { gameType: paramGameType } = useAppParams<{ gameType: string }>();
+  const gameType = paramGameType || 'phrase-clue';
+
+  const handleBack = () => handleBackWith(router.push, gameType);
+
+  const { answerSlots, slotIndices, hintIndices } = gameState;
+
+  return (
+    <ClueGameLayout
+      title={currentLevel.clue}
+      levelIndex={currentLevelIndex}
+      onBack={handleBack}
+      difficulty={currentLevel.difficulty}
+      instructions={instructions}
+      notification={notification}
+      onClearNotification={onClearNotification}
+      promptContent={null}
+      solutionContent={<SolutionBoxes solution={solution} currentWord={answerSlots.join("")} />}
+      letterOptionsContent={
+        <LetterGrid
+          letters={gameState.letters}
+          selectedIndices={slotIndices.filter((i: number | null): i is number => i !== null)}
+          onLetterClick={onLetterClick}
+          disabled={gameState.gameState !== "playing"}
+          hintIndices={hintIndices}
+        />
+      }
+      wrongAnswersContent={
+        wrongAnswers.length > 0 && (
+          <div className="mt-2">
+            <p className="text-sm text-muted-foreground mb-1">{t('wrongAttempts')}:</p>
+            <div className="flex flex-wrap gap-1 justify-center">
+              {wrongAnswers.map((answer: string, index: number) => <Badge key={index} variant="destructive">{answer}</Badge>)}
+            </div>
+          </div>
+        )
+      }
+      gameControlsContent={
+        <GameControls
+          onRemoveLetter={onRemove}
+          onClearAnswer={onClear}
+          onCheckAnswer={onCheck}
+          onHint={onHint}
+          onShowSolution={onShow}
+          onReset={resetLevel}
+          onPrevLevel={prevLevel}
+          onNextLevel={nextLevel}
+          canRemove={canRemove}
+          canClear={canClear}
+          canCheck={canCheck}
+          canHint={canHint}
+          canPrev={currentLevelIndex > 0}
+          canNext={currentLevelIndex < levels.length - 1}
+          gameState={gameState.gameState}
+          gameMode={gameMode}
+          isKidsMode={false}
+          labels={{
+            remove: t('remove'),
+            clear: t('clear'),
+            check: t('check'),
+            hint: t('hint'),
+            showSolution: t('showSolution'),
+            reset: t('reset'),
+            prev: t('prev'),
+            next: t('next'),
+          }}
+        />
+      }
+    />
+  );
+};
+
+// 2. Create the final export by wrapping the pure UI component with the GameScreen HOC.
+export const PhraseClueGameScreen: React.FC = () => (
+  // @ts-ignore - useGameHook type mismatch due to @powerletter/core import in transition
+  <GameScreen useGameHook={usePhraseClueGame} GameComponent={PhraseClueGame} />
+);

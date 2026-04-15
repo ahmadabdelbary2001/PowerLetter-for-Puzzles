@@ -1,3 +1,5 @@
+"use client";
+
 // src/components/molecules/TeamDisplay.tsx
 /**
  * TeamDisplay is a molecule component that displays team information in a competitive game mode.

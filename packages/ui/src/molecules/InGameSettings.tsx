@@ -1,3 +1,5 @@
+"use client";
+
 // src/components/molecules/InGameSettings.tsx
 import React from 'react';
 import {

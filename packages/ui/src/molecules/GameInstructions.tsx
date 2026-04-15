@@ -1,3 +1,5 @@
+"use client";
+
 // src/components/molecules/GameInstructions.tsx
 
 import React, { useState } from 'react';

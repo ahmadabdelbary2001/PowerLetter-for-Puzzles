@@ -1,3 +1,5 @@
+"use client";
+
 // src/components/organisms/Footer.tsx
 /**
  * Footer component for the PowerLetter application

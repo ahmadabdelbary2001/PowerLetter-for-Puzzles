@@ -1,3 +1,5 @@
+"use client";
+
 // src/components/molecules/CategorySelector.tsx
 /**
  * CategorySelector - A component for selecting game categories

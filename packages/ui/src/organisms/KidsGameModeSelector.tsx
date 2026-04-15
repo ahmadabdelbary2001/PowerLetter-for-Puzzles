@@ -1,3 +1,5 @@
+"use client";
+
 // src/components/organisms/KidsGameModeSelector.tsx
 /**
  * KidsGameModeSelector component - A simplified version of GameModeSelector for kids.

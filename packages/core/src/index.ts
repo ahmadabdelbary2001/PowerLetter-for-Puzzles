@@ -1,39 +1,46 @@
-"use client";
+// Shared - Types
+export * from './shared/types/game';
 
-export * from './types/game';
-export * from './store/slices/gameSettingsStore';
-export * from './store/slices/teamStore';
+// Entities - Stores
+export * from './entities/game/model/gameSettingsStore';
+export * from './entities/team/model/teamStore';
+export * from './entities/user/model/userStore';
+
+// Shared - Internalization
 export * from './i18n/resources';
 export { setupI18n, default as i18n } from './i18n/config';
 
-// Hooks
-export * from './hooks/useTranslation';
-export * from './hooks/useGameMode';
-export * from './hooks/useNotification';
+// Shared - Hooks
+export * from './shared/hooks/useTranslation';
+export * from './shared/hooks/useGameMode';
+export * from './shared/hooks/useNotification';
 
-// Config & Constants
-export * from './config/gameCategories';
+// Entities - Config & Constants
+export * from './entities/game/config/gameCategories';
 
-// Engine Factory & Discovery
-export { getGameEngine, registerGameEngine } from './engine/GameEngineFactory';
-export { bootstrapEngines } from './engine/bootstrap';
+// Features - Engine Factory & Discovery
+export { getGameEngine, registerGameEngine } from './features/games/engine/GameEngineFactory';
+export { bootstrapEngines } from './features/games/engine/bootstrap';
 
 // Auto-bootstrap standard engines
-import { bootstrapEngines as initEngines } from './engine/bootstrap';
+import { bootstrapEngines as initEngines } from './features/games/engine/bootstrap';
 initEngines();
 
-// Feature Hooks
-export { useFormationGame } from './hooks/game/useFormationGame';
-export { useImgChoiceGame } from './hooks/game/useImgChoiceGame';
-export { useImageClueGame } from './hooks/game/useImageClueGame';
-export { useLetterFlowGame } from './hooks/game/useLetterFlowGame';
-export { usePassiveTouchFix } from './hooks/game/usePassiveTouchFix';
-export { useOutsideStory } from './hooks/game/useOutsideStory';
-export { usePhraseClueGame } from './hooks/game/usePhraseClueGame';
-export { useWordChoiceGame } from './hooks/game/useWordChoiceGame';
-export type { LetterFlowLevel, WordPath, BoardCell } from './engine/letter-flow-gameEngine';
-export type { GridCell, FormationLevel } from './engine/formation-gameEngine';
-export { colorForString } from './utils/colors';
+// Shared - Feature Hooks (Relocated to shared/hooks)
+export { useFormationGame } from './shared/hooks/game/useFormationGame';
+export { useImgChoiceGame } from './shared/hooks/game/useImgChoiceGame';
+export { useImageClueGame } from './shared/hooks/game/useImageClueGame';
+export { useLetterFlowGame } from './shared/hooks/game/useLetterFlowGame';
+export { usePassiveTouchFix } from './shared/hooks/game/usePassiveTouchFix';
+export { useOutsideStory } from './shared/hooks/game/useOutsideStory';
+export { usePhraseClueGame } from './shared/hooks/game/usePhraseClueGame';
+export { useWordChoiceGame } from './shared/hooks/game/useWordChoiceGame';
 
+// Shared - Engine Types
+export type { LetterFlowLevel, WordPath, BoardCell } from './features/games/engine/letter-flow-gameEngine';
+export type { GridCell, FormationLevel } from './features/games/engine/formation-gameEngine';
+
+// Shared - Utilities
+export { colorForString } from './shared/lib/colors';
 
 // Note: UI Components and Contexts have been moved to @powerletter/ui

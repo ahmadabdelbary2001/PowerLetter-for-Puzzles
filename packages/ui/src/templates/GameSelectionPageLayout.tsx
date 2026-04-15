@@ -10,8 +10,6 @@
  * and a main content area with a title and description.
  */
 import React from 'react';
-import { Header } from '@ui/organisms/Header';
-import { Footer } from '@ui/organisms/Footer';
 import { useTranslation } from '@powerletter/core';
 
 interface GameSelectionPageLayoutProps {
@@ -27,14 +25,12 @@ export const GameSelectionPageLayout: React.FC<GameSelectionPageLayoutProps> = (
   pageDescription,
   children,
   backgroundClass,
-  headerView,
 }) => {
   const { i18n } = useTranslation();
   const dir = i18n.dir();
 
   return (
     <div className={`min-h-screen ${backgroundClass}`}>
-      <Header currentView={headerView} />
       <main className="min-h-[calc(100vh-8rem)]">
         <div className="container mx-auto px-4 py-6 max-w-6xl" dir={dir}>
           {/* Page Header */}
@@ -51,7 +47,6 @@ export const GameSelectionPageLayout: React.FC<GameSelectionPageLayoutProps> = (
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   );
 };

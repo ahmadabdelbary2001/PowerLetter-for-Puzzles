@@ -1,3 +1,5 @@
+"use client";
+
 // src/components/molecules/ModeSelector.tsx
 /**
  * ModeSelector - A component for selecting game mode

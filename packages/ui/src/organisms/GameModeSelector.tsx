@@ -1,3 +1,5 @@
+"use client";
+
 // src/organisms/GameModeSelector.tsx
 /**
  * @description A multi-step wizard for configuring game settings.

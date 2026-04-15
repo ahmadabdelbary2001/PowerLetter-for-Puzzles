@@ -1,36 +1,35 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { GAME_REGISTRY } from '@powerletter/ui';
+import { GameSettingsPage } from '@powerletter/ui';
 
 interface GameDetailPageProps {
   params: Promise<{ id: string }>;
 }
 
+export function generateStaticParams() {
+  return GAME_REGISTRY.map((g: { id: string }) => ({
+    id: g.id,
+  }));
+}
+
 export async function generateMetadata({ params }: GameDetailPageProps): Promise<Metadata> {
   const { id } = await params;
+  const game = GAME_REGISTRY.find((g: { id: string }) => g.id === id);
+  
   return {
-    title: `Game — ${id}`,
-    description: `Details and settings for the ${id} game.`,
+    title: game ? `Settings — ${game.titleKey}` : 'Game Settings',
+    description: `Configure settings for ${id}.`,
   };
 }
 
 export default async function GameDetailPage({ params }: GameDetailPageProps) {
   const { id } = await params;
 
-  // TODO: Validate id against GameRegistry and redirect / notFound
-  const validIds = [
-    'phrase-clue', 'formation', 'letter-flow', 'outside-the-story',
-    'image-clue', 'img-choice', 'word-choice',
-  ];
+  const isValid = GAME_REGISTRY.some((g: { id: string }) => g.id === id);
 
-  if (!validIds.includes(id)) notFound();
+  if (!isValid) notFound();
 
-  return (
-    <section className="container mx-auto px-4 py-10">
-      <h1 className="mb-4 text-3xl font-bold capitalize">{id.replace(/-/g, ' ')}</h1>
-      <p className="text-muted-foreground mb-8">
-        Configure your game settings and start playing.
-      </p>
-      {/* TODO: Render GameSettingsPanel with game-specific config */}
-    </section>
-  );
+  // For simplicity, we default to difficulty setting if not specified
+  return <GameSettingsPage settingType="difficulty" gameType={id} />;
 }

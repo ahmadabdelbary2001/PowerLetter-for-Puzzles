@@ -5,6 +5,8 @@
  * card, and back button, while allowing specific content for each step to be
  * passed in as children.
  */
+"use client";
+
 import React from 'react';
 import { Button } from '@ui/atoms/Button';
 import { Card } from '@ui/atoms/Card';

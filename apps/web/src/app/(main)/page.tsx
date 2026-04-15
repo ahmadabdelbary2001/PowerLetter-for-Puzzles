@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { HeroSection, KidsGameSelector } from '@powerletter/ui';
+import { HeroSection } from '@powerletter/ui';
 
 export const metadata: Metadata = {
   title: 'PowerLetter — Arabic & English Puzzle Games',
@@ -11,7 +11,6 @@ export default function LandingPage() {
   return (
     <>
       <HeroSection />
-      <KidsGameSelector />
     </>
   );
 }

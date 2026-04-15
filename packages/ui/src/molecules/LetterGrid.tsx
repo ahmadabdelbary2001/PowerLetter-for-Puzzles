@@ -1,3 +1,5 @@
+"use client";
+
 // src/components/molecules/LetterGrid.tsx
 /**
  * LetterGrid - A responsive grid of letter selection boxes

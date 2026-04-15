@@ -1,4 +1,6 @@
 // src/components/templates/GameLayout.tsx
+"use client";
+
 import React from 'react';
 import { Button } from '@ui/atoms/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '@ui/atoms/Card';

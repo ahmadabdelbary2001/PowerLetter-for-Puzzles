@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { I18nProvider } from "../components/I18nProvider";
+import { I18nProvider } from "@/shared/lib/I18nProvider";
 import { ThemeProvider, TooltipProvider, Toaster, Sonner } from "@powerletter/ui";
-import { NextRouterAdapter } from "../components/NextRouterAdapter";
+import { NextRouterAdapter } from "@/shared/lib/NextRouterAdapter";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {

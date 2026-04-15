@@ -1,3 +1,5 @@
+"use client";
+
 // src/components/molecules/DifficultySelector.tsx
 /**
  * DifficultySelector - A component for selecting game difficulty

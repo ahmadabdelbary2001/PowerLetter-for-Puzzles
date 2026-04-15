@@ -3,10 +3,16 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
+      "inputs": ["src/**", "tsconfig*.json", "vite.config.*", "next.config.*"],
       "outputs": ["dist/**", "build/**", ".next/**", "src-tauri/target/**"]
     },
     "lint": {
-      "dependsOn": ["^lint"]
+      "dependsOn": ["^lint"],
+      "inputs": ["src/**", "*.config.*", "eslint.config.*", "tsconfig*.json"]
+    },
+    "test": {
+      "dependsOn": ["^test"],
+      "inputs": ["src/**", "*.test.*", "*.spec.*"]
     },
     "dev": {
       "cache": false,
@@ -14,3 +20,4 @@
     }
   }
 }
+

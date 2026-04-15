@@ -14,6 +14,8 @@ import {
   GameModeSelector,
   KidsGameModeSelector,
   NotFound,
+  Header,
+  Footer,
   getGameConfig,
   type LinkComponent
 } from "@powerletter/ui";
@@ -93,6 +95,16 @@ const GameSettingsPageWrapper = () => {
   return <GameSettingsPage settingType={settingType} gameType={gameType} />;
 };
 
+const SharedLayout = ({ children }: { children?: React.ReactNode }) => (
+  <div className="flex flex-col min-h-screen">
+    <Header />
+    <main className="flex-1">
+      {children}
+    </main>
+    <Footer />
+  </div>
+);
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -102,20 +114,22 @@ const App = () => (
         <BrowserRouter>
           <ReactRouterAdapter>
             <Suspense fallback={<div className="flex justify-center items-center h-screen w-full">Loading...</div>}>
-              <Routes>
-                <Route path="/" element={<IndexPage />} />
-                <Route path="/games" element={<GameTypeSelector />} />
-                <Route path="/kids-games" element={<KidsGameSelector />} />
-                <Route path="/game-mode/:gameType" element={<GameModeSelectorWrapper />} />
-                
-                {/* Reusing shared pages across shells */}
-                <Route path="/team-config/:gameType" element={<TeamConfiguratorWrapper />} />
-                <Route path="/settings/teams/:gameType" element={<TeamConfiguratorWrapper />} />
-                <Route path="/settings/:settingType/:gameType" element={<GameSettingsPageWrapper />} />
+              <SharedLayout>
+                <Routes>
+                  <Route path="/" element={<IndexPage />} />
+                  <Route path="/games" element={<GameTypeSelector />} />
+                  <Route path="/kids-games" element={<KidsGameSelector />} />
+                  <Route path="/game-mode/:gameType" element={<GameModeSelectorWrapper />} />
+                  
+                  {/* Reusing shared pages across shells */}
+                  <Route path="/team-config/:gameType" element={<TeamConfiguratorWrapper />} />
+                  <Route path="/settings/teams/:gameType" element={<TeamConfiguratorWrapper />} />
+                  <Route path="/settings/:settingType/:gameType" element={<GameSettingsPageWrapper />} />
 
-                <Route path="/game/:gameType" element={<GameScreenWrapper />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+                  <Route path="/game/:gameType" element={<GameScreenWrapper />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </SharedLayout>
             </Suspense>
           </ReactRouterAdapter>
         </BrowserRouter>

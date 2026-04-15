@@ -1,3 +1,5 @@
+"use client";
+
 // src/components/molecules/Scoreboard.tsx
 /**
  * Scoreboard is a molecule component that displays team scores and hints remaining

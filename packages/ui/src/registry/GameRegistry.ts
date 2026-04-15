@@ -1,26 +1,27 @@
 import React from 'react';
 import { Puzzle, Search, Image as ImageIcon, CheckSquare, SpellCheck, Share2, Users } from 'lucide-react';
-import { type GameCategory, GAME_METADATA } from '@powerletter/core';
+import type { GameCategory, GameType } from '@powerletter/core';
+import { GAME_METADATA } from '@powerletter/core';
 
-// --- Lazy-loaded Screen Components (Moved from features to screens) ---
-const PhraseClueGameScreen = React.lazy(() => import('../screens/phrase-clue/PhraseClueGameScreen').then(m => ({ default: m.PhraseClueGameScreen })));
-const ImgClueGameScreen = React.lazy(() => import('../screens/img-clue/ImgClueGameScreen').then(m => ({ default: m.ImgClueGameScreen })));
-const WordChoiceScreen = React.lazy(() => import('../screens/word-choice/WordChoiceScreen').then(m => ({ default: m.WordChoiceScreen })));
-const FormationGameScreen = React.lazy(() => import('../screens/formation-game/FormationGameScreen').then(m => ({ default: m.FormationGameScreen })));
-const LetterFlowGameScreen = React.lazy(() => import('../screens/letter-flow/LetterFlowGameScreen').then(m => ({ default: m.LetterFlowGameScreen })));
-const ImgChoiceScreen = React.lazy(() => import('../screens/img-choice/ImgChoiceScreen').then(m => ({ default: m.ImgChoiceScreen })));
-const OutsideStoryScreen = React.lazy(() => import('../screens/outside-story/OutsideStoryScreen').then(m => ({ default: m.OutsideStoryScreen })));
+// --- Lazy-loaded Screen Components (Internal UI imports) ---
+const PhraseClueGameScreen = React.lazy(() => import('../organisms/games/phrase-clue/PhraseClueGameScreen').then((m: any) => ({ default: m.PhraseClueGameScreen })));
+const ImgClueGameScreen = React.lazy(() => import('../organisms/games/img-clue/ImgClueGameScreen').then((m: any) => ({ default: m.ImgClueGameScreen })));
+const WordChoiceScreen = React.lazy(() => import('../organisms/games/word-choice/WordChoiceScreen').then((m: any) => ({ default: m.WordChoiceScreen })));
+const FormationGameScreen = React.lazy(() => import('../organisms/games/formation-game/FormationGameScreen').then((m: any) => ({ default: m.FormationGameScreen })));
+const LetterFlowGameScreen = React.lazy(() => import('../organisms/games/letter-flow/LetterFlowGameScreen').then((m: any) => ({ default: m.LetterFlowGameScreen })));
+const ImgChoiceScreen = React.lazy(() => import('../organisms/games/img-choice/ImgChoiceScreen').then((m: any) => ({ default: m.ImgChoiceScreen })));
+const OutsideStoryScreen = React.lazy(() => import('../organisms/games/outside-story/OutsideStoryScreen').then((m: any) => ({ default: m.OutsideStoryScreen })));
 
 type TranslationKeys = string;
 type SupportedSetting = 'teams' | 'difficulty' | 'category';
 
 export interface GameConfig {
-  id: 'category' | 'phrase-clue' | 'formation' | 'image-clue' | 'letter-flow' | 'outside-the-story' | 'img-choice' | 'word-choice';
+  id: GameType;
   type: 'adult' | 'kids';
   titleKey: TranslationKeys;
   descriptionKey: TranslationKeys;
   featuresKey: TranslationKeys;
-  component: React.LazyExoticComponent<React.FC<any>>; // More specific for lazy components
+  component: React.LazyExoticComponent<React.FC<any>>;
   icon: React.ReactNode;
   status: 'available' | 'coming-soon';
   supportedSettings: SupportedSetting[];

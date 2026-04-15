@@ -1,3 +1,5 @@
+"use client";
+
 // src/components/molecules/SolutionBoxes.tsx
 /**
  * SolutionBoxes is a molecule component that displays a series of boxes representing

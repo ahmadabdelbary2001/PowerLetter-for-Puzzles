@@ -44,5 +44,9 @@
   "gameSettings": "Game Settings",
   "changeTeams": "Change Teams",
   "changeLevel": "Change Level",
-  "changeCategory": "Change Category"
+  "changeCategory": "Change Category",
+  "kidsGames": "Kids Puzzles",
+  "kidsSelectionDesc": "Fun and educational games designed for our little champions.",
+  "adultGames": "Game Challenges",
+  "gameSelectionDesc": "Select the type of challenge you want to play today."
 }
