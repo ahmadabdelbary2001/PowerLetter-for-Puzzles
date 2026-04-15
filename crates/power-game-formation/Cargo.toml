@@ -1,6 +1,6 @@
 [package]
 name = "power-game-formation"
-version = "1.0.4"
+version = "1.0.6"
 edition = "2021"
 authors = ["Ahmad Abdelbary"]
 description = "Formation (Word Crossword) game engine for PowerLetter"

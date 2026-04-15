@@ -1,6 +1,6 @@
 {
   "name": "@powerletter/web",
-  "version": "1.0.4",
+  "version": "1.0.6",
   "private": true,
   "scripts": {
     "predev": "node ../../scripts/copy-assets.js web",
@@ -8,7 +8,8 @@
     "prebuild": "node ../../scripts/copy-assets.js web",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.15",

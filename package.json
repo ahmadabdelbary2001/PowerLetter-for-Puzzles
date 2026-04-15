@@ -13,6 +13,7 @@
     "android:dev": "pnpm --filter @powerletter/desktop-mobile android:dev",
     "android:build": "pnpm --filter @powerletter/desktop-mobile android:build",
     "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
     "changeset": "changeset",
     "version-packages": "changeset version",
     "release": "changeset publish"
@@ -26,5 +27,5 @@
   "engines": {
     "node": ">=18"
   },
-  "version": "1.0.4"
+  "version": "1.0.6"
 }

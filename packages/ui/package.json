@@ -1,6 +1,6 @@
 {
   "name": "@powerletter/ui",
-  "version": "1.0.4",
+  "version": "1.0.6",
   "private": true,
   "type": "module",
   "main": "./src/index.ts",
@@ -12,7 +12,8 @@
   },
   "scripts": {
     "build": "tsc",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@powerletter/core": "workspace:*",

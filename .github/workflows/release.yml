@@ -98,6 +98,7 @@ jobs:
 
       - name: Decode Android Key
         run: |
+          mkdir -p apps/desktop-mobile/src-tauri/gen/android/module
           echo "${{ secrets.ANDROID_SIGNING_KEY }}" | base64 --decode > apps/desktop-mobile/src-tauri/gen/android/module/release.keystore
 
       - name: Inject Mobile Crate Types

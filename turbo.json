@@ -19,6 +19,10 @@
       "dependsOn": ["^lint"],
       "inputs": ["src/**", "*.config.*", "eslint.config.*", "tsconfig*.json"]
     },
+    "typecheck": {
+      "dependsOn": ["^typecheck"],
+      "inputs": ["src/**", "tsconfig*.json"]
+    },
     "test": {
       "dependsOn": ["^test"],
       "inputs": ["src/**", "*.test.*", "*.spec.*"]

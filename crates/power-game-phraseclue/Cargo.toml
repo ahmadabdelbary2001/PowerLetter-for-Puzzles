@@ -1,6 +1,6 @@
 [package]
 name = "power-game-phraseclue"
-version = "1.0.4"
+version = "1.0.6"
 edition = "2021"
 authors = ["PowerLetter Team"]
 description = "Phrase Clue game logic for PowerLetter"

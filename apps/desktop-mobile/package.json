@@ -1,6 +1,6 @@
 {
   "name": "@powerletter/desktop-mobile",
-  "version": "1.0.4",
+  "version": "1.0.6",
   "private": true,
   "type": "module",
   "scripts": {
@@ -11,6 +11,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "tauri": "tauri",
+    "typecheck": "tsc -b --noEmit",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build",
     "android:dev": "tauri android dev",

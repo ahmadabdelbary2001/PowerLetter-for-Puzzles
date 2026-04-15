@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "PowerLetter for Puzzles",
-  "version": "1.0.4",
+  "version": "1.0.6",
   "identifier": "com.powerletter.puzzles",
   "build": {
     "frontendDist": "../dist",
