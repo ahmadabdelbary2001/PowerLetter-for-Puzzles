@@ -1,36 +1,67 @@
 "use client";
 
 import { createContext, useContext } from 'react';
+import type { ThemeId } from '../lib/themes';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Types
+// ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * Type definition for available theme options
+ * The light/dark appearance mode.
+ * Separate from `ThemeId` — a theme is the palette, mode is the brightness.
  */
 export type Theme = 'light' | 'dark';
 
 /**
- * Interface defining the shape of the ThemeContext
- * Contains the current theme, a function to toggle it, and a computed boolean for dark mode
+ * Full context API exposed to consumers via `useTheme()`.
+ *
+ * Two orthogonal dimensions:
+ * - **themeId** — which colour palette (e.g. `'powerletter'`, `'ocean'`).
+ *   Controls the `data-theme` attribute on `<html>`.
+ * - **theme / toggleTheme / isDark** — light vs dark mode.
+ *   Controls the `.dark` class on `<html>`.
  */
 export interface ThemeContextType {
-  /** Current active theme ('light' or 'dark') */
+  // ── Mode (light / dark) ──────────────────────────────────────────────────
+  /** Current appearance mode: `'light'` or `'dark'`. */
   theme: Theme;
-  /** Function to toggle between light and dark themes */
+  /** Toggle between light and dark mode. */
   toggleTheme: () => void;
-  /** Computed boolean indicating if dark mode is active */
+  /** Shorthand boolean — `true` when `theme === 'dark'`. */
   isDark: boolean;
+
+  // ── Theme ID (colour palette) ─────────────────────────────────────────────
+  /** Active colour palette identifier (matches `data-theme` on `<html>`). */
+  themeId: ThemeId;
+  /** Switch to a different colour palette by ID. */
+  setThemeId: (id: ThemeId) => void;
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Context
+// ─────────────────────────────────────────────────────────────────────────────
+
 /**
- * React Context for theme management
- * Provides theme-related data and functions to components throughout the app
+ * React Context for theme management.
+ * Provides both mode (light/dark) and palette (themeId) to the component tree.
  */
 export const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Hook
+// ─────────────────────────────────────────────────────────────────────────────
+
 /**
- * Custom hook for accessing the theme context
- * Provides a convenient way to consume theme data in components
- * @throws {Error} If used outside of a ThemeProvider
- * @returns {ThemeContextType} The theme context value
+ * Custom hook for accessing the active theme.
+ *
+ * @throws {Error} If used outside of a `<ThemeProvider>`.
+ * @returns The full theme context including palette ID and appearance mode.
+ *
+ * @example
+ * ```tsx
+ * const { isDark, themeId, setThemeId, toggleTheme } = useTheme();
+ * ```
  */
 export const useTheme = (): ThemeContextType => {
   const context = useContext(ThemeContext);

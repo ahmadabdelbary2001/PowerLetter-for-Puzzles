@@ -1,6 +1,6 @@
 [package]
 name = "power-wasm"
-version = "1.0.7"
+version = "1.0.8"
 edition = "2021"
 authors = ["Ahmad Abdelbary"]
 description = "WebAssembly bindings for PowerLetter game engines (FSD Architecture)"

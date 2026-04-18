@@ -52,7 +52,7 @@
    Colors (kept minimal — only the two HSL colours you wanted)
    -------------------------------------------------------- */
 
-:root {
+[data-theme="powerletter"] {
   --radius: 0.625rem;
 
   /* Use only the two colours you requested (exact strings preserved) */
@@ -101,7 +101,7 @@
   --sidebar-ring: color-mix(in srgb, var(--secondary) 12%, transparent);
 }
 
-.dark {
+[data-theme="powerletter"].dark {
   --radius: 0.625rem;
 
   /* keep the same two colours (you asked to avoid warm/gold tones) */

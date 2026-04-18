@@ -70,6 +70,7 @@ export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from './atom
 export { useToast, toast } from './hooks/use-toast';
 export type { ToasterToast, ToastState } from './hooks/use-toast';
 export { cn } from './lib/utils';
+export * from './lib/themes';
 
 // --- Contexts ---
 export { ThemeProvider } from './contexts/ThemeProvider';
