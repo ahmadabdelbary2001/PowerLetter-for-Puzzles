@@ -20,10 +20,15 @@ export function Logo({ showText = true, showBadge = true, className }: LogoProps
         whileHover={{ scale: 1.1, rotate: [0, -10, 10, 0] }}
         transition={{ duration: 0.4 }}
       >
-        {/* Lightning bolt icon with enhanced gradient */}
-        <div className="text-2xl sm:text-3xl font-bold bg-linear-to-br from-primary via-primary-light to-secondary bg-clip-text text-transparent filter drop-shadow-sm">
-          ⚡
-        </div>
+        {/* New Brand Logo Image */}
+        <motion.img 
+          src="/logo.png" 
+          alt="PowerLetter"
+          className="w-8 h-8 sm:w-10 sm:h-10 object-contain filter drop-shadow-sm"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+        />
         {/* Animated pulse indicator with custom color */}
         <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-secondary rounded-full animate-pulse border-2 border-background" />
       </motion.div>

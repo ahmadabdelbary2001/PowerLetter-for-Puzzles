@@ -36,12 +36,15 @@
     ],
     "windows": {
       "webviewInstallMode": {
-        "type": "embedBootstrapper"
+        "type": "downloadBootstrapper"
       },
       "nsis": {
         "installerIcon": "icons/icon.ico",
         "displayLanguageSelector": true
       }
-    }
+    },
+    "resources": [
+      "WebView2Loader.dll"
+    ]
   }
 }

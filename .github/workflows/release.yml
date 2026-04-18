@@ -9,7 +9,24 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
+  create-release:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Global Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: "PowerLetter ${{ github.ref_name }}"
+          body: "Official Release of PowerLetter-for-Puzzles"
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   release:
+    needs: create-release
     permissions:
       contents: write
     strategy:
@@ -53,13 +70,14 @@ jobs:
           tagName: ${{ github.ref_name }}
           releaseName: "PowerLetter ${{ github.ref_name }}"
           releaseBody: "Official Release of PowerLetter-for-Puzzles"
-          releaseDraft: true
+          releaseDraft: false
           prerelease: false
           includeUpdaterJson: true
           distPath: ../dist
           projectPath: ./apps/desktop-mobile
 
   android:
+    needs: create-release
     permissions:
       contents: write
     runs-on: ubuntu-latest
@@ -130,7 +148,7 @@ jobs:
             else
               ABI=$(echo "$filename" | sed 's/app-//' | sed 's/-release.apk//')
             fi
-            NEW_NAME="universal-$ABI.apk"
+            NEW_NAME="PowerLetter-$VERSION-$ABI.apk"
             mv "$apk" "apps/desktop-mobile/src-tauri/gen/android/app/build/outputs/apk/release-unified/$NEW_NAME"
             echo "Renamed $filename to $NEW_NAME"
           done
@@ -146,7 +164,7 @@ jobs:
         with:
           files: apps/desktop-mobile/src-tauri/gen/android/app/build/outputs/apk/release-unified/*.apk
           tag_name: ${{ github.ref_name }}
-          draft: true
+          draft: false
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
